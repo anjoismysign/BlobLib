@@ -1,0 +1,6 @@
+name: BlobLib
+version: '${project.version}'
+main: us.mytheria.bloblib.BlobLib
+api-version: 1.18
+load: STARTUP
+authors: [ promorrom, j0ach1mmall3, Dean B ]
