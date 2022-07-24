@@ -6,7 +6,7 @@ import org.bukkit.World;
 import org.bukkit.util.Vector;
 
 
-public class BlockUtils {
+public class BlockUtil {
 
     public static void set(Location beginning, Vector vector1, Vector vector2, Material material) {
         World world = beginning.getWorld();

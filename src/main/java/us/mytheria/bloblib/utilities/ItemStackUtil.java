@@ -19,7 +19,7 @@ public class ItemStackUtil {
         }
         ItemMeta itemMeta = itemStack.getItemMeta();
         String customModelData = (itemMeta.hasCustomModelData() ? String.valueOf(itemMeta.getCustomModelData()) : "0");
-        String toReturn = itemMeta.getDisplayName() + "%bis:%" + StringUtils.listStringCompactor(itemMeta.getLore()) + "%bis:%" + customModelData + "%bis:%" + itemStack.getType();
+        String toReturn = itemMeta.getDisplayName() + "%bis:%" + StringUtil.listStringCompactor(itemMeta.getLore()) + "%bis:%" + customModelData + "%bis:%" + itemStack.getType();
         return toReturn;
     }
 
@@ -30,7 +30,7 @@ public class ItemStackUtil {
         ItemStack itemStack = new ItemStack(Material.valueOf(split[3]));
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.setDisplayName(split[0]);
-        itemMeta.setLore(StringUtils.listStringDecompactor(split[1]));
+        itemMeta.setLore(StringUtil.listStringDecompactor(split[1]));
         itemMeta.setCustomModelData(Integer.parseInt(split[2]));
         itemStack.setItemMeta(itemMeta);
         return itemStack;

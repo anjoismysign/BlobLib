@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class StringUtils {
+public class StringUtil {
 
     public static String listStringCompactor(List<String> list) {
         if (list == null) {

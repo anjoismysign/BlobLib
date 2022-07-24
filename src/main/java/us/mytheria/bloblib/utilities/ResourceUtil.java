@@ -5,8 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class ResourceUtils {
-    public void moveResource(File file, InputStream inputStream) {
+public class ResourceUtil {
+    public static void moveResource(File file, InputStream inputStream) {
         try {
             if (!file.getParentFile().exists()) {
                 File parentFile = file.getParentFile();
