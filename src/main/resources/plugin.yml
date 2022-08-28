@@ -1,6 +1,7 @@
 name: BlobLib
 version: 1.2
 main: us.mytheria.bloblib.BlobLib
-api-version: 1.18
+api-version: 1.17
 load: STARTUP
+softdepend: [ WorldGuard ]
 authors: [ promorrom, j0ach1mmall3, Dean B ]

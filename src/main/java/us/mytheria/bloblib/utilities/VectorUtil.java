@@ -1,10 +1,22 @@
 package us.mytheria.bloblib.utilities;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.util.Vector;
 
 public class VectorUtil {
 
+    public static Vector fromConfigurationSection(ConfigurationSection section) {
+        return new Vector(section.getDouble("X", 0),
+                section.getDouble("Y", 0),
+                section.getDouble("Z", 0));
+    }
+
+    public static void setVector(Vector vector, ConfigurationSection section) {
+        section.set("X", vector.getX());
+        section.set("Y", vector.getY());
+        section.set("Z", vector.getZ());
+    }
 
     public static void absoluteVector(Vector vector) {
         vector.setX(Math.abs(vector.getX()));
