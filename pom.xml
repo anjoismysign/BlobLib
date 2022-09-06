@@ -36,6 +36,7 @@
                 <configuration>
                     <checkModificationExcludes>
                         <checkModificationExclude>pom.xml</checkModificationExclude>
+                        <checkModificationExclude>**</checkModificationExclude>
                     </checkModificationExcludes>
                     <goals>pre-integration-test</goals>
                     <preparationGoals>package</preparationGoals>
