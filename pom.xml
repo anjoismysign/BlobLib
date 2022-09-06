@@ -12,7 +12,6 @@
     <name>BlobLib</name>
 
     <properties>
-        <testServer>/Users/lbenav8095/Documents/Dev/Java/anjoismysign/1.19 Test Server</testServer>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <build>
@@ -38,8 +37,6 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <outputFile>${testServer}/plugins/${project.artifactId}.jar
-                            </outputFile>
                             <filters>
                                 <filter>
                                     <artifact>*:*</artifact>
@@ -146,6 +143,12 @@
             <artifactId>decentholograms</artifactId>
             <version>2.7.2</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.skytasul</groupId>
+            <artifactId>guardianbeam</artifactId>
+            <version>2.3.0</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

@@ -5,7 +5,6 @@ import us.mytheria.bloblib.hologram.HologramManager;
 import us.mytheria.bloblib.vault.VaultManager;
 
 public final class BlobLib extends JavaPlugin {
-
     private VaultManager vaultManager;
     private HologramManager hologramManager;
 
