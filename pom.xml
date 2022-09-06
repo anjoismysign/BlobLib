@@ -4,7 +4,7 @@
 
     <groupId>us.mytheria</groupId>
     <artifactId>BlobLib</artifactId>
-    <version>1.4.0.4-SNAPSHOT</version>
+    <version>1.4.0.1</version>
     <packaging>jar</packaging>
 
     <name>BlobLib</name>
@@ -13,7 +13,7 @@
         <connection>scm:git:git@github.com:anjoismysign/BlobLib.git</connection>
         <developerConnection>scm:git:git@github.com:anjoismysign/BlobLib.git</developerConnection>
         <url>https://github.com/anjoismysign/BlobLib</url>
-        <tag>v@{project.version}</tag>
+        <tag>1.4.0.1</tag>
     </scm>
 
     <properties>
