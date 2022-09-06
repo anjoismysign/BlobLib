@@ -27,9 +27,21 @@ public class Found implements Vault {
     }
 
     @Override
+    public void withdrawCash(Player player, double amount) {
+        economy.withdrawPlayer(player, amount);
+    }
+
+    @Override
     public void setCash(Player player, double amount) {
         economy.withdrawPlayer(player, economy.getBalance(player));
-        economy.depositPlayer(player, amount);
+        if (amount > 0.01) {
+            economy.depositPlayer(player, amount);
+            return;
+        }
+        if (amount < -0.01) {
+            amount = -amount;
+            economy.withdrawPlayer(player, amount);
+        }
     }
 
     @Override

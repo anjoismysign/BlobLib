@@ -20,6 +20,10 @@ public class VaultManager {
         vault.addCash(player, amount);
     }
 
+    public void withdrawCash(Player player, double amount) {
+        vault.withdrawCash(player, amount);
+    }
+
     public void setCash(Player player, double amount) {
         vault.setCash(player, amount);
     }

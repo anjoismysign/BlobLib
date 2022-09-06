@@ -9,6 +9,10 @@ public class Absent implements Vault {
     }
 
     @Override
+    public void withdrawCash(Player player, double amount) {
+    }
+
+    @Override
     public void setCash(Player player, double amount) {
     }
 
