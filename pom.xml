@@ -84,6 +84,11 @@
                                     <pattern>org.apache.commons</pattern>
                                     <shadedPattern>global.warming.commons</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>fr.skytasul.guardianbeam</pattern>
+                                    <shadedPattern>nuclear.winter.guardianbeam</shadedPattern>
+                                </relocation>
+                                <!-- doomsday.clock.NNNEEEXXXTTT -->
                             </relocations>
                         </configuration>
                     </execution>
