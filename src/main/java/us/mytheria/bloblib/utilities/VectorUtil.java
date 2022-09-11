@@ -12,6 +12,12 @@ public class VectorUtil {
                 section.getDouble("Z", 0));
     }
 
+    public static void toConfigurationSection(Vector vector, ConfigurationSection section) {
+        section.set("X", vector.getX());
+        section.set("Y", vector.getY());
+        section.set("Z", vector.getZ());
+    }
+
     public static void setVector(Vector vector, ConfigurationSection section) {
         section.set("X", vector.getX());
         section.set("Y", vector.getY());
