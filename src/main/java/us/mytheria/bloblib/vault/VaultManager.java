@@ -39,4 +39,20 @@ public class VaultManager {
     public boolean isVaultInstalled() {
         return vaultInstalled;
     }
+
+    public boolean addPermission(Player player, String permission) {
+        return vault.addPermission(player, permission);
+    }
+
+    public boolean removePermission(Player player, String permission) {
+        return vault.removePermission(player, permission);
+    }
+
+    public boolean addPermission(Player player, String permission, String world) {
+        return vault.addPermission(player, permission, world);
+    }
+
+    public boolean removePermission(Player player, String permission, String world) {
+        return vault.removePermission(player, permission, world);
+    }
 }

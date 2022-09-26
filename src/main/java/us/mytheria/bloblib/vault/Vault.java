@@ -13,4 +13,12 @@ public interface Vault {
     boolean hasCashAmount(Player player, double amount);
 
     double getCash(Player player);
+
+    boolean addPermission(Player player, String permission);
+
+    boolean removePermission(Player player, String permission);
+
+    boolean addPermission(Player player, String permission, String world);
+
+    boolean removePermission(Player player, String permission, String world);
 }
