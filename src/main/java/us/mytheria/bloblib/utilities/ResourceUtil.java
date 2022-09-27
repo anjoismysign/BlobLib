@@ -2,6 +2,7 @@ package us.mytheria.bloblib.utilities;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -60,6 +61,14 @@ public class ResourceUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    public static void updateYml(File path, String tempPath, String fileName, File file, Plugin main) {
+        File tempLang = new File(path.getPath() + tempPath);
+        ResourceUtil.inputStreamToFile(tempLang, main.getResource(fileName));
+        YamlConfiguration tempLangConfig = YamlConfiguration.loadConfiguration(tempLang);
+        ResourceUtil.writeNewValues(file,
+                tempLangConfig);
+        tempLang.delete();
     }
 }
