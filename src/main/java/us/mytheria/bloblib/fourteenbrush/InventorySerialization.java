@@ -29,15 +29,6 @@ public class InventorySerialization {
         }
     }
 
-    public static String catchItemStackArrayToBase64(ItemStack[] itemStacks) {
-        try {
-            return itemStackArrayToBase64(itemStacks);
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public static String inventoryToBase64(Inventory inventory) throws IllegalStateException {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
              BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream)) {
@@ -55,15 +46,6 @@ public class InventorySerialization {
         }
     }
 
-    public static String catchInventoryToBase64(Inventory inventory) {
-        try {
-            return inventoryToBase64(inventory);
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public static Inventory inventoryFromBase64(String data) throws IOException {
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64.getDecoder().decode(data));
              BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream)) {
@@ -76,15 +58,6 @@ public class InventorySerialization {
         } catch (ClassNotFoundException e) {
             throw new IOException("Unable to decode class type.", e);
         }
-    }
-
-    public static Inventory catchInventoryFromBase64(String data) {
-        try {
-            return inventoryFromBase64(data);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     public static ItemStack[] itemStackArrayFromBase64(String data) {
