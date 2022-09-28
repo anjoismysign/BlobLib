@@ -6,6 +6,7 @@ import org.bukkit.block.Block;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -46,15 +47,21 @@ public class BukkitUtil {
         return location.getWorld().getName() + "-" + location.toVector() + " (World-X,Y,Z)";
     }
 
-    public static List<String> serializeBlockSet(Set<Block> blocks) {
-        List<String> serialized = new ArrayList<>();
-        for (Block block : blocks) {
-            serialized.add(locationToString(block.getLocation()));
+    @Nullable
+    public static List<String> serializeBlockSet(Set<Block> set) {
+        if (set == null)
+            return null;
+        List<String> blocks = new ArrayList<>();
+        for (Block block : set) {
+            blocks.add(locationToString(block.getLocation()));
         }
-        return serialized;
+        return blocks;
     }
 
+    @Nullable
     public static Set<Block> deserializeBlockSet(List<String> serialized) {
+        if (serialized == null)
+            return null;
         Set<Block> blocks = new HashSet<>();
         for (String string : serialized) {
             blocks.add(stringToLocation(string).getBlock());
@@ -62,15 +69,21 @@ public class BukkitUtil {
         return blocks;
     }
 
-    public static List<String> serializeVectorSet(Set<Vector> vectors) {
-        List<String> serialized = new ArrayList<>();
-        for (Vector vector : vectors) {
-            serialized.add(vector.getX() + "%" + vector.getY() + "%" + vector.getZ());
+    @Nullable
+    public static List<String> serializeVectorSet(Set<Vector> set) {
+        if (set == null)
+            return null;
+        List<String> vectors = new ArrayList<>();
+        for (Vector vector : set) {
+            vectors.add(vector.getX() + "%" + vector.getY() + "%" + vector.getZ());
         }
-        return serialized;
+        return vectors;
     }
 
+    @Nullable
     public static Set<Vector> deserializeVectorSet(List<String> serialized) {
+        if (serialized == null)
+            return null;
         Set<Vector> vectors = new HashSet<>();
         for (String string : serialized) {
             String[] split = string.split("%");
@@ -79,20 +92,26 @@ public class BukkitUtil {
         return vectors;
     }
 
-    public static List<String> serializeBlockVectorSet(Set<BlockVector> vectors) {
-        List<String> serialized = new ArrayList<>();
-        for (BlockVector vector : vectors) {
-            serialized.add(vector.getX() + "%" + vector.getY() + "%" + vector.getZ());
+    @Nullable
+    public static List<String> serializeBlockVectorSet(Set<BlockVector> set) {
+        if (set == null)
+            return null;
+        List<String> blocks = new ArrayList<>();
+        for (BlockVector blockVectors : set) {
+            blocks.add(blockVectors.getX() + "%" + blockVectors.getY() + "%" + blockVectors.getZ());
         }
-        return serialized;
+        return blocks;
     }
 
+    @Nullable
     public static Set<BlockVector> deserializeBlockVectorSet(List<String> serialized) {
-        Set<BlockVector> vectors = new HashSet<>();
+        if (serialized == null)
+            return null;
+        Set<BlockVector> blockVectors = new HashSet<>();
         for (String string : serialized) {
             String[] split = string.split("%");
-            vectors.add(new BlockVector(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2])));
+            blockVectors.add(new BlockVector(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2])));
         }
-        return vectors;
+        return blockVectors;
     }
 }
