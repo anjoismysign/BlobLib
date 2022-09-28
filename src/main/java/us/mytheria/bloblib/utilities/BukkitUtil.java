@@ -2,6 +2,12 @@ package us.mytheria.bloblib.utilities;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class BukkitUtil {
 
@@ -32,5 +38,21 @@ public class BukkitUtil {
      */
     public static String printLocation(Location location) {
         return location.getWorld().getName() + "-" + location.toVector() + " (World-X,Y,Z)";
+    }
+
+    public static List<String> serializeBlockSet(Set<Block> blocks) {
+        List<String> serialized = new ArrayList<>();
+        for (Block block : blocks) {
+            serialized.add(locationToString(block.getLocation()));
+        }
+        return serialized;
+    }
+
+    public static Set<Block> deserializeBlockSet(List<String> serialized) {
+        Set<Block> blocks = new HashSet<>();
+        for (String string : serialized) {
+            blocks.add(stringToLocation(string).getBlock());
+        }
+        return blocks;
     }
 }
