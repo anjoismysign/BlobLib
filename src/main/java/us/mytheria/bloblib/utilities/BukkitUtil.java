@@ -3,6 +3,7 @@ package us.mytheria.bloblib.utilities;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,6 +18,8 @@ public class BukkitUtil {
      * @see Location
      */
     public static String locationToString(Location loc) {
+        if (loc == null)
+            return "null";
         return loc.getWorld().getName() + "%loc:%" + loc.getX() + "%loc:%" + loc.getY() + "%loc:%" + loc.getZ();
     }
 
@@ -26,6 +29,8 @@ public class BukkitUtil {
      * @see Location
      */
     public static Location stringToLocation(String string) {
+        if (string.equals("null"))
+            return null;
         String[] split = string.split("%loc:%");
         return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]),
                 Double.parseDouble(split[3]));
@@ -54,5 +59,22 @@ public class BukkitUtil {
             blocks.add(stringToLocation(string).getBlock());
         }
         return blocks;
+    }
+
+    public static List<String> serializeVectorSet(Set<Vector> vectors) {
+        List<String> serialized = new ArrayList<>();
+        for (Vector vector : vectors) {
+            serialized.add(vector.getBlockX() + "%" + vector.getBlockY() + "%" + vector.getBlockZ());
+        }
+        return serialized;
+    }
+
+    public static Set<Vector> deserializeVectorSet(List<String> serialized) {
+        Set<Vector> vectors = new HashSet<>();
+        for (String string : serialized) {
+            String[] split = string.split("%");
+            vectors.add(new Vector(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2])));
+        }
+        return vectors;
     }
 }

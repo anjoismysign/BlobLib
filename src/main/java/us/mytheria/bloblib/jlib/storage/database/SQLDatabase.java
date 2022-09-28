@@ -322,13 +322,6 @@ public abstract class SQLDatabase extends Database {
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
-        } finally {
-            if (connection != null)
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
         }
     }
 
@@ -341,13 +334,6 @@ public abstract class SQLDatabase extends Database {
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
-        } finally {
-            if (connection != null)
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
         }
     }
 
