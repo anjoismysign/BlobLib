@@ -61,10 +61,17 @@ public class BlobLibAPI {
     }
 
     /**
-     * @return true if vault is enabled
+     * @return true if a vault economy plugin is being used
      */
-    public static boolean isVaultInstalled() {
-        return main.getVaultManager().isVaultInstalled();
+    public static boolean hasVaultEconomyDependency() {
+        return main.getVaultManager().isVaultEcoInstalled();
+    }
+
+    /**
+     * @return true if a vault permission plugin is being used
+     */
+    public static boolean hasVaultPermissionsDependency() {
+        return main.getVaultManager().isVaultPermsInstalled();
     }
 
     /**
@@ -116,5 +123,50 @@ public class BlobLibAPI {
      */
     public static void setHologramLines(String name, List<String> lines) {
         main.getHologramManager().setLines(name, lines);
+    }
+
+    /**
+     * Add permission to a player ONLY for the world the player is currently on.
+     * This is a world-specific operation, if you want to add global permission
+     * you must explicitly use NULL for the world.
+     *
+     * @return true if the permission was added, false if the player already had the permission
+     */
+    public static void addPermission(Player player, String permission) {
+        main.getVaultManager().addPermission(player, permission);
+    }
+
+    /**
+     * Remove permission from a player.
+     * Will attempt to remove permission from the player on the player's
+     * current world. This is NOT a global operation.
+     *
+     * @return true if the permission was removed, false if the player did not have the permission
+     */
+    public static void removePermission(Player player, String permission) {
+        main.getVaultManager().removePermission(player, permission);
+    }
+
+    /**
+     * Add permission to a player. Supports NULL value for World if the permission
+     * system registered supports global permissions. But May return odd values if
+     * the servers registered permission system does not have a global permission store.
+     *
+     * @return true if the permission was added, false if the player already had the permission
+     */
+    public static void addPermission(Player player, String permission, String world) {
+        main.getVaultManager().addPermission(player, permission, world);
+    }
+
+    /**
+     * Remove permission from a player. Supports NULL value for World if the
+     * permission system registered supports global permissions. But May return
+     * odd values if the servers registered permission system does not have a
+     * global permission store.
+     *
+     * @return true if the permission was removed, false if the player did not have the permission
+     */
+    public static void removePermission(Player player, String permission, String world) {
+        main.getVaultManager().removePermission(player, permission, world);
     }
 }

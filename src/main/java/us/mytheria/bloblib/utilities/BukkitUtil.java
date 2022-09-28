@@ -98,7 +98,7 @@ public class BukkitUtil {
             return null;
         List<String> blocks = new ArrayList<>();
         for (BlockVector blockVectors : set) {
-            blocks.add(blockVectors.getX() + "%" + blockVectors.getY() + "%" + blockVectors.getZ());
+            blocks.add(blockVectors.getBlockX() + "%" + blockVectors.getBlockY() + "%" + blockVectors.getBlockZ());
         }
         return blocks;
     }
