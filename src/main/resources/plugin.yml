@@ -4,4 +4,4 @@ main: us.mytheria.bloblib.BlobLib
 api-version: 1.16
 load: STARTUP
 softdepend: [ WorldGuard, Vault ]
-authors: [ promorrom, j0ach1mmall3, Dean B ]
+authors: [ promorrom, j0ach1mmall3, Dean B, FourteenBrush ]
