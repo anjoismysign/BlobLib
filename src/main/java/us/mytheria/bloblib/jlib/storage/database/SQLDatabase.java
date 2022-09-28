@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.jlib.storage.database;
 
+import com.mongodb.lang.Nullable;
 import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.mytheria.bloblib.jlib.storage.StorageAction;
@@ -27,11 +28,12 @@ public abstract class SQLDatabase extends Database {
 
     /**
      * Constructs a new SQLDatabase instance, shouldn't be used externally
-     * @param plugin The JavaPlugin associated with the MySQL Database
+     *
+     * @param plugin   The JavaPlugin associated with the MySQL Database
      * @param hostName The host name of the MySQL Server
-     * @param port The port of the MySQL Server
+     * @param port     The port of the MySQL Server
      * @param database The name of the MySQL Database
-     * @param user The user to use
+     * @param user     The user to use
      * @param password The password to use
      */
     protected SQLDatabase(JavaPlugin plugin, String hostName, int port, String database, String user, String password) {
@@ -46,6 +48,7 @@ public abstract class SQLDatabase extends Database {
 
     /**
      * Returns the Connection for the SQLDatabase
+     *
      * @return The Connection
      * @see Connection
      */
@@ -78,7 +81,8 @@ public abstract class SQLDatabase extends Database {
 
     /**
      * Executes an SQL Statement
-     * @param sql The SQL statement
+     *
+     * @param sql    The SQL statement
      * @param params The params for the Statement
      * @deprecated {@link SQLDatabase#execute(String, WrappedParameters)}
      */
@@ -104,7 +108,8 @@ public abstract class SQLDatabase extends Database {
 
     /**
      * Executes an SQL Statement
-     * @param sql The SQL statement
+     *
+     * @param sql    The SQL statement
      * @param params The params for the Statement
      */
     public void execute(final String sql, final WrappedParameters params) {
@@ -128,7 +133,8 @@ public abstract class SQLDatabase extends Database {
 
     /**
      * Executes an SQL Statement update
-     * @param sql The SQL statement
+     *
+     * @param sql    The SQL statement
      * @param params The params for the Statement
      * @deprecated {@link SQLDatabase#executeUpdate(String, WrappedParameters)}
      */
@@ -154,7 +160,8 @@ public abstract class SQLDatabase extends Database {
 
     /**
      * Executes an SQL Statement update
-     * @param sql The SQL statement
+     *
+     * @param sql    The SQL statement
      * @param params The params for the Statement
      */
     public void executeUpdate(final String sql, final WrappedParameters params) {
@@ -178,9 +185,10 @@ public abstract class SQLDatabase extends Database {
 
     /**
      * Executes an SQL Statement query
-     * @param sql The SQL statement
-     * @param params The params for the Statement
-     * @param columns The columns to query
+     *
+     * @param sql             The SQL statement
+     * @param params          The params for the Statement
+     * @param columns         The columns to query
      * @param callbackHandler The CallbackHandler to call back to
      * @deprecated {@link SQLDatabase#executeQuery(String, WrappedParameters, CallbackHandler)}
      */
@@ -211,8 +219,9 @@ public abstract class SQLDatabase extends Database {
 
     /**
      * Executes an SQL Statement query
-     * @param sql The SQL statement
-     * @param params The params for the Statement
+     *
+     * @param sql             The SQL statement
+     * @param params          The params for the Statement
      * @param callbackHandler The CallbackHandler to call back to
      */
     public void executeQuery(final String sql, final WrappedParameters params, final CallbackHandler<WrappedResultSet> callbackHandler) {
@@ -239,8 +248,9 @@ public abstract class SQLDatabase extends Database {
 
     /**
      * Checks whether a ResultSet has entries
-     * @param sql The SQL statement
-     * @param params The params for the Statement
+     *
+     * @param sql             The SQL statement
+     * @param params          The params for the Statement
      * @param callbackHandler The CallbackHandler to call back to
      * @deprecated
      */
@@ -266,12 +276,13 @@ public abstract class SQLDatabase extends Database {
 
     /**
      * Populates a PreparedStatement
-     * @param ps The PreparedStatement
+     *
+     * @param ps     The PreparedStatement
      * @param params The parameter map
      * @throws SQLException When an SQLException occurs
      */
     private void populatePreparedStatement(PreparedStatement ps, Map<Integer, Object> params) throws SQLException {
-        for(Map.Entry<Integer, Object> entry : params.entrySet()) {
+        for (Map.Entry<Integer, Object> entry : params.entrySet()) {
             Object o = entry.getValue();
             if (o instanceof String) ps.setString(entry.getKey(), (String) o);
             else if (o instanceof Integer) ps.setInt(entry.getKey(), (Integer) o);
@@ -282,14 +293,15 @@ public abstract class SQLDatabase extends Database {
 
     /**
      * Returns the columns from a ResultSet
-     * @param rs The ResultSet
+     *
+     * @param rs      The ResultSet
      * @param columns The columns to return
      * @return The columns
      * @throws SQLException When an SQLException occurs
      */
     private Map<String, Object> getColumns(ResultSet rs, Map<String, Class> columns) throws SQLException {
         Map<String, Object> values = new HashMap<>();
-        for(Map.Entry<String, Class> entry : columns.entrySet()) {
+        for (Map.Entry<String, Class> entry : columns.entrySet()) {
             String columnLabel = entry.getKey();
             Class c = entry.getValue();
             if (c == String.class) values.put(columnLabel, rs.getString(entry.getKey()));
@@ -298,5 +310,44 @@ public abstract class SQLDatabase extends Database {
             else throw new UnsupportedOperationException("unsupported type " + c.getSimpleName());
         }
         return values;
+    }
+
+    @Nullable
+    public PreparedStatement selectAllFromData(String keyType, String key, String table) {
+        Connection connection = null;
+        try {
+            connection = getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM " + table + " WHERE " + keyType + "='" + key + "'");
+            return preparedStatement;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            if (connection != null)
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+        }
+    }
+
+    public PreparedStatement updateDataSet(String keyType, String table, String values) {
+        Connection connection = null;
+        try {
+            connection = getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE " + table + " SET " + values + " WHERE " + keyType + "=?");
+            return preparedStatement;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            if (connection != null)
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+        }
     }
 }
