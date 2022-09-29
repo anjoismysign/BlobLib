@@ -1,8 +1,8 @@
 package us.mytheria.bloblib.utilities;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class StringUtil {
 
@@ -50,7 +50,7 @@ public class StringUtil {
         return list;
     }
 
-    public static List<String> replace(List<String> lore, HashMap<String, String> replacements) {
+    public static List<String> replace(List<String> lore, Map<String, String> replacements) {
         List<String> result = new ArrayList<>();
         for (String s : lore) {
             for (String key : replacements.keySet()) {
