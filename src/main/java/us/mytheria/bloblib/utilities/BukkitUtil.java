@@ -3,6 +3,8 @@ package us.mytheria.bloblib.utilities;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
@@ -36,6 +38,34 @@ public class BukkitUtil {
         String[] split = string.split("%loc:%");
         return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]),
                 Double.parseDouble(split[3]));
+    }
+
+    public static ConfigurationSection serializeLocation(Location location, ConfigurationSection section) {
+        section.set("World", location.getWorld().getName());
+        section.set("X", location.getX());
+        section.set("Y", location.getY());
+        section.set("Z", location.getZ());
+        section.set("Yaw", location.getYaw());
+        section.set("Pitch", location.getPitch());
+        return section;
+    }
+
+    public static ConfigurationSection serializeLocation(Location location, YamlConfiguration config,
+                                                         String path) {
+        ConfigurationSection section = config.createSection(path);
+        section.set("World", location.getWorld().getName());
+        section.set("X", location.getX());
+        section.set("Y", location.getY());
+        section.set("Z", location.getZ());
+        section.set("Yaw", location.getYaw());
+        section.set("Pitch", location.getPitch());
+        return section;
+    }
+
+    public static Location deserializeLocation(ConfigurationSection section) {
+        return new Location(Bukkit.getWorld(section.getString("World")), section.getDouble("X"),
+                section.getDouble("Y"), section.getDouble("Z"), (float) section.getDouble("Yaw"),
+                (float) section.getDouble("Pitch"));
     }
 
     /**
