@@ -9,6 +9,7 @@ public class ChatListener {
     private String input;
     private long timeout;
     private Runnable inputRunnable;
+    private Runnable timeoutRunnable;
     private BukkitTask task;
 
     public ChatListener(String owner, long timeout, Runnable inputRunnable,
@@ -16,6 +17,10 @@ public class ChatListener {
         this.owner = owner;
         this.timeout = timeout;
         this.inputRunnable = inputRunnable;
+        this.timeoutRunnable = timeoutRunnable;
+    }
+
+    public void runTasks() {
         BukkitRunnable bukkitRunnable = new BukkitRunnable() {
             @Override
             public void run() {

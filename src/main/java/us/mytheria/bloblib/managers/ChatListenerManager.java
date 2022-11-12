@@ -36,6 +36,7 @@ public class ChatListenerManager implements Listener {
             player.sendMessage(main.getLangManager().getLang("msg.Already-Chat-Listening"));
             return;
         }
+        chatListener.runTasks();
         chatListeners.put(player.getName(), chatListener);
     }
 

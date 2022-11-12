@@ -40,10 +40,15 @@ public class BlobChatListener extends ChatListener {
                             Runnable timeoutRunnable, List<BlobMessage> messages) {
         super(owner, timeout, inputRunnable, timeoutRunnable);
         this.messages = messages;
+    }
+
+    @Override
+    public void runTasks() {
+        super.runTasks();
         BukkitRunnable bukkitRunnable = new BukkitRunnable() {
             @Override
             public void run() {
-                Player player = Bukkit.getPlayer(owner);
+                Player player = Bukkit.getPlayer(getOwner());
                 if (player == null || !player.isOnline()) {
                     this.cancel();
                     return;
