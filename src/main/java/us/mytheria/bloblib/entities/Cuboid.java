@@ -6,6 +6,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BoundingBox;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -142,5 +143,9 @@ public class Cuboid {
             }
         }
         return res;
+    }
+
+    public Vector getRelative(Location location) {
+        return location.clone().subtract(getPoint1()).toVector();
     }
 }

@@ -3,7 +3,6 @@ package us.mytheria.bloblib.objects;
 import org.bukkit.inventory.ItemStack;
 
 public class Slotable {
-
     private int slot;
     private ItemStack itemStack;
 
