@@ -89,18 +89,20 @@ public class LangManager {
                 lang.put("actionbar." + key, ChatColor.translateAlternateColorCodes('&', langYml.getString(actionbar + key)));
             });
         ConfigurationSection titleSection = langYml.getConfigurationSection(title);
-        titleSection.getKeys(true).forEach(key -> {
-            String value = langYml.getString(title + key);
-            if (titleSection.isConfigurationSection(value))
-                return;
-            lang.put("title." + key, ChatColor.translateAlternateColorCodes('&', langYml.getString(title + key)));
-        });
+        if (titleSection != null)
+            titleSection.getKeys(true).forEach(key -> {
+                String value = langYml.getString(title + key);
+                if (titleSection.isConfigurationSection(value))
+                    return;
+                lang.put("title." + key, ChatColor.translateAlternateColorCodes('&', langYml.getString(title + key)));
+            });
         ConfigurationSection menuSection = langYml.getConfigurationSection(menu);
-        menuSection.getKeys(true).forEach(key -> {
-            if (menuSection.isConfigurationSection(key))
-                return;
-            lang.put("menu." + key, ChatColor.translateAlternateColorCodes('&', langYml.getString(menu + key)));
-        });
+        if (menuSection != null)
+            menuSection.getKeys(true).forEach(key -> {
+                if (menuSection.isConfigurationSection(key))
+                    return;
+                lang.put("menu." + key, ChatColor.translateAlternateColorCodes('&', langYml.getString(menu + key)));
+            });
     }
 
     public String noPermission() {
