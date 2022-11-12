@@ -1,0 +1,4 @@
+Message:
+  No-Permission: '&cI''m sorry, but you do not have permission to perform this command.
+    Please contact the server administrators if you believe that this is in error.'
+  Already-Chat-Listening: '&cCannot proceed. We are expecting you to type related to something else.'

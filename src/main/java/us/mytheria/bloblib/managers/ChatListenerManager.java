@@ -1,4 +1,4 @@
-package us.mytheria.bloblib.entities.chatlistener;
+package us.mytheria.bloblib.managers;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -6,14 +6,17 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.entities.chatlistener.ChatListener;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
 
 public class ChatListenerManager implements Listener {
+    private BlobLib main;
     private HashMap<String, ChatListener> chatListeners;
 
     public ChatListenerManager() {
+        this.main = BlobLib.getInstance();
         Bukkit.getPluginManager().registerEvents(this, BlobLib.getInstance());
         this.chatListeners = new HashMap<>();
     }
@@ -28,6 +31,11 @@ public class ChatListenerManager implements Listener {
     }
 
     public void addChatListener(Player player, ChatListener chatListener) {
+        String name = player.getName();
+        if (chatListeners.containsKey(name)) {
+            player.sendMessage(main.getLangManager().getLang("msg.Already-Chat-Listening"));
+            return;
+        }
         chatListeners.put(player.getName(), chatListener);
     }
 
