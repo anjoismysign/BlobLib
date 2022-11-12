@@ -28,6 +28,7 @@ public class ChatListenerManager implements Listener {
             return;
         ChatListener listener = chatListeners.get(e.getPlayer().getName());
         listener.setInput(e.getMessage());
+        e.setCancelled(true);
     }
 
     public void addChatListener(Player player, ChatListener chatListener) {
