@@ -14,7 +14,7 @@ public class BlobChatListener extends ChatListener {
     private BukkitTask messageTask;
 
     /**
-     * Will run a ChatListener which will send messages to player each second asynchronously
+     * Will run a ChatListener which will send messages to player every 10 ticks asynchronously
      *
      * @param owner           The owner of the ChatListener
      * @param timeout         The timeout of the ChatListener
@@ -28,7 +28,7 @@ public class BlobChatListener extends ChatListener {
     }
 
     /**
-     * Will run a ChatListener which will send messages to player each second asynchronously
+     * Will run a ChatListener which will send messages to player every 10 ticks asynchronously
      *
      * @param owner           The player's name which is owner of the ChatListener
      * @param timeout         The timeout of the ChatListener
@@ -56,7 +56,7 @@ public class BlobChatListener extends ChatListener {
                 messages.forEach(message -> message.send(player));
             }
         };
-        this.messageTask = bukkitRunnable.runTaskTimerAsynchronously(BlobLib.getInstance(), 0, 20);
+        this.messageTask = bukkitRunnable.runTaskTimerAsynchronously(BlobLib.getInstance(), 0, 10);
     }
 
     @Override
