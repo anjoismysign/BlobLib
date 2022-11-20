@@ -204,5 +204,11 @@
             <type>javadoc</type>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.anjoismysign</groupId>
+            <artifactId>Anjo</artifactId>
+            <version>v0.1.22</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

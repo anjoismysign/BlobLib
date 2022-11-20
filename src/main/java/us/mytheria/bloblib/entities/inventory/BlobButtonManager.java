@@ -1,9 +1,9 @@
 package us.mytheria.bloblib.entities.inventory;
 
+import me.anjoismysign.anjo.entities.uber.UberBoolean;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import us.mytheria.bloblib.entities.BlobMultiSlotable;
-import us.mytheria.bloblib.entities.uber.UberBoolean;
 
 import java.util.Collection;
 import java.util.HashMap;
