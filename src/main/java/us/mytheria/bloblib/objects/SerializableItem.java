@@ -43,6 +43,8 @@ public class SerializableItem {
             customModelData = section.getInt("CustomModelData", 0);
         else
             customModelData = 0;
+        if (itemStack.getType() == Material.AIR)
+            return itemStack;
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.setDisplayName(displayName);
         itemMeta.setLore(lore);
