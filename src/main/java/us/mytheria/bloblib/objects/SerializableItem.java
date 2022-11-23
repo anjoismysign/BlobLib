@@ -48,7 +48,8 @@ public class SerializableItem {
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.setDisplayName(displayName);
         itemMeta.setLore(lore);
-        itemMeta.setCustomModelData(customModelData);
+        if (customModelData != 0)
+            itemMeta.setCustomModelData(customModelData);
         itemStack.setItemMeta(itemMeta);
         return itemStack;
     }
