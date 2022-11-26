@@ -7,12 +7,12 @@ import java.util.UUID;
 
 public class MaterialSelector extends VariableSelector {
 
-    public static VariableSelector build(UUID builderId) {
+    public static MaterialSelector build(UUID builderId) {
         BlobInventory inventory = VariableSelector.DEFAULT();
         return new MaterialSelector(inventory, builderId);
     }
 
-    public MaterialSelector(BlobInventory blobInventory, UUID builderId) {
+    private MaterialSelector(BlobInventory blobInventory, UUID builderId) {
         super(blobInventory, builderId, "MATERIAL",
                 BlobLib.getInstance().getFillerManager().getMaterialFiller());
     }
