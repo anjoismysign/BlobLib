@@ -141,4 +141,11 @@ public class BlobInventory extends InventoryBuilder {
     public void setButton(int slot, ItemStack itemStack) {
         inventory.setItem(slot, itemStack);
     }
+
+    public void refillButton(String key) {
+        for (Integer i : getSlots(key)) {
+            setButton(i, getButton(i));
+            break;
+        }
+    }
 }

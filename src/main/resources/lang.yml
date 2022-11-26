@@ -3,3 +3,4 @@ Message:
     Please contact the server administrators if you believe that this is in error.'
   Already-Chat-Listening: '&cCannot proceed. We are expecting you to type related to something else.'
   Already-SelPos-Listening: '&cCannot proceed. We are expecting you to select a block for something else.'
+  Already-Selector-Listening: '&cCannot proceed. We are expecting you to select something else.'

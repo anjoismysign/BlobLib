@@ -74,7 +74,7 @@ public class LangManager {
 
     public void load() {
         lang = new HashMap<>();
-        YamlConfiguration langYml = main.getFileManager().getYml(main.getFileManager().getLang());
+        YamlConfiguration langYml = main.getFileManager().getYml(main.getFileManager().langFile());
         ConfigurationSection msgSection = langYml.getConfigurationSection(msg);
         msgSection.getKeys(true).forEach(key -> {
             if (msgSection.isConfigurationSection(key))

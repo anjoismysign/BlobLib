@@ -2,10 +2,8 @@ package us.mytheria.bloblib;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import us.mytheria.bloblib.hologram.HologramManager;
-import us.mytheria.bloblib.managers.ChatListenerManager;
-import us.mytheria.bloblib.managers.FileManager;
-import us.mytheria.bloblib.managers.LangManager;
-import us.mytheria.bloblib.managers.SelPosListenerManager;
+import us.mytheria.bloblib.managers.*;
+import us.mytheria.bloblib.managers.fillermanager.FillerManager;
 import us.mytheria.bloblib.vault.VaultManager;
 
 public final class BlobLib extends JavaPlugin {
@@ -13,8 +11,11 @@ public final class BlobLib extends JavaPlugin {
     private HologramManager hologramManager;
     private FileManager fileManager;
     private LangManager langManager;
+    private FillerManager fillerManager;
     private ChatListenerManager chatManager;
     private SelPosListenerManager positionManager;
+    private SelectorListenerManager selectorManager;
+    private InventoryManager inventoryManager;
 
     private static BlobLib instance;
 
@@ -25,12 +26,15 @@ public final class BlobLib extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        this.fileManager = new FileManager();
-        this.langManager = new LangManager();
+        fileManager = new FileManager();
+        langManager = new LangManager();
+        fillerManager = new FillerManager();
         vaultManager = new VaultManager();
         hologramManager = new HologramManager();
         chatManager = new ChatListenerManager();
         positionManager = new SelPosListenerManager();
+        selectorManager = new SelectorListenerManager();
+        inventoryManager = new InventoryManager();
     }
 
     public FileManager getFileManager() {
@@ -55,5 +59,17 @@ public final class BlobLib extends JavaPlugin {
 
     public SelPosListenerManager getPositionManager() {
         return positionManager;
+    }
+
+    public SelectorListenerManager getSelectorManager() {
+        return selectorManager;
+    }
+
+    public InventoryManager getInventoryManager() {
+        return inventoryManager;
+    }
+
+    public FillerManager getFillerManager() {
+        return fillerManager;
     }
 }

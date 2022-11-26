@@ -33,8 +33,8 @@ public abstract class InventoryBuilder {
         this.buttonManager = buttonManager;
     }
 
-    public Set<Integer> getSlots(String string) {
-        return buttonManager.get(string);
+    public Set<Integer> getSlots(String key) {
+        return buttonManager.get(key);
     }
 
     public ItemStack getButton(int slot) {

@@ -10,6 +10,7 @@ public class FileManager {
     private BlobLib main;
     private File path = new File("plugins/BlobLib");
     private File lang = new File(path.getPath() + "/lang.yml");
+    private File inventories = new File(path.getPath() + "/inventories.yml");
 
     public FileManager() {
         this.main = BlobLib.getInstance();
@@ -21,7 +22,9 @@ public class FileManager {
             if (!path.exists()) path.mkdir();
             ///////////////////////////////////////////
             if (!lang.exists()) lang.createNewFile();
+            if (!inventories.exists()) inventories.createNewFile();
             ResourceUtil.updateYml(path, "/tempLang.yml", "lang.yml", lang, main);
+            ResourceUtil.updateYml(path, "/tempInventories.yml", "inventories.yml", inventories, main);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -31,7 +34,11 @@ public class FileManager {
         return YamlConfiguration.loadConfiguration(f);
     }
 
-    public File getLang() {
+    public File langFile() {
         return lang;
+    }
+
+    public File inventoriesFile() {
+        return inventories;
     }
 }
