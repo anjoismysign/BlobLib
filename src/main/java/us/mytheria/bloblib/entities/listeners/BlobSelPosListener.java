@@ -1,4 +1,4 @@
-package us.mytheria.bloblib.entities.chatlistener;
+package us.mytheria.bloblib.entities.listeners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -9,35 +9,35 @@ import us.mytheria.bloblib.entities.message.BlobMessage;
 
 import java.util.List;
 
-public class BlobChatListener extends ChatListener {
+public class BlobSelPosListener extends SelPosListener {
     private List<BlobMessage> messages;
     private BukkitTask messageTask;
 
     /**
-     * Will run a ChatListener which will send messages to player every 10 ticks asynchronously
+     * Will run a SelPosListener which will send messages to player every 10 ticks asynchronously
      *
-     * @param owner           The owner of the ChatListener
-     * @param timeout         The timeout of the ChatListener
-     * @param inputRunnable   The runnable to run when the ChatListener receives input
-     * @param timeoutRunnable The runnable to run when the ChatListener times out
+     * @param owner           The owner of the SelPosListener
+     * @param timeout         The timeout of the SelPosListener
+     * @param inputRunnable   The runnable to run when the SelPosListener receives input
+     * @param timeoutRunnable The runnable to run when the SelPosListener times out
      * @param messages        The messages to send to the player
      */
-    public static BlobChatListener build(Player owner, long timeout, Runnable inputRunnable,
-                                         Runnable timeoutRunnable, List<BlobMessage> messages) {
-        return new BlobChatListener(owner.getName(), timeout, inputRunnable, timeoutRunnable, messages);
+    public static BlobSelPosListener build(Player owner, long timeout, Runnable inputRunnable,
+                                           Runnable timeoutRunnable, List<BlobMessage> messages) {
+        return new BlobSelPosListener(owner.getName(), timeout, inputRunnable, timeoutRunnable, messages);
     }
 
     /**
-     * Will run a ChatListener which will send messages to player every 10 ticks asynchronously
+     * Will run a SelPosListener which will send messages to player every 10 ticks asynchronously
      *
-     * @param owner           The player's name which is owner of the ChatListener
-     * @param timeout         The timeout of the ChatListener
-     * @param inputRunnable   The runnable to run when the ChatListener receives input
-     * @param timeoutRunnable The runnable to run when the ChatListener times out
+     * @param owner           The player's name which is owner of the SelPosListener
+     * @param timeout         The timeout of the SelPosListener
+     * @param inputRunnable   The runnable to run when the SelPosListener receives input
+     * @param timeoutRunnable The runnable to run when the SelPosListener times out
      * @param messages        The messages to send to the player
      */
-    public BlobChatListener(String owner, long timeout, Runnable inputRunnable,
-                            Runnable timeoutRunnable, List<BlobMessage> messages) {
+    public BlobSelPosListener(String owner, long timeout, Runnable inputRunnable,
+                              Runnable timeoutRunnable, List<BlobMessage> messages) {
         super(owner, timeout, inputRunnable, timeoutRunnable);
         this.messages = messages;
     }

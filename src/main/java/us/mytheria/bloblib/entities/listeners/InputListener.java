@@ -1,19 +1,18 @@
-package us.mytheria.bloblib.entities.chatlistener;
+package us.mytheria.bloblib.entities.listeners;
 
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import us.mytheria.bloblib.BlobLib;
 
-public class ChatListener {
-    private String owner;
-    private String input;
-    private long timeout;
-    private Runnable inputRunnable;
-    private Runnable timeoutRunnable;
-    private BukkitTask task;
+public abstract class InputListener {
+    protected final String owner;
+    protected final long timeout;
+    protected final Runnable inputRunnable;
+    protected final Runnable timeoutRunnable;
+    protected BukkitTask task;
 
-    public ChatListener(String owner, long timeout, Runnable inputRunnable,
-                        Runnable timeoutRunnable) {
+    public InputListener(String owner, long timeout, Runnable inputRunnable,
+                         Runnable timeoutRunnable) {
         this.owner = owner;
         this.timeout = timeout;
         this.inputRunnable = inputRunnable;
@@ -24,7 +23,7 @@ public class ChatListener {
         BukkitRunnable bukkitRunnable = new BukkitRunnable() {
             @Override
             public void run() {
-                ChatListener.this.cancel();
+                InputListener.this.cancel();
                 timeoutRunnable.run();
             }
         };
@@ -39,14 +38,8 @@ public class ChatListener {
         return owner;
     }
 
-    public String getInput() {
-        return input;
-    }
-
-    public void setInput(String input) {
-        this.input = input;
-        cancel();
-        inputRunnable.run();
+    public Object getInput() {
+        return null;
     }
 
     public long getTimeout() {
@@ -55,5 +48,13 @@ public class ChatListener {
 
     public BukkitTask getTask() {
         return task;
+    }
+
+    public Runnable getInputRunnable() {
+        return inputRunnable;
+    }
+
+    public Runnable getTimeoutRunnable() {
+        return timeoutRunnable;
     }
 }

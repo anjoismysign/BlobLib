@@ -5,6 +5,7 @@ import us.mytheria.bloblib.hologram.HologramManager;
 import us.mytheria.bloblib.managers.ChatListenerManager;
 import us.mytheria.bloblib.managers.FileManager;
 import us.mytheria.bloblib.managers.LangManager;
+import us.mytheria.bloblib.managers.SelPosListenerManager;
 import us.mytheria.bloblib.vault.VaultManager;
 
 public final class BlobLib extends JavaPlugin {
@@ -12,7 +13,8 @@ public final class BlobLib extends JavaPlugin {
     private HologramManager hologramManager;
     private FileManager fileManager;
     private LangManager langManager;
-    private ChatListenerManager listenerManager;
+    private ChatListenerManager chatManager;
+    private SelPosListenerManager positionManager;
 
     private static BlobLib instance;
 
@@ -27,7 +29,8 @@ public final class BlobLib extends JavaPlugin {
         this.langManager = new LangManager();
         vaultManager = new VaultManager();
         hologramManager = new HologramManager();
-        listenerManager = new ChatListenerManager();
+        chatManager = new ChatListenerManager();
+        positionManager = new SelPosListenerManager();
     }
 
     public FileManager getFileManager() {
@@ -46,7 +49,11 @@ public final class BlobLib extends JavaPlugin {
         return hologramManager;
     }
 
-    public ChatListenerManager getListenerManager() {
-        return listenerManager;
+    public ChatListenerManager getChatManager() {
+        return chatManager;
+    }
+
+    public SelPosListenerManager getPositionManager() {
+        return positionManager;
     }
 }

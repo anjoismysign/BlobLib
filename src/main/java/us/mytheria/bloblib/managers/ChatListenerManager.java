@@ -6,7 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.entities.chatlistener.ChatListener;
+import us.mytheria.bloblib.entities.listeners.ChatListener;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
