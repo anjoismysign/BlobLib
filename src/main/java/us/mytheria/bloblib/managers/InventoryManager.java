@@ -1,6 +1,7 @@
 package us.mytheria.bloblib.managers;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -45,8 +46,8 @@ public class InventoryManager implements Listener {
             return;
         }
         Object value = variableSelector.getValue(slot);
+        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
         listener.setInput(value);
-        player.closeInventory();
     }
 
     @EventHandler

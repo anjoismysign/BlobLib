@@ -1,6 +1,7 @@
 package us.mytheria.bloblib.entities.inventory;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import us.mytheria.bloblib.BlobLib;
@@ -17,7 +18,7 @@ public abstract class VariableSelector extends BlobInventory {
     private HashMap<Integer, Object> values;
     private final UUID builderId;
     private VariableFiller filler;
-    private int page;
+    private int page, itemsPerPage, totalPages;
 
     public static BlobInventory DEFAULT() {
         FileManager fileManager = BlobLib.getInstance().getFileManager();
@@ -35,6 +36,8 @@ public abstract class VariableSelector extends BlobInventory {
         setTitle(blobInventory.getTitle().replace("%variable%", dataType));
         buildInventory();
         this.page = 1;
+        this.itemsPerPage = getSlots("White-Background").size();
+        this.totalPages = filler.totalPages(getSlots("White-Background").size());
         loadPage(page, false);
     }
 
@@ -44,8 +47,6 @@ public abstract class VariableSelector extends BlobInventory {
     }
 
     public void loadPage(int page, boolean refill) {
-        int itemsPerPage = getSlots("White-Background").size();
-        int totalPages = filler.totalPages(itemsPerPage);
         if (totalPages < page) {
             return;
         }
@@ -122,8 +123,7 @@ public abstract class VariableSelector extends BlobInventory {
     }
 
     public void setPage(int page) {
-        int total = filler.totalPages(getSlots("White-Background").size());
-        if (page > total) {
+        if (page > totalPages) {
             return;
         }
         this.page = page;
@@ -132,9 +132,13 @@ public abstract class VariableSelector extends BlobInventory {
 
     public void nextPage() {
         setPage(page + 1);
+        Player player = getPlayer();
+        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
     }
 
     public void previousPage() {
         setPage(page - 1);
+        Player player = getPlayer();
+        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
     }
 }
