@@ -51,4 +51,8 @@ public class InventoryManager implements Listener {
             return;
         listener.setInput(null);
     }
+
+    public void addVariableSelector(VariableSelector variableSelector) {
+        variableSelectors.put(variableSelector.getPlayer().getName(), variableSelector);
+    }
 }
