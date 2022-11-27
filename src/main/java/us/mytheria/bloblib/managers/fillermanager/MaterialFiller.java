@@ -6,13 +6,17 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mytheria.bloblib.entities.VariableFiller;
 import us.mytheria.bloblib.entities.VariableValue;
+import us.mytheria.bloblib.utilities.MaterialUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MaterialFiller implements VariableFiller {
     private ArrayList<Material> materials;
+    private HashMap<Material, Material> nonItem;
 
     public MaterialFiller() {
+        nonItem = new HashMap<>();
         materials = new ArrayList<>();
         for (Material material : Material.values()) {
             if (material.name().contains("LEGACY"))
@@ -21,6 +25,7 @@ public class MaterialFiller implements VariableFiller {
                 continue;
             materials.add(material);
         }
+        MaterialUtil.fillNonItem(nonItem);
     }
 
     @Override
@@ -32,7 +37,11 @@ public class MaterialFiller implements VariableFiller {
             Material material;
             try {
                 material = materials.get(i);
-                ItemStack itemStack = new ItemStack(material);
+                ItemStack itemStack;
+                if (material.isItem())
+                    itemStack = new ItemStack(material);
+                else
+                    itemStack = new ItemStack(nonItem.get(material));
                 ItemMeta itemMeta = itemStack.getItemMeta();
                 itemMeta.setDisplayName(ChatColor.GOLD + material.name());
                 itemStack.setItemMeta(itemMeta);

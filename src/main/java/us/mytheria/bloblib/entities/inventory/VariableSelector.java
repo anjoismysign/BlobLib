@@ -47,6 +47,8 @@ public abstract class VariableSelector extends BlobInventory {
     }
 
     public void loadPage(int page, boolean refill) {
+        if (page < 1)
+            return;
         if (totalPages < page) {
             return;
         }
@@ -123,6 +125,8 @@ public abstract class VariableSelector extends BlobInventory {
     }
 
     public void setPage(int page) {
+        if (page < 1)
+            return;
         if (page > totalPages) {
             return;
         }
