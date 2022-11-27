@@ -25,15 +25,14 @@ public class InventoryManager implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent e) {
-        String title = e.getView().getTitle();
-        if (!variableSelectors.containsKey(title))
-            return;
         Player player = (Player) e.getWhoClicked();
+        if (!variableSelectors.containsKey(player.getName()))
+            return;
         SelectorListener listener = main.getSelectorManager().get(player);
         if (listener == null)
             return;
         e.setCancelled(true);
-        VariableSelector variableSelector = variableSelectors.get(title);
+        VariableSelector variableSelector = variableSelectors.get(player);
         int slot = e.getRawSlot();
         if (slot > variableSelector.valuesSize() - 1)
             return;
@@ -44,10 +43,9 @@ public class InventoryManager implements Listener {
 
     @EventHandler
     public void onClose(InventoryCloseEvent e) {
-        String title = e.getView().getTitle();
-        if (!variableSelectors.containsKey(title))
-            return;
         Player player = (Player) e.getPlayer();
+        if (!variableSelectors.containsKey(player.getName()))
+            return;
         SelectorListener listener = main.getSelectorManager().get(player);
         if (listener == null)
             return;
