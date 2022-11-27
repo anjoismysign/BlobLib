@@ -1,8 +1,12 @@
 package us.mytheria.bloblib.entities.listeners;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import us.mytheria.bloblib.BlobLib;
+
+import javax.annotation.Nullable;
 
 public abstract class InputListener {
     protected final String owner;
@@ -56,5 +60,10 @@ public abstract class InputListener {
 
     public Runnable getTimeoutRunnable() {
         return timeoutRunnable;
+    }
+
+    @Nullable
+    public Player getPlayerOwner() {
+        return Bukkit.getServer().getPlayer(owner);
     }
 }

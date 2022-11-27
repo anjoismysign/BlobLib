@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.entities.inventory.VariableSelector;
 import us.mytheria.bloblib.entities.message.BlobMessage;
 
 import java.util.List;
@@ -23,8 +24,10 @@ public class BlobSelectorListener extends SelectorListener {
      * @param messages        The messages to send to the player
      */
     public static BlobSelectorListener build(Player owner, long timeout, Runnable inputRunnable,
-                                             Runnable timeoutRunnable, List<BlobMessage> messages) {
-        return new BlobSelectorListener(owner.getName(), timeout, inputRunnable, timeoutRunnable, messages);
+                                             Runnable timeoutRunnable, List<BlobMessage> messages,
+                                             VariableSelector selector) {
+        return new BlobSelectorListener(owner.getName(), timeout,
+                inputRunnable, timeoutRunnable, messages, selector);
     }
 
     /**
@@ -36,9 +39,10 @@ public class BlobSelectorListener extends SelectorListener {
      * @param timeoutRunnable The runnable to run when the SelectorListener times out
      * @param messages        The messages to send to the player
      */
-    public BlobSelectorListener(String owner, long timeout, Runnable inputRunnable,
-                                Runnable timeoutRunnable, List<BlobMessage> messages) {
-        super(owner, timeout, inputRunnable, timeoutRunnable);
+    private BlobSelectorListener(String owner, long timeout, Runnable inputRunnable,
+                                 Runnable timeoutRunnable, List<BlobMessage> messages,
+                                 VariableSelector selector) {
+        super(owner, timeout, inputRunnable, timeoutRunnable, selector);
         this.messages = messages;
     }
 

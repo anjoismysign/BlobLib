@@ -60,6 +60,10 @@ public abstract class VariableSelector extends BlobInventory {
 
     public void loadPageAndOpen(int page) {
         loadPage(page, true);
+        open();
+    }
+
+    public void open() {
         getPlayer().openInventory(getInventory());
     }
 

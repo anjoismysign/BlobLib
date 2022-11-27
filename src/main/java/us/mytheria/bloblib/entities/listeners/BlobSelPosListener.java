@@ -36,8 +36,8 @@ public class BlobSelPosListener extends SelPosListener {
      * @param timeoutRunnable The runnable to run when the SelPosListener times out
      * @param messages        The messages to send to the player
      */
-    public BlobSelPosListener(String owner, long timeout, Runnable inputRunnable,
-                              Runnable timeoutRunnable, List<BlobMessage> messages) {
+    private BlobSelPosListener(String owner, long timeout, Runnable inputRunnable,
+                               Runnable timeoutRunnable, List<BlobMessage> messages) {
         super(owner, timeout, inputRunnable, timeoutRunnable);
         this.messages = messages;
     }

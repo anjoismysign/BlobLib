@@ -36,8 +36,8 @@ public class BlobChatListener extends ChatListener {
      * @param timeoutRunnable The runnable to run when the ChatListener times out
      * @param messages        The messages to send to the player
      */
-    public BlobChatListener(String owner, long timeout, Runnable inputRunnable,
-                            Runnable timeoutRunnable, List<BlobMessage> messages) {
+    private BlobChatListener(String owner, long timeout, Runnable inputRunnable,
+                             Runnable timeoutRunnable, List<BlobMessage> messages) {
         super(owner, timeout, inputRunnable, timeoutRunnable);
         this.messages = messages;
     }
