@@ -1,6 +1,5 @@
 package us.mytheria.bloblib.entities.listeners;
 
-import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
 
 public class SelectorListener extends InputListener {
@@ -12,11 +11,6 @@ public class SelectorListener extends InputListener {
         super(owner, timeout, inputRunnable, timeoutRunnable);
         this.selector = selector;
         selector.open();
-        register();
-    }
-
-    private void register() {
-        BlobLib.getInstance().getSelectorManager().addSelectorListener(getPlayerOwner(), this);
     }
 
     @Override
