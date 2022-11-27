@@ -99,6 +99,13 @@ public class BlobInventory extends InventoryBuilder {
     public BlobInventory() {
     }
 
+    public void addDefaultButtons(String key) {
+        for (Integer i : getSlots(key)) {
+            addDefaultButton(key, getButton(i));
+            break;
+        }
+    }
+
     public void loadDefaultButtons() {
         setDefaultButtons(new HashMap<>());
     }
