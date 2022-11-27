@@ -32,10 +32,18 @@ public class InventoryManager implements Listener {
         if (listener == null)
             return;
         e.setCancelled(true);
-        VariableSelector variableSelector = variableSelectors.get(player);
+        VariableSelector variableSelector = variableSelectors.get(player.getName());
         int slot = e.getRawSlot();
-        if (slot > variableSelector.valuesSize() - 1)
+        if (slot > variableSelector.valuesSize() - 1) {
+            if (variableSelector.isNextPageButton(slot)) {
+                variableSelector.nextPage();
+                return;
+            }
+            if (variableSelector.isPreviousPageButton(slot)) {
+                variableSelector.previousPage();
+            }
             return;
+        }
         Object value = variableSelector.getValue(slot);
         listener.setInput(value);
         player.closeInventory();

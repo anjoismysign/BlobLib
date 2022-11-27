@@ -1,6 +1,6 @@
 package us.mytheria.bloblib.entities.listeners;
 
-public class ChatListener extends InputListener {
+public class ChatListener extends TimeoutInputListener {
     private String input;
 
     public ChatListener(String owner, long timeout, Runnable inputRunnable,

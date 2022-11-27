@@ -17,6 +17,7 @@ public abstract class VariableSelector extends BlobInventory {
     private HashMap<Integer, Object> values;
     private final UUID builderId;
     private VariableFiller filler;
+    private int page;
 
     public static BlobInventory DEFAULT() {
         FileManager fileManager = BlobLib.getInstance().getFileManager();
@@ -33,7 +34,8 @@ public abstract class VariableSelector extends BlobInventory {
         this.dataType = dataType;
         setTitle(blobInventory.getTitle().replace("%variable%", dataType));
         buildInventory();
-        loadPage(1, false);
+        this.page = 1;
+        loadPage(page, false);
     }
 
     @Override
@@ -44,12 +46,14 @@ public abstract class VariableSelector extends BlobInventory {
     public void loadPage(int page, boolean refill) {
         int itemsPerPage = getSlots("White-Background").size();
         int totalPages = filler.totalPages(itemsPerPage);
-        if (totalPages < page) return;
+        if (totalPages < page) {
+            return;
+        }
         if (refill)
             refillButton("White-Background");
         values.clear();
-        VariableValue[] values = filler.page(1, itemsPerPage);
-        for (int i = 0; i < values.length - 1; i++) {
+        VariableValue[] values = filler.page(page, itemsPerPage);
+        for (int i = 0; i < values.length; i++) {
             setValue(i, values[i]);
         }
     }
@@ -115,5 +119,22 @@ public abstract class VariableSelector extends BlobInventory {
 
     public int valuesSize() {
         return getValues().size();
+    }
+
+    public void setPage(int page) {
+        int total = filler.totalPages(getSlots("White-Background").size());
+        if (page > total) {
+            return;
+        }
+        this.page = page;
+        loadPage(page);
+    }
+
+    public void nextPage() {
+        setPage(page + 1);
+    }
+
+    public void previousPage() {
+        setPage(page - 1);
     }
 }

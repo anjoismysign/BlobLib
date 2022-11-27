@@ -15,9 +15,11 @@ public class BlockMaterialFiller implements VariableFiller {
     public BlockMaterialFiller() {
         materials = new ArrayList<>();
         for (Material material : Material.values()) {
-            if (!material.name().contains("LEGACY_"))
+            if (material.name().contains("LEGACY"))
                 continue;
             if (!material.isBlock())
+                continue;
+            if (new ItemStack(material).getItemMeta() == null)
                 continue;
             materials.add(material);
         }
@@ -26,7 +28,7 @@ public class BlockMaterialFiller implements VariableFiller {
     @Override
     public VariableValue[] page(int page, int itemsPerPage) {
         int start = (page - 1) * itemsPerPage;
-        int end = start + (itemsPerPage - 1);
+        int end = start + (itemsPerPage);
         ArrayList<VariableValue> values = new ArrayList<>();
         for (int i = start; i < end; i++) {
             Material material;
@@ -46,6 +48,6 @@ public class BlockMaterialFiller implements VariableFiller {
 
     @Override
     public int totalPages(int itemsPerPage) {
-        return (int) Math.ceil(materials.size() / itemsPerPage);
+        return (int) Math.ceil((double) materials.size() / (double) itemsPerPage);
     }
 }

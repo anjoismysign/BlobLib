@@ -7,9 +7,8 @@ public class SelectorListener extends InputListener {
     private Object input;
     private VariableSelector selector;
 
-    public SelectorListener(String owner, long timeout, Runnable inputRunnable,
-                            Runnable timeoutRunnable, VariableSelector selector) {
-        super(owner, timeout, inputRunnable, timeoutRunnable);
+    public SelectorListener(String owner, Runnable inputRunnable, VariableSelector selector) {
+        super(owner, inputRunnable);
         this.selector = selector;
         register();
         selector.open();
@@ -26,7 +25,6 @@ public class SelectorListener extends InputListener {
 
     public void setInput(Object input) {
         this.input = input;
-        cancel();
         inputRunnable.run();
     }
 

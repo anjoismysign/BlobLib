@@ -11,44 +11,37 @@ import us.mytheria.bloblib.entities.message.BlobMessage;
 import java.util.List;
 
 public class BlobSelectorListener extends SelectorListener {
-    private List<BlobMessage> messages;
+    private final List<BlobMessage> messages;
     private BukkitTask messageTask;
 
     /**
      * Will run a SelectorListener which will send messages to player every 10 ticks asynchronously
      *
-     * @param owner           The owner of the SelectorListener
-     * @param timeout         The timeout of the SelectorListener
-     * @param inputRunnable   The runnable to run when the SelectorListener receives input
-     * @param timeoutRunnable The runnable to run when the SelectorListener times out
-     * @param messages        The messages to send to the player
+     * @param owner         The owner of the SelectorListener
+     * @param inputRunnable The runnable to run when the SelectorListener receives input
+     * @param messages      The messages to send to the player
      */
-    public static BlobSelectorListener build(Player owner, long timeout, Runnable inputRunnable,
-                                             Runnable timeoutRunnable, List<BlobMessage> messages,
-                                             VariableSelector selector) {
-        return new BlobSelectorListener(owner.getName(), timeout,
-                inputRunnable, timeoutRunnable, messages, selector);
+    public static BlobSelectorListener build(Player owner, Runnable inputRunnable
+            , List<BlobMessage> messages, VariableSelector selector) {
+        return new BlobSelectorListener(owner.getName(),
+                inputRunnable, messages, selector);
     }
 
     /**
      * Will run a SelectorListener which will send messages to player every 10 ticks asynchronously
      *
-     * @param owner           The player's name which is owner of the SelectorListener
-     * @param timeout         The timeout of the SelectorListener
-     * @param inputRunnable   The runnable to run when the SelectorListener receives input
-     * @param timeoutRunnable The runnable to run when the SelectorListener times out
-     * @param messages        The messages to send to the player
+     * @param owner         The player's name which is owner of the SelectorListener
+     * @param inputRunnable The runnable to run when the SelectorListener receives input
+     * @param messages      The messages to send to the player
      */
-    private BlobSelectorListener(String owner, long timeout, Runnable inputRunnable,
-                                 Runnable timeoutRunnable, List<BlobMessage> messages,
+    private BlobSelectorListener(String owner, Runnable inputRunnable, List<BlobMessage> messages,
                                  VariableSelector selector) {
-        super(owner, timeout, inputRunnable, timeoutRunnable, selector);
+        super(owner, inputRunnable, selector);
         this.messages = messages;
     }
 
     @Override
     public void runTasks() {
-        super.runTasks();
         BukkitRunnable bukkitRunnable = new BukkitRunnable() {
             @Override
             public void run() {
@@ -65,7 +58,6 @@ public class BlobSelectorListener extends SelectorListener {
 
     @Override
     public void cancel() {
-        getTask().cancel();
         messageTask.cancel();
     }
 

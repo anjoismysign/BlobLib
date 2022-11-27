@@ -2,7 +2,7 @@ package us.mytheria.bloblib.entities.listeners;
 
 import org.bukkit.block.Block;
 
-public class SelPosListener extends InputListener {
+public class SelPosListener extends TimeoutInputListener {
     private Block input;
 
     public SelPosListener(String owner, long timeout, Runnable inputRunnable,

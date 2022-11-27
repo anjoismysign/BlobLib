@@ -45,6 +45,6 @@ public class SpawnableEntityTypeFiller implements VariableFiller {
 
     @Override
     public int totalPages(int itemsPerPage) {
-        return (int) Math.ceil(entities.size() / itemsPerPage);
+        return (int) Math.ceil((double) entities.size() / (double) itemsPerPage);
     }
 }
