@@ -71,9 +71,9 @@ public class SelPosListenerManager implements Listener {
     }
 
     public void cancelPositionListener(String string) {
-        SelPosListener chatListener = positionListeners.get(string);
-        if (chatListener != null) {
-            chatListener.cancel();
+        SelPosListener positionListener = positionListeners.get(string);
+        if (positionListener != null) {
+            positionListener.cancel();
             removePositionListener(string);
         }
     }

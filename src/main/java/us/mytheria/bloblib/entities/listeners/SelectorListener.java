@@ -23,8 +23,10 @@ public class SelectorListener extends InputListener {
         return input;
     }
 
+
     public void setInput(Object input) {
         this.input = input;
+        cancel();
         inputRunnable.run();
     }
 
