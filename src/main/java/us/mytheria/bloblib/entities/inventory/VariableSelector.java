@@ -44,7 +44,6 @@ public abstract class VariableSelector extends BlobInventory {
     @Override
     public void loadDefaultButtons() {
         setDefaultButtons(new HashMap<>());
-        addDefaultButtons("White-Background");
     }
 
     public void loadPage(int page, boolean refill) {
@@ -57,7 +56,6 @@ public abstract class VariableSelector extends BlobInventory {
             refillButton("White-Background");
         values.clear();
         VariableValue[] values = filler.page(page, itemsPerPage);
-        getPlayer().sendMessage("length: " + values.length);
         for (int i = 0; i < values.length; i++) {
             setValue(i, values[i]);
         }

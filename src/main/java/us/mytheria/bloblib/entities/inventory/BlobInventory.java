@@ -151,8 +151,7 @@ public class BlobInventory extends InventoryBuilder {
 
     public void refillButton(String key) {
         for (Integer i : getSlots(key)) {
-            setButton(i, getDefaultButton(key));
-            break;
+            setButton(i, getButton(i));
         }
     }
 }
