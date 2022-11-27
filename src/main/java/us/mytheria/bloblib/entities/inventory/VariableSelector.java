@@ -14,11 +14,12 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public abstract class VariableSelector extends BlobInventory {
-    private String dataType;
-    private HashMap<Integer, Object> values;
+    private final String dataType;
+    private final HashMap<Integer, Object> values;
     private final UUID builderId;
-    private VariableFiller filler;
-    private int page, itemsPerPage;
+    private final VariableFiller filler;
+    private int page;
+    private final int itemsPerPage;
 
     public static BlobInventory DEFAULT() {
         FileManager fileManager = BlobLib.getInstance().getFileManager();
@@ -43,6 +44,7 @@ public abstract class VariableSelector extends BlobInventory {
     @Override
     public void loadDefaultButtons() {
         setDefaultButtons(new HashMap<>());
+        addDefaultButtons("White-Background");
     }
 
     public void loadPage(int page, boolean refill) {
@@ -55,6 +57,7 @@ public abstract class VariableSelector extends BlobInventory {
             refillButton("White-Background");
         values.clear();
         VariableValue[] values = filler.page(page, itemsPerPage);
+        getPlayer().sendMessage("length: " + values.length);
         for (int i = 0; i < values.length; i++) {
             setValue(i, values[i]);
         }
