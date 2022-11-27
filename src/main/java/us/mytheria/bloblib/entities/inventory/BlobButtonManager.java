@@ -46,6 +46,11 @@ public class BlobButtonManager extends ButtonManager {
     }
 
     @Override
+    public Collection<String> keys() {
+        return getStringKeys().keySet();
+    }
+
+    @Override
     public ItemStack get(int key) {
         return getIntegerKeys().get(key);
     }

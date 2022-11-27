@@ -19,4 +19,6 @@ public interface ButtonManagerMethods {
     Collection<ItemStack> buttons();
 
     boolean add(ConfigurationSection section);
+
+    Collection<String> keys();
 }

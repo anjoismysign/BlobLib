@@ -41,11 +41,6 @@ public abstract class VariableSelector extends BlobInventory {
         loadPage(page, false);
     }
 
-    @Override
-    public void loadDefaultButtons() {
-        setDefaultButtons(new HashMap<>());
-    }
-
     public void loadPage(int page, boolean refill) {
         if (page < 1)
             return;

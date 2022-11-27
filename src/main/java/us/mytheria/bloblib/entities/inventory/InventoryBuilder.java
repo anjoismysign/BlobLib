@@ -2,6 +2,7 @@ package us.mytheria.bloblib.entities.inventory;
 
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Collection;
 import java.util.Set;
 
 public abstract class InventoryBuilder {
@@ -39,5 +40,9 @@ public abstract class InventoryBuilder {
 
     public ItemStack getButton(int slot) {
         return buttonManager.get(slot);
+    }
+
+    public Collection<String> getKeys() {
+        return buttonManager.keys();
     }
 }

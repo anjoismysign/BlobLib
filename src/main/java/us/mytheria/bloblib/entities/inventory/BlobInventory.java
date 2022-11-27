@@ -99,7 +99,7 @@ public class BlobInventory extends InventoryBuilder {
     public BlobInventory() {
     }
 
-    public void addDefaultButtons(String key) {
+    public void addDefaultButton(String key) {
         for (Integer i : getSlots(key)) {
             addDefaultButton(key, getButton(i));
             break;
@@ -108,6 +108,9 @@ public class BlobInventory extends InventoryBuilder {
 
     public void loadDefaultButtons() {
         setDefaultButtons(new HashMap<>());
+        getKeys().forEach(key -> {
+            addDefaultButton(key);
+        });
     }
 
     public void addDefaultButton(String name, ItemStack item) {
