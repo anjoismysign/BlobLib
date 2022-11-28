@@ -3,8 +3,8 @@ package us.mytheria.bloblib.entities.listeners;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
 
-public class SelectorListener extends InputListener {
-    private Object input;
+public class SelectorListener<E> extends InputListener {
+    private E input;
     private VariableSelector selector;
 
     public SelectorListener(String owner, Runnable inputRunnable, VariableSelector selector) {
@@ -19,12 +19,12 @@ public class SelectorListener extends InputListener {
     }
 
     @Override
-    public Object getInput() {
+    public E getInput() {
         return input;
     }
 
 
-    public void setInput(Object input) {
+    public void setInput(E input) {
         this.input = input;
         cancel();
         inputRunnable.run();

@@ -10,18 +10,20 @@ import us.mytheria.bloblib.entities.VariableFiller;
 import us.mytheria.bloblib.entities.VariableValue;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
-public class PlayerFiller implements VariableFiller {
+public class PlayerFiller implements VariableFiller<UUID> {
 
     public PlayerFiller() {
     }
 
     @Override
-    public VariableValue[] page(int page, int itemsPerPage) {
+    public List<VariableValue<UUID>> page(int page, int itemsPerPage) {
         int start = (page - 1) * itemsPerPage;
         int end = start + (itemsPerPage - 1);
         ArrayList<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
-        ArrayList<VariableValue> values = new ArrayList<>();
+        ArrayList<VariableValue<UUID>> values = new ArrayList<>();
         for (int i = start; i < end; i++) {
             Player player;
             try {
@@ -30,12 +32,12 @@ public class PlayerFiller implements VariableFiller {
                 ItemMeta itemMeta = itemStack.getItemMeta();
                 itemMeta.setDisplayName(ChatColor.GOLD + player.getName());
                 itemStack.setItemMeta(itemMeta);
-                values.add(new VariableValue(itemStack, player.getUniqueId()));
+                values.add(new VariableValue<>(itemStack, player.getUniqueId()));
             } catch (IndexOutOfBoundsException e) {
                 break;
             }
         }
-        return values.toArray(new VariableValue[0]);
+        return values;
     }
 
     @Override

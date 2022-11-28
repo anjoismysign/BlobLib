@@ -11,10 +11,11 @@ import us.mytheria.bloblib.utilities.MaterialUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
-public class SpawnableEntityTypeFiller implements VariableFiller {
-    private ArrayList<EntityType> entities;
-    private HashMap<EntityType, Material> materials;
+public class SpawnableEntityTypeFiller implements VariableFiller<EntityType> {
+    private final ArrayList<EntityType> entities;
+    private final HashMap<EntityType, Material> materials;
 
     public SpawnableEntityTypeFiller() {
         entities = new ArrayList<>();
@@ -28,10 +29,10 @@ public class SpawnableEntityTypeFiller implements VariableFiller {
     }
 
     @Override
-    public VariableValue[] page(int page, int itemsPerPage) {
+    public List<VariableValue<EntityType>> page(int page, int itemsPerPage) {
         int start = (page - 1) * itemsPerPage;
         int end = start + (itemsPerPage);
-        ArrayList<VariableValue> values = new ArrayList<>();
+        ArrayList<VariableValue<EntityType>> values = new ArrayList<>();
         for (int i = start; i < end; i++) {
             EntityType entityType;
             try {
@@ -40,12 +41,12 @@ public class SpawnableEntityTypeFiller implements VariableFiller {
                 ItemMeta itemMeta = itemStack.getItemMeta();
                 itemMeta.setDisplayName(ChatColor.GOLD + entityType.name());
                 itemStack.setItemMeta(itemMeta);
-                values.add(new VariableValue(itemStack, entityType));
+                values.add(new VariableValue<>(itemStack, entityType));
             } catch (IndexOutOfBoundsException e) {
                 break;
             }
         }
-        return values.toArray(new VariableValue[0]);
+        return values;
     }
 
     @Override

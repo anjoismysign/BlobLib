@@ -1,11 +1,9 @@
 package us.mytheria.bloblib.managers.fillermanager;
 
-import us.mytheria.bloblib.entities.VariableFiller;
-
 import java.util.HashMap;
 
 public class FillerManager {
-    private HashMap<String, VariableFiller> variableFillers;
+    private final HashMap<String, Object> variableFillers;
 
     public FillerManager() {
         variableFillers = new HashMap<>();

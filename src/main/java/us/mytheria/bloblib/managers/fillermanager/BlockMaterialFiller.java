@@ -10,10 +10,11 @@ import us.mytheria.bloblib.utilities.MaterialUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
-public class BlockMaterialFiller implements VariableFiller {
-    private ArrayList<Material> materials;
-    private HashMap<Material, Material> nonItem;
+public class BlockMaterialFiller implements VariableFiller<Material> {
+    private final ArrayList<Material> materials;
+    private final HashMap<Material, Material> nonItem;
 
     public BlockMaterialFiller() {
         nonItem = new HashMap<>();
@@ -31,10 +32,10 @@ public class BlockMaterialFiller implements VariableFiller {
     }
 
     @Override
-    public VariableValue[] page(int page, int itemsPerPage) {
+    public List<VariableValue<Material>> page(int page, int itemsPerPage) {
         int start = (page - 1) * itemsPerPage;
         int end = start + (itemsPerPage);
-        ArrayList<VariableValue> values = new ArrayList<>();
+        ArrayList<VariableValue<Material>> values = new ArrayList<>();
         for (int i = start; i < end; i++) {
             Material material;
             try {
@@ -47,12 +48,12 @@ public class BlockMaterialFiller implements VariableFiller {
                 ItemMeta itemMeta = itemStack.getItemMeta();
                 itemMeta.setDisplayName(ChatColor.GOLD + material.name());
                 itemStack.setItemMeta(itemMeta);
-                values.add(new VariableValue(itemStack, material));
+                values.add(new VariableValue<>(itemStack, material));
             } catch (IndexOutOfBoundsException e) {
                 break;
             }
         }
-        return values.toArray(new VariableValue[0]);
+        return values;
     }
 
     @Override

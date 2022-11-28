@@ -1,9 +1,11 @@
 package us.mytheria.bloblib.entities;
 
-public interface VariableFiller {
-    VariableValue[] page(int page, int itemsPerPage);
+import java.util.List;
 
-    default VariableValue[] page(int page) {
+public interface VariableFiller<T> {
+    List<VariableValue<T>> page(int page, int itemsPerPage);
+
+    default List<VariableValue<T>> page(int page) {
         return page(page, 45);
     }
 

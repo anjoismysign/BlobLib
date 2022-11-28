@@ -11,13 +11,14 @@ import us.mytheria.bloblib.managers.FileManager;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
-public abstract class VariableSelector extends BlobInventory {
+public abstract class VariableSelector<T> extends BlobInventory {
     private final String dataType;
     private final HashMap<Integer, Object> values;
     private final UUID builderId;
-    private final VariableFiller filler;
+    private final VariableFiller<T> filler;
     private int page;
     private final int itemsPerPage;
 
@@ -28,7 +29,7 @@ public abstract class VariableSelector extends BlobInventory {
     }
 
     public VariableSelector(BlobInventory blobInventory, UUID builderId,
-                            String dataType, VariableFiller filler) {
+                            String dataType, VariableFiller<T> filler) {
         super(blobInventory.getTitle(), blobInventory.getSize(), blobInventory.getButtonManager());
         this.filler = filler;
         this.builderId = builderId;
@@ -50,9 +51,9 @@ public abstract class VariableSelector extends BlobInventory {
         if (refill)
             refillButton("White-Background");
         values.clear();
-        VariableValue[] values = filler.page(page, itemsPerPage);
-        for (int i = 0; i < values.length; i++) {
-            setValue(i, values[i]);
+        List<VariableValue<T>> values = filler.page(page, itemsPerPage);
+        for (int i = 0; i < values.size(); i++) {
+            setValue(i, values.get(i));
         }
     }
 
@@ -69,7 +70,7 @@ public abstract class VariableSelector extends BlobInventory {
         getPlayer().openInventory(getInventory());
     }
 
-    public void setValue(int slot, VariableValue value) {
+    public void setValue(int slot, VariableValue<T> value) {
         values.put(slot, value.value());
         setButton(slot, value.itemStack());
     }
@@ -111,7 +112,7 @@ public abstract class VariableSelector extends BlobInventory {
         values.put(slot, value);
     }
 
-    public VariableFiller getFiller() {
+    public VariableFiller<T> getFiller() {
         return filler;
     }
 
