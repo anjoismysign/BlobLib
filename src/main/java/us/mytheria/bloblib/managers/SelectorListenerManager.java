@@ -1,21 +1,18 @@
 package us.mytheria.bloblib.managers;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.listeners.SelectorListener;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
 
-public class SelectorListenerManager implements Listener {
+public class SelectorListenerManager {
     private BlobLib main;
     private HashMap<String, SelectorListener> selectorListener;
 
     public SelectorListenerManager() {
         this.main = BlobLib.getInstance();
-        Bukkit.getPluginManager().registerEvents(this, BlobLib.getInstance());
         this.selectorListener = new HashMap<>();
     }
 

@@ -16,6 +16,7 @@ public final class BlobLib extends JavaPlugin {
     private SelPosListenerManager positionManager;
     private SelectorListenerManager selectorManager;
     private InventoryManager inventoryManager;
+    private DropListenerManager dropListenerManager;
 
     private static BlobLib instance;
 
@@ -35,6 +36,7 @@ public final class BlobLib extends JavaPlugin {
         positionManager = new SelPosListenerManager();
         selectorManager = new SelectorListenerManager();
         inventoryManager = new InventoryManager();
+        dropListenerManager = new DropListenerManager();
     }
 
     public FileManager getFileManager() {
@@ -71,5 +73,9 @@ public final class BlobLib extends JavaPlugin {
 
     public FillerManager getFillerManager() {
         return fillerManager;
+    }
+
+    public DropListenerManager getDropListenerManager() {
+        return dropListenerManager;
     }
 }
