@@ -23,6 +23,10 @@ public abstract class ManagerDirector {
         managers = new HashMap<>();
     }
 
+    public void addManager(String key, Manager manager) {
+        managers.put(key, manager);
+    }
+
     public void reload() {
     }
 
