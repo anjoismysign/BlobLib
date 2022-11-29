@@ -23,16 +23,36 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     private final SelectorListenerManager selectorManager;
 
     public static <T> BlobEditor<T> build(BlobInventory blobInventory, UUID builderId,
-                                          String dataType, VariableFiller<T> filler) {
+                                          String dataType) {
         return new BlobEditor<>(blobInventory, builderId,
-                dataType, null);
+                dataType);
     }
 
     private BlobEditor(BlobInventory blobInventory, UUID builderId,
-                       String dataType, VariableFiller<T> filler) {
-        super(blobInventory, builderId, dataType, filler);
+                       String dataType) {
+        super(blobInventory, builderId, dataType, null);
         list = new ArrayList<>();
         selectorManager = BlobLib.getInstance().getSelectorManager();
+    }
+
+    @Override
+    public void loadInConstructor() {
+    }
+
+    @Override
+    public void loadPage(int page, boolean refill) {
+        if (page < 1)
+            return;
+        if (getTotalPages() < page) {
+            return;
+        }
+        if (refill)
+            refillButton("White-Background");
+        clearValues();
+        List<VariableValue<T>> values = page(page, getItemsPerPage());
+        for (int i = 0; i < values.size(); i++) {
+            setValue(i, values.get(i));
+        }
     }
 
     @Override

@@ -79,6 +79,10 @@ public abstract class VariableSelector<T> extends BlobInventory {
         setButton(slot, value.itemStack());
     }
 
+    public void clearValues() {
+        values.clear();
+    }
+
     public T getValue(int slot) {
         return values.get(slot);
     }
@@ -122,6 +126,10 @@ public abstract class VariableSelector<T> extends BlobInventory {
 
     public int valuesSize() {
         return getValues().size();
+    }
+
+    public int getItemsPerPage() {
+        return itemsPerPage;
     }
 
     public void setPage(int page) {
