@@ -83,6 +83,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
 
     @SuppressWarnings("unchecked")
     public void removeElement(Player player) {
+        loadPage(getPage(), false);
         selectorManager.addSelectorListener(player, BlobSelectorListener.build(player,
                 () -> {
                     if (selectorManager.get(player).getInput() == null)

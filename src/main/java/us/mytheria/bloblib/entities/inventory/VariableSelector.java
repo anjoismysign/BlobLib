@@ -87,6 +87,10 @@ public abstract class VariableSelector<T> extends BlobInventory {
         return values.get(slot);
     }
 
+    public int getPage() {
+        return page;
+    }
+
     /**
      * @return player matching builderId.
      * null if no player is found.
