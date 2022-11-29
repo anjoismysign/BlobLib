@@ -14,8 +14,8 @@ import us.mytheria.bloblib.entities.listeners.SelectorListener;
 import java.util.HashMap;
 
 public class InventoryManager implements Listener {
-    private BlobLib main;
-    private HashMap<String, VariableSelector> variableSelectors;
+    private final BlobLib main;
+    private final HashMap<String, VariableSelector<?>> variableSelectors;
 
     public InventoryManager() {
         this.main = BlobLib.getInstance();
@@ -29,11 +29,11 @@ public class InventoryManager implements Listener {
         Player player = (Player) e.getWhoClicked();
         if (!variableSelectors.containsKey(player.getName()))
             return;
-        SelectorListener listener = main.getSelectorManager().get(player);
+        SelectorListener<?> listener = main.getSelectorManager().get(player);
         if (listener == null)
             return;
         e.setCancelled(true);
-        VariableSelector variableSelector = variableSelectors.get(player.getName());
+        VariableSelector<?> variableSelector = variableSelectors.get(player.getName());
         int slot = e.getRawSlot();
         if (slot > variableSelector.valuesSize() - 1) {
             if (variableSelector.isNextPageButton(slot)) {
@@ -45,9 +45,8 @@ public class InventoryManager implements Listener {
             }
             return;
         }
-        Object value = variableSelector.getValue(slot);
+        listener.setInputFromSlot(variableSelector, slot);
         player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
-        listener.setInput(value);
     }
 
     @EventHandler
@@ -55,13 +54,13 @@ public class InventoryManager implements Listener {
         Player player = (Player) e.getPlayer();
         if (!variableSelectors.containsKey(player.getName()))
             return;
-        SelectorListener listener = main.getSelectorManager().get(player);
+        SelectorListener<?> listener = main.getSelectorManager().get(player);
         if (listener == null)
             return;
         listener.setInput(null);
     }
 
-    public void addVariableSelector(VariableSelector variableSelector) {
+    public void addVariableSelector(VariableSelector<?> variableSelector) {
         variableSelectors.put(variableSelector.getPlayer().getName(), variableSelector);
     }
 }

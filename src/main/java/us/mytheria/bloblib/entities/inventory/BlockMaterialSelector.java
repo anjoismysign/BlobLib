@@ -5,7 +5,7 @@ import us.mytheria.bloblib.BlobLib;
 
 import java.util.UUID;
 
-public class BlockMaterialSelector extends VariableSelector {
+public class BlockMaterialSelector extends VariableSelector<Material> {
 
     public static BlockMaterialSelector build(UUID builderId) {
         BlobInventory inventory = VariableSelector.DEFAULT();
@@ -15,10 +15,5 @@ public class BlockMaterialSelector extends VariableSelector {
     private BlockMaterialSelector(BlobInventory blobInventory, UUID builderId) {
         super(blobInventory, builderId, "BLOCKMATERIAL",
                 BlobLib.getInstance().getFillerManager().getBlockMaterialFiller());
-    }
-
-    @Override
-    public Material getValue(int slot) {
-        return (Material) getValues().get(slot);
     }
 }

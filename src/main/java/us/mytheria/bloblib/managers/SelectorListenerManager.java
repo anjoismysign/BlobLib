@@ -8,15 +8,15 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 
 public class SelectorListenerManager {
-    private BlobLib main;
-    private HashMap<String, SelectorListener> selectorListener;
+    private final BlobLib main;
+    private final HashMap<String, SelectorListener<?>> selectorListener;
 
     public SelectorListenerManager() {
         this.main = BlobLib.getInstance();
         this.selectorListener = new HashMap<>();
     }
 
-    public void addSelectorListener(Player player, SelectorListener listener) {
+    public void addSelectorListener(Player player, SelectorListener<?> listener) {
         String name = player.getName();
         if (selectorListener.containsKey(name)) {
             player.sendMessage(main.getLangManager().getLang("msg.Already-Selector-Listening"));
@@ -35,7 +35,7 @@ public class SelectorListenerManager {
     }
 
     public void cancelSelectorListener(String string) {
-        SelectorListener selectorListener = this.selectorListener.get(string);
+        SelectorListener<?> selectorListener = this.selectorListener.get(string);
         if (selectorListener != null) {
             selectorListener.cancel();
             removeSelectorListener(string);
@@ -52,12 +52,12 @@ public class SelectorListenerManager {
     }
 
     @Nullable
-    public SelectorListener get(Player player) {
+    public SelectorListener<?> get(Player player) {
         return get(player.getName());
     }
 
     @Nullable
-    public SelectorListener get(String string) {
+    public SelectorListener<?> get(String string) {
         return selectorListener.get(string);
     }
 }

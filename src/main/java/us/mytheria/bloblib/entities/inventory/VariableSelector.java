@@ -16,7 +16,7 @@ import java.util.UUID;
 
 public abstract class VariableSelector<T> extends BlobInventory {
     private final String dataType;
-    private final HashMap<Integer, Object> values;
+    private final HashMap<Integer, T> values;
     private final UUID builderId;
     private final VariableFiller<T> filler;
     private int page;
@@ -75,7 +75,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
         setButton(slot, value.itemStack());
     }
 
-    public Object getValue(int slot) {
+    public T getValue(int slot) {
         return values.get(slot);
     }
 
@@ -104,11 +104,11 @@ public abstract class VariableSelector<T> extends BlobInventory {
         return dataType;
     }
 
-    public HashMap<Integer, Object> getValues() {
+    public HashMap<Integer, T> getValues() {
         return values;
     }
 
-    public void addValue(int slot, Object value) {
+    public void addValue(int slot, T value) {
         values.put(slot, value);
     }
 

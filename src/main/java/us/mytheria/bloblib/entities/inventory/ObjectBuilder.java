@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public abstract class ObjectBuilder extends BlobInventory {
+public abstract class ObjectBuilder<T> extends BlobInventory {
     private final UUID builderId;
 
     public ObjectBuilder(BlobInventory blobInventory, UUID builderId) {
@@ -45,6 +45,10 @@ public abstract class ObjectBuilder extends BlobInventory {
             itemStack.setItemMeta(itemMeta);
             this.setButton(i, itemStack);
         });
+    }
+
+    public T build() {
+        return null;
     }
 
     public boolean isBuildButton(int slot) {

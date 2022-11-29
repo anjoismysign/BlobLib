@@ -16,8 +16,8 @@ public class SuperBlobFiller<T> implements VariableFiller<T> {
     private final Collection<T> values;
     private final Function<T, ItemStack> function;
 
-    public static <T> SuperBlobFiller<T> build(Collection values, Function<T, ItemStack> function) {
-        return new SuperBlobFiller<T>(values, function);
+    public static <T> SuperBlobFiller<T> build(Collection<T> values, Function<T, ItemStack> function) {
+        return new SuperBlobFiller(values, function);
     }
 
     private SuperBlobFiller(Collection<T> values, Function<T, ItemStack> function) {

@@ -10,7 +10,7 @@ import us.mytheria.bloblib.entities.message.BlobMessage;
 
 import java.util.List;
 
-public class BlobSelectorListener extends SelectorListener {
+public class BlobSelectorListener<T> extends SelectorListener<T> {
     private final List<BlobMessage> messages;
     private BukkitTask messageTask;
 
@@ -21,9 +21,9 @@ public class BlobSelectorListener extends SelectorListener {
      * @param inputRunnable The runnable to run when the SelectorListener receives input
      * @param messages      The messages to send to the player
      */
-    public static BlobSelectorListener build(Player owner, Runnable inputRunnable
-            , List<BlobMessage> messages, VariableSelector selector) {
-        return new BlobSelectorListener(owner.getName(),
+    public static <T> BlobSelectorListener<T> build(Player owner, Runnable inputRunnable
+            , List<BlobMessage> messages, VariableSelector<T> selector) {
+        return new BlobSelectorListener<>(owner.getName(),
                 inputRunnable, messages, selector);
     }
 
@@ -35,7 +35,7 @@ public class BlobSelectorListener extends SelectorListener {
      * @param messages      The messages to send to the player
      */
     private BlobSelectorListener(String owner, Runnable inputRunnable, List<BlobMessage> messages,
-                                 VariableSelector selector) {
+                                 VariableSelector<T> selector) {
         super(owner, inputRunnable, selector);
         this.messages = messages;
     }

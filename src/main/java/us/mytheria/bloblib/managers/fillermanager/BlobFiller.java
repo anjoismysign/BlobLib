@@ -15,8 +15,8 @@ public class BlobFiller<T> implements VariableFiller<T> {
     private final Collection<T> values;
     private final Material material;
 
-    public static BlobFiller build(Collection values, Material material) {
-        return new BlobFiller(values, material);
+    public static <T> BlobFiller<T> build(Collection<T> values, Material material) {
+        return new BlobFiller<>(values, material);
     }
 
     private BlobFiller(Collection<T> values, Material material) {
