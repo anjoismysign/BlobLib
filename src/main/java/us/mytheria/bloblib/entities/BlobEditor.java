@@ -28,6 +28,11 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
                 dataType);
     }
 
+    public static <T> BlobEditor<T> DEFAULT(UUID builderId, String dataType) {
+        return new BlobEditor<>(VariableSelector.DEFAULT(), builderId,
+                dataType);
+    }
+
     private BlobEditor(BlobInventory blobInventory, UUID builderId,
                        String dataType) {
         super(blobInventory, builderId, dataType, null);
