@@ -39,6 +39,10 @@ public abstract class VariableSelector<T> extends BlobInventory {
         buildInventory();
         this.page = 1;
         this.itemsPerPage = getSlots("White-Background").size();
+        loadInConstructor();
+    }
+
+    public void loadInConstructor() {
         loadPage(page, false);
     }
 

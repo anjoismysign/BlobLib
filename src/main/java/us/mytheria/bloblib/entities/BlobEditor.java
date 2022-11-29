@@ -25,7 +25,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     public static <T> BlobEditor<T> build(BlobInventory blobInventory, UUID builderId,
                                           String dataType, VariableFiller<T> filler) {
         return new BlobEditor<>(blobInventory, builderId,
-                dataType, filler);
+                dataType, null);
     }
 
     private BlobEditor(BlobInventory blobInventory, UUID builderId,
