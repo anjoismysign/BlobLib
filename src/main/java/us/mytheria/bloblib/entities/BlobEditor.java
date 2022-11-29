@@ -82,7 +82,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     }
 
     @SuppressWarnings("unchecked")
-    public void removeElement(Player player) {
+    public void removeElement(Player player, Runnable onRemove) {
         loadPage(getPage(), false);
         selectorManager.addSelectorListener(player, BlobSelectorListener.build(player,
                 () -> {
@@ -95,6 +95,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
                             return;
                         }
                         list.remove(input);
+                        onRemove.run();
                     });
                 }, Collections.singletonList(new BlobActionBar(ChatColor.GRAY + "Click an element to remove it")),
                 this));
