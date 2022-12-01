@@ -3,6 +3,7 @@ package us.mytheria.bloblib.entities;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -46,15 +47,16 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
 
     @Override
     public void loadPage(int page, boolean refill) {
-        if (page < 1)
+        if (page < 1) {
             return;
+        }
         if (getTotalPages() < page) {
             return;
         }
         if (refill)
             refillButton("White-Background");
         clearValues();
-        List<VariableValue<T>> values = page(page, getItemsPerPage());
+        List<VariableValue<T>> values = this.page(page, getItemsPerPage());
         for (int i = 0; i < values.size(); i++) {
             setValue(i, values.get(i));
         }
@@ -83,11 +85,15 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
 
     @SuppressWarnings("unchecked")
     public void removeElement(Player player, Runnable onRemove) {
-        loadPage(getPage(), false);
+        loadPage(getPage(), true);
         selectorManager.addSelectorListener(player, BlobSelectorListener.build(player,
                 () -> {
-                    if (selectorManager.get(player).getInput() == null)
+                    if (selectorManager.get(player).getInput() == null) {
+                        selectorManager.removeSelectorListener(player);
+                        onRemove.run();
                         return;
+                    }
+                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
                     T input = (T) selectorManager.get(player).getInput();
                     selectorManager.removeSelectorListener(player);
                     Bukkit.getScheduler().runTask(BlobLib.getInstance(), () -> {
@@ -108,6 +114,14 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     @Override
     public int totalPages(int itemsPerPage) {
         return (int) Math.ceil((double) list.size() / (double) itemsPerPage);
+    }
+
+    @Override
+    public int getTotalPages() {
+        int totalPages = totalPages(getItemsPerPage());
+        if (totalPages == 0)
+            totalPages = 1;
+        return totalPages;
     }
 
     @Override
