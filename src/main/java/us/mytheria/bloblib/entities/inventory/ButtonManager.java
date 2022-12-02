@@ -1,6 +1,8 @@
 package us.mytheria.bloblib.entities.inventory;
 
 import org.bukkit.inventory.ItemStack;
+import us.mytheria.bloblib.entities.InventoryButton;
+import us.mytheria.bloblib.entities.SuperInventoryButton;
 
 import java.util.Map;
 import java.util.Set;
@@ -32,5 +34,25 @@ public abstract class ButtonManager implements ButtonManagerMethods {
 
     public void setStringKeys(Map<String, Set<Integer>> stringKeys) {
         this.stringKeys = stringKeys;
+    }
+
+    public Set<Integer> getSlots(String key) {
+        return get(key);
+    }
+
+    public InventoryButton getButton(String key) {
+        return new InventoryButton(key, getSlots(key));
+    }
+
+
+    public void addCommand(String key, String command) {
+    }
+
+    public String getCommand(String key) {
+        return null;
+    }
+
+    public SuperInventoryButton getSuperButton(String key) {
+        return null;
     }
 }
