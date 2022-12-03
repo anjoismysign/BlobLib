@@ -10,9 +10,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import us.mytheria.bloblib.entities.Rep;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -101,6 +99,18 @@ public final class ItemStackBuilder {
         return lore(Rep.lace(lore, reps));
     }
 
+    private List<String> getLore() {
+        ItemMeta meta = itemStack.getItemMeta();
+        if (meta == null) return null;
+        return meta.getLore();
+    }
+
+    public ItemStackBuilder lore(Rep... reps) {
+        List<String> lore = getLore();
+        if (lore == null) return this;
+        return lore(Rep.lace(lore, reps));
+    }
+
     /**
      * Clears the lore of the item.
      */
@@ -127,6 +137,42 @@ public final class ItemStackBuilder {
 
     public ItemStackBuilder enchant(Enchantment enchantment, int level) {
         return itemStack(itemStack -> itemStack.addUnsafeEnchantment(enchantment, level));
+    }
+
+    public ItemStackBuilder unenchant(Enchantment enchantment) {
+        return itemStack(itemStack -> itemStack.removeEnchantment(enchantment));
+    }
+
+    public ItemStackBuilder enchant(Enchantment... enchantments) {
+        return itemStack(itemStack -> {
+            for (Enchantment enchantment : enchantments) {
+                itemStack.addUnsafeEnchantment(enchantment, 1);
+            }
+        });
+    }
+
+    public ItemStackBuilder enchant(Collection<Enchantment> enchantments) {
+        return itemStack(itemStack -> {
+            for (Enchantment enchantment : enchantments) {
+                itemStack.addUnsafeEnchantment(enchantment, 1);
+            }
+        });
+    }
+
+    public ItemStackBuilder enchant(Map<Enchantment, Integer> enchantments) {
+        return itemStack(itemStack -> {
+            for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+                itemStack.addUnsafeEnchantment(entry.getKey(), entry.getValue());
+            }
+        });
+    }
+
+    public ItemStackBuilder unenchant(Enchantment... enchantments) {
+        return itemStack(itemStack -> {
+            for (Enchantment enchantment : enchantments) {
+                itemStack.removeEnchantment(enchantment);
+            }
+        });
     }
 
     public ItemStackBuilder enchant(Enchantment enchantment) {

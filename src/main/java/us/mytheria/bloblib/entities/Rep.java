@@ -25,6 +25,8 @@ public final class Rep {
     }
 
     public static List<String> lace(List<String> lore, Rep... reps) {
+        if (lore == null)
+            return null;
         List<String> newLore = new ArrayList<>();
         for (String string : lore) {
             for (Rep rep : reps) {
