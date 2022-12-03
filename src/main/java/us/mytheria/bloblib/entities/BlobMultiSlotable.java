@@ -5,6 +5,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import us.mytheria.bloblib.entities.inventory.ButtonManager;
+import us.mytheria.bloblib.itemstack.ItemStackReader;
 import us.mytheria.bloblib.objects.SerializableItem;
 
 import java.util.HashSet;
@@ -15,6 +16,26 @@ public class BlobMultiSlotable extends MultiSlotable {
 
     public static BlobMultiSlotable fromConfigurationSection(ConfigurationSection section, String key) {
         ItemStack itemStack = SerializableItem.fromConfigurationSection(section.getConfigurationSection("ItemStack"));
+        HashSet<Integer> list = new HashSet<>();
+        String read = section.getString("Slot", "-1");
+        String[] slots = read.split(",");
+        if (slots.length != 1) {
+            for (String slot : slots) {
+                add(list, slot, section.getName());
+            }
+        } else {
+            add(list, read, section.getName());
+        }
+        return new BlobMultiSlotable(list, itemStack, key);
+    }
+
+    public static BlobMultiSlotable read(ConfigurationSection section, String key) {
+        ConfigurationSection itemStackSection = section.getConfigurationSection("ItemStack");
+        if (itemStackSection == null) {
+            Bukkit.getLogger().severe("ItemStack section is null for " + key);
+            return null;
+        }
+        ItemStack itemStack = ItemStackReader.read(itemStackSection).build();
         HashSet<Integer> list = new HashSet<>();
         String read = section.getString("Slot", "-1");
         String[] slots = read.split(",");

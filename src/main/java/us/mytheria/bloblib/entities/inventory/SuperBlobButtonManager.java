@@ -13,6 +13,12 @@ import java.util.Set;
 public class SuperBlobButtonManager extends ButtonManager {
     private HashMap<String, String> buttonCommands;
 
+    public static SuperBlobButtonManager smartFromConfigurationSection(ConfigurationSection section) {
+        SuperBlobButtonManager superBlobButtonManager = new SuperBlobButtonManager();
+        superBlobButtonManager.read(section);
+        return superBlobButtonManager;
+    }
+
     /**
      * Builds a SuperButtonManager through the specified ConfigurationSection.
      * Uses HashMap to store buttons.
@@ -80,6 +86,19 @@ public class SuperBlobButtonManager extends ButtonManager {
                 return;
             madeChanges.setValue(true);
             CommandMultiSlotable slotable = CommandMultiSlotable.fromConfigurationSection(section.getConfigurationSection(s), s);
+            slotable.setInSuperBlobButtonManager(this);
+        });
+        return madeChanges.getValue();
+    }
+
+    public boolean read(ConfigurationSection section) {
+        Set<String> set = section.getKeys(false);
+        UberBoolean madeChanges = new UberBoolean(false);
+        set.forEach(s -> {
+            if (contains(s))
+                return;
+            madeChanges.setValue(true);
+            CommandMultiSlotable slotable = CommandMultiSlotable.read(section.getConfigurationSection(s), s);
             slotable.setInSuperBlobButtonManager(this);
         });
         return madeChanges.getValue();

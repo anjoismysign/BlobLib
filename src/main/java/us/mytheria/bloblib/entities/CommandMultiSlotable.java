@@ -5,6 +5,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import us.mytheria.bloblib.entities.inventory.SuperBlobButtonManager;
+import us.mytheria.bloblib.itemstack.ItemStackReader;
 import us.mytheria.bloblib.objects.SerializableItem;
 
 import java.util.HashSet;
@@ -14,6 +15,29 @@ public class CommandMultiSlotable extends MultiSlotable {
     private String key;
     private boolean executesCommand;
     private String command;
+
+    public static CommandMultiSlotable read(ConfigurationSection section, String key) {
+        ConfigurationSection itemStackSection = section.getConfigurationSection("ItemStack");
+        if (itemStackSection == null) {
+            Bukkit.getLogger().severe("ItemStack section is null for " + key);
+            return null;
+        }
+        ItemStack itemStack = ItemStackReader.read(itemStackSection).build();
+        HashSet<Integer> list = new HashSet<>();
+        String read = section.getString("Slot", "-1");
+        String[] slots = read.split(",");
+        if (slots.length != 1) {
+            for (String slot : slots) {
+                add(list, slot, section.getName());
+            }
+        } else {
+            add(list, read, section.getName());
+        }
+        boolean executesCommand = section.getBoolean("ExecutesCommand", false);
+        String command = section.getString("Command", "say PLEASE CHECK YOUR NEW CONFIG FILES SINCE THERE'S A " +
+                "FILE THAT'S LOADING A BUTTON WHICH 'ExecutesCommand' is set as true but 'Command' is not specified.");
+        return new CommandMultiSlotable(list, itemStack, key, executesCommand, command);
+    }
 
     public static CommandMultiSlotable fromConfigurationSection(ConfigurationSection section, String key) {
         ItemStack itemStack = SerializableItem.fromConfigurationSection(section.getConfigurationSection("ItemStack"));

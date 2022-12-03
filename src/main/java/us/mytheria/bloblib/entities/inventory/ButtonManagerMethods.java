@@ -20,5 +20,7 @@ public interface ButtonManagerMethods {
 
     boolean add(ConfigurationSection section);
 
+    boolean read(ConfigurationSection section);
+
     Collection<String> keys();
 }

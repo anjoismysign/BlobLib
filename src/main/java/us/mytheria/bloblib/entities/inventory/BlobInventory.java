@@ -14,6 +14,30 @@ public class BlobInventory extends InventoryBuilder {
     private Inventory inventory;
     private HashMap<String, ItemStack> defaultButtons;
 
+    public static BlobInventory smartFromFile(File file) {
+        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        String title = ChatColor.translateAlternateColorCodes('&',
+                configuration.getString("Title", configuration.getName() + ">NOT-SET"));
+        int size = configuration.getInt("Size", -1);
+        if (size < 0 || size % 9 != 0) {
+            if (size < 0) {
+                size = 54;
+                Bukkit.getLogger().info(configuration.getName() + "'s Size is smaller than 0.");
+                Bukkit.getLogger().info("This was probably due because you never set a Size.");
+                Bukkit.getLogger().info("This is not possible in an inventory so it was set");
+                Bukkit.getLogger().info("to '54' which is default.");
+            } else {
+                size = 54;
+                Bukkit.getLogger().info(configuration.getName() + "'s Size is not a factor of 9.");
+                Bukkit.getLogger().info("This is not possible in an inventory so it was set");
+                Bukkit.getLogger().info("to '54' which is default.");
+            }
+        }
+        BlobButtonManager buttonManager = BlobButtonManager.smartFromConfigurationSection(configuration.getConfigurationSection("Buttons"));
+        BlobInventory inventory = new BlobInventory(title, size, buttonManager);
+        return inventory;
+    }
+
     public static BlobInventory fromFile(File file) {
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
         String title = ChatColor.translateAlternateColorCodes('&',
@@ -34,6 +58,29 @@ public class BlobInventory extends InventoryBuilder {
             }
         }
         BlobButtonManager buttonManager = BlobButtonManager.fromConfigurationSection(configuration.getConfigurationSection("Buttons"));
+        BlobInventory inventory = new BlobInventory(title, size, buttonManager);
+        return inventory;
+    }
+
+    public static BlobInventory smartFromConfigurationSection(ConfigurationSection section) {
+        String title = ChatColor.translateAlternateColorCodes('&',
+                section.getString("Title", section.getName() + ">NOT-SET"));
+        int size = section.getInt("Size", -1);
+        if (size < 0 || size % 9 != 0) {
+            if (size < 0) {
+                size = 54;
+                Bukkit.getLogger().info(section.getName() + "'s Size is smaller than 0.");
+                Bukkit.getLogger().info("This was probably due because you never set a Size.");
+                Bukkit.getLogger().info("This is not possible in an inventory so it was set");
+                Bukkit.getLogger().info("to '54' which is default.");
+            } else {
+                size = 54;
+                Bukkit.getLogger().info(section.getName() + "'s Size is not a factor of 9.");
+                Bukkit.getLogger().info("This is not possible in an inventory so it was set");
+                Bukkit.getLogger().info("to '54' which is default.");
+            }
+        }
+        BlobButtonManager buttonManager = BlobButtonManager.smartFromConfigurationSection(section.getConfigurationSection("Buttons"));
         BlobInventory inventory = new BlobInventory(title, size, buttonManager);
         return inventory;
     }

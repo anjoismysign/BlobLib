@@ -23,6 +23,12 @@ public class BlobButtonManager extends ButtonManager {
         return blobButtonManager;
     }
 
+    public static BlobButtonManager smartFromConfigurationSection(ConfigurationSection section) {
+        BlobButtonManager blobButtonManager = new BlobButtonManager();
+        blobButtonManager.read(section);
+        return blobButtonManager;
+    }
+
     /**
      * Builds a non abstract ButtonManager without any buttons stored yet.
      */
@@ -76,6 +82,20 @@ public class BlobButtonManager extends ButtonManager {
                 return;
             madeChanges.setValue(true);
             BlobMultiSlotable slotable = BlobMultiSlotable.fromConfigurationSection(section.getConfigurationSection(s), s);
+            slotable.setInButtonManager(this);
+        });
+        return madeChanges.getValue();
+    }
+
+    @Override
+    public boolean read(ConfigurationSection section) {
+        Set<String> set = section.getKeys(false);
+        UberBoolean madeChanges = new UberBoolean(false);
+        set.forEach(s -> {
+            if (contains(s))
+                return;
+            madeChanges.setValue(true);
+            BlobMultiSlotable slotable = BlobMultiSlotable.read(section.getConfigurationSection(s), s);
             slotable.setInButtonManager(this);
         });
         return madeChanges.getValue();
