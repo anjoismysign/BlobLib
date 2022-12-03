@@ -3,12 +3,12 @@ package us.mytheria.bloblib.itemstack;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.enchantments.Enchantment;
+import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.util.HashMap;
+import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
 public class ItemStackReader {
 
@@ -37,31 +37,33 @@ public class ItemStackReader {
         }
         if (section.contains("Enchantments")) {
             List<String> enchantNames = section.getStringList("Enchantments");
-            HashMap<Enchantment, Integer> enchantments = new HashMap<>();
-            enchantNames.forEach(element -> {
-                String[] split = element.split(",");
-                if (split.length != 2) {
-                    Bukkit.getLogger().severe("Invalid element inside 'Enchantments': " + element);
-                    return;
-                }
-                String key = split[0];
-                int level;
-                try {
-                    level = Integer.parseInt(split[1]);
-                } catch (NumberFormatException e) {
-                    Bukkit.getLogger().severe("Invalid level for " + key + " enchantment: " + split[1]);
-                    return;
-                }
-                Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(key));
-                if (enchantment != null) {
-                    enchantments.put(enchantment, level);
-                } else {
-                    Bukkit.getLogger().severe("Enchantment " + key + " is not a valid enchantment. Skipping.");
-                }
-            });
-            builder = builder.enchant(enchantments);
+            builder = builder.deserializeAndEnchant(enchantNames);
+        }
+        boolean hideAll = section.getBoolean("HideAllItemFlags", false);
+        if (hideAll)
+            builder = builder.hideAll();
+        if (section.contains("ItemFlags")) {
+            List<String> flagNames = section.getStringList("ItemFlags");
+            builder = builder.deserializeAndFlag(flagNames);
         }
         return builder;
+    }
+
+    public static ItemStackBuilder read(File file, String path) {
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+        return read(Objects.requireNonNull(config.getConfigurationSection(path)));
+    }
+
+    public static ItemStackBuilder read(File file) {
+        return read(file, "ItemStack");
+    }
+
+    public static ItemStackBuilder read(YamlConfiguration config, String path) {
+        return read(Objects.requireNonNull(config.getConfigurationSection(path)));
+    }
+
+    public static ItemStackBuilder read(YamlConfiguration config) {
+        return read(config, "ItemStack");
     }
 
     public static Color parseColor(String color) {

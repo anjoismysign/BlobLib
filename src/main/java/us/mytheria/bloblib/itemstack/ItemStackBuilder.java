@@ -3,6 +3,7 @@ package us.mytheria.bloblib.itemstack;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -15,7 +16,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public final class ItemStackBuilder {
-    private ItemStack itemStack;
+    private final ItemStack itemStack;
 
     private static final ItemFlag[] ALL_CONSTANTS = ItemFlag.values();
 
@@ -60,19 +61,39 @@ public final class ItemStackBuilder {
     }
 
     public ItemStackBuilder hideAll() {
-        return addFlag(ALL_CONSTANTS);
+        return flag(ALL_CONSTANTS);
     }
 
     public ItemStackBuilder showAll() {
-        return removeFlag(ALL_CONSTANTS);
+        return unflag(ALL_CONSTANTS);
     }
 
-    public ItemStackBuilder addFlag(ItemFlag... flags) {
+    public ItemStackBuilder flag(ItemFlag... flags) {
         return itemMeta(itemMeta -> itemMeta.addItemFlags(flags));
     }
 
-    public ItemStackBuilder removeFlag(ItemFlag... flags) {
+    public ItemStackBuilder flag(Collection<ItemFlag> flags) {
+        return flag(flags.toArray(new ItemFlag[0]));
+    }
+
+    public ItemStackBuilder deserializeAndFlag(List<String> flags) {
+        List<ItemFlag> itemFlags = new ArrayList<>();
+        for (String flag : flags) {
+            try {
+                itemFlags.add(ItemFlag.valueOf(flag));
+            } catch (IllegalArgumentException e) {
+                Bukkit.getLogger().info("ItemFlag " + flag + " is not a valid ItemFlag.");
+            }
+        }
+        return flag(itemFlags);
+    }
+
+    public ItemStackBuilder unflag(ItemFlag... flags) {
         return itemMeta(itemMeta -> itemMeta.removeItemFlags(flags));
+    }
+
+    public ItemStackBuilder unflag(Collection<ItemFlag> flags) {
+        return unflag(flags.toArray(new ItemFlag[0]));
     }
 
     public ItemStackBuilder displayName(String name) {
@@ -165,6 +186,32 @@ public final class ItemStackBuilder {
                 itemStack.addUnsafeEnchantment(entry.getKey(), entry.getValue());
             }
         });
+    }
+
+    public ItemStackBuilder deserializeAndEnchant(Collection<String> serializedEnchantments) {
+        HashMap<Enchantment, Integer> enchantments = new HashMap<>();
+        serializedEnchantments.forEach(element -> {
+            String[] split = element.split(",");
+            if (split.length != 2) {
+                Bukkit.getLogger().severe("Invalid element inside 'Enchantments': " + element);
+                return;
+            }
+            String key = split[0];
+            int level;
+            try {
+                level = Integer.parseInt(split[1]);
+            } catch (NumberFormatException e) {
+                Bukkit.getLogger().severe("Invalid level for " + key + " enchantment: " + split[1]);
+                return;
+            }
+            Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(key));
+            if (enchantment != null) {
+                enchantments.put(enchantment, level);
+            } else {
+                Bukkit.getLogger().severe("Enchantment " + key + " is not a valid enchantment. Skipping.");
+            }
+        });
+        return enchant(enchantments);
     }
 
     public ItemStackBuilder unenchant(Enchantment... enchantments) {
