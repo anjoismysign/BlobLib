@@ -39,6 +39,9 @@ public class ItemStackReader {
             List<String> enchantNames = section.getStringList("Enchantments");
             builder = builder.deserializeAndEnchant(enchantNames);
         }
+        if (section.contains("CustomModelData")) {
+            builder = builder.customModelData(section.getInt("CustomModelData"));
+        }
         boolean hideAll = section.getBoolean("HideAllItemFlags", false);
         if (hideAll)
             builder = builder.hideAll();
