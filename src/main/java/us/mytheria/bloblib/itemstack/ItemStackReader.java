@@ -42,9 +42,9 @@ public class ItemStackReader {
         if (section.contains("CustomModelData")) {
             builder = builder.customModelData(section.getInt("CustomModelData"));
         }
-        boolean hideAll = section.getBoolean("HideAllItemFlags", false);
-        if (hideAll)
-            builder = builder.hideAll();
+        boolean showAll = section.getBoolean("ShowAllItemFlags", false);
+        if (showAll)
+            builder = builder.showAll();
         if (section.contains("ItemFlags")) {
             List<String> flagNames = section.getStringList("ItemFlags");
             builder = builder.deserializeAndFlag(flagNames);
