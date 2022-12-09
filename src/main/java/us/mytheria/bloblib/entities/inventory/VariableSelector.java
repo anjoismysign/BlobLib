@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.VariableFiller;
 import us.mytheria.bloblib.entities.VariableValue;
@@ -13,6 +14,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 
 public abstract class VariableSelector<T> extends BlobInventory {
     private final String dataType;
@@ -62,6 +64,21 @@ public abstract class VariableSelector<T> extends BlobInventory {
             refillButton("White-Background");
         values.clear();
         List<VariableValue<T>> values = filler.page(page, itemsPerPage);
+        for (int i = 0; i < values.size(); i++) {
+            setValue(i, values.get(i));
+        }
+    }
+
+    public void loadCustomPage(int page, boolean refill, List<T> list, Function<T, ItemStack> function) {
+        if (page < 1)
+            return;
+        if (getTotalPages() < page) {
+            return;
+        }
+        if (refill)
+            refillButton("White-Background");
+        values.clear();
+        List<VariableValue<T>> values = filler.customPage(page, itemsPerPage, list, function);
         for (int i = 0; i < values.size(); i++) {
             setValue(i, values.get(i));
         }

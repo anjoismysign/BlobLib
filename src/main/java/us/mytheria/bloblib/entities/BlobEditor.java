@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 
 public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor<T> {
     private final List<T> list;
@@ -62,6 +63,10 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
         }
     }
 
+    public void loadCustomPage(int page, boolean refill, Function<T, ItemStack> function) {
+        super.loadCustomPage(page, refill, list, function);
+    }
+
     @Override
     public List<VariableValue<T>> page(int page, int itemsPerPage) {
         int start = (page - 1) * itemsPerPage;
@@ -90,6 +95,29 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     @SuppressWarnings("unchecked")
     public void removeElement(Player player, Runnable onRemove) {
         loadPage(getPage(), true);
+        selectorManager.addSelectorListener(player, BlobSelectorListener.build(player,
+                () -> {
+                    if (selectorManager.get(player).getInput() == null) {
+                        selectorManager.removeSelectorListener(player);
+                        onRemove.run();
+                        return;
+                    }
+                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
+                    T input = (T) selectorManager.get(player).getInput();
+                    selectorManager.removeSelectorListener(player);
+                    Bukkit.getScheduler().runTask(BlobLib.getInstance(), () -> {
+                        if (player == null || !player.isOnline()) {
+                            return;
+                        }
+                        remove(input);
+                        onRemove.run();
+                    });
+                }, Collections.singletonList(new BlobActionBar(ChatColor.GRAY + "Click an element to remove it")),
+                this));
+    }
+
+    public void removeElement(Player player, Runnable onRemove, Function<T, ItemStack> function) {
+        loadCustomPage(getPage(), true, function);
         selectorManager.addSelectorListener(player, BlobSelectorListener.build(player,
                 () -> {
                     if (selectorManager.get(player).getInput() == null) {
