@@ -64,7 +64,19 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     }
 
     public void loadCustomPage(int page, boolean refill, Function<T, ItemStack> function) {
-        super.loadCustomPage(page, refill, list, function);
+        if (page < 1) {
+            return;
+        }
+        if (getTotalPages() < page) {
+            return;
+        }
+        if (refill)
+            refillButton("White-Background");
+        clearValues();
+        List<VariableValue<T>> values = this.customPage(page, getItemsPerPage(), function);
+        for (int i = 0; i < values.size(); i++) {
+            setValue(i, values.get(i));
+        }
     }
 
     @Override
@@ -81,6 +93,22 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
                 itemMeta.setDisplayName(ChatColor.GOLD + get.toString());
                 itemStack.setItemMeta(itemMeta);
                 values.add(new VariableValue<>(itemStack, get));
+            } catch (IndexOutOfBoundsException e) {
+                break;
+            }
+        }
+        return values;
+    }
+
+    public List<VariableValue<T>> customPage(int page, int itemsPerPage, Function<T, ItemStack> function) {
+        int start = (page - 1) * itemsPerPage;
+        int end = start + (itemsPerPage);
+        ArrayList<VariableValue<T>> values = new ArrayList<>();
+        for (int i = start; i < end; i++) {
+            T get;
+            try {
+                get = getList().get(i);
+                values.add(new VariableValue<>(function.apply(get), get));
             } catch (IndexOutOfBoundsException e) {
                 break;
             }
