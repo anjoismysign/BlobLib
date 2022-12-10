@@ -190,7 +190,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
 
     @Override
     public int totalPages(int itemsPerPage) {
-        return (int) Math.ceil((double) list.size() / (double) itemsPerPage);
+        return (int) Math.ceil((double) getList().size() / (double) itemsPerPage);
     }
 
     @Override
