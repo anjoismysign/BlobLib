@@ -14,14 +14,12 @@ import us.mytheria.bloblib.entities.listeners.BlobSelectorListener;
 import us.mytheria.bloblib.entities.message.BlobActionBar;
 import us.mytheria.bloblib.managers.SelectorListenerManager;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 
 public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor<T> {
     private final List<T> list;
+    private final Collection<T> collection;
     private final SelectorListenerManager selectorManager;
 
     public static <T> BlobEditor<T> build(BlobInventory blobInventory, UUID builderId,
@@ -39,6 +37,15 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
                        String dataType) {
         super(blobInventory, builderId, dataType, null);
         list = new ArrayList<>();
+        collection = null;
+        selectorManager = BlobLib.getInstance().getSelectorManager();
+    }
+
+    private BlobEditor(BlobInventory blobInventory, UUID builderId,
+                       String dataType, Collection<T> collection) {
+        super(blobInventory, builderId, dataType, null);
+        this.collection = collection;
+        list = null;
         selectorManager = BlobLib.getInstance().getSelectorManager();
     }
 
@@ -190,6 +197,9 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     }
 
     public List<T> getList() {
+        if (collection != null) {
+            return new ArrayList<>(collection);
+        }
         return list;
     }
 }
