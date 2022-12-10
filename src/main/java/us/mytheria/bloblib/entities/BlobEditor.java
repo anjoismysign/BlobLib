@@ -33,6 +33,16 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
                 dataType);
     }
 
+    public static <T> BlobEditor<T> DEFAULT_ITEMSTACKREADER(UUID builderId, String dataType) {
+        return new BlobEditor<>(VariableSelector.DEFAULT_ITEMSTACKREADER(), builderId,
+                dataType);
+    }
+
+    public static <T> BlobEditor<T> DEFAULT_ITEMSTACKREADER(UUID builderId, String dataType, Collection<T> collection) {
+        return new BlobEditor<>(VariableSelector.DEFAULT_ITEMSTACKREADER(), builderId,
+                dataType, collection);
+    }
+
     private BlobEditor(BlobInventory blobInventory, UUID builderId,
                        String dataType) {
         super(blobInventory, builderId, dataType, null);
