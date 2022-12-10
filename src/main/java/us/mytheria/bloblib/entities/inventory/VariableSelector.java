@@ -33,7 +33,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
     public static BlobInventory DEFAULT_ITEMSTACKREADER() {
         FileManager fileManager = BlobLib.getInstance().getFileManager();
         YamlConfiguration inventories = fileManager.getYml(fileManager.inventoriesFile());
-        return smartFromConfigurationSection(inventories.getConfigurationSection("SmartVariableSelector"));
+        return smartFromConfigurationSection(inventories.getConfigurationSection("VariableSelector"));
     }
 
     public VariableSelector(BlobInventory blobInventory, UUID builderId,
