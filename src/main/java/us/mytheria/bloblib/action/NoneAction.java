@@ -4,8 +4,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 
 public class NoneAction<T extends Entity> extends Action<T> {
-
-    private NoneAction() {
+    public NoneAction() {
         this.actionType = ActionType.NONE;
     }
 

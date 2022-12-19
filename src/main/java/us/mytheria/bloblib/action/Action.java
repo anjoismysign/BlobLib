@@ -17,7 +17,7 @@ public abstract class Action<T extends Entity> {
                 return CommandAction.build(command);
             }
             case "None" -> {
-                return null;
+                return new NoneAction<>();
             }
             default -> throw new IllegalArgumentException("Unknown Action Type: " + type);
         }
