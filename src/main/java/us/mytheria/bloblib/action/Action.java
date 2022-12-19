@@ -16,11 +16,15 @@ public abstract class Action<T extends Entity> {
                     return ConsoleCommandAction.build(command);
                 return CommandAction.build(command);
             }
+            case "None" -> {
+                return null;
+            }
             default -> throw new IllegalArgumentException("Unknown Action Type: " + type);
         }
     }
 
     private T actor;
+    protected ActionType actionType;
 
     protected abstract void run();
 
@@ -51,5 +55,9 @@ public abstract class Action<T extends Entity> {
 
     public boolean isAsync() {
         return true;
+    }
+
+    public ActionType getActionType() {
+        return actionType;
     }
 }

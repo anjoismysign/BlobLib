@@ -15,6 +15,7 @@ public class ConsoleCommandAction<T extends Entity> extends Action<T> {
     }
 
     private ConsoleCommandAction(String command) {
+        this.actionType = ActionType.CONSOLE_COMMAND;
         this.command = command;
     }
 
@@ -25,7 +26,8 @@ public class ConsoleCommandAction<T extends Entity> extends Action<T> {
 
     public void updateActor(T actor) {
         super.updateActor(actor);
-        command = command.replace("%actor%", actor.getName());
+        if (actor != null)
+            command = command.replace("%actor%", actor.getName());
     }
 
     @Override
