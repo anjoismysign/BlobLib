@@ -31,7 +31,10 @@ public class Found implements WorldEditWorker {
     public Pattern parse(String string) {
         PatternFactory factory = com.sk89q.worldedit.WorldEdit.getInstance().getPatternFactory();
         try {
-            return factory.parseFromInput(string, new ParserContext());
+            ParserContext context = new ParserContext();
+            context.setRestricted(false);
+            context.setTryLegacy(false);
+            return factory.parseFromInput(string, context);
         } catch (InputParseException e) {
             e.printStackTrace();
             return null;
