@@ -3,18 +3,17 @@ package us.mytheria.bloblib.vault;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import us.mytheria.bloblib.vault.economy.AbsentEco;
 import us.mytheria.bloblib.vault.economy.FoundEco;
-import us.mytheria.bloblib.vault.economy.VaultEconomy;
+import us.mytheria.bloblib.vault.economy.VaultEconomyWorker;
 import us.mytheria.bloblib.vault.permissions.AbsentPerms;
 import us.mytheria.bloblib.vault.permissions.FoundPerms;
-import us.mytheria.bloblib.vault.permissions.VaultPermissions;
+import us.mytheria.bloblib.vault.permissions.VaultPermissionsWorker;
 
 public class VaultManager {
-    private VaultEconomy vaultEconomy;
-    private VaultPermissions vaultPermissions;
+    private VaultEconomyWorker vaultEconomyWorker;
+    private VaultPermissionsWorker vaultPermissionsWorker;
     private Economy economy = null;
     private Permission permission = null;
     private boolean vaultEcoInstalled = false;
@@ -23,38 +22,26 @@ public class VaultManager {
     public VaultManager() {
         if (!setupEconomy()) {
             Bukkit.getLogger().info("[BlobLib] Vault dependency / economy plugin not found, disabling economy features.");
-            vaultEconomy = new AbsentEco();
+            vaultEconomyWorker = new AbsentEco();
         } else {
-            vaultEconomy = new FoundEco(economy);
+            vaultEconomyWorker = new FoundEco(economy);
             vaultEcoInstalled = true;
         }
         if (!setupPermissions()) {
             Bukkit.getLogger().info("[BlobLib] Vault dependency / permissions plugin not found, disabling permissions features.");
-            vaultPermissions = new AbsentPerms();
+            vaultPermissionsWorker = new AbsentPerms();
         } else {
-            vaultPermissions = new FoundPerms(permission);
+            vaultPermissionsWorker = new FoundPerms(permission);
             vaultPermsInstalled = true;
         }
     }
 
-    public void addCash(Player player, double amount) {
-        vaultEconomy.addCash(player, amount);
+    public VaultEconomyWorker getVaultEconomyWorker() {
+        return vaultEconomyWorker;
     }
 
-    public void withdrawCash(Player player, double amount) {
-        vaultEconomy.withdrawCash(player, amount);
-    }
-
-    public void setCash(Player player, double amount) {
-        vaultEconomy.setCash(player, amount);
-    }
-
-    public boolean hasCashAmount(Player player, double amount) {
-        return vaultEconomy.hasCashAmount(player, amount);
-    }
-
-    public double getCash(Player player) {
-        return vaultEconomy.getCash(player);
+    public VaultPermissionsWorker getVaultPermissionsWorker() {
+        return vaultPermissionsWorker;
     }
 
     public boolean isVaultEcoInstalled() {
@@ -63,22 +50,6 @@ public class VaultManager {
 
     public boolean isVaultPermsInstalled() {
         return vaultPermsInstalled;
-    }
-
-    public boolean addPermission(Player player, String permission) {
-        return vaultPermissions.addPermission(player, permission);
-    }
-
-    public boolean removePermission(Player player, String permission) {
-        return vaultPermissions.removePermission(player, permission);
-    }
-
-    public boolean addPermission(Player player, String permission, String world) {
-        return vaultPermissions.addPermission(player, permission, world);
-    }
-
-    public boolean removePermission(Player player, String permission, String world) {
-        return vaultPermissions.removePermission(player, permission, world);
     }
 
     private boolean setupEconomy() {

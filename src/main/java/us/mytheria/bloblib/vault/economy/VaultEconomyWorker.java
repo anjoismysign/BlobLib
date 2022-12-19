@@ -2,7 +2,7 @@ package us.mytheria.bloblib.vault.economy;
 
 import org.bukkit.entity.Player;
 
-public interface VaultEconomy {
+public interface VaultEconomyWorker {
 
     void addCash(Player player, double amount);
 

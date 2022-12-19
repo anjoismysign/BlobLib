@@ -2,7 +2,7 @@ package us.mytheria.bloblib.vault.economy;
 
 import org.bukkit.entity.Player;
 
-public class AbsentEco implements VaultEconomy {
+public class AbsentEco implements VaultEconomyWorker {
 
     @Override
     public void addCash(Player player, double amount) {

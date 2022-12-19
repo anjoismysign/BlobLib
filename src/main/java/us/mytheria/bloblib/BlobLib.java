@@ -1,6 +1,7 @@
 package us.mytheria.bloblib;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import us.mytheria.bloblib.enginehub.EngineHubManager;
 import us.mytheria.bloblib.hologram.HologramManager;
 import us.mytheria.bloblib.managers.*;
 import us.mytheria.bloblib.managers.fillermanager.FillerManager;
@@ -8,6 +9,7 @@ import us.mytheria.bloblib.vault.VaultManager;
 
 public final class BlobLib extends JavaPlugin {
     private VaultManager vaultManager;
+    private EngineHubManager engineHubManager;
     private HologramManager hologramManager;
     private FileManager fileManager;
     private LangManager langManager;
@@ -31,6 +33,7 @@ public final class BlobLib extends JavaPlugin {
         langManager = new LangManager();
         fillerManager = new FillerManager();
         vaultManager = new VaultManager();
+        engineHubManager = new EngineHubManager();
         hologramManager = new HologramManager();
         chatManager = new ChatListenerManager();
         positionManager = new SelPosListenerManager();
@@ -77,5 +80,9 @@ public final class BlobLib extends JavaPlugin {
 
     public DropListenerManager getDropListenerManager() {
         return dropListenerManager;
+    }
+
+    public EngineHubManager getEngineHubManager() {
+        return engineHubManager;
     }
 }

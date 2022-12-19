@@ -3,7 +3,7 @@ package us.mytheria.bloblib.vault.permissions;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.entity.Player;
 
-public class FoundPerms implements VaultPermissions {
+public class FoundPerms implements VaultPermissionsWorker {
     private Permission permission;
 
     public FoundPerms(Permission permission) {

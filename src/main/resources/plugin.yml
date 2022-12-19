@@ -3,5 +3,5 @@ version: ${project.version}.${buildNumber}
 main: us.mytheria.bloblib.BlobLib
 api-version: 1.16
 load: STARTUP
-softdepend: [ WorldGuard, Vault ]
+softdepend: [ WorldGuard, WorldEdit, Vault ]
 authors: [ promorrom, j0ach1mmall3, Dean B, FourteenBrush ]

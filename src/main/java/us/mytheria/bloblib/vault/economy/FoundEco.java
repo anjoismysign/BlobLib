@@ -3,7 +3,7 @@ package us.mytheria.bloblib.vault.economy;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.entity.Player;
 
-public class FoundEco implements VaultEconomy {
+public class FoundEco implements VaultEconomyWorker {
     private Economy economy;
 
     public FoundEco(Economy economy) {

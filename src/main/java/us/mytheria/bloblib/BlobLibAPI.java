@@ -15,7 +15,7 @@ public class BlobLibAPI {
      * @param amount amount to deposit
      */
     public static void addCash(Player player, double amount) {
-        main.getVaultManager().addCash(player, amount);
+        main.getVaultManager().getVaultEconomyWorker().addCash(player, amount);
     }
 
     /**
@@ -25,7 +25,7 @@ public class BlobLibAPI {
      * @param amount amount to deposit
      */
     public static void withdrawCash(Player player, double amount) {
-        main.getVaultManager().withdrawCash(player, amount);
+        main.getVaultManager().getVaultEconomyWorker().withdrawCash(player, amount);
     }
 
     /**
@@ -36,7 +36,7 @@ public class BlobLibAPI {
      * @param amount amount to deposit
      */
     public static void setCash(Player player, double amount) {
-        main.getVaultManager().setCash(player, amount);
+        main.getVaultManager().getVaultEconomyWorker().setCash(player, amount);
     }
 
     /**
@@ -47,7 +47,7 @@ public class BlobLibAPI {
      * @return true if player has amount
      */
     public static boolean hasCashAmount(Player player, double amount) {
-        return main.getVaultManager().hasCashAmount(player, amount);
+        return main.getVaultManager().getVaultEconomyWorker().hasCashAmount(player, amount);
     }
 
     /**
@@ -57,7 +57,7 @@ public class BlobLibAPI {
      * @return amount of money
      */
     public static double getCash(Player player) {
-        return main.getVaultManager().getCash(player);
+        return main.getVaultManager().getVaultEconomyWorker().getCash(player);
     }
 
     /**
@@ -133,7 +133,7 @@ public class BlobLibAPI {
      * @return true if the permission was added, false if the player already had the permission
      */
     public static void addPermission(Player player, String permission) {
-        main.getVaultManager().addPermission(player, permission);
+        main.getVaultManager().getVaultPermissionsWorker().addPermission(player, permission);
     }
 
     /**
@@ -144,7 +144,7 @@ public class BlobLibAPI {
      * @return true if the permission was removed, false if the player did not have the permission
      */
     public static void removePermission(Player player, String permission) {
-        main.getVaultManager().removePermission(player, permission);
+        main.getVaultManager().getVaultPermissionsWorker().removePermission(player, permission);
     }
 
     /**
@@ -155,7 +155,7 @@ public class BlobLibAPI {
      * @return true if the permission was added, false if the player already had the permission
      */
     public static void addPermission(Player player, String permission, String world) {
-        main.getVaultManager().addPermission(player, permission, world);
+        main.getVaultManager().getVaultPermissionsWorker().addPermission(player, permission, world);
     }
 
     /**
@@ -167,6 +167,6 @@ public class BlobLibAPI {
      * @return true if the permission was removed, false if the player did not have the permission
      */
     public static void removePermission(Player player, String permission, String world) {
-        main.getVaultManager().removePermission(player, permission, world);
+        main.getVaultManager().getVaultPermissionsWorker().removePermission(player, permission, world);
     }
 }

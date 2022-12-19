@@ -2,7 +2,7 @@ package us.mytheria.bloblib.vault.permissions;
 
 import org.bukkit.entity.Player;
 
-public interface VaultPermissions {
+public interface VaultPermissionsWorker {
 
     boolean addPermission(Player player, String permission);
 
