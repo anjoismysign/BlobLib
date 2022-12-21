@@ -2,13 +2,15 @@ package us.mytheria.bloblib.entities.message;
 
 import org.bukkit.entity.Player;
 
-public class BlobTitle implements BlobMessage {
+public class BlobTitle extends BlobMessage {
     private String title, subtitle;
     private int fadeIn;
     private int stay;
     private int fadeOut;
 
-    public BlobTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
+    public BlobTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut,
+                     BlobSound sound) {
+        super(sound);
         this.title = title;
         this.subtitle = subtitle;
         this.fadeIn = fadeIn;

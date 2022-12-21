@@ -3,10 +3,11 @@ package us.mytheria.bloblib.entities.message;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class BlobChatMessage implements BlobMessage {
+public class BlobChatMessage extends BlobMessage {
     private String message;
 
-    public BlobChatMessage(String message) {
+    public BlobChatMessage(String message, BlobSound sound) {
+        super(sound);
         this.message = message;
     }
 
