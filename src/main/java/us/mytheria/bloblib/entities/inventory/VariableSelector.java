@@ -11,6 +11,7 @@ import us.mytheria.bloblib.entities.VariableValue;
 import us.mytheria.bloblib.managers.FileManager;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -183,5 +184,17 @@ public abstract class VariableSelector<T> extends BlobInventory {
 
     public int getTotalPages() {
         return filler.totalPages(itemsPerPage);
+    }
+
+    public void addValues(Collection<T> collection, boolean noDuplicates) {
+        for (T t : collection) {
+            if (noDuplicates && values.containsValue(t))
+                continue;
+            addValue(valuesSize(), t);
+        }
+    }
+
+    public void addValues(Collection<T> collection) {
+        addValues(collection, false);
     }
 }
