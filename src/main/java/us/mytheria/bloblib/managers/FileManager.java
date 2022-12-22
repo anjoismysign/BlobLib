@@ -7,9 +7,10 @@ import us.mytheria.bloblib.utilities.ResourceUtil;
 import java.io.File;
 
 public class FileManager {
-    private BlobLib main;
+    private final BlobLib main;
     private final File path = new File("plugins/BlobLib");
-    private final File lang = new File(path.getPath() + "/messages");
+    private final File messages = new File(path.getPath() + "/messages");
+    private final File lang = new File(messages.getPath() + "/bloblib_lang.yml");
     private final File inventories = new File(path.getPath() + "/inventories.yml");
 
     public FileManager() {
@@ -20,10 +21,11 @@ public class FileManager {
     public void loadFiles() {
         try {
             if (!path.exists()) path.mkdir();
-            if (!lang.exists()) lang.mkdir();
+            if (!messages.exists()) messages.mkdir();
             ///////////////////////////////////////////
+            if (!lang.exists()) lang.createNewFile();
             if (!inventories.exists()) inventories.createNewFile();
-            ResourceUtil.updateYml(path, "/tempLang.yml", "lang.yml", lang, main);
+            ResourceUtil.updateYml(path, "/tempLang.yml", "bloblib_lang.yml", lang, main);
             ResourceUtil.updateYml(path, "/tempInventories.yml", "inventories.yml", inventories, main);
         } catch (Exception e) {
             e.printStackTrace();
@@ -34,8 +36,8 @@ public class FileManager {
         return YamlConfiguration.loadConfiguration(f);
     }
 
-    public File langFile() {
-        return lang;
+    public File messagesFile() {
+        return messages;
     }
 
     public File inventoriesFile() {

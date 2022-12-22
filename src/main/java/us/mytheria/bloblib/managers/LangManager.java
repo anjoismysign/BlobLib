@@ -12,6 +12,7 @@ import java.util.HashMap;
 public class LangManager {
     private final BlobLib main;
     private HashMap<String, BlobMessage> lang;
+    private HashMap<String, Integer> duplicates;
 
     public LangManager() {
         this.main = BlobLib.getInstance();
@@ -20,16 +21,30 @@ public class LangManager {
 
     public void load() {
         lang = new HashMap<>();
-        YamlConfiguration langYml = main.getFileManager().getYml(main.getFileManager().langFile());
+        duplicates = new HashMap<>();
+        YamlConfiguration langYml = main.getFileManager().getYml(main.getFileManager().messagesFile());
         langYml.getKeys(false).forEach(key -> {
             ConfigurationSection section = langYml.getConfigurationSection(key);
             section.getKeys(true).forEach(subKey -> {
                 if (section.isConfigurationSection(subKey))
                     return;
                 ConfigurationSection subSection = section.getConfigurationSection(subKey);
+                String mapKey = key + "." + subKey;
+                if (lang.containsKey(mapKey)) {
+                    addDuplicate(mapKey);
+                    return;
+                }
                 lang.put(key + "." + subKey, BlobMessageReader.read(subSection));
             });
         });
+        duplicates.forEach((key, value) -> main.getLogger().severe("Duplicate key: '" + key + "' (" + value + " times)"));
+    }
+
+    private void addDuplicate(String key) {
+        if (duplicates.containsKey(key))
+            duplicates.put(key, duplicates.get(key) + 1);
+        else
+            duplicates.put(key, 1);
     }
 
     public void noPermission(Player player) {
