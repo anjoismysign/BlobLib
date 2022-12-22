@@ -8,9 +8,9 @@ import java.io.File;
 
 public class FileManager {
     private BlobLib main;
-    private File path = new File("plugins/BlobLib");
-    private File lang = new File(path.getPath() + "/lang.yml");
-    private File inventories = new File(path.getPath() + "/inventories.yml");
+    private final File path = new File("plugins/BlobLib");
+    private final File lang = new File(path.getPath() + "/messages");
+    private final File inventories = new File(path.getPath() + "/inventories.yml");
 
     public FileManager() {
         this.main = BlobLib.getInstance();
@@ -20,8 +20,8 @@ public class FileManager {
     public void loadFiles() {
         try {
             if (!path.exists()) path.mkdir();
+            if (!lang.exists()) lang.mkdir();
             ///////////////////////////////////////////
-            if (!lang.exists()) lang.createNewFile();
             if (!inventories.exists()) inventories.createNewFile();
             ResourceUtil.updateYml(path, "/tempLang.yml", "lang.yml", lang, main);
             ResourceUtil.updateYml(path, "/tempInventories.yml", "inventories.yml", inventories, main);

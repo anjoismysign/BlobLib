@@ -19,7 +19,7 @@ public class SelectorListenerManager {
     public void addSelectorListener(Player player, SelectorListener<?> listener) {
         String name = player.getName();
         if (selectorListener.containsKey(name)) {
-            player.sendMessage(main.getLangManager().getLang("msg.Already-Selector-Listening"));
+            main.getLangManager().playAndSend(player, "Message.Already-Selector-Listening");
             return;
         }
         listener.runTasks();

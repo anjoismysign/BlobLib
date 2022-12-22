@@ -34,7 +34,7 @@ public class ChatListenerManager implements Listener {
     public void addChatListener(Player player, ChatListener chatListener) {
         String name = player.getName();
         if (chatListeners.containsKey(name)) {
-            player.sendMessage(main.getLangManager().getLang("msg.Already-Chat-Listening"));
+            main.getLangManager().playAndSend(player, "Message.Already-Chat-Listening");
             return;
         }
         chatListener.runTasks();

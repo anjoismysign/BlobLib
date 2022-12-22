@@ -35,7 +35,7 @@ public class DropListenerManager implements Listener {
     public void addDropListener(Player player, DropListener listener) {
         String name = player.getName();
         if (dropListeners.containsKey(name)) {
-            player.sendMessage(main.getLangManager().getLang("msg.Already-Drop-Listening"));
+            main.getLangManager().playAndSend(player, "Message.Already-Drop-Listening");
             return;
         }
         listener.runTasks();
