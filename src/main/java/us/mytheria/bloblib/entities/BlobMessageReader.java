@@ -1,7 +1,8 @@
-package us.mytheria.bloblib.entities.message;
+package us.mytheria.bloblib.entities;
 
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
+import us.mytheria.bloblib.entities.message.*;
 
 import java.util.Optional;
 import java.util.function.Function;

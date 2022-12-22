@@ -3,10 +3,8 @@ package us.mytheria.bloblib.entities.message;
 import org.bukkit.entity.Player;
 
 public class BlobTitle extends BlobMessage {
-    private String title, subtitle;
-    private int fadeIn;
-    private int stay;
-    private int fadeOut;
+    private final String title, subtitle;
+    private final int fadeIn, stay, fadeOut;
 
     public BlobTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut,
                      BlobSound sound) {

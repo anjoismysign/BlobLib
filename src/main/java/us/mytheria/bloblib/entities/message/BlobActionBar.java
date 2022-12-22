@@ -5,12 +5,15 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 
 public class BlobActionBar extends BlobMessage {
-
-    private String message;
+    private final String message;
 
     public BlobActionBar(String message, BlobSound sound) {
         super(sound);
         this.message = message;
+    }
+
+    public BlobActionBar(String message) {
+        this(message, null);
     }
 
     @Override

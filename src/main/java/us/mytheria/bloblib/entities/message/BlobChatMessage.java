@@ -4,7 +4,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class BlobChatMessage extends BlobMessage {
-    private String message;
+    private final String message;
 
     public BlobChatMessage(String message, BlobSound sound) {
         super(sound);
