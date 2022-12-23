@@ -50,9 +50,13 @@ public class MessageManager {
         yamlConfiguration.getKeys(false).forEach(key -> {
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(key);
             section.getKeys(true).forEach(subKey -> {
-                if (section.isConfigurationSection(subKey))
+                if (!section.isConfigurationSection(subKey))
                     return;
                 ConfigurationSection subSection = section.getConfigurationSection(subKey);
+                if (!subSection.contains("Type"))
+                    return;
+                if (subSection.isConfigurationSection("Type"))
+                    return;
                 String mapKey = key + "." + subKey;
                 if (lang.containsKey(mapKey)) {
                     addDuplicate(mapKey);

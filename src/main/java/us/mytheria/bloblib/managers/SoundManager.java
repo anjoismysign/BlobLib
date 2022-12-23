@@ -50,9 +50,17 @@ public class SoundManager {
         yamlConfiguration.getKeys(false).forEach(key -> {
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(key);
             section.getKeys(true).forEach(subKey -> {
-                if (section.isConfigurationSection(subKey))
+                if (!section.isConfigurationSection(subKey))
                     return;
                 ConfigurationSection subSection = section.getConfigurationSection(subKey);
+                if (!subSection.contains("Sound") ||
+                        !subSection.contains("Volume") ||
+                        !subSection.contains("Pitch"))
+                    return;
+                if (subSection.isConfigurationSection("Sound") ||
+                        subSection.isConfigurationSection("Volume") ||
+                        subSection.isConfigurationSection("Pitch"))
+                    return;
                 String mapKey = key + "." + subKey;
                 if (sounds.containsKey(mapKey)) {
                     addDuplicate(mapKey);
