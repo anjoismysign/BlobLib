@@ -11,7 +11,7 @@ public class FileManager {
     private final File path = new File("plugins/BlobLib");
     private final File messages = new File(path.getPath() + "/BlobMessage");
     private final File sounds = new File(path.getPath() + "/BlobSound");
-    private final File defaultSounds = new File(sounds.getPath() + "/bloblib_sounds");
+    private final File defaultSounds = new File(sounds.getPath() + "/bloblib_sounds.yml");
     private final File defaultMessages = new File(messages.getPath() + "/bloblib_lang.yml");
     private final File inventories = new File(path.getPath() + "/inventories.yml");
 
