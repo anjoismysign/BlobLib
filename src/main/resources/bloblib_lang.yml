@@ -3,6 +3,9 @@ System:
     Type: CHAT
     Message: '&cI''m sorry, but you do not have permission to perform this command.
     Please contact the server administrators if you believe that this is in error.'
+  Console-Not-Allowed-Command:
+    Type: CHAT
+    Message: '&cYou must be a player to perform this command'
   Already-Chat-Listening:
     Type: CHAT
     Message: '&cCannot proceed. We are expecting you to type related to something else.'
