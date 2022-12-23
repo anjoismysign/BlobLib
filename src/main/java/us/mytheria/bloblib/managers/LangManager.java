@@ -7,6 +7,7 @@ import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.BlobMessageReader;
 import us.mytheria.bloblib.entities.message.BlobMessage;
 
+import java.io.File;
 import java.util.HashMap;
 
 public class LangManager {
@@ -19,12 +20,34 @@ public class LangManager {
         load();
     }
 
+    public void reload() {
+        load();
+    }
+
     public void load() {
         lang = new HashMap<>();
         duplicates = new HashMap<>();
-        YamlConfiguration langYml = main.getFileManager().getYml(main.getFileManager().messagesFile());
-        langYml.getKeys(false).forEach(key -> {
-            ConfigurationSection section = langYml.getConfigurationSection(key);
+        loadFiles(main.getFileManager().messagesFile());
+        duplicates.forEach((key, value) -> main.getLogger().severe("Duplicate key: '" + key + "' (" + value + " times)"));
+    }
+
+    private void loadFiles(File path) {
+        File[] listOfFiles = path.listFiles();
+        for (File file : listOfFiles) {
+            if (file.isFile()) {
+                if (file.getName().equals(".DS_Store"))
+                    continue;
+                loadYamlConfiguration(file);
+            }
+            if (file.isDirectory())
+                loadFiles(path);
+        }
+    }
+
+    private void loadYamlConfiguration(File file) {
+        YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
+        yamlConfiguration.getKeys(false).forEach(key -> {
+            ConfigurationSection section = yamlConfiguration.getConfigurationSection(key);
             section.getKeys(true).forEach(subKey -> {
                 if (section.isConfigurationSection(subKey))
                     return;
@@ -37,7 +60,6 @@ public class LangManager {
                 lang.put(key + "." + subKey, BlobMessageReader.read(subSection));
             });
         });
-        duplicates.forEach((key, value) -> main.getLogger().severe("Duplicate key: '" + key + "' (" + value + " times)"));
     }
 
     private void addDuplicate(String key) {

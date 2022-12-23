@@ -1,9 +1,10 @@
 package us.mytheria.bloblib.entities.message;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public abstract class BlobMessage {
-    private BlobSound sound;
+    private final BlobSound sound;
 
     public BlobMessage(BlobSound sound) {
         this.sound = sound;
@@ -20,6 +21,8 @@ public abstract class BlobMessage {
         if (sound != null)
             sound.play(player);
     }
+
+    public abstract void toCommandSender(CommandSender commandSender);
 
     public BlobSound getSound() {
         return sound;

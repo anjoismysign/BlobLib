@@ -2,6 +2,7 @@ package us.mytheria.bloblib.entities.message;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class BlobActionBar extends BlobMessage {
@@ -19,5 +20,13 @@ public class BlobActionBar extends BlobMessage {
     @Override
     public void send(Player player) {
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(message));
+    }
+
+    @Override
+    public void toCommandSender(CommandSender commandSender) {
+        if (commandSender instanceof Player player)
+            sendAndPlay(player);
+        else
+            commandSender.sendMessage(message);
     }
 }

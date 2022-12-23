@@ -11,8 +11,8 @@ public class BlobMessageReader {
     public static BlobMessage read(ConfigurationSection section,
                                    Function<String, BlobSound> soundManagerFunction) {
         String type = section.getString("Type");
-        Optional<BlobSound> sound = section.contains("Sound") ? Optional
-                .of(BlobSoundReader.read(section.getConfigurationSection("Sound"), soundManagerFunction))
+        Optional<BlobSound> sound = section.contains("BlobSound") ? Optional
+                .of(BlobSoundReader.read(section.getConfigurationSection("BlobSound"), soundManagerFunction))
                 : Optional.empty();
         switch (type) {
             case "ACTIONBAR" -> {

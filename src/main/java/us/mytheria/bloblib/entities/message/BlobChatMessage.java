@@ -19,4 +19,12 @@ public class BlobChatMessage extends BlobMessage {
     public void send(CommandSender sender) {
         sender.sendMessage(message);
     }
+
+    @Override
+    public void toCommandSender(CommandSender commandSender) {
+        if (commandSender instanceof Player player)
+            sendAndPlay(player);
+        else
+            commandSender.sendMessage(message);
+    }
 }
