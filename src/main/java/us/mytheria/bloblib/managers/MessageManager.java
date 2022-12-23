@@ -74,7 +74,7 @@ public class MessageManager {
         lang.get("System.No-Permission").sendAndPlay(player);
     }
 
-    public BlobMessage getLang(String key) {
+    public BlobMessage getMessage(String key) {
         return lang.get(key);
     }
 
