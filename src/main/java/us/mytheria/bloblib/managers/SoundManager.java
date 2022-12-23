@@ -53,10 +53,6 @@ public class SoundManager {
                 if (!section.isConfigurationSection(subKey))
                     return;
                 ConfigurationSection subSection = section.getConfigurationSection(subKey);
-                if (subSection.isConfigurationSection("Sound") ||
-                        subSection.isConfigurationSection("Volume") ||
-                        subSection.isConfigurationSection("Pitch"))
-                    return;
                 String mapKey = key + "." + subKey;
                 if (sounds.containsKey(mapKey)) {
                     addDuplicate(mapKey);
