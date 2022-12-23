@@ -4,8 +4,10 @@ import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
-public record BlobSound(Sound sound, float volume, float pitch, SoundCategory soundCategory) {
-    void play(Player player) {
+import javax.annotation.Nullable;
+
+public record BlobSound(Sound sound, float volume, float pitch, @Nullable SoundCategory soundCategory) {
+    public void play(Player player) {
         if (soundCategory == null)
             player.playSound(player.getLocation(), sound, volume, pitch);
         else

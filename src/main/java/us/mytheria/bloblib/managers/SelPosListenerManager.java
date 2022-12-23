@@ -55,7 +55,7 @@ public class SelPosListenerManager implements Listener {
     public void addPositionListener(Player player, SelPosListener posListener) {
         String name = player.getName();
         if (positionListeners.containsKey(name)) {
-            main.getLangManager().playAndSend(player, "Message.Already-SelPos-Listening");
+            main.getMessageManager().playAndSend(player, "System.Already-SelPos-Listening");
             return;
         }
         posListener.runTasks();

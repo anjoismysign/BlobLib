@@ -4,18 +4,18 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.entities.BlobMessageReader;
-import us.mytheria.bloblib.entities.message.BlobMessage;
+import us.mytheria.bloblib.entities.BlobSoundReader;
+import us.mytheria.bloblib.entities.message.BlobSound;
 
 import java.io.File;
 import java.util.HashMap;
 
-public class LangManager {
+public class SoundManager {
     private final BlobLib main;
-    private HashMap<String, BlobMessage> lang;
+    private HashMap<String, BlobSound> sounds;
     private HashMap<String, Integer> duplicates;
 
-    public LangManager() {
+    public SoundManager() {
         this.main = BlobLib.getInstance();
         load();
     }
@@ -25,10 +25,11 @@ public class LangManager {
     }
 
     public void load() {
-        lang = new HashMap<>();
+        sounds = new HashMap<>();
         duplicates = new HashMap<>();
-        loadFiles(main.getFileManager().messagesFile());
-        duplicates.forEach((key, value) -> main.getLogger().severe("Duplicate key: '" + key + "' (" + value + " times)"));
+        loadFiles(main.getFileManager().soundsFile());
+        duplicates.forEach((key, value) -> main.getLogger()
+                .severe("Duplicate BlobSound: '" + key + "' (found " + value + " instances)"));
     }
 
     private void loadFiles(File path) {
@@ -53,11 +54,11 @@ public class LangManager {
                     return;
                 ConfigurationSection subSection = section.getConfigurationSection(subKey);
                 String mapKey = key + "." + subKey;
-                if (lang.containsKey(mapKey)) {
+                if (sounds.containsKey(mapKey)) {
                     addDuplicate(mapKey);
                     return;
                 }
-                lang.put(key + "." + subKey, BlobMessageReader.read(subSection));
+                sounds.put(key + "." + subKey, BlobSoundReader.read(subSection));
             });
         });
     }
@@ -66,28 +67,17 @@ public class LangManager {
         if (duplicates.containsKey(key))
             duplicates.put(key, duplicates.get(key) + 1);
         else
-            duplicates.put(key, 1);
+            duplicates.put(key, 2);
     }
 
-    public void noPermission(Player player) {
-        lang.get("Message.No-Permission").sendAndPlay(player);
+    public BlobSound getSound(String key) {
+        return sounds.get(key);
     }
 
-    public BlobMessage getLang(String key) {
-        return lang.get(key);
-    }
-
-    public void playAndSend(Player player, String key) {
-        BlobMessage message = lang.get(key);
-        if (message == null)
-            throw new NullPointerException("Message '" + key + "' does not exist!");
-        message.sendAndPlay(player);
-    }
-
-    public void send(Player player, String key) {
-        BlobMessage message = lang.get(key);
-        if (message == null)
-            throw new NullPointerException("Message '" + key + "' does not exist!");
-        message.send(player);
+    public void play(Player player, String key) {
+        BlobSound sound = getSound(key);
+        if (sound == null)
+            throw new NullPointerException("Sound '" + key + "' does not exist!");
+        sound.play(player);
     }
 }

@@ -1,15 +1,26 @@
-Message:
-  No-Permission: '&cI''m sorry, but you do not have permission to perform this command.
+System:
+  No-Permission:
+    Type: CHAT
+    Message: '&cI''m sorry, but you do not have permission to perform this command.
     Please contact the server administrators if you believe that this is in error.'
-  Already-Chat-Listening: '&cCannot proceed. We are expecting you to type related to something else.'
-  Already-SelPos-Listening: '&cCannot proceed. We are expecting you to select a block for something else.'
-  Already-Selector-Listening: '&cCannot proceed. We are expecting you to select something else.'
-  Already-Drop-Listening: '&cCannot proceed. We are expecting you to drop something else.'
+  Already-Chat-Listening:
+    Type: CHAT
+    Message: '&cCannot proceed. We are expecting you to type related to something else.'
+    Sound: System.Alert
+  Already-SelPos-Listening:
+    Type: CHAT
+    Message: '&cCannot proceed. We are expecting you to select a block for something else.'
+    Sound: System.Alert
+  Already-Selector-Listening:
+    Type: CHAT
+    Message: '&cCannot proceed. We are expecting you to select something else.'
+    Sound: System.Alert
+  Already-Drop-Listening:
+    Type: CHAT
+    Message: '&cCannot proceed. We are expecting you to drop something else.'
+    Sound: System.Alert
   Reload:
     Type: TITLE
     Title: '&f&lDONE'
     Subtitle: '&7Reload complete'
-    BlobSound:
-      Sound: ENTITY_EXPERIENCE_ORB_PICKUP
-      Volume: 1.0
-      Pitch: 1.0
+    BlobSound: System.Done

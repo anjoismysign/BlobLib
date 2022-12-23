@@ -1,0 +1,9 @@
+System:
+  Alert:
+    Sound: BLOCK_NOTE_BLOCK_PLING
+    Volume: 1.0
+    Pitch: 0.9
+  Done:
+    Sound: ENTITY_ARROW_HIT_PLAYER
+    Volume: 1.0
+    Pitch: 0.9

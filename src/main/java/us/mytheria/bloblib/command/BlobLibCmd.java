@@ -21,7 +21,7 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!sender.hasPermission("blobgrind.admin")) {
-            main.getLangManager().getLang("Message.No-Permission").toCommandSender(sender);
+            main.getMessageManager().getLang("System.No-Permission").toCommandSender(sender);
             return true;
         }
         if (args.length < 1) {
@@ -30,8 +30,8 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
         }
         String arg1 = args[0];
         if (arg1.equalsIgnoreCase("reload")) {
-            main.getLangManager().reload();
-            main.getLangManager().getLang("Message.Reload").toCommandSender(sender);
+            main.getMessageManager().reload();
+            main.getMessageManager().getLang("System.Reload").toCommandSender(sender);
             return true;
         }
         return false;

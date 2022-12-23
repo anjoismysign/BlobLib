@@ -12,7 +12,8 @@ public final class BlobLib extends JavaPlugin {
     private EngineHubManager engineHubManager;
     private HologramManager hologramManager;
     private FileManager fileManager;
-    private LangManager langManager;
+    private MessageManager messageManager;
+    private SoundManager soundManager;
     private FillerManager fillerManager;
     private ChatListenerManager chatManager;
     private SelPosListenerManager positionManager;
@@ -30,7 +31,8 @@ public final class BlobLib extends JavaPlugin {
     public void onEnable() {
         instance = this;
         fileManager = new FileManager();
-        langManager = new LangManager();
+        messageManager = new MessageManager();
+        soundManager = new SoundManager();
         fillerManager = new FillerManager();
         vaultManager = new VaultManager();
         engineHubManager = new EngineHubManager();
@@ -46,8 +48,12 @@ public final class BlobLib extends JavaPlugin {
         return fileManager;
     }
 
-    public LangManager getLangManager() {
-        return langManager;
+    public MessageManager getMessageManager() {
+        return messageManager;
+    }
+
+    public SoundManager getSoundManager() {
+        return soundManager;
     }
 
     public VaultManager getVaultManager() {
