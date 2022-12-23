@@ -53,10 +53,6 @@ public class SoundManager {
                 if (!section.isConfigurationSection(subKey))
                     return;
                 ConfigurationSection subSection = section.getConfigurationSection(subKey);
-                if (!subSection.contains("Sound") ||
-                        !subSection.contains("Volume") ||
-                        !subSection.contains("Pitch"))
-                    return;
                 if (subSection.isConfigurationSection("Sound") ||
                         subSection.isConfigurationSection("Volume") ||
                         subSection.isConfigurationSection("Pitch"))

@@ -53,8 +53,6 @@ public class MessageManager {
                 if (!section.isConfigurationSection(subKey))
                     return;
                 ConfigurationSection subSection = section.getConfigurationSection(subKey);
-                if (!subSection.contains("Type"))
-                    return;
                 if (subSection.isConfigurationSection("Type"))
                     return;
                 String mapKey = key + "." + subKey;
