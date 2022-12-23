@@ -26,7 +26,7 @@ public class FileManager {
             if (!messages.exists()) messages.mkdir();
             if (!sounds.exists()) sounds.mkdir();
             ///////////////////////////////////////////
-            if (!defaultSounds.exists()) defaultSounds.mkdir();
+            if (!defaultSounds.exists()) defaultSounds.createNewFile();
             if (!defaultMessages.exists()) defaultMessages.createNewFile();
             if (!inventories.exists()) inventories.createNewFile();
             ResourceUtil.updateYml(sounds, "/tempbloblib_sounds.yml", "bloblib_sounds.yml", defaultSounds, main);
