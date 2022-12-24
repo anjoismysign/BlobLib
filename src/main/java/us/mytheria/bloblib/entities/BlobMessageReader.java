@@ -2,6 +2,7 @@ package us.mytheria.bloblib.entities;
 
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
+import us.mytheria.bloblib.BlobLibAPI;
 import us.mytheria.bloblib.entities.message.*;
 
 import java.util.Optional;
@@ -11,9 +12,14 @@ public class BlobMessageReader {
     public static BlobMessage read(ConfigurationSection section,
                                    Function<String, BlobSound> soundManagerFunction) {
         String type = section.getString("Type");
-        Optional<BlobSound> sound = section.contains("BlobSound") ? Optional
-                .of(BlobSoundReader.read(section.getConfigurationSection("BlobSound"), soundManagerFunction))
-                : Optional.empty();
+        Optional<BlobSound> sound;
+        if (soundManagerFunction == null)
+            sound = section.contains("BlobSound") ? Optional
+                    .of(BlobLibAPI.getSound(section.getString("BlobSound"))) : Optional.empty();
+        else
+            sound = section.contains("BlobSound") ? Optional
+                    .of(BlobSoundReader.read(section.getConfigurationSection("BlobSound"), soundManagerFunction))
+                    : Optional.empty();
         switch (type) {
             case "ACTIONBAR" -> {
                 if (!section.contains("Message"))
