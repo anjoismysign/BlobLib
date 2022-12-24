@@ -9,21 +9,31 @@ System:
   Already-Chat-Listening:
     Type: CHAT
     Message: '&cCannot proceed. We are expecting you to type related to something else.'
-    Sound: System.Alert
+    BlobSound: System.Alert
   Already-SelPos-Listening:
     Type: CHAT
     Message: '&cCannot proceed. We are expecting you to select a block for something else.'
-    Sound: System.Alert
+    BlobSound: System.Alert
   Already-Selector-Listening:
     Type: CHAT
     Message: '&cCannot proceed. We are expecting you to select something else.'
-    Sound: System.Alert
+    BlobSound: System.Alert
   Already-Drop-Listening:
     Type: CHAT
     Message: '&cCannot proceed. We are expecting you to drop something else.'
-    Sound: System.Alert
+    BlobSound: System.Alert
   Reload:
     Type: TITLE
     Title: '&f&lDONE'
     Subtitle: '&7Reload complete'
     BlobSound: System.Done
+Player:
+  Not-Found:
+    Type: CHAT
+    Message: '&cPlayer not found'
+    BlobSound: System.Alert
+  Not-Console:
+    Type: TITLE
+    Title: '&c&lERROR'
+    Subtitle: '&7You must perform this command through console'
+    BlobSound: System.Alert
