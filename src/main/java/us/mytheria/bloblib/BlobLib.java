@@ -42,6 +42,14 @@ public final class BlobLib extends JavaPlugin {
         selectorManager = new SelectorListenerManager();
         inventoryManager = new InventoryManager();
         dropListenerManager = new DropListenerManager();
+
+        //Load reloadable managers
+        reload();
+    }
+
+    public void reload() {
+        soundManager.reload();
+        messageManager.reload();
     }
 
     public FileManager getFileManager() {

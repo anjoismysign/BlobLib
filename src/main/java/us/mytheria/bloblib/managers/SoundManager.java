@@ -17,7 +17,6 @@ public class SoundManager {
 
     public SoundManager() {
         this.main = BlobLib.getInstance();
-        load();
     }
 
     public void reload() {

@@ -17,7 +17,6 @@ public class MessageManager {
 
     public MessageManager() {
         this.main = BlobLib.getInstance();
-        load();
     }
 
     public void reload() {
