@@ -3,23 +3,13 @@ package us.mytheria.bloblib.entities;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.configuration.ConfigurationSection;
+import us.mytheria.bloblib.BlobLibAPI;
 import us.mytheria.bloblib.entities.message.BlobSound;
 
 import java.util.Optional;
-import java.util.function.Function;
 
 public class BlobSoundReader {
-    public static BlobSound read(ConfigurationSection section,
-                                 Function<String, BlobSound> managerFunction) {
-        if (managerFunction != null) {
-            if (section.contains("BlobSound")) {
-                String blobSound = section.getString("BlobSound");
-                BlobSound sound = managerFunction.apply(blobSound);
-                if (sound == null)
-                    throw new IllegalArgumentException("Invalid BlobSound: " + blobSound);
-                return sound;
-            }
-        }
+    public static BlobSound read(ConfigurationSection section) {
         if (!section.contains("Sound"))
             throw new IllegalArgumentException("'Sound' is not defined");
         if (!section.contains("Volume"))
@@ -41,7 +31,11 @@ public class BlobSoundReader {
         );
     }
 
-    public static BlobSound read(ConfigurationSection section) {
-        return read(section, null);
+    public static Optional<BlobSound> parse(ConfigurationSection section) {
+        if (!section.contains("BlobSound"))
+            return Optional.empty();
+        if (section.isString("BlobSound"))
+            return Optional.ofNullable(BlobLibAPI.getSound(section.getString("BlobSound")));
+        return Optional.of(read(section.getConfigurationSection("BlobSound")));
     }
 }

@@ -6,20 +6,12 @@ import us.mytheria.bloblib.BlobLibAPI;
 import us.mytheria.bloblib.entities.message.*;
 
 import java.util.Optional;
-import java.util.function.Function;
 
 public class BlobMessageReader {
-    public static BlobMessage read(ConfigurationSection section,
-                                   Function<String, BlobSound> soundManagerFunction) {
+    public static BlobMessage read(ConfigurationSection section) {
         String type = section.getString("Type");
-        Optional<BlobSound> sound;
-        if (soundManagerFunction == null)
-            sound = section.contains("BlobSound") ? Optional
-                    .of(BlobLibAPI.getSound(section.getString("BlobSound"))) : Optional.empty();
-        else
-            sound = section.contains("BlobSound") ? Optional
-                    .of(BlobSoundReader.read(section.getConfigurationSection("BlobSound"), soundManagerFunction))
-                    : Optional.empty();
+        Optional<BlobSound> sound = section.contains("BlobSound") ?
+                BlobSoundReader.parse(section) : Optional.empty();
         switch (type) {
             case "ACTIONBAR" -> {
                 if (!section.contains("Message"))
@@ -105,10 +97,6 @@ public class BlobMessageReader {
             }
             default -> throw new IllegalArgumentException("Invalid message type: " + type);
         }
-    }
-
-    public static BlobMessage read(ConfigurationSection section) {
-        return read(section, null);
     }
 
     public static Optional<BlobMessage> parse(ConfigurationSection section) {
