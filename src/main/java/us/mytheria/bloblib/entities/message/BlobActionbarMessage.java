@@ -5,6 +5,8 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.function.Function;
+
 public class BlobActionbarMessage extends BlobMessage {
     private final String actionbar;
 
@@ -28,5 +30,10 @@ public class BlobActionbarMessage extends BlobMessage {
             sendAndPlay(player);
         else
             commandSender.sendMessage(actionbar);
+    }
+
+    @Override
+    public BlobActionbarMessage modify(Function<String, String> function) {
+        return new BlobActionbarMessage(function.apply(actionbar), getSound());
     }
 }

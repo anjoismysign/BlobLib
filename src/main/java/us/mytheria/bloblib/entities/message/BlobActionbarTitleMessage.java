@@ -5,6 +5,8 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.function.Function;
+
 public class BlobActionbarTitleMessage extends BlobTitleMessage {
     private final String actionbar;
 
@@ -29,5 +31,11 @@ public class BlobActionbarTitleMessage extends BlobTitleMessage {
             commandSender.sendMessage(subtitle);
             commandSender.sendMessage(actionbar);
         }
+    }
+
+    @Override
+    public BlobActionbarTitleMessage modify(Function<String, String> function) {
+        return new BlobActionbarTitleMessage(function.apply(actionbar), function.apply(title),
+                function.apply(subtitle), fadeIn, stay, fadeOut, getSound());
     }
 }

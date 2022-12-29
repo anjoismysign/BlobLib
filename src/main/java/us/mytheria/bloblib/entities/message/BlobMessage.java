@@ -3,6 +3,8 @@ package us.mytheria.bloblib.entities.message;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.function.Function;
+
 public abstract class BlobMessage {
     private final BlobSound sound;
 
@@ -27,4 +29,6 @@ public abstract class BlobMessage {
     public BlobSound getSound() {
         return sound;
     }
+
+    public abstract BlobMessage modify(Function<String, String> function);
 }

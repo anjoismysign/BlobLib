@@ -99,11 +99,11 @@ public class BlobMessageReader {
         }
     }
 
-    public static Optional<BlobMessage> parse(ConfigurationSection section) {
-        if (!section.contains("BlobMessage"))
+    public static Optional<BlobMessage> parse(ConfigurationSection parentConfigurationSection) {
+        if (!parentConfigurationSection.contains("BlobMessage"))
             return Optional.empty();
-        if (section.isString("BlobMessage"))
-            return Optional.ofNullable(BlobLibAPI.getMessage(section.getString("BlobMessage")));
-        return Optional.of(read(section.getConfigurationSection("BlobMessage")));
+        if (parentConfigurationSection.isString("BlobMessage"))
+            return Optional.ofNullable(BlobLibAPI.getMessage(parentConfigurationSection.getString("BlobMessage")));
+        return Optional.of(read(parentConfigurationSection.getConfigurationSection("BlobMessage")));
     }
 }

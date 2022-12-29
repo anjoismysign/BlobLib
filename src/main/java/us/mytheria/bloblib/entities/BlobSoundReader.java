@@ -31,11 +31,11 @@ public class BlobSoundReader {
         );
     }
 
-    public static Optional<BlobSound> parse(ConfigurationSection section) {
-        if (!section.contains("BlobSound"))
+    public static Optional<BlobSound> parse(ConfigurationSection parentConfigurationSection) {
+        if (!parentConfigurationSection.contains("BlobSound"))
             return Optional.empty();
-        if (section.isString("BlobSound"))
-            return Optional.ofNullable(BlobLibAPI.getSound(section.getString("BlobSound")));
-        return Optional.of(read(section.getConfigurationSection("BlobSound")));
+        if (parentConfigurationSection.isString("BlobSound"))
+            return Optional.ofNullable(BlobLibAPI.getSound(parentConfigurationSection.getString("BlobSound")));
+        return Optional.of(read(parentConfigurationSection.getConfigurationSection("BlobSound")));
     }
 }

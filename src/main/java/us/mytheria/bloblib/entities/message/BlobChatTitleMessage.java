@@ -3,6 +3,8 @@ package us.mytheria.bloblib.entities.message;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.function.Function;
+
 public class BlobChatTitleMessage extends BlobChatMessage {
     private final String title, subtitle;
     private final int fadeIn, stay, fadeOut;
@@ -32,5 +34,11 @@ public class BlobChatTitleMessage extends BlobChatMessage {
             commandSender.sendMessage(title);
             commandSender.sendMessage(subtitle);
         }
+    }
+
+    @Override
+    public BlobChatTitleMessage modify(Function<String, String> function) {
+        return new BlobChatTitleMessage(function.apply(chat), function.apply(title), function.apply(subtitle),
+                fadeIn, stay, fadeOut, getSound());
     }
 }

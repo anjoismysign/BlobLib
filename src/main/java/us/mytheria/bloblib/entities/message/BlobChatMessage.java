@@ -3,6 +3,8 @@ package us.mytheria.bloblib.entities.message;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.function.Function;
+
 public class BlobChatMessage extends BlobMessage {
     protected final String chat;
 
@@ -26,5 +28,10 @@ public class BlobChatMessage extends BlobMessage {
             sendAndPlay(player);
         else
             commandSender.sendMessage(chat);
+    }
+
+    @Override
+    public BlobChatMessage modify(Function<String, String> function) {
+        return new BlobChatMessage(function.apply(chat), getSound());
     }
 }
