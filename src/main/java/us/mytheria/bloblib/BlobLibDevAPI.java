@@ -1,7 +1,7 @@
 package us.mytheria.bloblib;
 
+import me.anjoismysign.anjo.entities.Result;
 import org.bukkit.plugin.Plugin;
-import us.mytheria.bloblib.entities.Result;
 import us.mytheria.bloblib.utilities.ResourceUtil;
 
 import java.io.File;

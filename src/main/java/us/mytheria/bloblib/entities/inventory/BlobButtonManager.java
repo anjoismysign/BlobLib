@@ -1,6 +1,6 @@
 package us.mytheria.bloblib.entities.inventory;
 
-import me.anjoismysign.anjo.entities.uber.UberBoolean;
+import me.anjoismysign.anjo.entities.Uber;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import us.mytheria.bloblib.entities.BlobMultiSlotable;
@@ -76,28 +76,28 @@ public class BlobButtonManager extends ButtonManager {
     @Override
     public boolean add(ConfigurationSection section) {
         Set<String> set = section.getKeys(false);
-        UberBoolean madeChanges = new UberBoolean(false);
+        Uber<Boolean> madeChanges = new Uber<>(false);
         set.forEach(s -> {
             if (contains(s))
                 return;
-            madeChanges.setValue(true);
+            madeChanges.talk(true);
             BlobMultiSlotable slotable = BlobMultiSlotable.fromConfigurationSection(section.getConfigurationSection(s), s);
             slotable.setInButtonManager(this);
         });
-        return madeChanges.getValue();
+        return madeChanges.thanks();
     }
 
     @Override
     public boolean read(ConfigurationSection section) {
         Set<String> set = section.getKeys(false);
-        UberBoolean madeChanges = new UberBoolean(false);
+        Uber<Boolean> madeChanges = new Uber<>(false);
         set.forEach(s -> {
             if (contains(s))
                 return;
-            madeChanges.setValue(true);
+            madeChanges.talk(true);
             BlobMultiSlotable slotable = BlobMultiSlotable.read(section.getConfigurationSection(s), s);
             slotable.setInButtonManager(this);
         });
-        return madeChanges.getValue();
+        return madeChanges.thanks();
     }
 }

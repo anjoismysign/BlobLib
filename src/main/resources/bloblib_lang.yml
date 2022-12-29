@@ -27,6 +27,69 @@ System:
     Title: '&f&lDONE'
     Subtitle: '&7Reload complete'
     BlobSound: System.Done
+Builder:
+  Number-Exception:
+    Type: CHAT
+    Message: '&cPlease enter a valid number'
+  World-Not-Found:
+    Type: CHAT
+    Message: "&cWorld '%world%' not found"
+  Material-Not-Found:
+    Type: CHAT
+    Message: "&cMaterial '%material%' not found"
+  World:
+    Type: TITLE
+    Title: "&f&lTYPE IN WORLD%"
+    Subtitle: "&7You are currently in '%world%'"
+  World-Timeout:
+    Type: TITLE
+    Title: '&c&lTIMEOUT'
+    Subtitle: '&7You took too long to type in a world'
+  Price:
+    Type: TITLE
+    Title: '&f&lTYPE IN PRICE'
+    Subtitle: '&7It can include decimals'
+  Price-Timeout:
+    Type: TITLE
+    Title: '&c&lTIMEOUT'
+    Subtitle: '&7You took too long to type in a price'
+  Position-Timeout:
+    Type: TITLE
+    Title: '&c&lTIMEOUT'
+    Subtitle: '&7You took too long to select a position'
+  Material:
+    Type: TITLE
+    Title: '&f&lTYPE IN MATERIAL'
+    Subtitle: '&7Type in an org.bukkit.Material'
+  Material-Timeout:
+    Type: TITLE
+    Title: '&c&lTIMEOUT'
+    Subtitle: '&7You took too long to type in Material'
+  Key:
+    Type: TITLE
+    Title: '&f&lTYPE IN KEY'
+    Subtitle: '&7How you want it to be named'
+  Key-Timeout:
+    Type: TITLE
+    Title: '&c&lTIMEOUT'
+    Subtitle: '&7You took too long to type in Key'
+  ItemStack:
+    Type: TITLE
+    Title: '&f&lDROP ITEM'
+    Subtitle: '&7Drop an item to set ItemStack'
+  Pos1:
+    Type: ACTIONBAR
+    Message: '&7Click a block to set Pos1'
+  Pos2:
+    Type: ACTIONBAR
+    Message: '&7Click a block to set Pos2'
+  EntityType:
+    Type: ACTIONBAR
+    Message: '&7Select an EntityType. Close the inventory to cancel'
+Editor:
+  Remove:
+    Type: ACTIONBAR
+    Message: '&7Click an element to remove it'
 Player:
   Not-Found:
     Type: CHAT

@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.entities;
 
+import me.anjoismysign.anjo.entities.Result;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Inventory;
@@ -12,9 +13,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class CommandMultiSlotable extends MultiSlotable {
-    private String key;
-    private boolean executesCommand;
-    private String command;
+    private final String key;
+    private final boolean executesCommand;
+    private final String command;
 
     public static CommandMultiSlotable read(ConfigurationSection section, String key) {
         ConfigurationSection itemStackSection = section.getConfigurationSection("ItemStack");
