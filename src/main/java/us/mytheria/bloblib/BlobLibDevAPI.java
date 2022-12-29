@@ -5,9 +5,11 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import us.mytheria.bloblib.entities.inventory.VariableSelector;
 import us.mytheria.bloblib.entities.listeners.BlobChatListener;
 import us.mytheria.bloblib.entities.listeners.BlobDropListener;
 import us.mytheria.bloblib.entities.listeners.BlobSelPosListener;
+import us.mytheria.bloblib.entities.listeners.BlobSelectorListener;
 import us.mytheria.bloblib.utilities.ResourceUtil;
 
 import java.io.File;
@@ -128,5 +130,21 @@ public class BlobLibDevAPI {
                                            String timeoutMessageKey, String timerMessageKey) {
         BlobLib.getInstance().getPositionManager().addPositionListener(player,
                 BlobSelPosListener.smart(player, timeout, consumer, timeoutMessageKey, timerMessageKey));
+    }
+
+    /**
+     * Adds a new selector listener
+     *
+     * @param player          The player
+     * @param consumer        The consumer. The argument is the item selected.
+     * @param timerMessageKey The timer message key
+     * @param selector        The selector
+     * @param <T>             The type of the selector
+     */
+    public static <T> void addSelectorListener(Player player, Consumer<T> consumer,
+                                               String timerMessageKey,
+                                               VariableSelector<T> selector) {
+        BlobLib.getInstance().getSelectorManager().addSelectorListener(player,
+                BlobSelectorListener.smart(player, consumer, timerMessageKey, selector));
     }
 }

@@ -5,10 +5,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.BlobLibAPI;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
 import us.mytheria.bloblib.entities.message.BlobMessage;
+import us.mytheria.bloblib.managers.SelectorListenerManager;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class BlobSelectorListener<T> extends SelectorListener<T> {
     private final List<BlobMessage> messages;
@@ -25,6 +29,24 @@ public class BlobSelectorListener<T> extends SelectorListener<T> {
             , List<BlobMessage> messages, VariableSelector<T> selector) {
         return new BlobSelectorListener<>(owner.getName(),
                 inputRunnable, messages, selector);
+    }
+
+    public static <T> BlobSelectorListener<T> smart(Player player, Consumer<T> consumer,
+                                                    String timerMessageKey,
+                                                    VariableSelector<T> selector) {
+        BlobLib main = BlobLib.getInstance();
+        SelectorListenerManager selectorManager = main.getSelectorManager();
+        return new BlobSelectorListener<>(player.getName(), () -> {
+            @SuppressWarnings("unchecked") T input = (T) selectorManager.getInput(player);
+            selectorManager.removeSelectorListener(player);
+            Bukkit.getScheduler().runTask(main, () -> {
+                if (player == null || !player.isOnline()) {
+                    return;
+                }
+                consumer.accept(input);
+            });
+        }, Collections.singletonList(BlobLibAPI.getMessage(timerMessageKey)),
+                selector);
     }
 
     /**
