@@ -110,4 +110,12 @@ public class BlobMessageReader {
     public static BlobMessage read(ConfigurationSection section) {
         return read(section, null);
     }
+
+    public static Optional<BlobMessage> parse(ConfigurationSection section) {
+        if (!section.contains("BlobMessage"))
+            return Optional.empty();
+        if (section.isString("BlobMessage"))
+            return Optional.ofNullable(BlobLibAPI.getMessage(section.getString("BlobMessage")));
+        return Optional.of(read(section.getConfigurationSection("BlobMessage")));
+    }
 }
