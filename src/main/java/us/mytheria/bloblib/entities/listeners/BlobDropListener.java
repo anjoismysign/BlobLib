@@ -2,12 +2,17 @@ package us.mytheria.bloblib.entities.listeners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.BlobLibAPI;
 import us.mytheria.bloblib.entities.message.BlobMessage;
+import us.mytheria.bloblib.managers.DropListenerManager;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class BlobDropListener extends DropListener {
     private List<BlobMessage> messages;
@@ -15,6 +20,21 @@ public class BlobDropListener extends DropListener {
 
     public static BlobDropListener build(Player owner, Runnable inputRunnable, List<BlobMessage> messages) {
         return new BlobDropListener(owner.getName(), inputRunnable, messages);
+    }
+
+    public static BlobDropListener smart(Player owner, Consumer<ItemStack> consumer, String timerMessageKey) {
+        BlobLib main = BlobLib.getInstance();
+        DropListenerManager dropManager = main.getDropListenerManager();
+        return new BlobDropListener(owner.getName(), () -> {
+            ItemStack input = dropManager.getInput(owner);
+            dropManager.removeDropListener(owner);
+            Bukkit.getScheduler().runTask(main, () -> {
+                if (owner == null || !owner.isOnline()) {
+                    return;
+                }
+                consumer.accept(input);
+            });
+        }, Collections.singletonList(BlobLibAPI.getMessage(timerMessageKey)));
     }
 
     private BlobDropListener(String owner, Runnable inputRunnable,

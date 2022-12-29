@@ -11,7 +11,7 @@ import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
 import us.mytheria.bloblib.entities.listeners.BlobSelectorListener;
-import us.mytheria.bloblib.entities.message.BlobActionBar;
+import us.mytheria.bloblib.entities.message.BlobActionbarMessage;
 import us.mytheria.bloblib.managers.SelectorListenerManager;
 
 import java.util.*;
@@ -157,7 +157,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
                         remove(input);
                         onRemove.run();
                     });
-                }, Collections.singletonList(new BlobActionBar(ChatColor.GRAY + "Click an element to remove it")),
+                }, Collections.singletonList(new BlobActionbarMessage(ChatColor.GRAY + "Click an element to remove it")),
                 this));
     }
 
@@ -180,7 +180,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
                         remove(input);
                         onRemove.run();
                     });
-                }, Collections.singletonList(new BlobActionBar(ChatColor.GRAY + "Click an element to remove it")),
+                }, Collections.singletonList(new BlobActionbarMessage(ChatColor.GRAY + "Click an element to remove it")),
                 this));
     }
 

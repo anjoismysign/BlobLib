@@ -4,20 +4,20 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class BlobChatMessage extends BlobMessage {
-    private final String message;
+    protected final String chat;
 
     public BlobChatMessage(String message, BlobSound sound) {
         super(sound);
-        this.message = message;
+        this.chat = message;
     }
 
     @Override
     public void send(Player player) {
-        player.sendMessage(message);
+        player.sendMessage(chat);
     }
 
     public void send(CommandSender sender) {
-        sender.sendMessage(message);
+        sender.sendMessage(chat);
     }
 
     @Override
@@ -25,6 +25,6 @@ public class BlobChatMessage extends BlobMessage {
         if (commandSender instanceof Player player)
             sendAndPlay(player);
         else
-            commandSender.sendMessage(message);
+            commandSender.sendMessage(chat);
     }
 }

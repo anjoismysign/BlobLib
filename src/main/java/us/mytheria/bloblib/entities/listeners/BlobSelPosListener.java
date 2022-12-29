@@ -1,13 +1,18 @@
 package us.mytheria.bloblib.entities.listeners;
 
 import org.bukkit.Bukkit;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.BlobLibAPI;
 import us.mytheria.bloblib.entities.message.BlobMessage;
+import us.mytheria.bloblib.managers.SelPosListenerManager;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class BlobSelPosListener extends SelPosListener {
     private List<BlobMessage> messages;
@@ -25,6 +30,27 @@ public class BlobSelPosListener extends SelPosListener {
     public static BlobSelPosListener build(Player owner, long timeout, Runnable inputRunnable,
                                            Runnable timeoutRunnable, List<BlobMessage> messages) {
         return new BlobSelPosListener(owner.getName(), timeout, inputRunnable, timeoutRunnable, messages);
+    }
+
+    public static BlobSelPosListener smart(Player player, long timeout, Consumer<Block> consumer,
+                                           String timeoutMessageKey, String timerMessageKey) {
+        BlobLib main = BlobLib.getInstance();
+        SelPosListenerManager selPosManager = main.getPositionManager();
+        return new BlobSelPosListener(player.getName(), timeout,
+                () -> {
+                    Block input = selPosManager.getInput(player);
+                    selPosManager.removePositionListener(player);
+                    Bukkit.getScheduler().runTask(main, () -> {
+                        if (player == null || !player.isOnline()) {
+                            return;
+                        }
+                        consumer.accept(input);
+                    });
+                },
+                () -> {
+                    selPosManager.removePositionListener(player);
+                    BlobLibAPI.getMessage(timeoutMessageKey).sendAndPlay(player);
+                }, Collections.singletonList(BlobLibAPI.getMessage(timerMessageKey)));
     }
 
     /**

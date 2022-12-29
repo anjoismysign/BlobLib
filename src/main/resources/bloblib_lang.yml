@@ -86,6 +86,12 @@ Builder:
   EntityType:
     Type: ACTIONBAR
     Message: '&7Select an EntityType. Close the inventory to cancel'
+  CustomModelData: '&f&lCUSTOMMODELDATA%split%&7Type in a number'
+  CustomModelData-Timeout: '&c&lTIMEOUT%split%&7You took too long to type in CustomModelData'
+  BuyPrice: '&f&lBUY PRICE%split%&7Type in a number'
+  BuyPrice-Timeout: '&c&lTIMEOUT%split%&7You took too long to type in BuyPrice'
+  SellPrice: '&f&lSELL PRICE%split%&7Type in a number'
+  SellPrice-Timeout: '&c&lTIMEOUT%split%&7You took too long to type in SellPrice'
 Editor:
   Remove:
     Type: ACTIONBAR

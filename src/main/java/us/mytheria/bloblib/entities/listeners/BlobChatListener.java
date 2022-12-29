@@ -5,9 +5,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.BlobLibAPI;
 import us.mytheria.bloblib.entities.message.BlobMessage;
+import us.mytheria.bloblib.managers.ChatListenerManager;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class BlobChatListener extends ChatListener {
     private List<BlobMessage> messages;
@@ -25,6 +29,27 @@ public class BlobChatListener extends ChatListener {
     public static BlobChatListener build(Player owner, long timeout, Runnable inputRunnable,
                                          Runnable timeoutRunnable, List<BlobMessage> messages) {
         return new BlobChatListener(owner.getName(), timeout, inputRunnable, timeoutRunnable, messages);
+    }
+
+    public static BlobChatListener smart(Player owner, long timeout, Consumer<String> consumer,
+                                         String timeoutMessageKey, String timerMessageKey) {
+        BlobLib main = BlobLib.getInstance();
+        ChatListenerManager chatManager = main.getChatManager();
+        return new BlobChatListener(owner.getName(), timeout,
+                () -> {
+                    String input = chatManager.getInput(owner);
+                    chatManager.removeChatListener(owner);
+                    Bukkit.getScheduler().runTask(main, () -> {
+                        if (owner == null || !owner.isOnline()) {
+                            return;
+                        }
+                        consumer.accept(input);
+                    });
+                },
+                () -> {
+                    chatManager.removeChatListener(owner);
+                    BlobLibAPI.getMessage(timeoutMessageKey).sendAndPlay(owner);
+                }, Collections.singletonList(BlobLibAPI.getMessage(timerMessageKey)));
     }
 
     /**

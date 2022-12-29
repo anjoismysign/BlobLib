@@ -5,21 +5,21 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class BlobActionBar extends BlobMessage {
-    private final String message;
+public class BlobActionbarMessage extends BlobMessage {
+    private final String actionbar;
 
-    public BlobActionBar(String message, BlobSound sound) {
+    public BlobActionbarMessage(String message, BlobSound sound) {
         super(sound);
-        this.message = message;
+        this.actionbar = message;
     }
 
-    public BlobActionBar(String message) {
+    public BlobActionbarMessage(String message) {
         this(message, null);
     }
 
     @Override
     public void send(Player player) {
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(message));
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(actionbar));
     }
 
     @Override
@@ -27,6 +27,6 @@ public class BlobActionBar extends BlobMessage {
         if (commandSender instanceof Player player)
             sendAndPlay(player);
         else
-            commandSender.sendMessage(message);
+            commandSender.sendMessage(actionbar);
     }
 }

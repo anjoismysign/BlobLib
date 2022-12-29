@@ -3,13 +3,13 @@ package us.mytheria.bloblib.entities.message;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class BlobTitle extends BlobMessage {
+public class BlobChatTitleMessage extends BlobChatMessage {
     private final String title, subtitle;
     private final int fadeIn, stay, fadeOut;
 
-    public BlobTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut,
-                     BlobSound sound) {
-        super(sound);
+    public BlobChatTitleMessage(String chat, String title, String subtitle, int fadeIn, int stay, int fadeOut,
+                                BlobSound sound) {
+        super(chat, sound);
         this.title = title;
         this.subtitle = subtitle;
         this.fadeIn = fadeIn;
@@ -19,6 +19,7 @@ public class BlobTitle extends BlobMessage {
 
     @Override
     public void send(Player player) {
+        super.send(player);
         player.sendTitle(title, subtitle, fadeIn, stay, fadeOut);
     }
 
@@ -27,6 +28,7 @@ public class BlobTitle extends BlobMessage {
         if (commandSender instanceof Player player)
             sendAndPlay(player);
         else {
+            commandSender.sendMessage(chat);
             commandSender.sendMessage(title);
             commandSender.sendMessage(subtitle);
         }
