@@ -13,6 +13,13 @@ import java.io.ByteArrayOutputStream;
 import java.util.Base64;
 
 public class ItemStackUtil {
+    public static String display(ItemStack itemStack) {
+        if (itemStack == null)
+            return "null";
+        if (itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName())
+            return itemStack.getItemMeta().getDisplayName();
+        return itemStack.getType().name();
+    }
 
     @Nullable
     public static String serialize(ItemStack itemStack) {
