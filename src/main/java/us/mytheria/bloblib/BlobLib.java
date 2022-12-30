@@ -1,5 +1,6 @@
 package us.mytheria.bloblib;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.mytheria.bloblib.enginehub.EngineHubManager;
 import us.mytheria.bloblib.hologram.HologramManager;
@@ -29,6 +30,7 @@ public final class BlobLib extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        Bukkit.getLogger().info("Jitpack test");
         instance = this;
         fileManager = new FileManager();
         messageManager = new MessageManager();
