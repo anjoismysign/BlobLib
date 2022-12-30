@@ -28,6 +28,9 @@ System:
     Subtitle: '&7Reload complete'
     BlobSound: System.Done
 Builder:
+  Invalid-Input:
+    Type: CHAT
+    Message: '&cInvalid input. Please try again.'
   Number-Exception:
     Type: CHAT
     Message: '&cPlease enter a valid number'
