@@ -89,7 +89,7 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
         });
     }
 
-    public ObjectBuilder<T> addObjectBuilderButton(ObjectBuilderButton<T> builderButton) {
+    public ObjectBuilder<T> addObjectBuilderButton(ObjectBuilderButton<?> builderButton) {
         objectBuilderButtons.put(builderButton.getButtonKey(), builderButton);
         return this;
     }
