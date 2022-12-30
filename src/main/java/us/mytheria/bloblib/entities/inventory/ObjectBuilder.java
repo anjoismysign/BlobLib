@@ -89,6 +89,12 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
         });
     }
 
+    public void handle(int slot, Player player) {
+        ifObjectBuilderButtonAddListener(slot, player);
+        if (isBuildButton(slot))
+            build();
+    }
+
     public ObjectBuilder<T> addObjectBuilderButton(ObjectBuilderButton<?> builderButton) {
         objectBuilderButtons.put(builderButton.getButtonKey(), builderButton);
         return this;
