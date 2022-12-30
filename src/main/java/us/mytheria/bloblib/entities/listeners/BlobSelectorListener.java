@@ -12,6 +12,7 @@ import us.mytheria.bloblib.managers.SelectorListenerManager;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class BlobSelectorListener<T> extends SelectorListener<T> {
@@ -36,6 +37,8 @@ public class BlobSelectorListener<T> extends SelectorListener<T> {
                                                     VariableSelector<T> selector) {
         BlobLib main = BlobLib.getInstance();
         SelectorListenerManager selectorManager = main.getSelectorManager();
+        Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibAPI.getMessage(timerMessageKey));
+        List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
         return new BlobSelectorListener<>(player.getName(), () -> {
             @SuppressWarnings("unchecked") T input = (T) selectorManager.getInput(player);
             selectorManager.removeSelectorListener(player);
@@ -45,8 +48,7 @@ public class BlobSelectorListener<T> extends SelectorListener<T> {
                 }
                 consumer.accept(input);
             });
-        }, Collections.singletonList(BlobLibAPI.getMessage(timerMessageKey)),
-                selector);
+        }, messages, selector);
     }
 
     /**
@@ -72,7 +74,7 @@ public class BlobSelectorListener<T> extends SelectorListener<T> {
                     this.cancel();
                     return;
                 }
-                messages.forEach(message -> message.send(player));
+                messages.forEach(message -> message.sendAndPlay(player));
             }
         };
         this.messageTask = bukkitRunnable.runTaskTimerAsynchronously(BlobLib.getInstance(), 0, 10);

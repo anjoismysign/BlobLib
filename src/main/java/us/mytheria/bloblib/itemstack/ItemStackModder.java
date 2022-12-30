@@ -15,43 +15,20 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public final class ItemStackBuilder {
+public final class ItemStackModder {
     private final ItemStack itemStack;
 
     private static final ItemFlag[] ALL_CONSTANTS = ItemFlag.values();
 
-    public static ItemStackBuilder build(ItemStack itemStack) {
-        return new ItemStackBuilder(itemStack.clone()).hideAll();
+    public static ItemStackModder mod(ItemStack itemStack) {
+        return new ItemStackModder(itemStack).hideAll();
     }
 
-    public static ItemStackBuilder build(Material material) {
-        return build(material, 1);
-    }
-
-    public static ItemStackBuilder build(Material material, int amount) {
-        return build(new ItemStack(material, amount));
-    }
-
-    public static ItemStackBuilder build(String material) {
-        return build(material, 1);
-    }
-
-    public static ItemStackBuilder build(String material, int amount) {
-        Material mat;
-        try {
-            mat = Material.valueOf(material);
-        } catch (IllegalArgumentException e) {
-            mat = Material.DIRT;
-            Bukkit.getLogger().info("Material " + material + " is not a valid material. Using DIRT instead.");
-        }
-        return build(mat, amount);
-    }
-
-    private ItemStackBuilder(ItemStack itemStack) {
+    private ItemStackModder(ItemStack itemStack) {
         this.itemStack = Objects.requireNonNull(itemStack, "itemStack cannot be null");
     }
 
-    private ItemStackBuilder itemMeta(Consumer<ItemMeta> consumer) {
+    private ItemStackModder itemMeta(Consumer<ItemMeta> consumer) {
         ItemMeta m = this.itemStack.getItemMeta();
         if (m != null) {
             consumer.accept(m);
@@ -60,23 +37,23 @@ public final class ItemStackBuilder {
         return this;
     }
 
-    public ItemStackBuilder hideAll() {
+    public ItemStackModder hideAll() {
         return flag(ALL_CONSTANTS);
     }
 
-    public ItemStackBuilder showAll() {
+    public ItemStackModder showAll() {
         return unflag(ALL_CONSTANTS);
     }
 
-    public ItemStackBuilder flag(ItemFlag... flags) {
+    public ItemStackModder flag(ItemFlag... flags) {
         return itemMeta(itemMeta -> itemMeta.addItemFlags(flags));
     }
 
-    public ItemStackBuilder flag(Collection<ItemFlag> flags) {
+    public ItemStackModder flag(Collection<ItemFlag> flags) {
         return flag(flags.toArray(new ItemFlag[0]));
     }
 
-    public ItemStackBuilder deserializeAndFlag(List<String> flags) {
+    public ItemStackModder deserializeAndFlag(List<String> flags) {
         List<ItemFlag> itemFlags = new ArrayList<>();
         for (String flag : flags) {
             try {
@@ -88,35 +65,35 @@ public final class ItemStackBuilder {
         return flag(itemFlags);
     }
 
-    public ItemStackBuilder unflag(ItemFlag... flags) {
+    public ItemStackModder unflag(ItemFlag... flags) {
         return itemMeta(itemMeta -> itemMeta.removeItemFlags(flags));
     }
 
-    public ItemStackBuilder unflag(Collection<ItemFlag> flags) {
+    public ItemStackModder unflag(Collection<ItemFlag> flags) {
         return unflag(flags.toArray(new ItemFlag[0]));
     }
 
-    public ItemStackBuilder displayName(String name) {
+    public ItemStackModder displayName(String name) {
         return itemMeta(itemMeta -> itemMeta.setDisplayName(name));
     }
 
-    public ItemStackBuilder lore(String line) {
+    public ItemStackModder lore(String line) {
         return lore(List.of(line));
     }
 
-    public ItemStackBuilder lore(String... lore) {
+    public ItemStackModder lore(String... lore) {
         return itemMeta(itemMeta -> itemMeta.setLore(List.of(lore)));
     }
 
-    public ItemStackBuilder lore(List<String> lore) {
+    public ItemStackModder lore(List<String> lore) {
         return itemMeta(itemMeta -> itemMeta.setLore(lore));
     }
 
-    public ItemStackBuilder lore(Function<List<String>, List<String>> lore) {
+    public ItemStackModder lore(Function<List<String>, List<String>> lore) {
         return itemMeta(itemMeta -> itemMeta.setLore(lore.apply(itemMeta.getLore())));
     }
 
-    public ItemStackBuilder lore(List<String> lore, Rep... reps) {
+    public ItemStackModder lore(List<String> lore, Rep... reps) {
         return lore(Rep.lace(lore, reps));
     }
 
@@ -126,7 +103,7 @@ public final class ItemStackBuilder {
         return meta.getLore();
     }
 
-    public ItemStackBuilder lore(Rep... reps) {
+    public ItemStackModder lore(Rep... reps) {
         List<String> lore = getLore();
         if (lore == null) return this;
         return lore(Rep.lace(lore, reps));
@@ -135,36 +112,36 @@ public final class ItemStackBuilder {
     /**
      * Clears the lore of the item.
      */
-    public ItemStackBuilder lore() {
+    public ItemStackModder lore() {
         return itemMeta(itemMeta -> itemMeta.setLore(new ArrayList<>()));
     }
 
-    public ItemStackBuilder customModelData(int amount) {
+    public ItemStackModder customModelData(int amount) {
         return itemMeta(itemMeta -> itemMeta.setCustomModelData(amount));
     }
 
-    private ItemStackBuilder itemStack(Consumer<ItemStack> consumer) {
+    private ItemStackModder itemStack(Consumer<ItemStack> consumer) {
         consumer.accept(this.itemStack);
         return this;
     }
 
-    public ItemStackBuilder amount(int amount) {
+    public ItemStackModder amount(int amount) {
         return itemStack(itemStack -> itemStack.setAmount(amount));
     }
 
-    public ItemStackBuilder type(Material material) {
+    public ItemStackModder type(Material material) {
         return itemStack(itemStack -> itemStack.setType(material));
     }
 
-    public ItemStackBuilder enchant(Enchantment enchantment, int level) {
+    public ItemStackModder enchant(Enchantment enchantment, int level) {
         return itemStack(itemStack -> itemStack.addUnsafeEnchantment(enchantment, level));
     }
 
-    public ItemStackBuilder unenchant(Enchantment enchantment) {
+    public ItemStackModder unenchant(Enchantment enchantment) {
         return itemStack(itemStack -> itemStack.removeEnchantment(enchantment));
     }
 
-    public ItemStackBuilder enchant(Enchantment... enchantments) {
+    public ItemStackModder enchant(Enchantment... enchantments) {
         return itemStack(itemStack -> {
             for (Enchantment enchantment : enchantments) {
                 itemStack.addUnsafeEnchantment(enchantment, 1);
@@ -172,7 +149,7 @@ public final class ItemStackBuilder {
         });
     }
 
-    public ItemStackBuilder enchant(Collection<Enchantment> enchantments) {
+    public ItemStackModder enchant(Collection<Enchantment> enchantments) {
         return itemStack(itemStack -> {
             for (Enchantment enchantment : enchantments) {
                 itemStack.addUnsafeEnchantment(enchantment, 1);
@@ -180,7 +157,7 @@ public final class ItemStackBuilder {
         });
     }
 
-    public ItemStackBuilder enchant(Map<Enchantment, Integer> enchantments) {
+    public ItemStackModder enchant(Map<Enchantment, Integer> enchantments) {
         return itemStack(itemStack -> {
             for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
                 itemStack.addUnsafeEnchantment(entry.getKey(), entry.getValue());
@@ -188,7 +165,7 @@ public final class ItemStackBuilder {
         });
     }
 
-    public ItemStackBuilder deserializeAndEnchant(Collection<String> serializedEnchantments) {
+    public ItemStackModder deserializeAndEnchant(Collection<String> serializedEnchantments) {
         HashMap<Enchantment, Integer> enchantments = new HashMap<>();
         serializedEnchantments.forEach(element -> {
             String[] split = element.split(",");
@@ -214,7 +191,7 @@ public final class ItemStackBuilder {
         return enchant(enchantments);
     }
 
-    public ItemStackBuilder unenchant(Enchantment... enchantments) {
+    public ItemStackModder unenchant(Enchantment... enchantments) {
         return itemStack(itemStack -> {
             for (Enchantment enchantment : enchantments) {
                 itemStack.removeEnchantment(enchantment);
@@ -222,15 +199,15 @@ public final class ItemStackBuilder {
         });
     }
 
-    public ItemStackBuilder enchant(Enchantment enchantment) {
+    public ItemStackModder enchant(Enchantment enchantment) {
         return enchant(enchantment, 1);
     }
 
-    public ItemStackBuilder clearEnchantments() {
+    public ItemStackModder clearEnchantments() {
         return itemMeta(itemStack -> itemStack.getEnchants().keySet().forEach(itemStack::removeEnchant));
     }
 
-    public ItemStackBuilder color(Color color) {
+    public ItemStackModder color(Color color) {
         return itemStack(itemStack -> {
             Material type = itemStack.getType();
             if (type == Material.LEATHER_BOOTS || type == Material.LEATHER_CHESTPLATE || type == Material.LEATHER_HELMET || type == Material.LEATHER_LEGGINGS) {
@@ -241,11 +218,39 @@ public final class ItemStackBuilder {
         });
     }
 
-    public ItemStackBuilder unbreakable(boolean unbreakable) {
+    public ItemStackModder unbreakable(boolean unbreakable) {
         return itemMeta(itemMeta -> itemMeta.setUnbreakable(unbreakable));
     }
 
-    public ItemStack build() {
-        return this.itemStack;
+    /**
+     * Replaces in both displayName && lore if available
+     *
+     * @param regex       the regex to replace
+     * @param replacement the replacement
+     * @return
+     */
+    public ItemStackModder replace(String regex, String replacement) {
+        return itemMeta(itemMeta -> {
+            if (itemMeta.hasDisplayName()) {
+                String name = itemMeta.getDisplayName();
+                itemMeta.setDisplayName(name.replace(regex, replacement));
+            }
+            if (itemMeta.hasLore()) {
+                List<String> current = itemMeta.getLore();
+                List<String> toBeSet = new ArrayList<>();
+                current.forEach(string -> {
+                    string = string.replace(regex, replacement);
+                    toBeSet.add(string);
+                });
+                itemMeta.setLore(toBeSet);
+            }
+        });
+    }
+
+    public ItemStackModder replace(Rep... reps) {
+        for (Rep rep : reps) {
+            replace(rep.getCheck(), rep.getReplace());
+        }
+        return this;
     }
 }

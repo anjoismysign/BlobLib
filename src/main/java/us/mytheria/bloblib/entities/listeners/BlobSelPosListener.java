@@ -12,6 +12,7 @@ import us.mytheria.bloblib.managers.SelPosListenerManager;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class BlobSelPosListener extends SelPosListener {
@@ -36,6 +37,9 @@ public class BlobSelPosListener extends SelPosListener {
                                            String timeoutMessageKey, String timerMessageKey) {
         BlobLib main = BlobLib.getInstance();
         SelPosListenerManager selPosManager = main.getPositionManager();
+        Optional<BlobMessage> timeoutMessage = Optional.ofNullable(BlobLibAPI.getMessage(timeoutMessageKey));
+        Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibAPI.getMessage(timerMessageKey));
+        List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
         return new BlobSelPosListener(player.getName(), timeout,
                 () -> {
                     Block input = selPosManager.getInput(player);
@@ -49,8 +53,8 @@ public class BlobSelPosListener extends SelPosListener {
                 },
                 () -> {
                     selPosManager.removePositionListener(player);
-                    BlobLibAPI.getMessage(timeoutMessageKey).sendAndPlay(player);
-                }, Collections.singletonList(BlobLibAPI.getMessage(timerMessageKey)));
+                    timeoutMessage.ifPresent(message -> message.send(player));
+                }, messages);
     }
 
     /**
@@ -79,7 +83,7 @@ public class BlobSelPosListener extends SelPosListener {
                     this.cancel();
                     return;
                 }
-                messages.forEach(message -> message.send(player));
+                messages.forEach(message -> message.sendAndPlay(player));
             }
         };
         this.messageTask = bukkitRunnable.runTaskTimerAsynchronously(BlobLib.getInstance(), 0, 10);

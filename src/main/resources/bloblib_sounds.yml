@@ -7,3 +7,8 @@ System:
     Sound: ENTITY_ARROW_HIT_PLAYER
     Volume: 1.0
     Pitch: 0.9
+Builder:
+  Button-Click:
+    Sound: UI_BUTTON_CLICK
+    Volume: 1.0
+    Pitch: 1.0
