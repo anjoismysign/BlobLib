@@ -24,7 +24,7 @@ public class ObjectBuilderManager<T> extends Manager {
     private DropListenerManager dropListenerManager;
     private SelectorListenerManager selectorListenerManager;
     private SelPosListenerManager selPosListenerManager;
-    private String titleKey;
+    private String fileKey;
     private Function<UUID, ObjectBuilder<T>> builderFunction;
 
     public ObjectBuilderManager(ManagerDirector managerDirector) {
@@ -32,10 +32,10 @@ public class ObjectBuilderManager<T> extends Manager {
     }
 
     public ObjectBuilderManager(ManagerDirector managerDirector,
-                                String titleKey,
+                                String fileKey,
                                 Function<UUID, ObjectBuilder<T>> builderFunction) {
         super(managerDirector);
-        this.titleKey = titleKey;
+        this.fileKey = fileKey;
         this.builderFunction = builderFunction;
     }
 
@@ -56,9 +56,9 @@ public class ObjectBuilderManager<T> extends Manager {
     }
 
     public void update() {
-        Optional<File> file = getManagerDirector().getFileManager().searchFile(titleKey);
+        Optional<File> file = getManagerDirector().getFileManager().searchFile(fileKey);
         if (file.isEmpty())
-            throw new RuntimeException("titleKey not found: " + titleKey);
+            throw new RuntimeException("File not found by key '" + fileKey + "'");
         YamlConfiguration inventory = YamlConfiguration.loadConfiguration(file.get());
         /*By default, all BlobInventorie's are forced to have Title, else
         they wouldn't load.*/
@@ -91,8 +91,8 @@ public class ObjectBuilderManager<T> extends Manager {
         removeBuilder(player.getUniqueId());
     }
 
-    public String getTitleKey() {
-        return titleKey;
+    public String getFileKey() {
+        return fileKey;
     }
 
     public DropListenerManager getDropListenerManager() {
