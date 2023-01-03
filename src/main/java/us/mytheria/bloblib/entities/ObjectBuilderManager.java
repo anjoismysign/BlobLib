@@ -1,5 +1,7 @@
 package us.mytheria.bloblib.entities;
 
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
 import us.mytheria.bloblib.entities.manager.Manager;
@@ -9,19 +11,20 @@ import us.mytheria.bloblib.managers.DropListenerManager;
 import us.mytheria.bloblib.managers.SelPosListenerManager;
 import us.mytheria.bloblib.managers.SelectorListenerManager;
 
+import java.io.File;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
-public abstract class ObjectBuilderManager<T> extends Manager {
+public class ObjectBuilderManager<T> extends Manager {
     protected String title;
     private HashMap<UUID, ObjectBuilder<T>> builders;
     private ChatListenerManager chatManager;
     private DropListenerManager dropListenerManager;
     private SelectorListenerManager selectorListenerManager;
     private SelPosListenerManager selPosListenerManager;
-    private Supplier<String> titleSupplier;
+    private String titleKey;
     private Function<UUID, ObjectBuilder<T>> builderFunction;
 
     public ObjectBuilderManager(ManagerDirector managerDirector) {
@@ -29,10 +32,10 @@ public abstract class ObjectBuilderManager<T> extends Manager {
     }
 
     public ObjectBuilderManager(ManagerDirector managerDirector,
-                                Supplier<String> titleSupplier,
+                                String titleKey,
                                 Function<UUID, ObjectBuilder<T>> builderFunction) {
         super(managerDirector);
-        this.titleSupplier = titleSupplier;
+        this.titleKey = titleKey;
         this.builderFunction = builderFunction;
     }
 
@@ -52,7 +55,16 @@ public abstract class ObjectBuilderManager<T> extends Manager {
         this.builders = new HashMap<>();
     }
 
-    public abstract void update();
+    public void update() {
+        Optional<File> file = getManagerDirector().getFileManager().searchFile(titleKey);
+        if (file.isEmpty())
+            throw new RuntimeException("titleKey not found: " + titleKey);
+        YamlConfiguration inventory = YamlConfiguration.loadConfiguration(file.get());
+        /*By default, all BlobInventorie's are forced to have Title, else
+        they wouldn't load.*/
+        this.title = ChatColor.translateAlternateColorCodes('&',
+                inventory.getString("Title"));
+    }
 
     public ObjectBuilder<T> getOrDefault(UUID uuid) {
         ObjectBuilder<T> builder = builders.get(uuid);
@@ -79,8 +91,8 @@ public abstract class ObjectBuilderManager<T> extends Manager {
         removeBuilder(player.getUniqueId());
     }
 
-    public Supplier<String> getTitleSupplier() {
-        return titleSupplier;
+    public String getTitleKey() {
+        return titleKey;
     }
 
     public DropListenerManager getDropListenerManager() {

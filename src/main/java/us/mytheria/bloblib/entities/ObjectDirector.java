@@ -13,29 +13,23 @@ import java.io.File;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class ObjectDirector<T> extends Manager implements Listener {
     private final ObjectBuilderManager<T> objectBuilderManager;
     private final ObjectManager<T> objectManager;
 
     public ObjectDirector(ManagerDirector managerDirector,
-                          Supplier<String> titleSupplier,
+                          String titleKey,
                           Function<UUID, ObjectBuilder<T>> builderFunction,
                           String loadFilesPathKey,
                           Function<File, Tuple2<T, String>> readFunction) {
         super(managerDirector);
-        this.objectBuilderManager = new ObjectBuilderManager<T>(managerDirector,
-                titleSupplier, builderFunction) {
-            @Override
-            public void update() {
-                this.title = getTitleSupplier().get();
-            }
-        };
+        this.objectBuilderManager = new ObjectBuilderManager<>(managerDirector,
+                titleKey, builderFunction);
         Optional<File> loadFilesPath = managerDirector.getFileManager().searchFile(loadFilesPathKey);
         if (loadFilesPath.isEmpty())
             throw new IllegalArgumentException("The loadFilesPathKey is not valid");
-        this.objectManager = new ObjectManager<T>(managerDirector, loadFilesPath.get()) {
+        this.objectManager = new ObjectManager<>(managerDirector, loadFilesPath.get()) {
             @Override
             public void loadFiles(File path) {
                 File[] listOfFiles = path.listFiles();
@@ -54,17 +48,12 @@ public class ObjectDirector<T> extends Manager implements Listener {
     }
 
     public ObjectDirector(ManagerDirector managerDirector,
-                          Supplier<String> titleSupplier,
+                          String titleKey,
                           Function<UUID, ObjectBuilder<T>> builderFunction,
                           ObjectManager<T> objectManager) {
         super(managerDirector);
-        this.objectBuilderManager = new ObjectBuilderManager<T>(managerDirector,
-                titleSupplier, builderFunction) {
-            @Override
-            public void update() {
-                this.title = getTitleSupplier().get();
-            }
-        };
+        this.objectBuilderManager = new ObjectBuilderManager<>(managerDirector,
+                titleKey, builderFunction);
         this.objectManager = objectManager;
     }
 
