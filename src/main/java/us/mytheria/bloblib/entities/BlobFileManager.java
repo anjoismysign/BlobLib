@@ -10,24 +10,24 @@ import java.io.IOException;
 import java.util.*;
 
 public class BlobFileManager extends Manager {
-    private final File path;
+    private final File pluginDirectory;
     private final HashMap<String, File> files;
     private final String lowercased = getPlugin().getName().toLowerCase();
 
-    public BlobFileManager(ManagerDirector managerDirector, String pathname) {
+    public BlobFileManager(ManagerDirector managerDirector, String pluginDirectoryPathname) {
         super(managerDirector);
         this.files = new HashMap<>();
-        this.path = new File(pathname);
-        addFile("messages", new File(path.getPath() + "/BlobMessage"));
-        addFile("sounds", new File(path.getPath() + "/BlobSound"));
-        addFile("inventories", new File(path.getPath() + "/Inventories"));
+        this.pluginDirectory = new File(pluginDirectoryPathname);
+        addFile("messages", new File(pluginDirectory.getPath() + "/BlobMessage"));
+        addFile("sounds", new File(pluginDirectory.getPath() + "/BlobSound"));
+        addFile("inventories", new File(pluginDirectory.getPath() + "/Inventories"));
         addFile("defaultSounds", new File(soundsFolder().getPath() + "/" + lowercased + "_sounds.yml"));
         addFile("defaultMessages", new File(messagesFolder().getPath() + "/" + lowercased + "_lang.yml"));
         loadFiles();
     }
 
     public File addDirectory(String key, String folderName) {
-        File directory = new File(path.getPath() + "/" + folderName);
+        File directory = new File(pluginDirectory.getPath() + "/" + folderName);
         addFile(key, directory);
         return directory;
     }
@@ -80,7 +80,7 @@ public class BlobFileManager extends Manager {
 
     public void loadFiles() {
         try {
-            if (!path.exists()) path.mkdir();
+            if (!pluginDirectory.exists()) pluginDirectory.mkdir();
             if (!messagesFolder().exists()) messagesFolder().mkdir();
             if (!soundsFolder().exists()) soundsFolder().mkdir();
             ///////////////////////////////////////////
@@ -91,6 +91,10 @@ public class BlobFileManager extends Manager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public File getPluginDirectory() {
+        return pluginDirectory;
     }
 
     public YamlConfiguration getYml(File f) {
