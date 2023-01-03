@@ -2,6 +2,7 @@ package us.mytheria.bloblib.entities.manager;
 
 import org.bukkit.plugin.Plugin;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.entities.BlobFileManager;
 import us.mytheria.bloblib.managers.ChatListenerManager;
 import us.mytheria.bloblib.managers.DropListenerManager;
 import us.mytheria.bloblib.managers.SelPosListenerManager;
@@ -16,9 +17,21 @@ public abstract class ManagerDirector {
     private final SelectorListenerManager selectorListenerManager;
     private final SelPosListenerManager positionListenerManager;
     private final DropListenerManager dropListenerManager;
+    private final BlobFileManager blobFileManager;
 
-    public ManagerDirector(Plugin plugin) {
+    public ManagerDirector(Plugin plugin, String fileManagerPathname) {
         this.plugin = plugin;
+        this.blobFileManager = new BlobFileManager(this, fileManagerPathname);
+        chatListenerManager = BlobLib.getInstance().getChatManager();
+        selectorListenerManager = BlobLib.getInstance().getSelectorManager();
+        positionListenerManager = BlobLib.getInstance().getPositionManager();
+        dropListenerManager = BlobLib.getInstance().getDropListenerManager();
+        managers = new HashMap<>();
+    }
+
+    public ManagerDirector(Plugin plugin, BlobFileManager fileManager) {
+        this.plugin = plugin;
+        this.blobFileManager = fileManager;
         chatListenerManager = BlobLib.getInstance().getChatManager();
         selectorListenerManager = BlobLib.getInstance().getSelectorManager();
         positionListenerManager = BlobLib.getInstance().getPositionManager();
