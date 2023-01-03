@@ -23,18 +23,6 @@ public abstract class ObjectManager<T> extends Manager {
     }
 
     public abstract void loadFiles(File path);
-//    {
-//        File[] listOfFiles = path.listFiles();
-//        for (File file : listOfFiles) {
-//            if (file.getName().equals(".DS_Store"))
-//                continue;
-//            if (file.isFile()) {
-//                addShopArticle(ShopArticle.fromFile(file));
-//            }
-//            if (file.isDirectory())
-//                loadFiles(file);
-//        }
-//    }
 
     public void addObject(String key, T object) {
         objects.put(key, object);
