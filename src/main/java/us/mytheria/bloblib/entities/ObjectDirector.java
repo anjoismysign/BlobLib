@@ -19,13 +19,13 @@ public class ObjectDirector<T> extends Manager implements Listener {
     private final ObjectManager<T> objectManager;
 
     public ObjectDirector(ManagerDirector managerDirector,
-                          String titleKey,
+                          String fileKey,
                           Function<UUID, ObjectBuilder<T>> builderFunction,
                           String loadFilesPathKey,
                           Function<File, Tuple2<T, String>> readFunction) {
         super(managerDirector);
         this.objectBuilderManager = new ObjectBuilderManager<>(managerDirector,
-                titleKey, builderFunction);
+                fileKey, builderFunction);
         Optional<File> loadFilesPath = managerDirector.getFileManager().searchFile(loadFilesPathKey);
         if (loadFilesPath.isEmpty())
             throw new IllegalArgumentException("The loadFilesPathKey is not valid");
@@ -48,12 +48,12 @@ public class ObjectDirector<T> extends Manager implements Listener {
     }
 
     public ObjectDirector(ManagerDirector managerDirector,
-                          String titleKey,
+                          String fileKey,
                           Function<UUID, ObjectBuilder<T>> builderFunction,
                           ObjectManager<T> objectManager) {
         super(managerDirector);
         this.objectBuilderManager = new ObjectBuilderManager<>(managerDirector,
-                titleKey, builderFunction);
+                fileKey, builderFunction);
         this.objectManager = objectManager;
     }
 
