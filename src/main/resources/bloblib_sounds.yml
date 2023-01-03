@@ -12,3 +12,7 @@ Builder:
     Sound: UI_BUTTON_CLICK
     Volume: 1.0
     Pitch: 1.0
+  Build-Complete:
+    Sound: BLOCK_ANVIL_USE
+    Volume: 1.0
+    Pitch: 1.35
