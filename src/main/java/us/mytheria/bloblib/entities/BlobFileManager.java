@@ -7,9 +7,7 @@ import us.mytheria.bloblib.utilities.ResourceUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Optional;
+import java.util.*;
 
 public class BlobFileManager extends Manager {
     private final File path;
@@ -26,6 +24,20 @@ public class BlobFileManager extends Manager {
         addFile("defaultSounds", new File(soundsFolder().getPath() + "/" + lowercased + "_sounds.yml"));
         addFile("defaultMessages", new File(messagesFolder().getPath() + "/" + lowercased + "_lang.yml"));
         loadFiles();
+    }
+
+    public File addDirectory(String key, String folderName) {
+        File directory = new File(path.getPath() + "/" + folderName);
+        addFile(key, directory);
+        return directory;
+    }
+
+    public List<File> addDirectories(Map<String, String> map) {
+        List<File> files = new ArrayList<>();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            files.add(addDirectory(entry.getKey(), entry.getValue()));
+        }
+        return files;
     }
 
     public void addFile(String key, File file) {
