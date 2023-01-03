@@ -109,6 +109,12 @@ public final class ItemStackModder {
         return lore(Rep.lace(lore, reps));
     }
 
+    public ItemStackModder lore(Collection<Rep> reps) {
+        List<String> lore = getLore();
+        if (lore == null) return this;
+        return lore(Rep.lace(lore, reps));
+    }
+
     /**
      * Clears the lore of the item.
      */
@@ -248,6 +254,13 @@ public final class ItemStackModder {
     }
 
     public ItemStackModder replace(Rep... reps) {
+        for (Rep rep : reps) {
+            replace(rep.getCheck(), rep.getReplace());
+        }
+        return this;
+    }
+
+    public ItemStackModder replace(Collection<Rep> reps) {
         for (Rep rep : reps) {
             replace(rep.getCheck(), rep.getReplace());
         }

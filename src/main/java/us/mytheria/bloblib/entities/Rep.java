@@ -1,6 +1,7 @@
 package us.mytheria.bloblib.entities;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public final class Rep {
@@ -25,6 +26,19 @@ public final class Rep {
     }
 
     public static List<String> lace(List<String> lore, Rep... reps) {
+        if (lore == null)
+            return null;
+        List<String> newLore = new ArrayList<>();
+        for (String string : lore) {
+            for (Rep rep : reps) {
+                string = string.replace(rep.getCheck(), rep.getReplace());
+            }
+            newLore.add(string);
+        }
+        return newLore;
+    }
+
+    public static List<String> lace(List<String> lore, Collection<Rep> reps) {
         if (lore == null)
             return null;
         List<String> newLore = new ArrayList<>();

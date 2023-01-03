@@ -6,12 +6,15 @@ import us.mytheria.bloblib.entities.manager.ManagerDirector;
 import us.mytheria.bloblib.utilities.ResourceUtil;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
 
 public class BlobFileManager extends Manager {
     private final File path;
     private final HashMap<String, File> files;
+    private final String lowercased = getPlugin().getName().toLowerCase();
 
     public BlobFileManager(ManagerDirector managerDirector, String pathname) {
         super(managerDirector);
@@ -20,7 +23,6 @@ public class BlobFileManager extends Manager {
         addFile("messages", new File(path.getPath() + "/BlobMessage"));
         addFile("sounds", new File(path.getPath() + "/BlobSound"));
         addFile("inventories", new File(path.getPath() + "/Inventories"));
-        String lowercased = getPlugin().getName().toLowerCase();
         addFile("defaultSounds", new File(soundsFolder().getPath() + "/" + lowercased + "_sounds.yml"));
         addFile("defaultMessages", new File(messagesFolder().getPath() + "/" + lowercased + "_lang.yml"));
         loadFiles();
@@ -28,6 +30,32 @@ public class BlobFileManager extends Manager {
 
     public void addFile(String key, File file) {
         files.put(key, file);
+    }
+
+    public void createAndUpdateYML(File yamlFile) {
+        String fileName = yamlFile.getName();
+        try {
+            boolean newFile = yamlFile.createNewFile();
+            if (newFile)
+                return;
+            ResourceUtil.updateYml(yamlFile.getParentFile(),
+                    "/temp" + fileName,
+                    fileName, getDefaultMessages(), getPlugin());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void createAndUpdateYMLs(File... files) {
+        for (File file : files) {
+            createAndUpdateYML(file);
+        }
+    }
+
+    public void createAndUpdateYMLs(Collection<File> files) {
+        for (File file : files) {
+            createAndUpdateYML(file);
+        }
     }
 
     private File getFile(String key) {
@@ -39,7 +67,6 @@ public class BlobFileManager extends Manager {
     }
 
     public void loadFiles() {
-        String lowercased = getPlugin().getName().toLowerCase();
         try {
             if (!path.exists()) path.mkdir();
             if (!messagesFolder().exists()) messagesFolder().mkdir();

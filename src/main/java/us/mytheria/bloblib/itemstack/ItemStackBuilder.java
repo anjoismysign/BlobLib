@@ -132,6 +132,10 @@ public final class ItemStackBuilder {
         return lore(Rep.lace(lore, reps));
     }
 
+    public ItemStackBuilder lore(Collection<Rep> reps) {
+        return lore(reps.toArray(new Rep[0]));
+    }
+
     /**
      * Clears the lore of the item.
      */
