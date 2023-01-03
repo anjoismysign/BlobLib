@@ -72,7 +72,9 @@ public abstract class ManagerDirector {
         return dropListenerManager;
     }
 
-//    public abstract FileManager getFileManager();
+    public BlobFileManager getFileManager() {
+        return blobFileManager;
+    }
 
     public Plugin getPlugin() {
         return plugin;

@@ -6,39 +6,49 @@ import us.mytheria.bloblib.entities.manager.ManagerDirector;
 import us.mytheria.bloblib.utilities.ResourceUtil;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Optional;
 
 public class BlobFileManager extends Manager {
     private final File path;
-    private final File messages;
-    private final File sounds;
-    private final File defaultSounds;
-    private final File defaultMessages;
-    private final File inventories;
+    private final HashMap<String, File> files;
 
     public BlobFileManager(ManagerDirector managerDirector, String pathname) {
         super(managerDirector);
+        this.files = new HashMap<>();
         this.path = new File(pathname);
-        this.messages = new File(path.getPath() + "/BlobMessage");
-        this.sounds = new File(path.getPath() + "/BlobSound");
-        this.inventories = new File(path.getPath() + "/Inventories");
+        addFile("messages", new File(path.getPath() + "/BlobMessage"));
+        addFile("sounds", new File(path.getPath() + "/BlobSound"));
+        addFile("inventories", new File(path.getPath() + "/Inventories"));
         String lowercased = getPlugin().getName().toLowerCase();
-        this.defaultSounds = new File(sounds.getPath() + "/" + lowercased + "_sounds.yml");
-        this.defaultMessages = new File(messages.getPath() + "/" + lowercased + "_lang.yml");
+        addFile("defaultSounds", new File(soundsFolder().getPath() + "/" + lowercased + "_sounds.yml"));
+        addFile("defaultMessages", new File(messagesFolder().getPath() + "/" + lowercased + "_lang.yml"));
         loadFiles();
+    }
+
+    public void addFile(String key, File file) {
+        files.put(key, file);
+    }
+
+    private File getFile(String key) {
+        return files.get(key);
+    }
+
+    public Optional<File> searchFile(String key) {
+        return Optional.ofNullable(files.get(key));
     }
 
     public void loadFiles() {
         String lowercased = getPlugin().getName().toLowerCase();
         try {
             if (!path.exists()) path.mkdir();
-            if (!messages.exists()) messages.mkdir();
-            if (!sounds.exists()) sounds.mkdir();
+            if (!messagesFolder().exists()) messagesFolder().mkdir();
+            if (!soundsFolder().exists()) soundsFolder().mkdir();
             ///////////////////////////////////////////
-            if (!defaultSounds.exists()) defaultSounds.createNewFile();
-            if (!defaultMessages.exists()) defaultMessages.createNewFile();
-            if (!inventories.exists()) inventories.createNewFile();
-            ResourceUtil.updateYml(sounds, "/temp" + lowercased + "_sounds.yml", lowercased + "_sounds.yml", defaultSounds, getPlugin());
-            ResourceUtil.updateYml(messages, "/temp" + lowercased + "_lang.yml", lowercased + "_lang.yml", defaultMessages, getPlugin());
+            if (!getDefaultSounds().exists()) getDefaultSounds().createNewFile();
+            if (!getDefaultMessages().exists()) getDefaultMessages().createNewFile();
+            ResourceUtil.updateYml(soundsFolder(), "/temp" + lowercased + "_sounds.yml", lowercased + "_sounds.yml", getDefaultSounds(), getPlugin());
+            ResourceUtil.updateYml(messagesFolder(), "/temp" + lowercased + "_lang.yml", lowercased + "_lang.yml", getDefaultMessages(), getPlugin());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -49,22 +59,22 @@ public class BlobFileManager extends Manager {
     }
 
     public File messagesFolder() {
-        return messages;
+        return getFile("messages");
     }
 
     public File soundsFolder() {
-        return sounds;
+        return getFile("sounds");
     }
 
     public File inventoriesFolder() {
-        return inventories;
+        return getFile("inventories");
     }
 
     public File getDefaultMessages() {
-        return defaultMessages;
+        return getFile("defaultMessages");
     }
 
     public File getDefaultSounds() {
-        return defaultSounds;
+        return getFile("defaultSounds");
     }
 }
