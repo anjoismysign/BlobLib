@@ -1,5 +1,7 @@
 package us.mytheria.bloblib.entities;
 
+import me.anjoismysign.anjo.entities.NamingConventions;
+
 import java.io.File;
 
 public record ObjectDirectorData(String objectDirectory, String objectBuilderKey) {
@@ -10,7 +12,7 @@ public record ObjectDirectorData(String objectDirectory, String objectBuilderKey
                                                       String objectName) {
         File shopArticleBuilder = new File(fileManager.getPluginDirectory() + "/" + objectBuilderFilename + ".yml");
         String objectDirectory = objectName + "Directory";
-        fileManager.addDirectory(objectDirectory, "articles");
+        fileManager.addDirectory(objectDirectory, NamingConventions.toCamelCase(objectDirectoryFilename));
         String objectBuilderKey = objectName + "Builder";
         fileManager.addFile(objectBuilderKey, shopArticleBuilder);
         fileManager.createAndUpdateYML(shopArticleBuilder);
@@ -19,6 +21,6 @@ public record ObjectDirectorData(String objectDirectory, String objectBuilderKey
 
     public static ObjectDirectorData simple(BlobFileManager blobFileManager,
                                             String objectName) {
-        return registerAndBuild(blobFileManager, objectName + "Builder", objectName.toLowerCase() + "Directory", objectName);
+        return registerAndBuild(blobFileManager, objectName + "Builder", objectName + "Directory", objectName);
     }
 }
