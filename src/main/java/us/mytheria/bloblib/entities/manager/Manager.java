@@ -1,9 +1,9 @@
 package us.mytheria.bloblib.entities.manager;
 
-import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public abstract class Manager {
-    private Plugin plugin;
+    private JavaPlugin plugin;
     private ManagerDirector managerDirector;
 
     public Manager(ManagerDirector managerDirector) {
@@ -31,7 +31,7 @@ public abstract class Manager {
         return managerDirector;
     }
 
-    public Plugin getPlugin() {
+    public JavaPlugin getPlugin() {
         return plugin;
     }
 }
