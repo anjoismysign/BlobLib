@@ -1,5 +1,6 @@
 package us.mytheria.bloblib;
 
+import me.anjoismysign.anjo.entities.NamingConventions;
 import me.anjoismysign.anjo.entities.Result;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -69,6 +70,16 @@ public class BlobLibDevAPI {
     }
 
     /**
+     * @param fileName The name of the file. Is converted to snake_case
+     * @param plugin   The plugin
+     * @return The Result of the file. If the file didn't exist and no exceptions were found, Result will be valid.
+     */
+    public static Result<File> conventionAddDefaultMessagesFile(String fileName, Plugin plugin) {
+        String snakeCase = NamingConventions.toSnakeCase(fileName);
+        return addDefaultMessagesFile(snakeCase, plugin);
+    }
+
+    /**
      * @param fileName The name of the file
      * @param plugin   The plugin
      * @return The Result of the file. If the file didn't exist and no exceptions were found, Result will be valid.
@@ -87,6 +98,16 @@ public class BlobLibDevAPI {
             }
         }
         return Result.invalid(file);
+    }
+
+    /**
+     * @param fileName The name of the file. Is converted to snake_case
+     * @param plugin   The plugin
+     * @return The Result of the file. If the file didn't exist and no exceptions were found, Result will be valid.
+     */
+    public static Result<File> conventionAddDefaultSoundsFile(String fileName, Plugin plugin) {
+        String snakeCase = NamingConventions.toSnakeCase(fileName);
+        return addDefaultSoundsFile(snakeCase, plugin);
     }
 
     /**
