@@ -72,4 +72,12 @@ public class ObjectDirector<T> extends Manager implements Listener {
         e.setCancelled(true);
         builder.handle(slot, player);
     }
+
+    public ObjectBuilderManager<T> getBuilderManager() {
+        return objectBuilderManager;
+    }
+
+    public ObjectManager<T> getObjectManager() {
+        return objectManager;
+    }
 }
