@@ -1,10 +1,11 @@
 package us.mytheria.bloblib.entities;
 
+import me.anjoismysign.anjo.entities.ConventionHelper;
 import me.anjoismysign.anjo.entities.NamingConventions;
 
 import java.io.File;
 
-public record ObjectDirectorData(String objectDirectory, String objectBuilderKey) {
+public record ObjectDirectorData(String objectDirectory, String objectBuilderKey, String objectName) {
 
     public static ObjectDirectorData registerAndBuild(BlobFileManager fileManager,
                                                       String objectBuilderFilename,
@@ -16,11 +17,15 @@ public record ObjectDirectorData(String objectDirectory, String objectBuilderKey
         String objectBuilderKey = objectName + "Builder";
         fileManager.addFile(objectBuilderKey, shopArticleBuilder);
         fileManager.createAndUpdateYML(shopArticleBuilder);
-        return new ObjectDirectorData(objectDirectory, objectBuilderKey);
+        return new ObjectDirectorData(objectDirectory, objectBuilderKey, objectName);
     }
 
     public static ObjectDirectorData simple(BlobFileManager blobFileManager,
                                             String objectName) {
         return registerAndBuild(blobFileManager, objectName + "Builder", objectName + "Directory", objectName);
+    }
+
+    public ConventionHelper objectNameConvention() {
+        return ConventionHelper.from(objectName);
     }
 }
