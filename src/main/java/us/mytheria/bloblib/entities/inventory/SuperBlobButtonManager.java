@@ -81,9 +81,7 @@ public class SuperBlobButtonManager extends ButtonManager {
     public boolean add(ConfigurationSection section) {
         Set<String> set = section.getKeys(false);
         Uber<Boolean> madeChanges = new Uber<>(false);
-        set.forEach(s -> {
-            if (contains(s))
-                return;
+        set.stream().filter(s -> !contains(s)).forEach(s -> {
             madeChanges.talk(true);
             CommandMultiSlotable slotable = CommandMultiSlotable.fromConfigurationSection(section.getConfigurationSection(s), s);
             slotable.setInSuperBlobButtonManager(this);
@@ -94,6 +92,11 @@ public class SuperBlobButtonManager extends ButtonManager {
     public boolean read(ConfigurationSection section) {
         Set<String> set = section.getKeys(false);
         Uber<Boolean> madeChanges = new Uber<>(false);
+        set.stream().filter(s -> !contains(s)).forEach(s -> {
+            madeChanges.talk(true);
+            CommandMultiSlotable slotable = CommandMultiSlotable.fromConfigurationSection(section.getConfigurationSection(s), s);
+            slotable.setInSuperBlobButtonManager(this);
+        });
         set.forEach(s -> {
             if (contains(s))
                 return;

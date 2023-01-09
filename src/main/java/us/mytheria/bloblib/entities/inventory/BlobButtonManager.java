@@ -77,11 +77,9 @@ public class BlobButtonManager extends ButtonManager {
     public boolean add(ConfigurationSection section) {
         Set<String> set = section.getKeys(false);
         Uber<Boolean> madeChanges = new Uber<>(false);
-        set.forEach(s -> {
-            if (contains(s))
-                return;
+        set.stream().filter(key -> !contains(key)).forEach(key -> {
             madeChanges.talk(true);
-            BlobMultiSlotable slotable = BlobMultiSlotable.fromConfigurationSection(section.getConfigurationSection(s), s);
+            BlobMultiSlotable slotable = BlobMultiSlotable.read(section.getConfigurationSection(key), key);
             slotable.setInButtonManager(this);
         });
         return madeChanges.thanks();
@@ -91,11 +89,9 @@ public class BlobButtonManager extends ButtonManager {
     public boolean read(ConfigurationSection section) {
         Set<String> set = section.getKeys(false);
         Uber<Boolean> madeChanges = new Uber<>(false);
-        set.forEach(s -> {
-            if (contains(s))
-                return;
+        set.stream().filter(key -> !contains(key)).forEach(key -> {
             madeChanges.talk(true);
-            BlobMultiSlotable slotable = BlobMultiSlotable.read(section.getConfigurationSection(s), s);
+            BlobMultiSlotable slotable = BlobMultiSlotable.read(section.getConfigurationSection(key), key);
             slotable.setInButtonManager(this);
         });
         return madeChanges.thanks();
