@@ -2,8 +2,8 @@ package us.mytheria.bloblib;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import us.mytheria.bloblib.entities.message.BlobMessage;
 import us.mytheria.bloblib.entities.message.BlobSound;
+import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
 import us.mytheria.bloblib.managers.MessageManager;
 import us.mytheria.bloblib.managers.SoundManager;
 
@@ -30,7 +30,7 @@ public class BlobLibAPI {
      * @param key The key of the message
      * @return The message
      */
-    public static BlobMessage getMessage(String key) {
+    public static ReferenceBlobMessage getMessage(String key) {
         return getMessageManager().getMessage(key);
     }
 

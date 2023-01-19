@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 import java.util.function.Function;
 
-public class BlobActionbarMessage extends BlobMessage {
+public class BlobActionbarMessage extends SerialBlobMessage {
     private final String actionbar;
 
     public BlobActionbarMessage(String message, BlobSound sound) {

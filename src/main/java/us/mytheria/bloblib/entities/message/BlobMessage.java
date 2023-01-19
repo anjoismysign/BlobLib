@@ -5,30 +5,15 @@ import org.bukkit.entity.Player;
 
 import java.util.function.Function;
 
-public abstract class BlobMessage {
-    private final BlobSound sound;
+public interface BlobMessage {
 
-    public BlobMessage(BlobSound sound) {
-        this.sound = sound;
-    }
+    void send(Player player);
 
-    public BlobMessage() {
-        sound = null;
-    }
+    void sendAndPlay(Player player);
 
-    public abstract void send(Player player);
+    void toCommandSender(CommandSender commandSender);
 
-    public void sendAndPlay(Player player) {
-        send(player);
-        if (sound != null)
-            sound.play(player);
-    }
+    BlobSound getSound();
 
-    public abstract void toCommandSender(CommandSender commandSender);
-
-    public BlobSound getSound() {
-        return sound;
-    }
-
-    public abstract BlobMessage modify(Function<String, String> function);
+    BlobMessage modify(Function<String, String> function);
 }

@@ -8,7 +8,7 @@ import us.mytheria.bloblib.entities.message.*;
 import java.util.Optional;
 
 public class BlobMessageReader {
-    public static BlobMessage read(ConfigurationSection section) {
+    public static SerialBlobMessage read(ConfigurationSection section) {
         String type = section.getString("Type");
         Optional<BlobSound> sound = section.contains("BlobSound") ?
                 BlobSoundReader.parse(section) : Optional.empty();
@@ -99,7 +99,7 @@ public class BlobMessageReader {
         }
     }
 
-    public static Optional<BlobMessage> parse(ConfigurationSection parentConfigurationSection) {
+    public static Optional<SerialBlobMessage> parse(ConfigurationSection parentConfigurationSection) {
         if (!parentConfigurationSection.contains("BlobMessage"))
             return Optional.empty();
         if (parentConfigurationSection.isString("BlobMessage"))

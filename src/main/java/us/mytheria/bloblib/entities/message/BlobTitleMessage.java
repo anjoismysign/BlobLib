@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 
 import java.util.function.Function;
 
-public class BlobTitleMessage extends BlobMessage {
+public class BlobTitleMessage extends SerialBlobMessage {
     protected final String title, subtitle;
     protected final int fadeIn, stay, fadeOut;
 

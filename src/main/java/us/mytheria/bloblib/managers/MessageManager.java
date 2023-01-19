@@ -5,14 +5,15 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.BlobMessageReader;
-import us.mytheria.bloblib.entities.message.BlobMessage;
+import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
+import us.mytheria.bloblib.entities.message.SerialBlobMessage;
 
 import java.io.File;
 import java.util.HashMap;
 
 public class MessageManager {
     private final BlobLib main;
-    private HashMap<String, BlobMessage> lang;
+    private HashMap<String, SerialBlobMessage> lang;
     private HashMap<String, Integer> duplicates;
 
     public MessageManager() {
@@ -75,19 +76,19 @@ public class MessageManager {
         lang.get("System.No-Permission").sendAndPlay(player);
     }
 
-    public BlobMessage getMessage(String key) {
-        return lang.get(key);
+    public ReferenceBlobMessage getMessage(String key) {
+        return new ReferenceBlobMessage(lang.get(key), key);
     }
 
     public void playAndSend(Player player, String key) {
-        BlobMessage message = lang.get(key);
+        SerialBlobMessage message = lang.get(key);
         if (message == null)
             throw new NullPointerException("Message '" + key + "' does not exist!");
         message.sendAndPlay(player);
     }
 
     public void send(Player player, String key) {
-        BlobMessage message = lang.get(key);
+        SerialBlobMessage message = lang.get(key);
         if (message == null)
             throw new NullPointerException("Message '" + key + "' does not exist!");
         message.send(player);

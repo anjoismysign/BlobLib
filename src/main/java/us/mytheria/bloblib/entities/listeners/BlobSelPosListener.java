@@ -7,7 +7,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.BlobLibAPI;
-import us.mytheria.bloblib.entities.message.BlobMessage;
+import us.mytheria.bloblib.entities.message.SerialBlobMessage;
 import us.mytheria.bloblib.managers.SelPosListenerManager;
 
 import java.util.Collections;
@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public class BlobSelPosListener extends SelPosListener {
-    private List<BlobMessage> messages;
+    private List<SerialBlobMessage> messages;
     private BukkitTask messageTask;
 
     /**
@@ -29,7 +29,7 @@ public class BlobSelPosListener extends SelPosListener {
      * @param messages        The messages to send to the player
      */
     public static BlobSelPosListener build(Player owner, long timeout, Runnable inputRunnable,
-                                           Runnable timeoutRunnable, List<BlobMessage> messages) {
+                                           Runnable timeoutRunnable, List<SerialBlobMessage> messages) {
         return new BlobSelPosListener(owner.getName(), timeout, inputRunnable, timeoutRunnable, messages);
     }
 
@@ -37,9 +37,9 @@ public class BlobSelPosListener extends SelPosListener {
                                            String timeoutMessageKey, String timerMessageKey) {
         BlobLib main = BlobLib.getInstance();
         SelPosListenerManager selPosManager = main.getPositionManager();
-        Optional<BlobMessage> timeoutMessage = Optional.ofNullable(BlobLibAPI.getMessage(timeoutMessageKey));
-        Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibAPI.getMessage(timerMessageKey));
-        List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
+        Optional<SerialBlobMessage> timeoutMessage = Optional.ofNullable(BlobLibAPI.getMessage(timeoutMessageKey));
+        Optional<SerialBlobMessage> timerMessage = Optional.ofNullable(BlobLibAPI.getMessage(timerMessageKey));
+        List<SerialBlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
         return new BlobSelPosListener(player.getName(), timeout,
                 () -> {
                     Block input = selPosManager.getInput(player);
@@ -67,7 +67,7 @@ public class BlobSelPosListener extends SelPosListener {
      * @param messages        The messages to send to the player
      */
     private BlobSelPosListener(String owner, long timeout, Runnable inputRunnable,
-                               Runnable timeoutRunnable, List<BlobMessage> messages) {
+                               Runnable timeoutRunnable, List<SerialBlobMessage> messages) {
         super(owner, timeout, inputRunnable, timeoutRunnable);
         this.messages = messages;
     }
@@ -95,7 +95,7 @@ public class BlobSelPosListener extends SelPosListener {
         messageTask.cancel();
     }
 
-    public List<BlobMessage> getMessages() {
+    public List<SerialBlobMessage> getMessages() {
         return messages;
     }
 }

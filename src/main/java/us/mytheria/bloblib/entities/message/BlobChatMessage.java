@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 
 import java.util.function.Function;
 
-public class BlobChatMessage extends BlobMessage {
+public class BlobChatMessage extends SerialBlobMessage {
     protected final String chat;
 
     public BlobChatMessage(String message, BlobSound sound) {

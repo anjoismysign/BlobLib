@@ -7,7 +7,7 @@ import org.bukkit.scheduler.BukkitTask;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.BlobLibAPI;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
-import us.mytheria.bloblib.entities.message.BlobMessage;
+import us.mytheria.bloblib.entities.message.SerialBlobMessage;
 import us.mytheria.bloblib.managers.SelectorListenerManager;
 
 import java.util.Collections;
@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public class BlobSelectorListener<T> extends SelectorListener<T> {
-    private final List<BlobMessage> messages;
+    private final List<SerialBlobMessage> messages;
     private BukkitTask messageTask;
 
     /**
@@ -27,7 +27,7 @@ public class BlobSelectorListener<T> extends SelectorListener<T> {
      * @param messages      The messages to send to the player
      */
     public static <T> BlobSelectorListener<T> build(Player owner, Runnable inputRunnable
-            , List<BlobMessage> messages, VariableSelector<T> selector) {
+            , List<SerialBlobMessage> messages, VariableSelector<T> selector) {
         return new BlobSelectorListener<>(owner.getName(),
                 inputRunnable, messages, selector);
     }
@@ -37,8 +37,8 @@ public class BlobSelectorListener<T> extends SelectorListener<T> {
                                                     VariableSelector<T> selector) {
         BlobLib main = BlobLib.getInstance();
         SelectorListenerManager selectorManager = main.getSelectorManager();
-        Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibAPI.getMessage(timerMessageKey));
-        List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
+        Optional<SerialBlobMessage> timerMessage = Optional.ofNullable(BlobLibAPI.getMessage(timerMessageKey));
+        List<SerialBlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
         return new BlobSelectorListener<>(player.getName(), () -> {
             @SuppressWarnings("unchecked") T input = (T) selectorManager.getInput(player);
             selectorManager.removeSelectorListener(player);
@@ -58,7 +58,7 @@ public class BlobSelectorListener<T> extends SelectorListener<T> {
      * @param inputRunnable The runnable to run when the SelectorListener receives input
      * @param messages      The messages to send to the player
      */
-    private BlobSelectorListener(String owner, Runnable inputRunnable, List<BlobMessage> messages,
+    private BlobSelectorListener(String owner, Runnable inputRunnable, List<SerialBlobMessage> messages,
                                  VariableSelector<T> selector) {
         super(owner, inputRunnable, selector);
         this.messages = messages;
@@ -85,7 +85,7 @@ public class BlobSelectorListener<T> extends SelectorListener<T> {
         messageTask.cancel();
     }
 
-    public List<BlobMessage> getMessages() {
+    public List<SerialBlobMessage> getMessages() {
         return messages;
     }
 }

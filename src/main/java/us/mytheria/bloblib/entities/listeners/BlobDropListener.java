@@ -7,7 +7,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.BlobLibAPI;
-import us.mytheria.bloblib.entities.message.BlobMessage;
+import us.mytheria.bloblib.entities.message.SerialBlobMessage;
 import us.mytheria.bloblib.managers.DropListenerManager;
 
 import java.util.Collections;
@@ -16,18 +16,18 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public class BlobDropListener extends DropListener {
-    private List<BlobMessage> messages;
+    private List<SerialBlobMessage> messages;
     private BukkitTask messageTask;
 
-    public static BlobDropListener build(Player owner, Runnable inputRunnable, List<BlobMessage> messages) {
+    public static BlobDropListener build(Player owner, Runnable inputRunnable, List<SerialBlobMessage> messages) {
         return new BlobDropListener(owner.getName(), inputRunnable, messages);
     }
 
     public static BlobDropListener smart(Player owner, Consumer<ItemStack> consumer, String timerMessageKey) {
         BlobLib main = BlobLib.getInstance();
         DropListenerManager dropManager = main.getDropListenerManager();
-        Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibAPI.getMessage(timerMessageKey));
-        List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
+        Optional<SerialBlobMessage> timerMessage = Optional.ofNullable(BlobLibAPI.getMessage(timerMessageKey));
+        List<SerialBlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
         return new BlobDropListener(owner.getName(), () -> {
             ItemStack input = dropManager.getInput(owner);
             dropManager.removeDropListener(owner);
@@ -41,7 +41,7 @@ public class BlobDropListener extends DropListener {
     }
 
     private BlobDropListener(String owner, Runnable inputRunnable,
-                             List<BlobMessage> messages) {
+                             List<SerialBlobMessage> messages) {
         super(owner, inputRunnable);
         this.messages = messages;
     }
@@ -68,7 +68,7 @@ public class BlobDropListener extends DropListener {
         messageTask.cancel();
     }
 
-    public List<BlobMessage> getMessages() {
+    public List<SerialBlobMessage> getMessages() {
         return messages;
     }
 
