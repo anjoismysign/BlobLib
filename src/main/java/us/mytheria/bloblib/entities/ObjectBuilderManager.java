@@ -46,12 +46,10 @@ public class ObjectBuilderManager<T> extends Manager {
     }
 
     public ObjectBuilderManager(ManagerDirector managerDirector,
-                                String fileKey,
-                                Function<UUID, ObjectBuilder<T>> builderFunction) {
+                                String fileKey) {
         super(managerDirector);
         this.fileKey = fileKey;
         this.builderFunctions = new HashMap<>();
-        this.builderFunctions.put("default", builderFunction);
     }
 
     @Override
@@ -62,7 +60,6 @@ public class ObjectBuilderManager<T> extends Manager {
         selectorListenerManager = getManagerDirector().getSelectorManager();
         update();
         this.builders = new HashMap<>();
-        this.builders.put("default", new HashMap<>());
     }
 
     @Override
@@ -84,12 +81,19 @@ public class ObjectBuilderManager<T> extends Manager {
     }
 
     public ObjectBuilder<T> getOrDefault(UUID uuid, String builderType) {
-        ObjectBuilder<T> builder = builders.get(builderType).get(uuid);
-        if (builder == null) {
-            builder = builderFunctions.get(builderType).apply(uuid);
-            builders.get(builderType).put(uuid, builder);
+        HashMap<UUID, ObjectBuilder<T>> builderMap = builders.get(builderType);
+        if (builderMap == null) {
+            builderMap = new HashMap<>();
+            builders.put(builderType, builderMap);
+            if (builderType.equals("default"))
+                throw new RuntimeException("Builder type 'default' was not manually initialized.");
         }
-        return builder;
+        ObjectBuilder<T> objectBuilder = builders.get(builderType).get(uuid);
+        if (objectBuilder == null) {
+            objectBuilder = builderFunctions.get(builderType).apply(uuid);
+            builders.get(builderType).put(uuid, objectBuilder);
+        }
+        return objectBuilder;
     }
 
     public ObjectBuilder<T> getOrDefault(UUID uuid) {
@@ -104,43 +108,51 @@ public class ObjectBuilderManager<T> extends Manager {
         return getOrDefault(player.getUniqueId());
     }
 
-    public void addBuilder(UUID uuid, ObjectBuilder<T> builder, String builderType) {
+    public ObjectBuilderManager<T> addBuilder(UUID uuid, ObjectBuilder<T> builder, String builderType) {
         if (builders.containsKey(builderType)) {
             builders.get(builderType).put(uuid, builder);
         } else {
             builders.put(builderType, new HashMap<>());
             builders.get(builderType).put(uuid, builder);
         }
+        return this;
     }
 
-    public void addBuilder(UUID uuid, ObjectBuilder<T> builder) {
+    public ObjectBuilderManager<T> addBuilder(UUID uuid, ObjectBuilder<T> builder) {
         addBuilder(uuid, builder, "default");
+        return this;
     }
 
-    public void addBuilder(Player player, ObjectBuilder<T> builder, String builderType) {
+    public ObjectBuilderManager<T> addBuilder(Player player, ObjectBuilder<T> builder, String builderType) {
         addBuilder(player.getUniqueId(), builder, builderType);
+        return this;
     }
 
-    public void addBuilder(Player player, ObjectBuilder<T> builder) {
+    public ObjectBuilderManager<T> addBuilder(Player player, ObjectBuilder<T> builder) {
         addBuilder(player.getUniqueId(), builder);
+        return this;
     }
 
-    public void removeBuilder(UUID uuid, String builderType) {
+    public ObjectBuilderManager<T> removeBuilder(UUID uuid, String builderType) {
         if (builders.containsKey(builderType)) {
             builders.get(builderType).remove(uuid);
         }
+        return this;
     }
 
-    public void removeBuilder(UUID uuid) {
+    public ObjectBuilderManager<T> removeBuilder(UUID uuid) {
         removeBuilder(uuid, "default");
+        return this;
     }
 
-    public void removeBuilder(Player player, String builderType) {
+    public ObjectBuilderManager<T> removeBuilder(Player player, String builderType) {
         removeBuilder(player.getUniqueId(), builderType);
+        return this;
     }
 
-    public void removeBuilder(Player player) {
+    public ObjectBuilderManager<T> removeBuilder(Player player) {
         removeBuilder(player.getUniqueId());
+        return this;
     }
 
     public String getFileKey() {

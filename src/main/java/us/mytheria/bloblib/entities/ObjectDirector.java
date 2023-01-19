@@ -11,7 +11,6 @@ import us.mytheria.bloblib.entities.manager.ManagerDirector;
 
 import java.io.File;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -22,12 +21,11 @@ public class ObjectDirector<T> extends Manager implements Listener {
 
     public ObjectDirector(ManagerDirector managerDirector,
                           String fileKey,
-                          Function<UUID, ObjectBuilder<T>> builderFunction,
                           String loadFilesPathKey,
                           Function<File, Tuple2<T, String>> readFunction) {
         super(managerDirector);
         this.objectBuilderManager = new ObjectBuilderManager<>(managerDirector,
-                fileKey, builderFunction);
+                fileKey);
         Optional<File> loadFilesPath = managerDirector.getFileManager().searchFile(loadFilesPathKey);
         if (loadFilesPath.isEmpty())
             throw new IllegalArgumentException("The loadFilesPathKey is not valid");
@@ -66,11 +64,10 @@ public class ObjectDirector<T> extends Manager implements Listener {
 
     public ObjectDirector(ManagerDirector managerDirector,
                           String fileKey,
-                          Function<UUID, ObjectBuilder<T>> builderFunction,
                           ObjectManager<T> objectManager) {
         super(managerDirector);
         this.objectBuilderManager = new ObjectBuilderManager<>(managerDirector,
-                fileKey, builderFunction);
+                fileKey);
         this.objectManager = objectManager;
         clickEventConsumer = e -> {
             String invname = e.getView().getTitle();
