@@ -38,4 +38,8 @@ public class ReferenceBlobMessage implements BlobMessage {
     public ReferenceBlobMessage modify(Function<String, String> function) {
         return new ReferenceBlobMessage(message.modify(function), reference);
     }
+
+    public String getReference() {
+        return reference;
+    }
 }
