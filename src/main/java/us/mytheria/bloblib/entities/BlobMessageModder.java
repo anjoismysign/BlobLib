@@ -1,15 +1,15 @@
 package us.mytheria.bloblib.entities;
 
 import net.md_5.bungee.api.ChatColor;
-import us.mytheria.bloblib.entities.message.SerialBlobMessage;
+import us.mytheria.bloblib.entities.message.BlobMessage;
 
 import java.util.Locale;
 import java.util.function.Function;
 
-public class BlobMessageModder<T extends SerialBlobMessage> {
-    private SerialBlobMessage blobMessage;
+public class BlobMessageModder<T extends BlobMessage> {
+    private BlobMessage blobMessage;
 
-    public static <T extends SerialBlobMessage> BlobMessageModder<T> mod(T blobMessage) {
+    public static <T extends BlobMessage> BlobMessageModder<T> mod(T blobMessage) {
         BlobMessageModder messageModder = new BlobMessageModder();
         messageModder.blobMessage = blobMessage;
         return messageModder;
