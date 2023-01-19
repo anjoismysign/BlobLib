@@ -65,7 +65,8 @@ public class ObjectDirector<T> extends Manager implements Listener {
         }
         int slot = e.getRawSlot();
         Player player = (Player) e.getWhoClicked();
-        ObjectBuilder<T> builder = objectBuilderManager.getOrDefault(player.getUniqueId());
+        ObjectBuilder<T> builder = objectBuilderManager.getOrDefault(player.getUniqueId(),
+                "default");
         if (slot >= builder.getSize()) {
             return;
         }

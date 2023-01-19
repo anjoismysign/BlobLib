@@ -19,13 +19,27 @@ import java.util.function.Function;
 
 public class ObjectBuilderManager<T> extends Manager {
     protected String title;
-    private HashMap<UUID, ObjectBuilder<T>> builders;
+    /*
+    Pongamos el ejemplo de que usaremos de ObjectBuilder el objeto abstracto
+    Reward que luego se extiende en PermissionsReward, CashReward e ItemStackReward.
+    Tengo que tener una variable llamada builders que me permita acceder al ObjectBuilder
+    que tenga el jugador (siendo el UUID del jugador el key y el ObjectBuilder el value).
+    No solo eso, me tiene que permitir colocar cualquiera de los tres tipos de Reward
+    dentro de builders.
+    El plan sería investigar cuál es la función que agrega un ObjectBuilder a builders
+    y asegurarme que la variable builders sea de ObjectBuilder<Reward> ya que cualquiera
+    de los tres tipos extienden Reward.
+
+    Sugerencia: crear un nuevo HashMap en el que key sea String y value
+    sea un HashMap de key UUID y value ObjectBuilder<>.
+     */
+    private HashMap<String, HashMap<UUID, ObjectBuilder<T>>> builders;
     private ChatListenerManager chatManager;
     private DropListenerManager dropListenerManager;
     private SelectorListenerManager selectorListenerManager;
     private SelPosListenerManager selPosListenerManager;
     private String fileKey;
-    private Function<UUID, ObjectBuilder<T>> builderFunction;
+    private HashMap<String, Function<UUID, ObjectBuilder<T>>> builderFunctions;
 
     public ObjectBuilderManager(ManagerDirector managerDirector) {
         super(managerDirector);
@@ -36,7 +50,8 @@ public class ObjectBuilderManager<T> extends Manager {
                                 Function<UUID, ObjectBuilder<T>> builderFunction) {
         super(managerDirector);
         this.fileKey = fileKey;
-        this.builderFunction = builderFunction;
+        this.builderFunctions = new HashMap<>();
+        this.builderFunctions.put("default", builderFunction);
     }
 
     @Override
@@ -47,12 +62,14 @@ public class ObjectBuilderManager<T> extends Manager {
         selectorListenerManager = getManagerDirector().getSelectorManager();
         update();
         this.builders = new HashMap<>();
+        this.builders.put("default", new HashMap<>());
     }
 
     @Override
     public void reload() {
         update();
         this.builders = new HashMap<>();
+        this.builders.put("default", new HashMap<>());
     }
 
     public void update() {
@@ -66,25 +83,60 @@ public class ObjectBuilderManager<T> extends Manager {
                 inventory.getString("Title"));
     }
 
-    public ObjectBuilder<T> getOrDefault(UUID uuid) {
-        ObjectBuilder<T> builder = builders.get(uuid);
+    public ObjectBuilder<T> getOrDefault(UUID uuid, String builderType) {
+        ObjectBuilder<T> builder = builders.get(builderType).get(uuid);
         if (builder == null) {
-            builder = builderFunction.apply(uuid);
-            builders.put(uuid, builder);
+            builder = builderFunctions.get(builderType).apply(uuid);
+            builders.get(builderType).put(uuid, builder);
         }
         return builder;
+    }
+
+    public ObjectBuilder<T> getOrDefault(UUID uuid) {
+        return getOrDefault(uuid, "default");
+    }
+
+    public ObjectBuilder<T> getOrDefault(Player player, String builderType) {
+        return getOrDefault(player.getUniqueId(), builderType);
     }
 
     public ObjectBuilder<T> getOrDefault(Player player) {
         return getOrDefault(player.getUniqueId());
     }
 
+    public void addBuilder(UUID uuid, ObjectBuilder<T> builder, String builderType) {
+        if (builders.containsKey(builderType)) {
+            builders.get(builderType).put(uuid, builder);
+        } else {
+            builders.put(builderType, new HashMap<>());
+            builders.get(builderType).put(uuid, builder);
+        }
+    }
+
     public void addBuilder(UUID uuid, ObjectBuilder<T> builder) {
-        builders.put(uuid, builder);
+        addBuilder(uuid, builder, "default");
+    }
+
+    public void addBuilder(Player player, ObjectBuilder<T> builder, String builderType) {
+        addBuilder(player.getUniqueId(), builder, builderType);
+    }
+
+    public void addBuilder(Player player, ObjectBuilder<T> builder) {
+        addBuilder(player.getUniqueId(), builder);
+    }
+
+    public void removeBuilder(UUID uuid, String builderType) {
+        if (builders.containsKey(builderType)) {
+            builders.get(builderType).remove(uuid);
+        }
     }
 
     public void removeBuilder(UUID uuid) {
-        builders.remove(uuid);
+        removeBuilder(uuid, "default");
+    }
+
+    public void removeBuilder(Player player, String builderType) {
+        removeBuilder(player.getUniqueId(), builderType);
     }
 
     public void removeBuilder(Player player) {
