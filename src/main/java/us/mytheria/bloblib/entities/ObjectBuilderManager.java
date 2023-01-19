@@ -66,7 +66,6 @@ public class ObjectBuilderManager<T> extends Manager {
     public void reload() {
         update();
         this.builders = new HashMap<>();
-        this.builders.put("default", new HashMap<>());
     }
 
     public void update() {
@@ -152,6 +151,16 @@ public class ObjectBuilderManager<T> extends Manager {
 
     public ObjectBuilderManager<T> removeBuilder(Player player) {
         removeBuilder(player.getUniqueId());
+        return this;
+    }
+
+    public ObjectBuilderManager<T> addBuilderFunction(String builderType, Function<UUID, ObjectBuilder<T>> function) {
+        builderFunctions.put(builderType, function);
+        return this;
+    }
+
+    public ObjectBuilderManager<T> addBuilderFunction(Function<UUID, ObjectBuilder<T>> function) {
+        addBuilderFunction("default", function);
         return this;
     }
 
