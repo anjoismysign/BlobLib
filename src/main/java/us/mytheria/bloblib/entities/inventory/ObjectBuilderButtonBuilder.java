@@ -4,6 +4,7 @@ import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 import us.mytheria.bloblib.BlobLibAPI;
 import us.mytheria.bloblib.BlobLibDevAPI;
+import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -211,5 +212,26 @@ public class ObjectBuilderButtonBuilder {
                                                              String timerMessageKey,
                                                              VariableSelector<T> selector) {
         return SELECTOR(buttonKey, timerMessageKey, t -> true, selector);
+    }
+
+    public static ObjectBuilderButton<ReferenceBlobMessage> MESSAGE(String buttonKey, long timeout,
+                                                                    String timeoutMessageKey,
+                                                                    String timerMessageKey,
+                                                                    Function<ReferenceBlobMessage, Boolean> function) {
+        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+                (button, player) -> BlobLibDevAPI.addChatListener(player, timeout,
+                        string -> {
+                            ReferenceBlobMessage message = BlobLibAPI.getMessage(string);
+                            button.set(message, function);
+                        },
+                        timeoutMessageKey,
+                        timerMessageKey)) {
+        };
+    }
+
+    public static ObjectBuilderButton<ReferenceBlobMessage> SIMPLE_MESSAGE(String buttonKey, long timeout,
+                                                                           String timeoutMessageKey,
+                                                                           String timerMessageKey) {
+        return MESSAGE(buttonKey, timeout, timeoutMessageKey, timerMessageKey, s -> true);
     }
 }
