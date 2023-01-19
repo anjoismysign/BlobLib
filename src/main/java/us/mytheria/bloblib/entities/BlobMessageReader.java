@@ -99,7 +99,15 @@ public class BlobMessageReader {
         }
     }
 
-    public static Optional<SerialBlobMessage> parse(ConfigurationSection parentConfigurationSection) {
+    /**
+     * Whenever detecting BlobMessage being a single line String, will attempt to read it
+     * as a ReferenceBlobMessage.
+     * Otherwise, will attempt to read it as a SerialBlobMessage
+     *
+     * @param parentConfigurationSection
+     * @return BlobMessage
+     */
+    public static Optional<BlobMessage> parse(ConfigurationSection parentConfigurationSection) {
         if (!parentConfigurationSection.contains("BlobMessage"))
             return Optional.empty();
         if (parentConfigurationSection.isString("BlobMessage"))
