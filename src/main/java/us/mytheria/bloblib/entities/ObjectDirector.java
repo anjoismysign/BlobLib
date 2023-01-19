@@ -72,6 +72,21 @@ public class ObjectDirector<T> extends Manager implements Listener {
         this.objectBuilderManager = new ObjectBuilderManager<>(managerDirector,
                 fileKey, builderFunction);
         this.objectManager = objectManager;
+        clickEventConsumer = e -> {
+            String invname = e.getView().getTitle();
+            if (!invname.equals(objectBuilderManager.title)) {
+                return;
+            }
+            int slot = e.getRawSlot();
+            Player player = (Player) e.getWhoClicked();
+            ObjectBuilder<T> builder = objectBuilderManager.getOrDefault(player.getUniqueId(),
+                    "default");
+            if (slot >= builder.getSize()) {
+                return;
+            }
+            e.setCancelled(true);
+            builder.handle(slot, player);
+        };
     }
 
     @EventHandler
