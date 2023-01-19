@@ -12,11 +12,13 @@ import us.mytheria.bloblib.entities.manager.ManagerDirector;
 import java.io.File;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class ObjectDirector<T> extends Manager implements Listener {
     private final ObjectBuilderManager<T> objectBuilderManager;
     private final ObjectManager<T> objectManager;
+    private Consumer<InventoryClickEvent> clickEventConsumer;
 
     public ObjectDirector(ManagerDirector managerDirector,
                           String fileKey,
@@ -45,6 +47,21 @@ public class ObjectDirector<T> extends Manager implements Listener {
                 }
             }
         };
+        clickEventConsumer = e -> {
+            String invname = e.getView().getTitle();
+            if (!invname.equals(objectBuilderManager.title)) {
+                return;
+            }
+            int slot = e.getRawSlot();
+            Player player = (Player) e.getWhoClicked();
+            ObjectBuilder<T> builder = objectBuilderManager.getOrDefault(player.getUniqueId(),
+                    "default");
+            if (slot >= builder.getSize()) {
+                return;
+            }
+            e.setCancelled(true);
+            builder.handle(slot, player);
+        };
     }
 
     public ObjectDirector(ManagerDirector managerDirector,
@@ -59,19 +76,7 @@ public class ObjectDirector<T> extends Manager implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent e) {
-        String invname = e.getView().getTitle();
-        if (!invname.equals(objectBuilderManager.title)) {
-            return;
-        }
-        int slot = e.getRawSlot();
-        Player player = (Player) e.getWhoClicked();
-        ObjectBuilder<T> builder = objectBuilderManager.getOrDefault(player.getUniqueId(),
-                "default");
-        if (slot >= builder.getSize()) {
-            return;
-        }
-        e.setCancelled(true);
-        builder.handle(slot, player);
+        clickEventConsumer.accept(e);
     }
 
     public ObjectBuilderManager<T> getBuilderManager() {
@@ -80,5 +85,9 @@ public class ObjectDirector<T> extends Manager implements Listener {
 
     public ObjectManager<T> getObjectManager() {
         return objectManager;
+    }
+
+    public void onInventoryClickEvent(Consumer<InventoryClickEvent> clickEventConsumer) {
+        this.clickEventConsumer = clickEventConsumer;
     }
 }
