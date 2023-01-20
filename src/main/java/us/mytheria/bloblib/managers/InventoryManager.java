@@ -72,6 +72,11 @@ public class InventoryManager {
 
     @Nullable
     public BlobInventory getInventory(String key) {
-        return inventories.get(key);
+        try {
+            return inventories.get(key).clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

@@ -2,8 +2,10 @@ package us.mytheria.bloblib;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import us.mytheria.bloblib.entities.inventory.BlobInventory;
 import us.mytheria.bloblib.entities.message.BlobSound;
 import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
+import us.mytheria.bloblib.managers.InventoryManager;
 import us.mytheria.bloblib.managers.MessageManager;
 import us.mytheria.bloblib.managers.SoundManager;
 
@@ -11,6 +13,13 @@ import java.util.List;
 
 public class BlobLibAPI {
     private static final BlobLib main = BlobLib.getInstance();
+
+    /**
+     * @return The inventory manager
+     */
+    public static InventoryManager getInventoryManager() {
+        return main.getInventoryManager();
+    }
 
     /**
      * @return The message manager
@@ -24,6 +33,14 @@ public class BlobLibAPI {
      */
     public static SoundManager getSoundManager() {
         return main.getSoundManager();
+    }
+
+    /**
+     * @param key Key that points to the inventory
+     * @return The inventory
+     */
+    public static BlobInventory getBlobInventory(String key) {
+        return getInventoryManager().getInventory(key);
     }
 
     /**
