@@ -13,6 +13,7 @@ public final class BlobLib extends JavaPlugin {
     private EngineHubManager engineHubManager;
     private HologramManager hologramManager;
     private FileManager fileManager;
+    private InventoryManager inventoryManager;
     private MessageManager messageManager;
     private SoundManager soundManager;
     private FillerManager fillerManager;
@@ -33,6 +34,7 @@ public final class BlobLib extends JavaPlugin {
         Bukkit.getLogger().info("Jitpack test");
         instance = this;
         fileManager = new FileManager();
+        inventoryManager = new InventoryManager();
         messageManager = new MessageManager();
         soundManager = new SoundManager();
         fillerManager = new FillerManager();
@@ -52,10 +54,15 @@ public final class BlobLib extends JavaPlugin {
     public void reload() {
         soundManager.reload();
         messageManager.reload();
+        inventoryManager.reload();
     }
 
     public FileManager getFileManager() {
         return fileManager;
+    }
+
+    public InventoryManager getInventoryManager() {
+        return inventoryManager;
     }
 
     public MessageManager getMessageManager() {
