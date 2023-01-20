@@ -1,5 +1,7 @@
 package us.mytheria.bloblib.entities.inventory;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 import us.mytheria.bloblib.BlobLibAPI;
@@ -233,5 +235,26 @@ public class ObjectBuilderButtonBuilder {
                                                                            String timeoutMessageKey,
                                                                            String timerMessageKey) {
         return MESSAGE(buttonKey, timeout, timeoutMessageKey, timerMessageKey, s -> true);
+    }
+
+    public static ObjectBuilderButton<World> WORLD(String buttonKey, long timeout,
+                                                   String timeoutMessageKey,
+                                                   String timerMessageKey,
+                                                   Function<World, Boolean> function) {
+        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+                (button, player) -> BlobLibDevAPI.addChatListener(player, timeout,
+                        string -> {
+                            World world = Bukkit.getWorld(string);
+                            button.set(world, function);
+                        },
+                        timeoutMessageKey,
+                        timerMessageKey)) {
+        };
+    }
+
+    public static ObjectBuilderButton<World> SIMPLE_WORLD(String buttonKey, long timeout,
+                                                          String timeoutMessageKey,
+                                                          String timerMessageKey) {
+        return WORLD(buttonKey, timeout, timeoutMessageKey, timerMessageKey, s -> true);
     }
 }
