@@ -27,13 +27,13 @@ public abstract class VariableSelector<T> extends BlobInventory {
 
     public static BlobInventory DEFAULT() {
         FileManager fileManager = BlobLib.getInstance().getFileManager();
-        YamlConfiguration inventories = fileManager.getYml(fileManager.inventoriesFile());
+        YamlConfiguration inventories = fileManager.getYml(fileManager.defaultInventoriesFile());
         return fromConfigurationSection(inventories.getConfigurationSection("VariableSelector"));
     }
 
     public static BlobInventory DEFAULT_ITEMSTACKREADER() {
         FileManager fileManager = BlobLib.getInstance().getFileManager();
-        YamlConfiguration inventories = fileManager.getYml(fileManager.inventoriesFile());
+        YamlConfiguration inventories = fileManager.getYml(fileManager.defaultInventoriesFile());
         return smartFromConfigurationSection(inventories.getConfigurationSection("VariableSelector"));
     }
 

@@ -15,7 +15,7 @@ public class SelectorListener<T> extends InputListener {
     }
 
     private void register() {
-        BlobLib.getInstance().getInventoryManager().addVariableSelector(selector);
+        BlobLib.getInstance().getVariableSelectorManager().addVariableSelector(selector);
     }
 
     @Override

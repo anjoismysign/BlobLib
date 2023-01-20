@@ -8,6 +8,7 @@ import us.mytheria.bloblib.entities.BlobMessageReader;
 import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
 import us.mytheria.bloblib.entities.message.SerialBlobMessage;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.HashMap;
 
@@ -76,6 +77,7 @@ public class MessageManager {
         lang.get("System.No-Permission").sendAndPlay(player);
     }
 
+    @Nullable
     public ReferenceBlobMessage getMessage(String key) {
         return new ReferenceBlobMessage(lang.get(key), key);
     }

@@ -1,66 +1,77 @@
 package us.mytheria.bloblib.managers;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Sound;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.entities.inventory.VariableSelector;
-import us.mytheria.bloblib.entities.listeners.SelectorListener;
+import us.mytheria.bloblib.entities.inventory.BlobInventory;
 
+import javax.annotation.Nullable;
+import java.io.File;
 import java.util.HashMap;
 
-public class InventoryManager implements Listener {
+public class InventoryManager {
     private final BlobLib main;
-    private final HashMap<String, VariableSelector<?>> variableSelectors;
+    private HashMap<String, BlobInventory> inventories;
+    private HashMap<String, Integer> duplicates;
 
     public InventoryManager() {
         this.main = BlobLib.getInstance();
-        Bukkit.getPluginManager().registerEvents(this, BlobLib.getInstance());
-        this.variableSelectors = new HashMap<>();
     }
 
+    public void reload() {
+        load();
+    }
 
-    @EventHandler
-    public void onClick(InventoryClickEvent e) {
-        Player player = (Player) e.getWhoClicked();
-        if (!variableSelectors.containsKey(player.getName()))
-            return;
-        SelectorListener<?> listener = main.getSelectorManager().get(player);
-        if (listener == null)
-            return;
-        e.setCancelled(true);
-        VariableSelector<?> variableSelector = variableSelectors.get(player.getName());
-        int slot = e.getRawSlot();
-        if (slot > variableSelector.valuesSize() - 1) {
-            if (variableSelector.isNextPageButton(slot)) {
-                variableSelector.nextPage();
-                return;
+    public void load() {
+        inventories = new HashMap<>();
+        duplicates = new HashMap<>();
+        loadFiles(main.getFileManager().defaultInventoriesFile());
+        duplicates.forEach((key, value) -> main.getLogger()
+                .severe("Duplicate BlobInventory: '" + key + "' (found " + value + " instances)"));
+    }
+
+    private void loadFiles(File path) {
+        File[] listOfFiles = path.listFiles();
+        for (File file : listOfFiles) {
+            if (file.isFile()) {
+                if (file.getName().equals(".DS_Store"))
+                    continue;
+                loadYamlConfiguration(file);
             }
-            if (variableSelector.isPreviousPageButton(slot)) {
-                variableSelector.previousPage();
-            }
-            return;
+            if (file.isDirectory())
+                loadFiles(path);
         }
-        listener.setInputFromSlot(variableSelector, slot);
-        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
     }
 
-    @EventHandler
-    public void onClose(InventoryCloseEvent e) {
-        Player player = (Player) e.getPlayer();
-        if (!variableSelectors.containsKey(player.getName()))
-            return;
-        SelectorListener<?> listener = main.getSelectorManager().get(player);
-        if (listener == null)
-            return;
-        listener.setInput(null);
+    private void loadYamlConfiguration(File file) {
+        YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
+        yamlConfiguration.getKeys(false).forEach(key -> {
+            ConfigurationSection section = yamlConfiguration.getConfigurationSection(key);
+            section.getKeys(true).forEach(subKey -> {
+                if (!section.isConfigurationSection(subKey))
+                    return;
+                ConfigurationSection subSection = section.getConfigurationSection(subKey);
+                if (!subSection.isInt("Size"))
+                    return;
+                String mapKey = key + "." + subKey;
+                if (inventories.containsKey(mapKey)) {
+                    addDuplicate(mapKey);
+                    return;
+                }
+                inventories.put(key + "." + subKey, BlobInventory.smartFromConfigurationSection(subSection));
+            });
+        });
     }
 
-    public void addVariableSelector(VariableSelector<?> variableSelector) {
-        variableSelectors.put(variableSelector.getPlayer().getName(), variableSelector);
+    private void addDuplicate(String key) {
+        if (duplicates.containsKey(key))
+            duplicates.put(key, duplicates.get(key) + 1);
+        else
+            duplicates.put(key, 2);
+    }
+
+    @Nullable
+    public BlobInventory getInventory(String key) {
+        return inventories.get(key);
     }
 }

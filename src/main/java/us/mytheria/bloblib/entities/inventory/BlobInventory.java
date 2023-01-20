@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import java.io.File;
 import java.util.HashMap;
 
-public class BlobInventory extends InventoryBuilder {
+public class BlobInventory extends InventoryBuilder implements Cloneable {
     private Inventory inventory;
     private HashMap<String, ItemStack> defaultButtons;
 
@@ -144,6 +144,11 @@ public class BlobInventory extends InventoryBuilder {
     }
 
     public BlobInventory() {
+    }
+
+    @Override
+    public BlobInventory clone() throws CloneNotSupportedException {
+        return (BlobInventory) super.clone();
     }
 
     public void addDefaultButton(String key) {

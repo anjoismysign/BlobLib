@@ -7,6 +7,7 @@ import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.BlobSoundReader;
 import us.mytheria.bloblib.entities.message.BlobSound;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.HashMap;
 
@@ -71,6 +72,7 @@ public class SoundManager {
             duplicates.put(key, 2);
     }
 
+    @Nullable
     public BlobSound getSound(String key) {
         return sounds.get(key);
     }

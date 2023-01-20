@@ -19,7 +19,7 @@ public final class BlobLib extends JavaPlugin {
     private ChatListenerManager chatManager;
     private SelPosListenerManager positionManager;
     private SelectorListenerManager selectorManager;
-    private InventoryManager inventoryManager;
+    private VariableSelectorManager variableSelectorManager;
     private DropListenerManager dropListenerManager;
 
     private static BlobLib instance;
@@ -42,7 +42,7 @@ public final class BlobLib extends JavaPlugin {
         chatManager = new ChatListenerManager();
         positionManager = new SelPosListenerManager();
         selectorManager = new SelectorListenerManager();
-        inventoryManager = new InventoryManager();
+        variableSelectorManager = new VariableSelectorManager();
         dropListenerManager = new DropListenerManager();
 
         //Load reloadable managers
@@ -86,8 +86,8 @@ public final class BlobLib extends JavaPlugin {
         return selectorManager;
     }
 
-    public InventoryManager getInventoryManager() {
-        return inventoryManager;
+    public VariableSelectorManager getVariableSelectorManager() {
+        return variableSelectorManager;
     }
 
     public FillerManager getFillerManager() {
