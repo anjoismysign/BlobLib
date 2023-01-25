@@ -51,6 +51,10 @@ public class FileManager {
         return sounds;
     }
 
+    public File inventoriesFile() {
+        return inventories;
+    }
+
     public File defaultInventoriesFile() {
         return defaultInventories;
     }

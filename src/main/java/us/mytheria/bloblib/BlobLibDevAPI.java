@@ -11,6 +11,7 @@ import us.mytheria.bloblib.entities.listeners.BlobChatListener;
 import us.mytheria.bloblib.entities.listeners.BlobDropListener;
 import us.mytheria.bloblib.entities.listeners.BlobSelPosListener;
 import us.mytheria.bloblib.entities.listeners.BlobSelectorListener;
+import us.mytheria.bloblib.managers.InventoryManager;
 import us.mytheria.bloblib.utilities.ResourceUtil;
 
 import java.io.File;
@@ -41,11 +42,49 @@ public class BlobLibDevAPI {
         return main.getFileManager().soundsFile();
     }
 
+    public static File getInventoriesFile() {
+        return main.getFileManager().inventoriesFile();
+    }
+
     /**
      * @return The sounds file path
      */
     public static String getSoundsFilePath() {
         return main.getFileManager().soundsFile().getPath();
+    }
+
+    /**
+     * @param fileNameOrPath The file name or path
+     * @param plugin         The plugin
+     * @return The file
+     */
+    public static Result<File> getInventoryFile(String fileNameOrPath, Plugin plugin) {
+        File path = new File(getInventoriesFile() + "/" + plugin.getName());
+        File file = new File(path +
+                "/" + fileNameOrPath + ".yml");
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+                ResourceUtil.updateYml(path, "/temp" + fileNameOrPath + ".yml", fileNameOrPath + ".yml", file, plugin);
+                return Result.valid(file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return Result.invalid(file);
+    }
+
+    /**
+     * @param fileNameOrPath The file name or path
+     * @param plugin         The JavaPlugin instance
+     * @return true if the file exists, false otherwise
+     */
+    public static boolean registerInventoryFile(String fileNameOrPath, Plugin plugin) {
+        Result<File> result = getInventoryFile(fileNameOrPath, plugin);
+        if (!result.isValid())
+            return false;
+        InventoryManager.loadYamlConfiguration(result.value());
+        return true;
     }
 
     /**

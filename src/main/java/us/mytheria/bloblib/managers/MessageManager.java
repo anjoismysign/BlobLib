@@ -14,7 +14,7 @@ import java.util.HashMap;
 
 public class MessageManager {
     private final BlobLib main;
-    private HashMap<String, SerialBlobMessage> lang;
+    private HashMap<String, SerialBlobMessage> messages;
     private HashMap<String, Integer> duplicates;
 
     public MessageManager() {
@@ -26,7 +26,7 @@ public class MessageManager {
     }
 
     public void load() {
-        lang = new HashMap<>();
+        messages = new HashMap<>();
         duplicates = new HashMap<>();
         loadFiles(main.getFileManager().messagesFile());
         duplicates.forEach((key, value) -> main.getLogger()
@@ -57,11 +57,11 @@ public class MessageManager {
                 if (!subSection.isString("Type"))
                     return;
                 String mapKey = key + "." + subKey;
-                if (lang.containsKey(mapKey)) {
+                if (messages.containsKey(mapKey)) {
                     addDuplicate(mapKey);
                     return;
                 }
-                lang.put(key + "." + subKey, BlobMessageReader.read(subSection));
+                messages.put(key + "." + subKey, BlobMessageReader.read(subSection));
             });
         });
     }
@@ -74,23 +74,23 @@ public class MessageManager {
     }
 
     public void noPermission(Player player) {
-        lang.get("System.No-Permission").sendAndPlay(player);
+        messages.get("System.No-Permission").sendAndPlay(player);
     }
 
     @Nullable
     public ReferenceBlobMessage getMessage(String key) {
-        return new ReferenceBlobMessage(lang.get(key), key);
+        return new ReferenceBlobMessage(messages.get(key), key);
     }
 
     public void playAndSend(Player player, String key) {
-        SerialBlobMessage message = lang.get(key);
+        SerialBlobMessage message = messages.get(key);
         if (message == null)
             throw new NullPointerException("Message '" + key + "' does not exist!");
         message.sendAndPlay(player);
     }
 
     public void send(Player player, String key) {
-        SerialBlobMessage message = lang.get(key);
+        SerialBlobMessage message = messages.get(key);
         if (message == null)
             throw new NullPointerException("Message '" + key + "' does not exist!");
         message.send(player);

@@ -43,7 +43,9 @@ public class InventoryManager {
         }
     }
 
-    private void loadYamlConfiguration(File file) {
+    public static void loadYamlConfiguration(File file) {
+        InventoryManager inventoryManager = BlobLib.getInstance().getInventoryManager();
+        HashMap<String, BlobInventory> inventories = inventoryManager.inventories;
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         yamlConfiguration.getKeys(false).forEach(key -> {
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(key);
@@ -55,7 +57,7 @@ public class InventoryManager {
                     return;
                 String mapKey = key + "." + subKey;
                 if (inventories.containsKey(mapKey)) {
-                    addDuplicate(mapKey);
+                    inventoryManager.addDuplicate(mapKey);
                     return;
                 }
                 inventories.put(key + "." + subKey, BlobInventory.smartFromConfigurationSection(subSection));
