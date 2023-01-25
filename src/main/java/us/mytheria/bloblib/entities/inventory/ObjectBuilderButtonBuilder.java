@@ -31,6 +31,43 @@ public class ObjectBuilderButtonBuilder {
         return STRING(buttonKey, timeout, timeoutMessageKey, timerMessageKey, s -> true);
     }
 
+    /**
+     * A quick ObjectBuilderButton for String's.
+     * An example of how to use it:
+     * <pre>
+     *     ObjectBuilder&lt;Person&gt; objectBuilder = someRandomObjectBuilderYouHave;
+     *
+     *     ObjectBuilderButton&lt;String&gt; button =
+     *     ObjectBuilderButtonBuilder.QUICK_STRING("Password", 300, "password");
+     *
+     *     assert button.equals(ObjectBuilderButtonBuilder.STRING("Password", 300,
+     *     "Builder.Password-Timeout", "Builder.Password", value -> {
+     *                     objectBuilder.updateDefaultButton("Password", "%password%",
+     *                             value == null ? "N/A" : value + value);
+     *                     objectBuilder.openInventory();
+     *                     return true;
+     *                 }));
+     * </pre>
+     *
+     * @param buttonKey        The key of the button
+     * @param timeout          The timeout of the chat listener
+     * @param placeholderRegex The regex that the string must match
+     * @return The button
+     */
+    public static ObjectBuilderButton<String> QUICK_STRING(String buttonKey, long timeout,
+                                                           String placeholderRegex,
+                                                           ObjectBuilder<?> objectBuilder) {
+        return STRING(buttonKey, timeout, "Builder." + buttonKey
+                        + "-Timeout", "Builder." + buttonKey,
+                value -> {
+                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                            value == null ? "N/A" : value + value);
+                    objectBuilder.openInventory();
+                    return true;
+                });
+
+    }
+
     public static ObjectBuilderButton<Byte> BYTE(String buttonKey, long timeout,
                                                  String timeoutMessageKey,
                                                  String timerMessageKey,
@@ -52,6 +89,44 @@ public class ObjectBuilderButtonBuilder {
                                                         String timeoutMessageKey,
                                                         String timerMessageKey) {
         return BYTE(buttonKey, timeout, timeoutMessageKey, timerMessageKey, b -> true);
+    }
+
+    /**
+     * A quick ObjectBuilderButton for Byte's.
+     * An example of how to use it:
+     * <pre>
+     *     ObjectBuilder&lt;Person&gt; objectBuilder = someRandomObjectBuilderYouHave;
+     *
+     *     ObjectBuilderButton&lt;Byte&gt; button =
+     *     ObjectBuilderButtonBuilder.QUICK_BYTE("Age", 300, "age", objectBuilder);
+     *
+     *     assert button.equals(ObjectBuilderButtonBuilder.BYTE("Age", 300,
+     *     "Builder.Age-Timeout", "Builder.Age", value -> {
+     *                objectBuilder.updateDefaultButton("Age", "%age%",
+     *                "" + value);
+     *                objectBuilder.openInventory();
+     *                return true;
+     *                }));
+     *                </pre>
+     *
+     * @param buttonKey        The key of the button
+     * @param timeout          The timeout of the chat listener
+     * @param placeholderRegex The regex that the string must match
+     * @param objectBuilder    The object builder
+     * @return The button
+     */
+    public static ObjectBuilderButton<Byte> QUICK_BYTE(String buttonKey, long timeout,
+                                                       String placeholderRegex,
+                                                       ObjectBuilder<?> objectBuilder) {
+        return BYTE(buttonKey, timeout, "Builder." + buttonKey
+                        + "-Timeout", "Builder." + buttonKey,
+                value -> {
+                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                            "" + value);
+                    objectBuilder.openInventory();
+                    return true;
+                });
+
     }
 
     public static ObjectBuilderButton<Short> SHORT(String buttonKey, long timeout,
@@ -76,6 +151,44 @@ public class ObjectBuilderButtonBuilder {
         return SHORT(buttonKey, timeout, timeoutMessageKey, timerMessageKey, s -> true);
     }
 
+    /**
+     * A quick ObjectBuilderButton for Short's.
+     * An example of how to use it:
+     * <pre>
+     *     ObjectBuilder&lt;Person&gt; objectBuilder = someRandomObjectBuilderYouHave;
+     *
+     *     ObjectBuilderButton&lt;Short&gt; button =
+     *     ObjectBuilderButtonBuilder.QUICK_SHORT("Level", 300, "level", objectBuilder);
+     *
+     *     assert button.equals(ObjectBuilderButtonBuilder.SHORT("Level", 300,
+     *     "Builder.Level-Timeout", "Builder.Level", value -> {
+     *           objectBuilder.updateDefaultButton("Level", "%level%",
+     *           "" + value);
+     *           objectBuilder.openInventory();
+     *           return true;
+     *           }));
+     *           </pre>
+     *
+     * @param buttonKey        The key of the button
+     * @param timeout          The timeout of the chat listener
+     * @param placeholderRegex The regex that the string must match
+     * @param objectBuilder    The object builder
+     * @return The button
+     */
+    public static ObjectBuilderButton<Short> QUICK_SHORT(String buttonKey, long timeout,
+                                                         String placeholderRegex,
+                                                         ObjectBuilder<?> objectBuilder) {
+        return SHORT(buttonKey, timeout, "Builder." + buttonKey
+                        + "-Timeout", "Builder." + buttonKey,
+                value -> {
+                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                            "" + value);
+                    objectBuilder.openInventory();
+                    return true;
+                });
+
+    }
+
     public static ObjectBuilderButton<Integer> INTEGER(String buttonKey, long timeout,
                                                        String timeoutMessageKey,
                                                        String timerMessageKey,
@@ -96,6 +209,44 @@ public class ObjectBuilderButtonBuilder {
                                                               String timeoutMessageKey,
                                                               String timerMessageKey) {
         return INTEGER(buttonKey, timeout, timeoutMessageKey, timerMessageKey, i -> true);
+    }
+
+    /**
+     * A quick ObjectBuilderButton for Integer's.
+     * An example of how to use it:
+     * <pre>
+     *     ObjectBuilder&lt;Person&gt; objectBuilder = someRandomObjectBuilderYouHave;
+     *
+     *     ObjectBuilderButton&lt;Integer&gt; button =
+     *     ObjectBuilderButtonBuilder.QUICK_INTEGER("Damage", 300, "damage", objectBuilder);
+     *
+     *     assert button.equals(ObjectBuilderButtonBuilder.INTEGER("Damage", 300,
+     *     "Builder.Damage-Timeout", "Builder.Damage", value -> {
+     *      objectBuilder.updateDefaultButton("Damage", "%damage%",
+     *      "" + value);
+     *      objectBuilder.openInventory();
+     *      return true;
+     *      }));
+     *      </pre>
+     *
+     * @param buttonKey        The key of the button
+     * @param timeout          The timeout of the chat listener
+     * @param placeholderRegex The regex that the string must match
+     * @param objectBuilder    The object builder
+     * @return The button
+     */
+    public static ObjectBuilderButton<Integer> QUICK_INTEGER(String buttonKey, long timeout,
+                                                             String placeholderRegex,
+                                                             ObjectBuilder<?> objectBuilder) {
+        return INTEGER(buttonKey, timeout, "Builder." + buttonKey
+                        + "-Timeout", "Builder." + buttonKey,
+                value -> {
+                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                            "" + value);
+                    objectBuilder.openInventory();
+                    return true;
+                });
+
     }
 
     public static ObjectBuilderButton<Long> LONG(String buttonKey, long timeout,
@@ -120,6 +271,44 @@ public class ObjectBuilderButtonBuilder {
         return LONG(buttonKey, timeout, timeoutMessageKey, timerMessageKey, l -> true);
     }
 
+    /**
+     * A quick ObjectBuilderButton for Long's.
+     * An example of how to use it:
+     * <pre>
+     *     ObjectBuilder&lt;Person&gt; objectBuilder = someRandomObjectBuilderYouHave;
+     *
+     *     ObjectBuilderButton&lt;Long&gt; button =
+     *     ObjectBuilderButtonBuilder.QUICK_LONG("Coins", 300, "coins", objectBuilder);
+     *
+     *     assert button.equals(ObjectBuilderButtonBuilder.LONG("Coins", 300,
+     *     "Builder.Coins-Timeout", "Builder.Coins", value -> {
+     *     objectBuilder.updateDefaultButton("Coins", "%coins%",
+     *     "" + value);
+     *     objectBuilder.openInventory();
+     *     return true;
+     *     }));
+     *     </pre>
+     *
+     * @param buttonKey        The key of the button
+     * @param timeout          The timeout of the chat listener
+     * @param placeholderRegex The regex that the string must match
+     * @param objectBuilder    The object builder
+     * @return The button
+     */
+    public static ObjectBuilderButton<Long> QUICK_LONG(String buttonKey, long timeout,
+                                                       String placeholderRegex,
+                                                       ObjectBuilder<?> objectBuilder) {
+        return LONG(buttonKey, timeout, "Builder." + buttonKey
+                        + "-Timeout", "Builder." + buttonKey,
+                value -> {
+                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                            "" + value);
+                    objectBuilder.openInventory();
+                    return true;
+                });
+
+    }
+
     public static ObjectBuilderButton<Float> FLOAT(String buttonKey, long timeout,
                                                    String timeoutMessageKey,
                                                    String timerMessageKey,
@@ -142,6 +331,44 @@ public class ObjectBuilderButtonBuilder {
         return FLOAT(buttonKey, timeout, timeoutMessageKey, timerMessageKey, f -> true);
     }
 
+    /**
+     * A quick ObjectBuilderButton for Float's.
+     * An example of how to use it:
+     * <pre>
+     *     ObjectBuilder&lt;Person&gt; objectBuilder = someRandomObjectBuilderYouHave;
+     *
+     *     ObjectBuilderButton&lt;Float&gt; button =
+     *     ObjectBuilderButtonBuilder.QUICK_FLOAT("Health", 300, "health", objectBuilder);
+     *
+     *     assert button.equals(ObjectBuilderButtonBuilder.FLOAT("Health", 300,
+     *     "Builder.Health-Timeout", "Builder.Health", value -> {
+     *     objectBuilder.updateDefaultButton("Health", "%health%",
+     *     "" + value);
+     *     objectBuilder.openInventory();
+     *     return true;
+     *     }));
+     *     </pre>
+     *
+     * @param buttonKey        The key of the button
+     * @param timeout          The timeout of the chat listener
+     * @param placeholderRegex The regex that the string must match
+     * @param objectBuilder    The object builder
+     * @return The button
+     */
+    public static ObjectBuilderButton<Float> QUICK_FLOAT(String buttonKey, long timeout,
+                                                         String placeholderRegex,
+                                                         ObjectBuilder<?> objectBuilder) {
+        return FLOAT(buttonKey, timeout, "Builder." + buttonKey
+                        + "-Timeout", "Builder." + buttonKey,
+                value -> {
+                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                            "" + value);
+                    objectBuilder.openInventory();
+                    return true;
+                });
+
+    }
+
     public static ObjectBuilderButton<Double> DOUBLE(String buttonKey, long timeout,
                                                      String timeoutMessageKey,
                                                      String timerMessageKey,
@@ -162,6 +389,44 @@ public class ObjectBuilderButtonBuilder {
                                                             String timeoutMessageKey,
                                                             String timerMessageKey) {
         return DOUBLE(buttonKey, timeout, timeoutMessageKey, timerMessageKey, d -> true);
+    }
+
+    /**
+     * A quick ObjectBuilderButton for Double's.
+     * An example of how to use it:
+     * <pre>
+     *     ObjectBuilder&lt;Person&gt; objectBuilder = someRandomObjectBuilderYouHave;
+     *
+     *     ObjectBuilderButton&lt;Double&gt; button =
+     *     ObjectBuilderButtonBuilder.QUICK_DOUBLE("Dogecoin", 300, "dogecoin", objectBuilder);
+     *
+     *     assert button.equals(ObjectBuilderButtonBuilder.DOUBLE("Dogecoin", 300,
+     *     "Builder.Dogecoin-Timeout", "Builder.Dogecoin", value -> {
+     *     objectBuilder.updateDefaultButton("Dogecoin", "%dogecoin%",
+     *     "" + value);
+     *     objectBuilder.openInventory();
+     *     return true;
+     *     }));
+     *     </pre>
+     *
+     * @param buttonKey        The key of the button
+     * @param timeout          The timeout of the chat listener
+     * @param placeholderRegex The regex that the string must match
+     * @param objectBuilder    The object builder
+     * @return The button
+     */
+    public static ObjectBuilderButton<Double> QUICK_DOUBLE(String buttonKey, long timeout,
+                                                           String placeholderRegex,
+                                                           ObjectBuilder<?> objectBuilder) {
+        return DOUBLE(buttonKey, timeout, "Builder." + buttonKey
+                        + "-Timeout", "Builder." + buttonKey,
+                value -> {
+                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                            "" + value);
+                    objectBuilder.openInventory();
+                    return true;
+                });
+
     }
 
     public static ObjectBuilderButton<Block> BLOCK(String buttonKey, long timeout,
