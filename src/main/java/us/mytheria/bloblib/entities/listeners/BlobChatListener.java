@@ -14,8 +14,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+/**
+ * @author anjoismysign
+ * A listener that runs tasks when input is received through chat
+ */
 public class BlobChatListener extends ChatListener {
-    private List<BlobMessage> messages;
+    private final List<BlobMessage> messages;
     private BukkitTask messageTask;
 
     /**
@@ -26,12 +30,23 @@ public class BlobChatListener extends ChatListener {
      * @param inputRunnable   The runnable to run when the ChatListener receives input
      * @param timeoutRunnable The runnable to run when the ChatListener times out
      * @param messages        The messages to send to the player
+     * @return The ChatListener
      */
     public static BlobChatListener build(Player owner, long timeout, Runnable inputRunnable,
                                          Runnable timeoutRunnable, List<BlobMessage> messages) {
         return new BlobChatListener(owner.getName(), timeout, inputRunnable, timeoutRunnable, messages);
     }
 
+    /**
+     * Will run a smart ChatListener which will send messages to player every 10 ticks asynchronously
+     *
+     * @param owner             The owner of the ChatListener
+     * @param timeout           The timeout of the ChatListener
+     * @param consumer          The consumer to run when the ChatListener receives input
+     * @param timeoutMessageKey The message to send when the ChatListener times out
+     * @param timerMessageKey   The message to send to the player every 10 ticks
+     * @return The ChatListener
+     */
     public static BlobChatListener smart(Player owner, long timeout, Consumer<String> consumer,
                                          String timeoutMessageKey, String timerMessageKey) {
         BlobLib main = BlobLib.getInstance();
@@ -71,6 +86,9 @@ public class BlobChatListener extends ChatListener {
         this.messages = messages;
     }
 
+    /**
+     * Runs the ChatListener
+     */
     @Override
     public void runTasks() {
         super.runTasks();
@@ -88,12 +106,18 @@ public class BlobChatListener extends ChatListener {
         this.messageTask = bukkitRunnable.runTaskTimerAsynchronously(BlobLib.getInstance(), 0, 10);
     }
 
+    /**
+     * Cancels the ChatListener
+     */
     @Override
     public void cancel() {
         getTask().cancel();
         messageTask.cancel();
     }
 
+    /**
+     * @return The messages to send to the player
+     */
     public List<BlobMessage> getMessages() {
         return messages;
     }

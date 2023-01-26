@@ -199,8 +199,8 @@ public class BlobLibAPI {
      *
      * @return true if the permission was added, false if the player already had the permission
      */
-    public static void addPermission(Player player, String permission) {
-        main.getVaultManager().getVaultPermissionsWorker().addPermission(player, permission);
+    public static boolean addPermission(Player player, String permission) {
+        return main.getVaultManager().getVaultPermissionsWorker().addPermission(player, permission);
     }
 
     /**
@@ -210,8 +210,8 @@ public class BlobLibAPI {
      *
      * @return true if the permission was removed, false if the player did not have the permission
      */
-    public static void removePermission(Player player, String permission) {
-        main.getVaultManager().getVaultPermissionsWorker().removePermission(player, permission);
+    public static boolean removePermission(Player player, String permission) {
+        return main.getVaultManager().getVaultPermissionsWorker().removePermission(player, permission);
     }
 
     /**
@@ -221,8 +221,8 @@ public class BlobLibAPI {
      *
      * @return true if the permission was added, false if the player already had the permission
      */
-    public static void addPermission(Player player, String permission, String world) {
-        main.getVaultManager().getVaultPermissionsWorker().addPermission(player, permission, world);
+    public static boolean addPermission(Player player, String permission, String world) {
+        return main.getVaultManager().getVaultPermissionsWorker().addPermission(player, permission, world);
     }
 
     /**
@@ -233,7 +233,7 @@ public class BlobLibAPI {
      *
      * @return true if the permission was removed, false if the player did not have the permission
      */
-    public static void removePermission(Player player, String permission, String world) {
-        main.getVaultManager().getVaultPermissionsWorker().removePermission(player, permission, world);
+    public static boolean removePermission(Player player, String permission, String world) {
+        return main.getVaultManager().getVaultPermissionsWorker().removePermission(player, permission, world);
     }
 }

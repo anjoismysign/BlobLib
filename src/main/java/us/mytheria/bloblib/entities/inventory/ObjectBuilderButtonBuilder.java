@@ -147,11 +147,11 @@ public class ObjectBuilderButtonBuilder {
      *                                 byte input = Byte.parseByte(string);
      *                                 Function&lt;Byte, Boolean&gt; function = value -> {
      *                                     objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-     *                                             value < 0 ? "N/A" : "" + value);
+     *                                             value &lt; 0 ? "N/A" : "" + value);
      *                                     objectBuilder.openInventory();
      *                                     return true;
      *                                 };
-     *                                 if (input < 0) {
+     *                                 if (input &lt; 0) {
      *                                     button.set(null, function);
      *                                 } else {
      *                                     button.set(input, function);
@@ -272,11 +272,11 @@ public class ObjectBuilderButtonBuilder {
      *            short input = Short.parseShort(string);
      *            Function&lt;Short, Boolean&gt; function = value -> {
      *            objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-     *            value < 0 ? "N/A" : "" + value);
+     *            value &lt; 0 ? "N/A" : "" + value);
      *            objectBuilder.openInventory();
      *            return true;
      *            };
-     *            if (input < 0) {
+     *            if (input &lt; 0) {
      *            button.set(null, function);
      *            } else {
      *            button.set(input, function);
@@ -397,11 +397,11 @@ public class ObjectBuilderButtonBuilder {
      *       int input = Integer.parseInt(string);
      *       Function&lt;Integer, Boolean&gt; function = value -> {
      *       objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-     *       value < 0 ? "N/A" : "" + value);
+     *       value &lt; 0 ? "N/A" : "" + value);
      *       objectBuilder.openInventory();
      *       return true;
      *       };
-     *       if (input < 0) {
+     *       if (input &lt; 0) {
      *       button.set(null, function);
      *       } else {
      *       button.set(input, function);
@@ -522,11 +522,11 @@ public class ObjectBuilderButtonBuilder {
      *     long input = Long.parseLong(string);
      *     Function&lt;Long, Boolean&gt; function = value -> {
      *     objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-     *     value < 0 ? "N/A" : "" + value);
+     *     value &lt; 0 ? "N/A" : "" + value);
      *     objectBuilder.openInventory();
      *     return true;
      *     };
-     *     if (input < 0) {
+     *     if (input &lt; 0) {
      *     button.set(null, function);
      *     } else {
      *     button.set(input, function);
@@ -647,11 +647,11 @@ public class ObjectBuilderButtonBuilder {
      *     float input = Float.parseFloat(string);
      *     Function&lt;Float, Boolean&gt; function = value -> {
      *     objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-     *     value < 0 ? "N/A" : "" + value);
+     *     value &lt; 0 ? "N/A" : "" + value);
      *     objectBuilder.openInventory();
      *     return true;
      *     };
-     *     if (input < 0) {
+     *     if (input &lt; 0) {
      *     button.set(null, function);
      *     } else {
      *     button.set(input, function);
@@ -772,11 +772,11 @@ public class ObjectBuilderButtonBuilder {
      *     double input = Double.parseDouble(string);
      *     Function&lt;Double, Boolean&gt; function = value -> {
      *     objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-     *     value < 0 ? "N/A" : "" + value);
+     *     value &lt; 0 ? "N/A" : "" + value);
      *     objectBuilder.openInventory();
      *     return true;
      *     };
-     *     if (input < 0) {
+     *     if (input &lt; 0) {
      *     button.set(null, function);
      *     } else {
      *     button.set(input, function);

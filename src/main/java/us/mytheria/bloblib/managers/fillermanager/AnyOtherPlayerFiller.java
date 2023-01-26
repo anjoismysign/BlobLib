@@ -13,8 +13,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * @author anjoismysign
+ * A filler that fills all players except the one specified
+ */
 public record AnyOtherPlayerFiller(Player exclude) implements VariableFiller<UUID> {
 
+    /**
+     * @param page         The page to get
+     * @param itemsPerPage The amount of items per page
+     * @return The items for the page
+     */
     @Override
     public List<VariableValue<UUID>> page(int page, int itemsPerPage) {
         int start = (page - 1) * itemsPerPage;
@@ -42,6 +51,10 @@ public record AnyOtherPlayerFiller(Player exclude) implements VariableFiller<UUI
         return values;
     }
 
+    /**
+     * @param itemsPerPage The amount of items per page
+     * @return The total amount of pages
+     */
     @Override
     public int totalPages(int itemsPerPage) {
         return (int) Math.ceil((double) Bukkit.getOnlinePlayers().size() - 1 / (double) itemsPerPage);

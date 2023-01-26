@@ -46,8 +46,8 @@ public class SuperBlobButtonManager extends ButtonManager {
     }
 
     @Override
-    public boolean contains(int key) {
-        return getIntegerKeys().containsKey(key);
+    public boolean contains(int slot) {
+        return getIntegerKeys().containsKey(slot);
     }
 
     @Override
@@ -61,8 +61,8 @@ public class SuperBlobButtonManager extends ButtonManager {
     }
 
     @Override
-    public ItemStack get(int key) {
-        return getIntegerKeys().get(key);
+    public ItemStack get(int slot) {
+        return getIntegerKeys().get(slot);
     }
 
     @Override

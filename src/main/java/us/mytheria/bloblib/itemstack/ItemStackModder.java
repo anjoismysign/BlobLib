@@ -229,7 +229,7 @@ public final class ItemStackModder {
     }
 
     /**
-     * Replaces in both displayName && lore if available
+     * Replaces in both displayName and lore if available
      *
      * @param regex       the regex to replace
      * @param replacement the replacement

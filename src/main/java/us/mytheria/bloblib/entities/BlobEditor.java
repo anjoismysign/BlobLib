@@ -17,27 +17,71 @@ import us.mytheria.bloblib.managers.SelectorListenerManager;
 import java.util.*;
 import java.util.function.Function;
 
+/**
+ * @author anjoismysign
+ * A BlobEditor is a VariableEditor that can be used to edit a collection.
+ */
 public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor<T> {
     private final List<T> list;
     private final Collection<T> collection;
     private final SelectorListenerManager selectorManager;
 
+    /**
+     * Creates a new BlobEditor passing a BlobInventory for VariableSelector
+     */
     public static <T> BlobEditor<T> build(BlobInventory blobInventory, UUID builderId,
                                           String dataType) {
         return new BlobEditor<>(blobInventory, builderId,
                 dataType);
     }
 
+    /**
+     * Creates a new BlobEditor
+     *
+     * @param builderId the id of the builder
+     * @param dataType  the data type of the editor
+     * @return the new BlobEditor
+     */
     public static <T> BlobEditor<T> DEFAULT(UUID builderId, String dataType) {
         return new BlobEditor<>(VariableSelector.DEFAULT(), builderId,
                 dataType);
     }
 
+    /**
+     * Creates a new BlobEditor passing specific collection.
+     *
+     * @param builderId  the id of the builder
+     * @param dataType   the data type of the editor
+     * @param collection the collection to edit
+     * @return the new BlobEditor
+     */
+    public static <T> BlobEditor<T> COLLECTION_INJECTION(UUID builderId, String dataType, Collection<T> collection) {
+        return new BlobEditor<>(VariableSelector.DEFAULT_ITEMSTACKREADER(), builderId,
+                dataType, collection);
+    }
+
+    /**
+     * Creates a new BlobEditor.
+     *
+     * @param builderId the id of the builder
+     * @param dataType  the data type of the editor
+     * @return the new BlobEditor
+     */
+    @Deprecated
     public static <T> BlobEditor<T> DEFAULT_ITEMSTACKREADER(UUID builderId, String dataType) {
         return new BlobEditor<>(VariableSelector.DEFAULT_ITEMSTACKREADER(), builderId,
                 dataType);
     }
 
+    /**
+     * Creates a new BlobEditor passing specific collection.
+     *
+     * @param builderId  the id of the builder
+     * @param dataType   the data type of the editor
+     * @param collection the collection to edit
+     * @return the new BlobEditor
+     */
+    @Deprecated
     public static <T> BlobEditor<T> DEFAULT_ITEMSTACKREADER(UUID builderId, String dataType, Collection<T> collection) {
         return new BlobEditor<>(VariableSelector.DEFAULT_ITEMSTACKREADER(), builderId,
                 dataType, collection);
@@ -59,10 +103,19 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
         selectorManager = BlobLib.getInstance().getSelectorManager();
     }
 
+    /**
+     * any actions that should be executed inside the constructor on super call
+     */
     @Override
     public void loadInConstructor() {
     }
 
+    /**
+     * loads the page with the given page number
+     *
+     * @param page   the page number
+     * @param refill if the background should be refilled
+     */
     @Override
     public void loadPage(int page, boolean refill) {
         if (page < 1) {
@@ -80,6 +133,13 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
         }
     }
 
+    /**
+     * loads the page with the given page number
+     *
+     * @param page     the page number
+     * @param refill   if the background should be refilled
+     * @param function the function to apply
+     */
     public void loadCustomPage(int page, boolean refill, Function<T, ItemStack> function) {
         if (page < 1) {
             return;
@@ -96,6 +156,12 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
         }
     }
 
+    /**
+     * returns the page with the given page number without loading
+     *
+     * @param page         the page number
+     * @param itemsPerPage the items per page
+     */
     @Override
     public List<VariableValue<T>> page(int page, int itemsPerPage) {
         int start = (page - 1) * itemsPerPage;
@@ -117,6 +183,14 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
         return values;
     }
 
+    /**
+     * returns specific page with provided function without loading
+     *
+     * @param page         the page
+     * @param itemsPerPage the items per page
+     * @param function     the function to apply
+     * @return the list of values
+     */
     public List<VariableValue<T>> customPage(int page, int itemsPerPage, Function<T, ItemStack> function) {
         int start = (page - 1) * itemsPerPage;
         int end = start + (itemsPerPage);
@@ -137,6 +211,12 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
         list.remove(t);
     }
 
+    /**
+     * removes an element from the list
+     *
+     * @param player   the player
+     * @param onRemove the runnable to run after the element is removed
+     */
     @SuppressWarnings("unchecked")
     public void removeElement(Player player, Runnable onRemove) {
         loadPage(getPage(), true);
@@ -161,6 +241,13 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
                 this));
     }
 
+    /**
+     * removes an element from the list
+     *
+     * @param player   the player
+     * @param onRemove the runnable to run when the element is removed
+     * @param function the function to get the itemstack from the element
+     */
     public void removeElement(Player player, Runnable onRemove, Function<T, ItemStack> function) {
         loadCustomPage(getPage(), true, function);
         selectorManager.addSelectorListener(player, BlobSelectorListener.build(player,
@@ -184,15 +271,26 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
                 this));
     }
 
+    /**
+     * add an element to the list
+     *
+     * @param element the element to add
+     */
     public void addElement(T element) {
         list.add(element);
     }
 
+    /**
+     * @return the total pages
+     */
     @Override
     public int totalPages(int itemsPerPage) {
         return (int) Math.ceil((double) getList().size() / (double) itemsPerPage);
     }
 
+    /**
+     * @return the total pages using getItemsPerPage() method
+     */
     @Override
     public int getTotalPages() {
         int totalPages = totalPages(getItemsPerPage());
@@ -201,11 +299,19 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
         return totalPages;
     }
 
+    /**
+     * add an element to the list
+     *
+     * @param t the element to add
+     */
     @Override
     public void add(T t) {
         list.add(t);
     }
 
+    /**
+     * @return the list
+     */
     public List<T> getList() {
         if (collection != null) {
             return new ArrayList<>(collection);

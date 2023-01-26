@@ -15,15 +15,37 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+/**
+ * @author anjoismysign
+ * A listener that runs a task when the owner drops an item.
+ */
 public class BlobDropListener extends DropListener {
     private List<BlobMessage> messages;
     private BukkitTask messageTask;
 
-    public static BlobDropListener build(Player owner, Runnable inputRunnable, List<BlobMessage> messages) {
+    /**
+     * Creates a new DropListener.
+     *
+     * @param owner         the owner of the listener
+     * @param inputRunnable the runnable to run when the input is received
+     * @param messages      the messages to send to the owner
+     * @return the new DropListener
+     */
+    public static BlobDropListener build(Player owner, Runnable inputRunnable,
+                                         List<BlobMessage> messages) {
         return new BlobDropListener(owner.getName(), inputRunnable, messages);
     }
 
-    public static BlobDropListener smart(Player owner, Consumer<ItemStack> consumer, String timerMessageKey) {
+    /**
+     * Creates a new DropListener. Smart instance.
+     *
+     * @param owner           the owner of the listener
+     * @param consumer        the consumer of the input
+     * @param timerMessageKey the key of the message to send to the owner
+     * @return the new DropListener
+     */
+    public static BlobDropListener smart(Player owner, Consumer<ItemStack> consumer,
+                                         String timerMessageKey) {
         BlobLib main = BlobLib.getInstance();
         DropListenerManager dropManager = main.getDropListenerManager();
         Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibAPI.getMessage(timerMessageKey));
@@ -40,12 +62,21 @@ public class BlobDropListener extends DropListener {
         }, messages);
     }
 
+    /**
+     * Creates a new DropListener
+     *
+     * @param owner         the owner of the listener
+     * @param inputRunnable the runnable to run when the input is received
+     */
     private BlobDropListener(String owner, Runnable inputRunnable,
                              List<BlobMessage> messages) {
         super(owner, inputRunnable);
         this.messages = messages;
     }
 
+    /**
+     * Runs the tasks
+     */
     @Override
     public void runTasks() {
         super.runTasks();
@@ -63,14 +94,19 @@ public class BlobDropListener extends DropListener {
         this.messageTask = bukkitRunnable.runTaskTimerAsynchronously(BlobLib.getInstance(), 0, 10);
     }
 
+    /**
+     * Cancels the task
+     */
     @Override
     public void cancel() {
         messageTask.cancel();
     }
 
+    /**
+     * @return the messages
+     */
     public List<BlobMessage> getMessages() {
         return messages;
     }
-
 
 }

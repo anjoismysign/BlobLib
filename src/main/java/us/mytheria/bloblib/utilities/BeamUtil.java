@@ -6,6 +6,10 @@ import org.bukkit.entity.LivingEntity;
 
 import javax.annotation.Nullable;
 
+/**
+ * @author anjoismysign
+ * A utility class for creating GuardianBeams
+ */
 public class BeamUtil {
 
     /**
