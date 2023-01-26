@@ -150,6 +150,30 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
         return addObjectBuilderButton(ObjectBuilderButtonBuilder.QUICK_WORLD(buttonKey, timeout, this));
     }
 
+    public ObjectBuilder<T> addQuickOptionalByteButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.OPTIONAL_QUICK_BYTE(buttonKey, timeout, this));
+    }
+
+    public ObjectBuilder<T> addQuickOptionalShortButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.OPTIONAL_QUICK_SHORT(buttonKey, timeout, this));
+    }
+
+    public ObjectBuilder<T> addQuickOptionalIntegerButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.OPTIONAL_QUICK_INTEGER(buttonKey, timeout, this));
+    }
+
+    public ObjectBuilder<T> addQuickOptionalLongButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.OPTIONAL_QUICK_LONG(buttonKey, timeout, this));
+    }
+
+    public ObjectBuilder<T> addQuickOptionalFloatButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.OPTIONAL_QUICK_FLOAT(buttonKey, timeout, this));
+    }
+
+    public ObjectBuilder<T> addQuickOptionalDoubleButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.OPTIONAL_QUICK_DOUBLE(buttonKey, timeout, this));
+    }
+
     public ObjectBuilder<T> setFunction(Function<ObjectBuilder<T>, T> function) {
         this.function = function;
         return this;
