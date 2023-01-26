@@ -1,6 +1,5 @@
 package us.mytheria.bloblib.entities.inventory;
 
-import me.anjoismysign.anjo.entities.ConventionHelper;
 import me.anjoismysign.anjo.entities.NamingConventions;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -132,6 +131,71 @@ public class ObjectBuilderButtonBuilder {
 
     }
 
+    /**
+     * A quick optional ObjectBuilderButton for Byte's
+     * An example of how to use it:
+     *
+     * <pre>
+     *     ObjectBuilder&lt;Person&gt; objectBuilder = someRandomObjectBuilderYouHave;
+     *
+     *     ObjectBuilderButton&lt;Byte&gt; button =
+     *     ObjectBuilderButtonBuilder.QUICK_OPTIONAL_BYTE("Age", 300, objectBuilder);
+     *
+     *     assert button.equals(new ObjectBuilderButton&lt;&gt;(buttonKey, Optional.empty(),
+     *                 (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+     *                             try {
+     *                                 byte input = Byte.parseByte(string);
+     *                                 Function&lt;Byte, Boolean&gt; function = value -> {
+     *                                     objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+     *                                             value < 0 ? "N/A" : "" + value);
+     *                                     objectBuilder.openInventory();
+     *                                     return true;
+     *                                 };
+     *                                 if (input < 0) {
+     *                                     button.set(null, function);
+     *                                 } else {
+     *                                     button.set(input, function);
+     *                                 }
+     *                             } catch (NumberFormatException e) {
+     *                                 BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+     *                             }
+     *                         }, "Builder." + buttonKey + "-Timeout",
+     *                         "Builder." + buttonKey)) {
+     *                         }));
+     *                         </pre>
+     *
+     * @param buttonKey     The key of the button
+     * @param timeout       The timeout of the chat listener
+     * @param objectBuilder The object builder
+     * @return The button
+     */
+    public static ObjectBuilderButton<Byte> OPTIONAL_QUICK_BYTE(String buttonKey, long timeout,
+                                                                ObjectBuilder<?> objectBuilder) {
+
+        String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
+        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+                (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+                            try {
+                                byte input = Byte.parseByte(string);
+                                Function<Byte, Boolean> function = value -> {
+                                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                                            value < 0 ? "N/A" : "" + value);
+                                    objectBuilder.openInventory();
+                                    return true;
+                                };
+                                if (input < 0) {
+                                    button.set(null, function);
+                                } else {
+                                    button.set(input, function);
+                                }
+                            } catch (NumberFormatException e) {
+                                BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                            }
+                        }, "Builder." + buttonKey + "-Timeout",
+                        "Builder." + buttonKey)) {
+        };
+    }
+
     public static ObjectBuilderButton<Short> SHORT(String buttonKey, long timeout,
                                                    String timeoutMessageKey,
                                                    String timerMessageKey,
@@ -190,6 +254,71 @@ public class ObjectBuilderButtonBuilder {
                     return true;
                 });
 
+    }
+
+    /**
+     * A quick optional ObjectBuilderButton for Short's
+     * An example of how to use it:
+     *
+     * <pre>
+     *     ObjectBuilder&lt;Person&gt; objectBuilder = someRandomObjectBuilderYouHave;
+     *
+     *     ObjectBuilderButton&lt;Short&gt; button =
+     *     ObjectBuilderButtonBuilder.QUICK_OPTIONAL_SHORT("Level", 300, objectBuilder);
+     *
+     *     assert button.equals(new ObjectBuilderButton&lt;&gt;(buttonKey, Optional.empty(),
+     *            (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+     *            try {
+     *            short input = Short.parseShort(string);
+     *            Function&lt;Short, Boolean&gt; function = value -> {
+     *            objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+     *            value < 0 ? "N/A" : "" + value);
+     *            objectBuilder.openInventory();
+     *            return true;
+     *            };
+     *            if (input < 0) {
+     *            button.set(null, function);
+     *            } else {
+     *            button.set(input, function);
+     *            }
+     *            } catch (NumberFormatException e) {
+     *            BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+     *            }
+     *            }, "Builder." + buttonKey + "-Timeout",
+     *            "Builder." + buttonKey)) {
+     *            }));
+     *            </pre>
+     *
+     * @param buttonKey     The key of the button
+     * @param timeout       The timeout of the chat listener
+     * @param objectBuilder The object builder
+     * @return The button
+     */
+    public static ObjectBuilderButton<Short> OPTIONAL_QUICK_SHORT(String buttonKey, long timeout,
+                                                                  ObjectBuilder<?> objectBuilder) {
+
+        String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
+        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+                (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+                            try {
+                                short input = Short.parseShort(string);
+                                Function<Short, Boolean> function = value -> {
+                                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                                            value < 0 ? "N/A" : "" + value);
+                                    objectBuilder.openInventory();
+                                    return true;
+                                };
+                                if (input < 0) {
+                                    button.set(null, function);
+                                } else {
+                                    button.set(input, function);
+                                }
+                            } catch (NumberFormatException e) {
+                                BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                            }
+                        }, "Builder." + buttonKey + "-Timeout",
+                        "Builder." + buttonKey)) {
+        };
     }
 
     public static ObjectBuilderButton<Integer> INTEGER(String buttonKey, long timeout,
@@ -252,6 +381,71 @@ public class ObjectBuilderButtonBuilder {
 
     }
 
+    /**
+     * A quick optional ObjectBuilderButton for Integer's
+     * An example of how to use it:
+     *
+     * <pre>
+     *     ObjectBuilder&lt;Person&gt; objectBuilder = someRandomObjectBuilderYouHave;
+     *
+     *     ObjectBuilderButton&lt;Integer&gt; button =
+     *     ObjectBuilderButtonBuilder.QUICK_OPTIONAL_INTEGER("Damage", 300, objectBuilder);
+     *
+     *     assert button.equals(new ObjectBuilderButton&lt;&gt;(buttonKey, Optional.empty(),
+     *       (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+     *       try {
+     *       int input = Integer.parseInt(string);
+     *       Function&lt;Integer, Boolean&gt; function = value -> {
+     *       objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+     *       value < 0 ? "N/A" : "" + value);
+     *       objectBuilder.openInventory();
+     *       return true;
+     *       };
+     *       if (input < 0) {
+     *       button.set(null, function);
+     *       } else {
+     *       button.set(input, function);
+     *       }
+     *       } catch (NumberFormatException e) {
+     *       BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+     *       }
+     *       }, "Builder." + buttonKey + "-Timeout",
+     *       "Builder." + buttonKey)) {
+     *       }));
+     *       </pre>
+     *
+     * @param buttonKey     The key of the button
+     * @param timeout       The timeout of the chat listener
+     * @param objectBuilder The object builder
+     * @return The button
+     */
+    public static ObjectBuilderButton<Integer> OPTIONAL_QUICK_INTEGER(String buttonKey, long timeout,
+                                                                      ObjectBuilder<?> objectBuilder) {
+
+        String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
+        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+                (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+                            try {
+                                int input = Integer.parseInt(string);
+                                Function<Integer, Boolean> function = value -> {
+                                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                                            value < 0 ? "N/A" : "" + value);
+                                    objectBuilder.openInventory();
+                                    return true;
+                                };
+                                if (input < 0) {
+                                    button.set(null, function);
+                                } else {
+                                    button.set(input, function);
+                                }
+                            } catch (NumberFormatException e) {
+                                BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                            }
+                        }, "Builder." + buttonKey + "-Timeout",
+                        "Builder." + buttonKey)) {
+        };
+    }
+
     public static ObjectBuilderButton<Long> LONG(String buttonKey, long timeout,
                                                  String timeoutMessageKey,
                                                  String timerMessageKey,
@@ -310,6 +504,71 @@ public class ObjectBuilderButtonBuilder {
                     return true;
                 });
 
+    }
+
+    /**
+     * A quick optional ObjectBuilderButton for Long's
+     * An example of how to use it:
+     *
+     * <pre>
+     *     ObjectBuilder&lt;Person&gt; objectBuilder = someRandomObjectBuilderYouHave;
+     *
+     *     ObjectBuilderButton&lt;Long&gt; button =
+     *     ObjectBuilderButtonBuilder.QUICK_OPTIONAL_LONG("Coins", 300, objectBuilder);
+     *
+     *     assert button.equals(new ObjectBuilderButton&lt;&gt;(buttonKey, Optional.empty(),
+     *     (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+     *     try {
+     *     long input = Long.parseLong(string);
+     *     Function&lt;Long, Boolean&gt; function = value -> {
+     *     objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+     *     value < 0 ? "N/A" : "" + value);
+     *     objectBuilder.openInventory();
+     *     return true;
+     *     };
+     *     if (input < 0) {
+     *     button.set(null, function);
+     *     } else {
+     *     button.set(input, function);
+     *     }
+     *     } catch (NumberFormatException e) {
+     *     BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+     *     }
+     *     }, "Builder." + buttonKey + "-Timeout",
+     *     "Builder." + buttonKey)) {
+     *     }));
+     *     </pre>
+     *
+     * @param buttonKey     The key of the button
+     * @param timeout       The timeout of the chat listener
+     * @param objectBuilder The object builder
+     * @return The button
+     */
+    public static ObjectBuilderButton<Long> OPTIONAL_QUICK_LONG(String buttonKey, long timeout,
+                                                                ObjectBuilder<?> objectBuilder) {
+
+        String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
+        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+                (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+                            try {
+                                long input = Long.parseLong(string);
+                                Function<Long, Boolean> function = value -> {
+                                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                                            value < 0 ? "N/A" : "" + value);
+                                    objectBuilder.openInventory();
+                                    return true;
+                                };
+                                if (input < 0) {
+                                    button.set(null, function);
+                                } else {
+                                    button.set(input, function);
+                                }
+                            } catch (NumberFormatException e) {
+                                BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                            }
+                        }, "Builder." + buttonKey + "-Timeout",
+                        "Builder." + buttonKey)) {
+        };
     }
 
     public static ObjectBuilderButton<Float> FLOAT(String buttonKey, long timeout,
@@ -372,6 +631,71 @@ public class ObjectBuilderButtonBuilder {
 
     }
 
+    /**
+     * A quick optional ObjectBuilderButton for Float's
+     * An example of how to use it:
+     *
+     * <pre>
+     *     ObjectBuilder&lt;Person&gt; objectBuilder = someRandomObjectBuilderYouHave;
+     *
+     *     ObjectBuilderButton&lt;Float&gt; button =
+     *     ObjectBuilderButtonBuilder.QUICK_OPTIONAL_FLOAT("Health", 300, objectBuilder);
+     *
+     *     assert button.equals(new ObjectBuilderButton&lt;&gt;(buttonKey, Optional.empty(),
+     *     (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+     *     try {
+     *     float input = Float.parseFloat(string);
+     *     Function&lt;Float, Boolean&gt; function = value -> {
+     *     objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+     *     value < 0 ? "N/A" : "" + value);
+     *     objectBuilder.openInventory();
+     *     return true;
+     *     };
+     *     if (input < 0) {
+     *     button.set(null, function);
+     *     } else {
+     *     button.set(input, function);
+     *     }
+     *     } catch (NumberFormatException e) {
+     *     BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+     *     }
+     *     }, "Builder." + buttonKey + "-Timeout",
+     *     "Builder." + buttonKey)) {
+     *     }));
+     *     </pre>
+     *
+     * @param buttonKey     The key of the button
+     * @param timeout       The timeout of the chat listener
+     * @param objectBuilder The object builder
+     * @return The button
+     */
+    public static ObjectBuilderButton<Float> OPTIONAL_QUICK_FLOAT(String buttonKey, long timeout,
+                                                                  ObjectBuilder<?> objectBuilder) {
+
+        String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
+        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+                (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+                            try {
+                                float input = Float.parseFloat(string);
+                                Function<Float, Boolean> function = value -> {
+                                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                                            value < 0 ? "N/A" : "" + value);
+                                    objectBuilder.openInventory();
+                                    return true;
+                                };
+                                if (input < 0) {
+                                    button.set(null, function);
+                                } else {
+                                    button.set(input, function);
+                                }
+                            } catch (NumberFormatException e) {
+                                BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                            }
+                        }, "Builder." + buttonKey + "-Timeout",
+                        "Builder." + buttonKey)) {
+        };
+    }
+
     public static ObjectBuilderButton<Double> DOUBLE(String buttonKey, long timeout,
                                                      String timeoutMessageKey,
                                                      String timerMessageKey,
@@ -430,6 +754,70 @@ public class ObjectBuilderButtonBuilder {
                     return true;
                 });
 
+    }
+
+    /**
+     * A quick optional ObjectBuilderButton for Double's
+     * An example of how to use it:
+     *
+     * <pre>
+     *     ObjectBuilder&lt;Person&gt; objectBuilder = someRandomObjectBuilderYouHave;
+     *
+     *     ObjectBuilderButton&lt;Double&gt; button =
+     *     ObjectBuilderButtonBuilder.QUICK_OPTIONAL_DOUBLE("Dogecoin", 300, objectBuilder);
+     *
+     *     assert button.equals(new ObjectBuilderButton&lt;&gt;(buttonKey, Optional.empty(),
+     *     (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+     *     try {
+     *     double input = Double.parseDouble(string);
+     *     Function&lt;Double, Boolean&gt; function = value -> {
+     *     objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+     *     value < 0 ? "N/A" : "" + value);
+     *     objectBuilder.openInventory();
+     *     return true;
+     *     };
+     *     if (input < 0) {
+     *     button.set(null, function);
+     *     } else {
+     *     button.set(input, function);
+     *     }
+     *     } catch (NumberFormatException e) {
+     *     BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+     *     }
+     *     }, "Builder." + buttonKey + "-Timeout",
+     *     "Builder." + buttonKey)) {
+     *     }));
+     *     </pre>
+     *
+     * @param buttonKey     The key of the button
+     * @param timeout       The timeout of the chat listener
+     * @param objectBuilder The object builder
+     * @return The button
+     */
+    public static ObjectBuilderButton<Double> OPTIONAL_QUICK_DOUBLE(String buttonKey, long timeout,
+                                                                    ObjectBuilder<?> objectBuilder) {
+        String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
+        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+                (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+                            try {
+                                double input = Double.parseDouble(string);
+                                Function<Double, Boolean> function = value -> {
+                                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                                            value < 0 ? "N/A" : "" + value);
+                                    objectBuilder.openInventory();
+                                    return true;
+                                };
+                                if (input < 0) {
+                                    button.set(null, function);
+                                } else {
+                                    button.set(input, function);
+                                }
+                            } catch (NumberFormatException e) {
+                                BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                            }
+                        }, "Builder." + buttonKey + "-Timeout",
+                        "Builder." + buttonKey)) {
+        };
     }
 
     public static ObjectBuilderButton<Block> BLOCK(String buttonKey, long timeout,
