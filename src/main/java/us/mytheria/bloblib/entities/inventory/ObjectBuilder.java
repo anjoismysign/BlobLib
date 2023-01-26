@@ -100,6 +100,56 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
         return this;
     }
 
+    public ObjectBuilder<T> addQuickStringButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.QUICK_STRING(buttonKey, timeout, this));
+    }
+
+    public ObjectBuilder<T> addQuickByteButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.QUICK_BYTE(buttonKey, timeout, this));
+    }
+
+    public ObjectBuilder<T> addQuickShortButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.QUICK_SHORT(buttonKey, timeout, this));
+    }
+
+    public ObjectBuilder<T> addQuickIntegerButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.QUICK_INTEGER(buttonKey, timeout, this));
+    }
+
+    public ObjectBuilder<T> addQuickLongButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.QUICK_LONG(buttonKey, timeout, this));
+    }
+
+    public ObjectBuilder<T> addQuickFloatButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.QUICK_FLOAT(buttonKey, timeout, this));
+    }
+
+    public ObjectBuilder<T> addQuickDoubleButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.QUICK_DOUBLE(buttonKey, timeout, this));
+    }
+
+    public ObjectBuilder<T> addQuickBlockButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.QUICK_BLOCK(buttonKey, timeout, this));
+    }
+
+    public ObjectBuilder<T> addQuickItemButton(String buttonKey) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.QUICK_ITEM(buttonKey, this));
+    }
+
+    public ObjectBuilder<T> addQuickSelectorButton(String buttonKey,
+                                                   VariableSelector<T> selector,
+                                                   Function<T, String> ifAvailable) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.QUICK_SELECTOR(buttonKey, selector, ifAvailable, this));
+    }
+
+    public ObjectBuilder<T> addQuickMessageButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.QUICK_MESSAGE(buttonKey, timeout, this));
+    }
+
+    public ObjectBuilder<T> addQuickWorldButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.QUICK_WORLD(buttonKey, timeout, this));
+    }
+
     public ObjectBuilder<T> setFunction(Function<ObjectBuilder<T>, T> function) {
         this.function = function;
         return this;
