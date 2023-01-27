@@ -27,7 +27,7 @@ public class SoundManager {
     public void load() {
         sounds = new HashMap<>();
         duplicates = new HashMap<>();
-        loadFiles(main.getFileManager().soundsFile());
+        loadFiles(main.getFileManager().soundsDirectory());
         duplicates.forEach((key, value) -> main.getLogger()
                 .severe("Duplicate BlobSound: '" + key + "' (found " + value + " instances)"));
     }

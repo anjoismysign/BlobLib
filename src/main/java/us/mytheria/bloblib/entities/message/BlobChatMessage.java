@@ -10,6 +10,9 @@ import java.util.function.Function;
  * An instance of BlobMessage that holds a Chat message.
  */
 public class BlobChatMessage extends SerialBlobMessage {
+    /**
+     * The chat message
+     */
     protected final String chat;
 
     /**

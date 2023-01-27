@@ -28,6 +28,12 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
 
     /**
      * Creates a new BlobEditor passing a BlobInventory for VariableSelector
+     *
+     * @param <T>           the type of the collection
+     * @param blobInventory the BlobInventory
+     * @param builderId     the id of the builder
+     * @param dataType      the data type of the editor
+     * @return the new BlobEditor
      */
     public static <T> BlobEditor<T> build(BlobInventory blobInventory, UUID builderId,
                                           String dataType) {
@@ -38,6 +44,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     /**
      * Creates a new BlobEditor
      *
+     * @param <T>       the type of the collection
      * @param builderId the id of the builder
      * @param dataType  the data type of the editor
      * @return the new BlobEditor
@@ -50,6 +57,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     /**
      * Creates a new BlobEditor passing specific collection.
      *
+     * @param <T>        the type of the collection
      * @param builderId  the id of the builder
      * @param dataType   the data type of the editor
      * @param collection the collection to edit
@@ -63,6 +71,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     /**
      * Creates a new BlobEditor.
      *
+     * @param <T>       the type of the collection
      * @param builderId the id of the builder
      * @param dataType  the data type of the editor
      * @return the new BlobEditor
@@ -76,6 +85,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     /**
      * Creates a new BlobEditor passing specific collection.
      *
+     * @param <T>        the type of the collection
      * @param builderId  the id of the builder
      * @param dataType   the data type of the editor
      * @param collection the collection to edit
@@ -113,18 +123,18 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     /**
      * loads the page with the given page number
      *
-     * @param page   the page number
-     * @param refill if the background should be refilled
+     * @param page                  the page number
+     * @param whiteBackgroundRefill if the background should be refilled
      */
     @Override
-    public void loadPage(int page, boolean refill) {
+    public void loadPage(int page, boolean whiteBackgroundRefill) {
         if (page < 1) {
             return;
         }
         if (getTotalPages() < page) {
             return;
         }
-        if (refill)
+        if (whiteBackgroundRefill)
             refillButton("White-Background");
         clearValues();
         List<VariableValue<T>> values = this.page(page, getItemsPerPage());
@@ -207,6 +217,11 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
         return values;
     }
 
+    /**
+     * removes an element from the list
+     *
+     * @param t the element to remove
+     */
     public void remove(T t) {
         list.remove(t);
     }

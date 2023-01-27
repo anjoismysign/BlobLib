@@ -42,4 +42,27 @@ public interface VaultPermissionsWorker {
      * @return True if the permission was removed
      */
     boolean removePermission(Player player, String permission, String world);
+
+
+    /**
+     * Adds a global(all worlds) permission to a player.
+     *
+     * @param player     Player to add permission to
+     * @param permission Permission to add
+     * @return True if the permission was added
+     */
+    default boolean addGlobalPermission(Player player, String permission) {
+        return addPermission(player, permission, null);
+    }
+
+    /**
+     * Removes a global(all worlds) permission from a player.
+     *
+     * @param player     Player to remove permission from
+     * @param permission Permission to remove
+     * @return True if the permission was removed
+     */
+    default boolean removeGlobalPermission(Player player, String permission) {
+        return removePermission(player, permission, null);
+    }
 }

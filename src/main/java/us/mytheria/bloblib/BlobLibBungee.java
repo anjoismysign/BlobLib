@@ -5,13 +5,24 @@ import net.md_5.bungee.api.plugin.Plugin;
 import us.mytheria.bloblib.bungee.PluginMessageEventListener;
 import us.mytheria.bloblib.entities.message.BungeeMessage;
 
+/**
+ * BlobLib is planned to be a Bungeecord plugin as well.
+ */
 public class BlobLibBungee extends Plugin {
     private static BlobLibBungee instance;
 
+    /**
+     * Will retrieve the instance of the plugin
+     *
+     * @return the instance of the plugin
+     */
     public static BlobLibBungee getInstance() {
         return instance;
     }
 
+    /**
+     * Called when the plugin is enabled
+     */
     @Override
     public void onEnable() {
         instance = this;
@@ -19,9 +30,11 @@ public class BlobLibBungee extends Plugin {
         new PluginMessageEventListener();
     }
 
+    /**
+     * Called when the plugin is disabled
+     */
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
     }
 
     /**

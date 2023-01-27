@@ -40,7 +40,11 @@ public class BlobButtonManager extends ButtonManager {
      *
      * @param section configuration section which contains all the buttons
      * @return a non abstract ButtonManager.
+     * @deprecated Smart methods were made during development and are already
+     * safe to use. Use {@link #fromConfigurationSection(ConfigurationSection)} instead
+     * which is identical to this method.
      */
+    @Deprecated
     public static BlobButtonManager smartFromConfigurationSection(ConfigurationSection section) {
         BlobButtonManager blobButtonManager = new BlobButtonManager();
         blobButtonManager.read(section);
@@ -143,6 +147,9 @@ public class BlobButtonManager extends ButtonManager {
      * @param section configuration section which contains all the buttons
      * @return true if at least one button was succesfully added.
      * this is determined in case the being called after the first add call
+     * @deprecated 'read' method was made during development but is ready and
+     * safe to use. Use {@link #add(ConfigurationSection)} instead which
+     * is identical to this method.
      */
     @Deprecated
     @Override

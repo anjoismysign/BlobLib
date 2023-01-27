@@ -2,17 +2,21 @@ package us.mytheria.bloblib;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import us.mytheria.bloblib.command.BlobLibCmd;
 import us.mytheria.bloblib.enginehub.EngineHubManager;
 import us.mytheria.bloblib.hologram.HologramManager;
 import us.mytheria.bloblib.managers.*;
 import us.mytheria.bloblib.managers.fillermanager.FillerManager;
 import us.mytheria.bloblib.vault.VaultManager;
 
+/**
+ * The main class of the plugin
+ */
 public final class BlobLib extends JavaPlugin {
     private VaultManager vaultManager;
     private EngineHubManager engineHubManager;
     private HologramManager hologramManager;
-    private FileManager fileManager;
+    private BlobLibFileManager fileManager;
     private InventoryManager inventoryManager;
     private MessageManager messageManager;
     private SoundManager soundManager;
@@ -25,15 +29,23 @@ public final class BlobLib extends JavaPlugin {
 
     private static BlobLib instance;
 
+    /**
+     * Will retrieve the instance of the plugin
+     *
+     * @return The instance of the plugin
+     */
     public static BlobLib getInstance() {
         return instance;
     }
 
+    /**
+     * Called when the plugin is enabled
+     */
     @Override
     public void onEnable() {
         Bukkit.getLogger().info("Jitpack test");
         instance = this;
-        fileManager = new FileManager();
+        fileManager = new BlobLibFileManager();
         inventoryManager = new InventoryManager();
         messageManager = new MessageManager();
         soundManager = new SoundManager();
@@ -49,62 +61,132 @@ public final class BlobLib extends JavaPlugin {
 
         //Load reloadable managers
         reload();
+        new BlobLibCmd();
     }
 
+    /**
+     * Will reload all the managers
+     */
     public void reload() {
         soundManager.reload();
         messageManager.reload();
         inventoryManager.reload();
     }
 
-    public FileManager getFileManager() {
+
+    /**
+     * Will retrieve the FileManager
+     *
+     * @return The FileManager
+     */
+    public BlobLibFileManager getFileManager() {
         return fileManager;
     }
 
+    /**
+     * Will retrieve the InventoryManager
+     *
+     * @return The InventoryManager
+     */
     public InventoryManager getInventoryManager() {
         return inventoryManager;
     }
 
+    /**
+     * Will retrieve the MessageManager
+     *
+     * @return The MessageManager
+     */
     public MessageManager getMessageManager() {
         return messageManager;
     }
 
+    /**
+     * Will retrieve the SoundManager
+     *
+     * @return The SoundManager
+     */
     public SoundManager getSoundManager() {
         return soundManager;
     }
 
+    /**
+     * Will retrieve the VaultManager
+     *
+     * @return The VaultManager
+     */
     public VaultManager getVaultManager() {
         return vaultManager;
     }
 
+    /**
+     * Will retrieve the HologramManager
+     *
+     * @return The HologramManager
+     */
     public HologramManager getHologramManager() {
         return hologramManager;
     }
 
+    /**
+     * Will retrieve the ChatListenerManager
+     *
+     * @return The ChatListenerManager
+     */
     public ChatListenerManager getChatManager() {
         return chatManager;
     }
 
+    /**
+     * Will retrieve the SelectPositionListenerManager(SelPosListenerManager)
+     *
+     * @return The SelPosListenerManager
+     */
     public SelPosListenerManager getPositionManager() {
         return positionManager;
     }
 
+    /**
+     * Will retrieve the SelectorListenerManager
+     *
+     * @return The SelectorListenerManager
+     */
     public SelectorListenerManager getSelectorManager() {
         return selectorManager;
     }
 
+    /**
+     * Will retrieve the VariableSelectorManager
+     *
+     * @return The VariableSelectorManager
+     */
     public VariableSelectorManager getVariableSelectorManager() {
         return variableSelectorManager;
     }
 
+    /**
+     * Will retrieve the FillerManager
+     *
+     * @return The FillerManager
+     */
     public FillerManager getFillerManager() {
         return fillerManager;
     }
 
+    /**
+     * Will retrieve the DropListenerManager
+     *
+     * @return The DropListenerManager
+     */
     public DropListenerManager getDropListenerManager() {
         return dropListenerManager;
     }
 
+    /**
+     * Will retrieve the EngineHubManager
+     *
+     * @return The EngineHubManager
+     */
     public EngineHubManager getEngineHubManager() {
         return engineHubManager;
     }

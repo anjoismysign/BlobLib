@@ -28,7 +28,7 @@ public class MessageManager {
     public void load() {
         messages = new HashMap<>();
         duplicates = new HashMap<>();
-        loadFiles(main.getFileManager().messagesFile());
+        loadFiles(main.getFileManager().messagesDirectory());
         duplicates.forEach((key, value) -> main.getLogger()
                 .severe("Duplicate BlobMessage: '" + key + "' (found " + value + " instances)"));
     }

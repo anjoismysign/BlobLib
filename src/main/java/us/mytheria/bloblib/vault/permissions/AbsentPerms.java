@@ -2,6 +2,10 @@ package us.mytheria.bloblib.vault.permissions;
 
 import org.bukkit.entity.Player;
 
+/**
+ * A class that does nothing since there is no
+ * permissions plugin compatible with Vault.
+ */
 public class AbsentPerms implements VaultPermissionsWorker {
     @Override
     public boolean addPermission(Player player, String permission) {

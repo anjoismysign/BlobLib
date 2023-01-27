@@ -6,6 +6,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
 import us.mytheria.bloblib.entities.listeners.BlobChatListener;
 import us.mytheria.bloblib.entities.listeners.BlobDropListener;
@@ -18,39 +19,90 @@ import java.io.File;
 import java.io.IOException;
 import java.util.function.Consumer;
 
+/**
+ * @author anjoismysign
+ * It's meant to hold quick/static methods that later are meant to be
+ * moved to a different class, such as BlobLibAPI.
+ * Consider all methods as deprecated and subject to change.
+ */
 public class BlobLibDevAPI {
     private static final BlobLib main = BlobLib.getInstance();
 
     /**
      * @return The messages file
+     * @deprecated Use {@link #getMessagesDirectory()} instead
+     * to avoid confusion.
      */
+    @Deprecated
+    @NotNull
     public static File getMessagesFile() {
-        return main.getFileManager().messagesFile();
+        return main.getFileManager().messagesDirectory();
+    }
+
+    /**
+     * @return The messages file
+     */
+    @NotNull
+    public static File getMessagesDirectory() {
+        return main.getFileManager().messagesDirectory();
     }
 
     /**
      * @return The messages file path
      */
+    @NotNull
     public static String getMessagesFilePath() {
-        return main.getFileManager().messagesFile().getPath();
+        return main.getFileManager().messagesDirectory().getPath();
+    }
+
+    /**
+     * @return The sounds file
+     * @deprecated Use {@link #getSoundsDirectory()} instead
+     * to avoid confusion.
+     */
+    @Deprecated
+    @NotNull
+    public static File getSoundsFile() {
+        return main.getFileManager().soundsDirectory();
+    }
+
+    /**
+     * Retrieves a file from the inventories' directory.
+     *
+     * @return The inventories file
+     * @deprecated Use {@link #getInventoriesDirectory()} instead
+     * to avoid confusion.
+     */
+    @Deprecated
+    @NotNull
+    public static File getInventoriesFile() {
+        return main.getFileManager().inventoriesDirectory();
     }
 
     /**
      * @return The sounds file
      */
-    public static File getSoundsFile() {
-        return main.getFileManager().soundsFile();
+    @NotNull
+    public static File getSoundsDirectory() {
+        return main.getFileManager().soundsDirectory();
     }
 
-    public static File getInventoriesFile() {
-        return main.getFileManager().inventoriesFile();
+    /**
+     * Retrieves a file from the inventories' directory.
+     *
+     * @return The inventories file
+     */
+    @NotNull
+    public static File getInventoriesDirectory() {
+        return main.getFileManager().inventoriesDirectory();
     }
 
     /**
      * @return The sounds file path
      */
+    @NotNull
     public static String getSoundsFilePath() {
-        return main.getFileManager().soundsFile().getPath();
+        return main.getFileManager().soundsDirectory().getPath();
     }
 
     /**
@@ -59,7 +111,7 @@ public class BlobLibDevAPI {
      * @return The file
      */
     public static Result<File> getInventoryFile(String fileNameOrPath, Plugin plugin) {
-        File path = new File(getInventoriesFile() + "/" + plugin.getName());
+        File path = new File(getInventoriesDirectory() + "/" + plugin.getName());
         File file = new File(path +
                 "/" + fileNameOrPath + ".yml");
         if (!file.exists()) {
@@ -93,7 +145,7 @@ public class BlobLibDevAPI {
      * @return The Result of the file. If the file didn't exist and no exceptions were found, Result will be valid.
      */
     public static Result<File> addDefaultMessagesFile(String fileName, Plugin plugin) {
-        File path = new File(getMessagesFile() + "/" + plugin.getName());
+        File path = new File(getMessagesDirectory() + "/" + plugin.getName());
         File file = new File(path +
                 "/" + fileName + ".yml");
         if (!file.exists()) {
@@ -124,7 +176,7 @@ public class BlobLibDevAPI {
      * @return The Result of the file. If the file didn't exist and no exceptions were found, Result will be valid.
      */
     public static Result<File> addDefaultSoundsFile(String fileName, Plugin plugin) {
-        File path = new File(getSoundsFile() + "/" + plugin.getName());
+        File path = new File(getSoundsDirectory() + "/" + plugin.getName());
         File file = new File(path +
                 "/" + fileName + ".yml");
         if (!file.exists()) {

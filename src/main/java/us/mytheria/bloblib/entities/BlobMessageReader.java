@@ -7,7 +7,19 @@ import us.mytheria.bloblib.entities.message.*;
 
 import java.util.Optional;
 
+/**
+ * @author anjoismysign
+ * This clas will help with parsing of BlobMessage's
+ * <p>
+ * Recommended method is parse(ConfigurationSection section)
+ */
 public class BlobMessageReader {
+    /**
+     * Will read a BlobMessage from a ConfigurationSection
+     *
+     * @param section The section to read from
+     * @return The BlobMessage
+     */
     public static SerialBlobMessage read(ConfigurationSection section) {
         String type = section.getString("Type");
         Optional<BlobSound> sound = section.contains("BlobSound") ?
@@ -104,7 +116,7 @@ public class BlobMessageReader {
      * as a ReferenceBlobMessage.
      * Otherwise, will attempt to read it as a SerialBlobMessage
      *
-     * @param parentConfigurationSection
+     * @param parentConfigurationSection The parent configuration section
      * @return BlobMessage
      */
     public static Optional<BlobMessage> parse(ConfigurationSection parentConfigurationSection) {

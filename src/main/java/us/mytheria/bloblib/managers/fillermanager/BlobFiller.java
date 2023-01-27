@@ -11,10 +11,24 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * @param <T> The type
+ * @author anjoismysign
+ * <p>
+ * A BlobFiller is an instance of VariableFiller.
+ */
 public class BlobFiller<T> implements VariableFiller<T> {
     private final Collection<T> values;
     private final Material material;
 
+    /**
+     * Builds a BlobFiller
+     *
+     * @param values   The values
+     * @param material The material
+     * @param <T>      The type
+     * @return A BlobFiller
+     */
     public static <T> BlobFiller<T> build(Collection<T> values, Material material) {
         return new BlobFiller<>(values, material);
     }
@@ -24,6 +38,13 @@ public class BlobFiller<T> implements VariableFiller<T> {
         this.material = material;
     }
 
+    /**
+     * Returns a list of VariableValues
+     *
+     * @param page         The page
+     * @param itemsPerPage The amount of items per page
+     * @return A list of VariableValues
+     */
     @Override
     public List<VariableValue<T>> page(int page, int itemsPerPage) {
         int start = (page - 1) * itemsPerPage;
@@ -46,6 +67,12 @@ public class BlobFiller<T> implements VariableFiller<T> {
         return values;
     }
 
+    /**
+     * Returns the total amount of pages
+     *
+     * @param itemsPerPage The amount of items per page
+     * @return The total amount of pages
+     */
     @Override
     public int totalPages(int itemsPerPage) {
         return (int) Math.ceil((double) values.size() / (double) itemsPerPage);

@@ -11,6 +11,11 @@ import us.mytheria.bloblib.managers.SoundManager;
 
 import java.util.List;
 
+/**
+ * @author anjoismysign
+ * This class provides static methods to interact with the BlobLib API.
+ * It's not meant to change unless in a future in a big rewrite of the API.
+ */
 public class BlobLibAPI {
     private static final BlobLib main = BlobLib.getInstance();
 
@@ -197,6 +202,8 @@ public class BlobLibAPI {
      * This is a world-specific operation, if you want to add global permission
      * you must explicitly use NULL for the world.
      *
+     * @param player     The player to add the permission to
+     * @param permission The permission to add
      * @return true if the permission was added, false if the player already had the permission
      */
     public static boolean addPermission(Player player, String permission) {
@@ -208,6 +215,8 @@ public class BlobLibAPI {
      * Will attempt to remove permission from the player on the player's
      * current world. This is NOT a global operation.
      *
+     * @param player     The player to remove the permission from
+     * @param permission The permission to remove
      * @return true if the permission was removed, false if the player did not have the permission
      */
     public static boolean removePermission(Player player, String permission) {
@@ -219,6 +228,9 @@ public class BlobLibAPI {
      * system registered supports global permissions. But May return odd values if
      * the servers registered permission system does not have a global permission store.
      *
+     * @param player     The player to add the permission to
+     * @param permission The permission to add
+     * @param world      The world to add the permission to (null for global)
      * @return true if the permission was added, false if the player already had the permission
      */
     public static boolean addPermission(Player player, String permission, String world) {
@@ -231,9 +243,37 @@ public class BlobLibAPI {
      * odd values if the servers registered permission system does not have a
      * global permission store.
      *
+     * @param player     The player to remove the permission from
+     * @param permission The permission to remove
+     * @param world      The world to remove the permission from
+     *                   (null for global)
      * @return true if the permission was removed, false if the player did not have the permission
      */
     public static boolean removePermission(Player player, String permission, String world) {
         return main.getVaultManager().getVaultPermissionsWorker().removePermission(player, permission, world);
+    }
+
+    /**
+     * Add permission to a player. Will attempt to add permission
+     * to the player on the player, GLOBALLY.
+     *
+     * @param player     The player to add the permission to
+     * @param permission The permission to add
+     * @return true if the permission was added, false if the player already had the permission
+     */
+    public static boolean addGlobalPermission(Player player, String permission) {
+        return main.getVaultManager().getVaultPermissionsWorker().addGlobalPermission(player, permission);
+    }
+
+    /**
+     * Remove permission from a player. Will attempt to remove permission
+     * from the player on the player, GLOBALLY.
+     *
+     * @param player     The player to remove the permission from
+     * @param permission The permission to remove
+     * @return true if the permission was removed, false if the player did not have the permission
+     */
+    public static boolean removeGlobalPermission(Player player, String permission) {
+        return main.getVaultManager().getVaultPermissionsWorker().removeGlobalPermission(player, permission);
     }
 }

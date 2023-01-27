@@ -2,6 +2,10 @@ package us.mytheria.bloblib.vault.economy;
 
 import org.bukkit.entity.Player;
 
+/**
+ * A class that does nothing since there is no
+ * economy plugin compatible with Vault.
+ */
 public class AbsentEco implements VaultEconomyWorker {
 
     /**

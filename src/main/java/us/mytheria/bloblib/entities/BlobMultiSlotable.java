@@ -112,6 +112,9 @@ public class BlobMultiSlotable extends MultiSlotable {
         return key;
     }
 
+    /**
+     * @return the slots
+     */
     @Override
     public Set<Integer> getSlots() {
         return (Set<Integer>) super.getSlots();

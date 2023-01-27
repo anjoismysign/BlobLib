@@ -7,6 +7,14 @@ import us.mytheria.bloblib.entities.message.BungeeMessage;
 
 import javax.annotation.Nullable;
 
+/**
+ * @author anjoismysign
+ * <p>
+ * @deprecated API is in early development
+ * state and is highly probable to be subject
+ * to change.
+ */
+@Deprecated
 public class BlobMessageReceiveEvent extends Event {
     private final BungeeMessage message;
     private final Connection sender;
@@ -18,17 +26,24 @@ public class BlobMessageReceiveEvent extends Event {
      * "BlobTycoon" return. Switch message's type in order
      * to know what to do with message's value.
      *
-     * @param message the message
+     * @param message    the message
+     * @param connection the sender's connection
      */
     public BlobMessageReceiveEvent(BungeeMessage message, Connection connection) {
         this.message = message;
         this.sender = connection;
     }
 
+    /**
+     * @return Message
+     */
     public BungeeMessage getMessage() {
         return message;
     }
 
+    /**
+     * @return Sender's connection
+     */
     public Connection getSender() {
         return sender;
     }

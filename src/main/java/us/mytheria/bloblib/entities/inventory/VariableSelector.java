@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.VariableFiller;
 import us.mytheria.bloblib.entities.VariableValue;
-import us.mytheria.bloblib.managers.FileManager;
+import us.mytheria.bloblib.managers.BlobLibFileManager;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -17,6 +17,15 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 
+/**
+ * @param <T> type of the variable
+ * @author anjoismysign
+ * <p>
+ * A VariableSelector is a BlobInventory that can be used to select a variable.
+ * An example of the usage would be a selector for a collection so each element
+ * would be displayed as an ItemStack inside the GUI since VariableSelector
+ * extends BlobInventory.
+ */
 public abstract class VariableSelector<T> extends BlobInventory {
     private final String dataType;
     private final HashMap<Integer, T> values;
@@ -25,18 +34,37 @@ public abstract class VariableSelector<T> extends BlobInventory {
     private int page;
     private final int itemsPerPage;
 
+    /**
+     * Creates a new VariableSelector
+     *
+     * @return the new VariableSelector
+     */
     public static BlobInventory DEFAULT() {
-        FileManager fileManager = BlobLib.getInstance().getFileManager();
+        BlobLibFileManager fileManager = BlobLib.getInstance().getFileManager();
         YamlConfiguration inventories = fileManager.getYml(fileManager.defaultInventoriesFile());
         return fromConfigurationSection(inventories.getConfigurationSection("VariableSelector"));
     }
 
+    /**
+     * Creates a new VariableSelector
+     *
+     * @return the new VariableSelector
+     */
+    @Deprecated
     public static BlobInventory DEFAULT_ITEMSTACKREADER() {
-        FileManager fileManager = BlobLib.getInstance().getFileManager();
+        BlobLibFileManager fileManager = BlobLib.getInstance().getFileManager();
         YamlConfiguration inventories = fileManager.getYml(fileManager.defaultInventoriesFile());
         return smartFromConfigurationSection(inventories.getConfigurationSection("VariableSelector"));
     }
 
+    /**
+     * creates a new VariableSelector
+     *
+     * @param blobInventory the inventory to use
+     * @param builderId     the id of the builder
+     * @param dataType      the data type
+     * @param filler        the filler to use
+     */
     public VariableSelector(BlobInventory blobInventory, UUID builderId,
                             String dataType, VariableFiller<T> filler) {
         super(blobInventory.getTitle(), blobInventory.getSize(), blobInventory.getButtonManager());
@@ -51,17 +79,26 @@ public abstract class VariableSelector<T> extends BlobInventory {
         loadInConstructor();
     }
 
+    /**
+     * runs all code that should run inside constructor in the super call
+     */
     public void loadInConstructor() {
         loadPage(page, false);
     }
 
-    public void loadPage(int page, boolean refill) {
+    /**
+     * loads the specified page with optional white background refill
+     *
+     * @param page                  the page to load
+     * @param whiteBackgroundRefill whether to refill the white background
+     */
+    public void loadPage(int page, boolean whiteBackgroundRefill) {
         if (page < 1)
             return;
         if (getTotalPages() < page) {
             return;
         }
-        if (refill)
+        if (whiteBackgroundRefill)
             refillButton("White-Background");
         values.clear();
         List<VariableValue<T>> values = filler.page(page, itemsPerPage);
@@ -70,6 +107,14 @@ public abstract class VariableSelector<T> extends BlobInventory {
         }
     }
 
+    /**
+     * loads the specified page using a specific function
+     *
+     * @param page     the page to load
+     * @param refill   whether to refill the background
+     * @param list     the list to load the page from
+     * @param function the function to use to convert the list to an itemstack
+     */
     public void loadCustomPage(int page, boolean refill, List<T> list, Function<T, ItemStack> function) {
         if (page < 1)
             return;
@@ -85,24 +130,46 @@ public abstract class VariableSelector<T> extends BlobInventory {
         }
     }
 
+    /**
+     * loads the specified page
+     *
+     * @param page the page to load
+     */
     public void loadPage(int page) {
         loadPage(page, true);
     }
 
+    /**
+     * loads the specified page and opens the inventory
+     *
+     * @param page the page to load
+     */
     public void loadPageAndOpen(int page) {
         loadPage(page, true);
         open();
     }
 
+    /**
+     * opens the inventory for the player
+     */
     public void open() {
         getPlayer().openInventory(getInventory());
     }
 
+    /**
+     * sets a value to a slot
+     *
+     * @param slot  the slot to set the value to
+     * @param value the value to set
+     */
     public void setValue(int slot, VariableValue<T> value) {
         values.put(slot, value.value());
         setButton(slot, value.itemStack());
     }
 
+    /**
+     * clears all values and items from the hashmap
+     */
     public void clearValues() {
         values.clear();
     }
@@ -139,6 +206,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
     }
 
     /**
+     * @param slot the slot to check
      * @return true if the slot is a previous page button, false otherwise
      */
     public boolean isPreviousPageButton(int slot) {
@@ -146,6 +214,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
     }
 
     /**
+     * @param slot the slot to check
      * @return true if the slot is a next page button, false otherwise
      */
     public boolean isNextPageButton(int slot) {
@@ -199,6 +268,8 @@ public abstract class VariableSelector<T> extends BlobInventory {
 
     /**
      * goes/opens to specific page
+     *
+     * @param page the page to go to
      */
     public void setPage(int page) {
         if (page < 1)
