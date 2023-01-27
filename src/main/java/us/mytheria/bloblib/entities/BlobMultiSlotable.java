@@ -11,9 +11,33 @@ import us.mytheria.bloblib.objects.SerializableItem;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * @author anjoismysign
+ * <p>
+ * BlobMultiSlotable is an instance of MultiSlotable which
+ * itself contains an extra attribute which would be
+ * a String 'key'. BlobMultiSlotable contains parsing
+ * methods from ConfigurationSection's and methods
+ * related to insertion into org.bukkit.inventory.Inventory
+ * or even us.mytheria.bloblib.entities.inventory.ButtonManager
+ * in case of working with BlobLib's GUI system.
+ * The 'key' attribute is used to identify the BlobMultiSlotable
+ * in case of failure to be able to detail/trace the error.
+ */
 public class BlobMultiSlotable extends MultiSlotable {
-    private String key;
+    private final String key;
 
+    /**
+     * Parses/reads from a ConfigurationSection using SerializableItem.
+     *
+     * @param section The ConfigurationSection to read from.
+     * @param key     The key of the BlobMultiSlotable which was intended to read from.
+     * @return The BlobMultiSlotable which was read from the ConfigurationSection.
+     * @deprecated Use {@link #read(ConfigurationSection, String)} instead
+     * since SerializableItem is deprecated due to ItemStackReader being
+     * the new way to read ItemStacks from ConfigurationSections.
+     */
+    @Deprecated
     public static BlobMultiSlotable fromConfigurationSection(ConfigurationSection section, String key) {
         ItemStack itemStack = SerializableItem.fromConfigurationSection(section.getConfigurationSection("ItemStack"));
         HashSet<Integer> list = new HashSet<>();
@@ -29,6 +53,13 @@ public class BlobMultiSlotable extends MultiSlotable {
         return new BlobMultiSlotable(list, itemStack, key);
     }
 
+    /**
+     * Parses/reads from a ConfigurationSection using ItemStackReader.
+     *
+     * @param section The ConfigurationSection to read from.
+     * @param key     The key of the BlobMultiSlotable which was intended to read from.
+     * @return The BlobMultiSlotable which was read from the ConfigurationSection.
+     */
     public static BlobMultiSlotable read(ConfigurationSection section, String key) {
         ConfigurationSection itemStackSection = section.getConfigurationSection("ItemStack");
         if (itemStackSection == null) {
@@ -49,17 +80,38 @@ public class BlobMultiSlotable extends MultiSlotable {
         return new BlobMultiSlotable(list, itemStack, key);
     }
 
+    /**
+     * Constructor for BlobMultiSlotable
+     *
+     * @param slots     The slots to add the item to
+     * @param itemStack The item to add
+     * @param key       The key to use for the item
+     */
     public BlobMultiSlotable(Set<Integer> slots, ItemStack itemStack, String key) {
         super(slots, itemStack);
         this.key = key;
     }
 
+    /**
+     * Will insert the BlobMultiSlotable into the given Inventory.
+     * The ItemStack is not cloned, so they all should be references
+     * in case of retrieving in the future.
+     *
+     * @param inventory The inventory to insert the ItemStacks
+     */
     public void setInInventory(Inventory inventory) {
         for (Integer slot : getSlots()) {
             inventory.setItem(slot, getItemStack());
         }
     }
 
+    /**
+     * Writes in a ButtonManager (in case of working
+     * with BlobLib's GUI system) the BlobMultiSlotable
+     *
+     * @param buttonManager The ButtonManager to write in
+     *                      the BlobMultiSlotable
+     */
     public void setInButtonManager(ButtonManager buttonManager) {
         buttonManager.getStringKeys().put(key, this.getSlots());
         for (Integer slot : getSlots()) {
@@ -67,9 +119,22 @@ public class BlobMultiSlotable extends MultiSlotable {
         }
     }
 
+    /**
+     * Adds slots to an existing set. Used in parsing
+     * from ConfigurationSection.
+     *
+     * @param set         the set to add
+     * @param raw         the raw string to parse. should be a range or a single number, i.e. 1-7 or 8
+     * @param sectionName the name of the section, used for logging/debugging
+     */
     private static void add(Set<Integer> set, String raw, String sectionName) {
         String[] split = raw.split("-");
         switch (split.length) {
+            /*
+            if String.split(regex) has no match will return String itself
+            which is a length of "1".
+            Example for this case would be if 'raw' is "4" instead of "1-7"
+             */
             case 1 -> {
                 int slot = Integer.parseInt(split[0]);
                 if (slot < 0) {
@@ -108,12 +173,15 @@ public class BlobMultiSlotable extends MultiSlotable {
         }
     }
 
+    /**
+     * @return The key/identifier of the BlobMultiSlotable
+     */
     public String getKey() {
         return key;
     }
 
     /**
-     * @return the slots
+     * @return the slots that the ItemStack belongs to
      */
     @Override
     public Set<Integer> getSlots() {

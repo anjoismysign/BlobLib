@@ -6,6 +6,10 @@ import org.bukkit.entity.Entity;
 
 import java.util.Objects;
 
+/**
+ * @param <T> The type of entity this action is for
+ * @author anjoismysign
+ */
 public class ConsoleCommandAction<T extends Entity> extends Action<T> {
     private String command;
 
