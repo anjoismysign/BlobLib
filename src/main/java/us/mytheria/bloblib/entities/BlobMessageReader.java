@@ -2,7 +2,7 @@ package us.mytheria.bloblib.entities;
 
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
-import us.mytheria.bloblib.BlobLibAPI;
+import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.entities.message.*;
 
 import java.util.Optional;
@@ -123,7 +123,7 @@ public class BlobMessageReader {
         if (!parentConfigurationSection.contains("BlobMessage"))
             return Optional.empty();
         if (parentConfigurationSection.isString("BlobMessage"))
-            return Optional.ofNullable(BlobLibAPI.getMessage(parentConfigurationSection.getString("BlobMessage")));
+            return Optional.ofNullable(BlobLibAssetAPI.getMessage(parentConfigurationSection.getString("BlobMessage")));
         return Optional.of(read(parentConfigurationSection.getConfigurationSection("BlobMessage")));
     }
 }

@@ -1,21 +1,16 @@
 package us.mytheria.bloblib;
 
-import me.anjoismysign.anjo.entities.NamingConventions;
-import me.anjoismysign.anjo.entities.Result;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
 import us.mytheria.bloblib.entities.listeners.BlobChatListener;
 import us.mytheria.bloblib.entities.listeners.BlobDropListener;
 import us.mytheria.bloblib.entities.listeners.BlobSelPosListener;
 import us.mytheria.bloblib.entities.listeners.BlobSelectorListener;
-import us.mytheria.bloblib.utilities.ResourceUtil;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.function.Consumer;
 
 /**
@@ -104,67 +99,89 @@ public class BlobLibDevAPI {
         return main.getFileManager().soundsDirectory().getPath();
     }
 
-    /**
-     * @param fileName The name of the file
-     * @param plugin   The plugin
-     * @return The Result of the file. If the file didn't exist and no exceptions were found, Result will be valid.
-     */
-    public static Result<File> addDefaultMessagesFile(String fileName, Plugin plugin) {
-        File path = new File(getMessagesDirectory() + "/" + plugin.getName());
-        File file = new File(path +
-                "/" + fileName + ".yml");
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-                ResourceUtil.updateYml(path, "/temp" + fileName + ".yml", fileName + ".yml", file, plugin);
-                return Result.valid(file);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return Result.invalid(file);
-    }
-
-    /**
-     * @param fileName The name of the file. Is converted to snake_case
-     * @param plugin   The plugin
-     * @return The Result of the file. If the file didn't exist and no exceptions were found, Result will be valid.
-     */
-    public static Result<File> conventionAddDefaultMessagesFile(String fileName, Plugin plugin) {
-        String snakeCase = NamingConventions.toSnakeCase(fileName);
-        return addDefaultMessagesFile(snakeCase, plugin);
-    }
-
-    /**
-     * @param fileName The name of the file
-     * @param plugin   The plugin
-     * @return The Result of the file. If the file didn't exist and no exceptions were found, Result will be valid.
-     */
-    public static Result<File> addDefaultSoundsFile(String fileName, Plugin plugin) {
-        File path = new File(getSoundsDirectory() + "/" + plugin.getName());
-        File file = new File(path +
-                "/" + fileName + ".yml");
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-                ResourceUtil.updateYml(path, "/temp" + fileName + ".yml", fileName + ".yml", file, plugin);
-                return Result.valid(file);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return Result.invalid(file);
-    }
-
-    /**
-     * @param fileName The name of the file. Is converted to snake_case
-     * @param plugin   The plugin
-     * @return The Result of the file. If the file didn't exist and no exceptions were found, Result will be valid.
-     */
-    public static Result<File> conventionAddDefaultSoundsFile(String fileName, Plugin plugin) {
-        String snakeCase = NamingConventions.toSnakeCase(fileName);
-        return addDefaultSoundsFile(snakeCase, plugin);
-    }
+    // DEPRECATED ALL BELOW
+//    private static Result<File> conventionAddDefaultInventoryFile(String fileName, Plugin plugin) {
+//        fileName = NamingConventions.toSnakeCase(fileName);
+//        File path = new File(getInventoriesDirectory() + "/" + plugin.getName());
+//        File file = new File(path +
+//                "/" + fileName + ".yml");
+//        if (!file.exists()) {
+//            try {
+//                file.createNewFile();
+//                ResourceUtil.updateYml(path, "/temp" + fileName + ".yml", fileName + ".yml", file, plugin);
+//                return Result.valid(file);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        return Result.invalid(file);
+//    }
+//
+//    /**
+//     * @param fileName The name of the file
+//     * @param plugin   The plugin
+//     * @return The Result of the file. If the file didn't exist and no exceptions were found, Result will be valid.
+//     * @deprecated Use {@link #conventionAddDefaultMessagesFile(String, Plugin)} to
+//     * ensure that a naming convention is followed.
+//     */
+//    @Deprecated
+//    public static Result<File> addDefaultMessagesFile(String fileName, Plugin plugin) {
+//        File path = new File(getMessagesDirectory() + "/" + plugin.getName());
+//        File file = new File(path +
+//                "/" + fileName + ".yml");
+//        if (!file.exists()) {
+//            try {
+//                file.createNewFile();
+//                ResourceUtil.updateYml(path, "/temp" + fileName + ".yml", fileName + ".yml", file, plugin);
+//                return Result.valid(file);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        return Result.invalid(file);
+//    }
+//
+//    /**
+//     * @param fileName The name of the file. Is converted to snake_case
+//     * @param plugin   The plugin
+//     * @return The Result of the file. If the file didn't exist and no exceptions were found, Result will be valid.
+//     */
+//    public static Result<File> conventionAddDefaultMessagesFile(String fileName, Plugin plugin) {
+//        String snakeCase = NamingConventions.toSnakeCase(fileName);
+//        return addDefaultMessagesFile(snakeCase, plugin);
+//    }
+//
+//    /**
+//     * @param fileName The name of the file
+//     * @param plugin   The plugin
+//     * @return The Result of the file. If the file didn't exist and no exceptions were found, Result will be valid.
+//     */
+//    @Deprecated
+//    public static Result<File> addDefaultSoundsFile(String fileName, Plugin plugin) {
+//        File path = new File(getSoundsDirectory() + "/" + plugin.getName());
+//        File file = new File(path +
+//                "/" + fileName + ".yml");
+//        if (!file.exists()) {
+//            try {
+//                file.createNewFile();
+//                ResourceUtil.updateYml(path, "/temp" + fileName + ".yml", fileName + ".yml", file, plugin);
+//                return Result.valid(file);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        return Result.invalid(file);
+//    }
+//
+//    /**
+//     * @param fileName The name of the file. Is converted to snake_case
+//     * @param plugin   The plugin
+//     * @return The Result of the file. If the file didn't exist and no exceptions were found, Result will be valid.
+//     */
+//    public static Result<File> conventionAddDefaultSoundsFile(String fileName, Plugin plugin) {
+//        String snakeCase = NamingConventions.toSnakeCase(fileName);
+//        return addDefaultSoundsFile(snakeCase, plugin);
+//    }
 
     /**
      * Adds a new chat listener

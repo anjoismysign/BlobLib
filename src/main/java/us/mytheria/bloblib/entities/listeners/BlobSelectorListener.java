@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.BlobLibAPI;
+import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
 import us.mytheria.bloblib.entities.message.BlobMessage;
 import us.mytheria.bloblib.managers.SelectorListenerManager;
@@ -37,7 +37,7 @@ public class BlobSelectorListener<T> extends SelectorListener<T> {
                                                     VariableSelector<T> selector) {
         BlobLib main = BlobLib.getInstance();
         SelectorListenerManager selectorManager = main.getSelectorManager();
-        Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibAPI.getMessage(timerMessageKey));
+        Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibAssetAPI.getMessage(timerMessageKey));
         List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
         return new BlobSelectorListener<>(player.getName(), () -> {
             @SuppressWarnings("unchecked") T input = (T) selectorManager.getInput(player);

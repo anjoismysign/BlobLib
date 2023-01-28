@@ -1,7 +1,7 @@
 package us.mytheria.bloblib.entities.inventory;
 
 import org.bukkit.entity.Player;
-import us.mytheria.bloblib.BlobLibAPI;
+import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.entities.message.BlobSound;
 
 import java.util.Optional;
@@ -49,6 +49,6 @@ public abstract class ObjectBuilderButton<T> {
     }
 
     public void addListener(Player player) {
-        addListener(player, Optional.of(BlobLibAPI.getSound("Builder.Button-Click")));
+        addListener(player, Optional.of(BlobLibAssetAPI.getSound("Builder.Button-Click")));
     }
 }

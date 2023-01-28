@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.BlobLibAPI;
+import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.entities.message.BlobMessage;
 import us.mytheria.bloblib.managers.ChatListenerManager;
 
@@ -51,8 +51,8 @@ public class BlobChatListener extends ChatListener {
                                          String timeoutMessageKey, String timerMessageKey) {
         BlobLib main = BlobLib.getInstance();
         ChatListenerManager chatManager = main.getChatManager();
-        Optional<BlobMessage> timeoutMessage = Optional.ofNullable(BlobLibAPI.getMessage(timeoutMessageKey));
-        Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibAPI.getMessage(timerMessageKey));
+        Optional<BlobMessage> timeoutMessage = Optional.ofNullable(BlobLibAssetAPI.getMessage(timeoutMessageKey));
+        Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibAssetAPI.getMessage(timerMessageKey));
         List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
         return new BlobChatListener(owner.getName(), timeout,
                 () -> {

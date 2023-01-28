@@ -5,7 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
-import us.mytheria.bloblib.BlobLibAPI;
+import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.BlobLibDevAPI;
 import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
 import us.mytheria.bloblib.utilities.BukkitUtil;
@@ -80,7 +80,7 @@ public class ObjectBuilderButtonBuilder {
                                 byte input = Byte.parseByte(string);
                                 button.set(input, function);
                             } catch (NumberFormatException e) {
-                                BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
                             }
                         }, timeoutMessageKey,
                         timerMessageKey)) {
@@ -157,7 +157,7 @@ public class ObjectBuilderButtonBuilder {
      *                                     button.set(input, function);
      *                                 }
      *                             } catch (NumberFormatException e) {
-     *                                 BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+     *                                 BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
      *                             }
      *                         }, "Builder." + buttonKey + "-Timeout",
      *                         "Builder." + buttonKey)) {
@@ -189,7 +189,7 @@ public class ObjectBuilderButtonBuilder {
                                     button.set(input, function);
                                 }
                             } catch (NumberFormatException e) {
-                                BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
                             }
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey)) {
@@ -206,7 +206,7 @@ public class ObjectBuilderButtonBuilder {
                         short input = Short.parseShort(string);
                         button.set(input, function);
                     } catch (NumberFormatException e) {
-                        BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                        BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
                     }
                 }, timeoutMessageKey, timerMessageKey)) {
         };
@@ -282,7 +282,7 @@ public class ObjectBuilderButtonBuilder {
      *            button.set(input, function);
      *            }
      *            } catch (NumberFormatException e) {
-     *            BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+     *            BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
      *            }
      *            }, "Builder." + buttonKey + "-Timeout",
      *            "Builder." + buttonKey)) {
@@ -314,7 +314,7 @@ public class ObjectBuilderButtonBuilder {
                                     button.set(input, function);
                                 }
                             } catch (NumberFormatException e) {
-                                BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
                             }
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey)) {
@@ -331,7 +331,7 @@ public class ObjectBuilderButtonBuilder {
                         int input = Integer.parseInt(string);
                         button.set(input, function);
                     } catch (NumberFormatException ignored) {
-                        BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                        BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
                     }
                 }, timeoutMessageKey, timerMessageKey)) {
         };
@@ -407,7 +407,7 @@ public class ObjectBuilderButtonBuilder {
      *       button.set(input, function);
      *       }
      *       } catch (NumberFormatException e) {
-     *       BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+     *       BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
      *       }
      *       }, "Builder." + buttonKey + "-Timeout",
      *       "Builder." + buttonKey)) {
@@ -439,7 +439,7 @@ public class ObjectBuilderButtonBuilder {
                                     button.set(input, function);
                                 }
                             } catch (NumberFormatException e) {
-                                BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
                             }
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey)) {
@@ -456,7 +456,7 @@ public class ObjectBuilderButtonBuilder {
                         long input = Long.parseLong(string);
                         button.set(input, function);
                     } catch (NumberFormatException ignored) {
-                        BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                        BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
                     }
                 }, timeoutMessageKey, timerMessageKey)) {
         };
@@ -532,7 +532,7 @@ public class ObjectBuilderButtonBuilder {
      *     button.set(input, function);
      *     }
      *     } catch (NumberFormatException e) {
-     *     BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+     *     BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
      *     }
      *     }, "Builder." + buttonKey + "-Timeout",
      *     "Builder." + buttonKey)) {
@@ -564,7 +564,7 @@ public class ObjectBuilderButtonBuilder {
                                     button.set(input, function);
                                 }
                             } catch (NumberFormatException e) {
-                                BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
                             }
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey)) {
@@ -581,7 +581,7 @@ public class ObjectBuilderButtonBuilder {
                         float input = Float.parseFloat(string);
                         button.set(input, function);
                     } catch (NumberFormatException ignored) {
-                        BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                        BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
                     }
                 }, timeoutMessageKey, timerMessageKey)) {
         };
@@ -657,7 +657,7 @@ public class ObjectBuilderButtonBuilder {
      *     button.set(input, function);
      *     }
      *     } catch (NumberFormatException e) {
-     *     BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+     *     BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
      *     }
      *     }, "Builder." + buttonKey + "-Timeout",
      *     "Builder." + buttonKey)) {
@@ -689,7 +689,7 @@ public class ObjectBuilderButtonBuilder {
                                     button.set(input, function);
                                 }
                             } catch (NumberFormatException e) {
-                                BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
                             }
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey)) {
@@ -706,7 +706,7 @@ public class ObjectBuilderButtonBuilder {
                         double input = Double.parseDouble(string);
                         button.set(input, function);
                     } catch (NumberFormatException ignored) {
-                        BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                        BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
                     }
                 }, timeoutMessageKey, timerMessageKey)) {
         };
@@ -782,7 +782,7 @@ public class ObjectBuilderButtonBuilder {
      *     button.set(input, function);
      *     }
      *     } catch (NumberFormatException e) {
-     *     BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+     *     BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
      *     }
      *     }, "Builder." + buttonKey + "-Timeout",
      *     "Builder." + buttonKey)) {
@@ -813,7 +813,7 @@ public class ObjectBuilderButtonBuilder {
                                     button.set(input, function);
                                 }
                             } catch (NumberFormatException e) {
-                                BlobLibAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
                             }
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey)) {
@@ -990,7 +990,7 @@ public class ObjectBuilderButtonBuilder {
         return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibDevAPI.addChatListener(player, timeout,
                         string -> {
-                            ReferenceBlobMessage message = BlobLibAPI.getMessage(string);
+                            ReferenceBlobMessage message = BlobLibAssetAPI.getMessage(string);
                             button.set(message, function);
                         },
                         timeoutMessageKey,

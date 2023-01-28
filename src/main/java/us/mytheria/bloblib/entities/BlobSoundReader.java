@@ -3,7 +3,7 @@ package us.mytheria.bloblib.entities;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.configuration.ConfigurationSection;
-import us.mytheria.bloblib.BlobLibAPI;
+import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.entities.message.BlobSound;
 
 import java.util.Optional;
@@ -35,7 +35,7 @@ public class BlobSoundReader {
         if (!parentConfigurationSection.contains("BlobSound"))
             return Optional.empty();
         if (parentConfigurationSection.isString("BlobSound"))
-            return Optional.ofNullable(BlobLibAPI.getSound(parentConfigurationSection.getString("BlobSound")));
+            return Optional.ofNullable(BlobLibAssetAPI.getSound(parentConfigurationSection.getString("BlobSound")));
         return Optional.of(read(parentConfigurationSection.getConfigurationSection("BlobSound")));
     }
 }
