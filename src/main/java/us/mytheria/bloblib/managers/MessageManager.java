@@ -33,6 +33,19 @@ public class MessageManager {
                 .severe("Duplicate BlobMessage: '" + key + "' (found " + value + " instances)"));
     }
 
+    public void load(BlobPlugin plugin) {
+        duplicates.clear();
+        File directory = plugin.getManagerDirector().getFileManager().messagesDirectory();
+        loadFiles(directory);
+        duplicates.forEach((key, value) -> main.getLogger()
+                .severe("Duplicate BlobMessage: '" + key + "' (found " + value + " instances)"));
+    }
+
+    public static void loadBlobPlugin(BlobPlugin plugin) {
+        MessageManager manager = BlobLib.getInstance().getMessageManager();
+        manager.load(plugin);
+    }
+
     private void loadFiles(File path) {
         File[] listOfFiles = path.listFiles();
         for (File file : listOfFiles) {

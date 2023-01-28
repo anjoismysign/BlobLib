@@ -32,6 +32,19 @@ public class SoundManager {
                 .severe("Duplicate BlobSound: '" + key + "' (found " + value + " instances)"));
     }
 
+    public void load(BlobPlugin plugin) {
+        duplicates.clear();
+        File directory = plugin.getManagerDirector().getFileManager().soundsDirectory();
+        loadFiles(directory);
+        duplicates.forEach((key, value) -> main.getLogger()
+                .severe("Duplicate BlobSound: '" + key + "' (found " + value + " instances)"));
+    }
+
+    public static void loadBlobPlugin(BlobPlugin plugin) {
+        SoundManager manager = BlobLib.getInstance().getSoundManager();
+        manager.load(plugin);
+    }
+
     private void loadFiles(File path) {
         File[] listOfFiles = path.listFiles();
         for (File file : listOfFiles) {

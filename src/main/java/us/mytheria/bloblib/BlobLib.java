@@ -1,6 +1,5 @@
 package us.mytheria.bloblib;
 
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.mytheria.bloblib.command.BlobLibCmd;
 import us.mytheria.bloblib.enginehub.EngineHubManager;
@@ -26,6 +25,8 @@ public final class BlobLib extends JavaPlugin {
     private SelectorListenerManager selectorManager;
     private VariableSelectorManager variableSelectorManager;
     private DropListenerManager dropListenerManager;
+    private ColorManager colorManager;
+    private PluginManager pluginManager;
 
     private static BlobLib instance;
 
@@ -43,8 +44,9 @@ public final class BlobLib extends JavaPlugin {
      */
     @Override
     public void onEnable() {
-        Bukkit.getLogger().info("Jitpack test");
         instance = this;
+        pluginManager = new PluginManager();
+        colorManager = new ColorManager();
         fileManager = new BlobLibFileManager();
         inventoryManager = new InventoryManager();
         messageManager = new MessageManager();
@@ -71,8 +73,25 @@ public final class BlobLib extends JavaPlugin {
         soundManager.reload();
         messageManager.reload();
         inventoryManager.reload();
+        getPluginManager().reload();
     }
 
+    /**
+     * Will retrieve the plugin manager.
+     * This manager will handle all the plugins that are using BlobLib.
+     */
+    public PluginManager getPluginManager() {
+        return pluginManager;
+    }
+
+    /**
+     * Will retrieve the color manager.
+     *
+     * @return The color manager
+     */
+    public ColorManager getColorManager() {
+        return colorManager;
+    }
 
     /**
      * Will retrieve the FileManager

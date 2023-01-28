@@ -25,9 +25,22 @@ public class InventoryManager {
     public void load() {
         inventories = new HashMap<>();
         duplicates = new HashMap<>();
-        loadFiles(main.getFileManager().defaultInventoriesFile());
+        loadFiles(main.getFileManager().inventoriesDirectory());
         duplicates.forEach((key, value) -> main.getLogger()
                 .severe("Duplicate BlobInventory: '" + key + "' (found " + value + " instances)"));
+    }
+
+    public void load(BlobPlugin plugin) {
+        duplicates.clear();
+        File directory = plugin.getManagerDirector().getFileManager().inventoriesDirectory();
+        loadFiles(directory);
+        duplicates.forEach((key, value) -> main.getLogger()
+                .severe("Duplicate BlobInventory: '" + key + "' (found " + value + " instances)"));
+    }
+
+    public static void loadBlobPlugin(BlobPlugin plugin) {
+        InventoryManager manager = BlobLib.getInstance().getInventoryManager();
+        manager.load(plugin);
     }
 
     private void loadFiles(File path) {
@@ -43,9 +56,7 @@ public class InventoryManager {
         }
     }
 
-    public static void loadYamlConfiguration(File file) {
-        InventoryManager inventoryManager = BlobLib.getInstance().getInventoryManager();
-        HashMap<String, BlobInventory> inventories = inventoryManager.inventories;
+    private void loadYamlConfiguration(File file) {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         yamlConfiguration.getKeys(false).forEach(key -> {
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(key);
@@ -57,7 +68,7 @@ public class InventoryManager {
                     return;
                 String mapKey = key + "." + subKey;
                 if (inventories.containsKey(mapKey)) {
-                    inventoryManager.addDuplicate(mapKey);
+                    addDuplicate(mapKey);
                     return;
                 }
                 inventories.put(key + "." + subKey, BlobInventory.smartFromConfigurationSection(subSection));

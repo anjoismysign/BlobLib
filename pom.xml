@@ -202,7 +202,7 @@
         <dependency>
             <groupId>com.github.anjoismysign</groupId>
             <artifactId>Anjo</artifactId>
-            <version>0c4486b73a</version>
+            <version>97d18a6645</version>
         </dependency>
     </dependencies>
 </project>
