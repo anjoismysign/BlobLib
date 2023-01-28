@@ -1,6 +1,5 @@
 package us.mytheria.bloblib.entities;
 
-import org.apache.commons.io.FilenameUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -92,7 +91,6 @@ public class BlobFileManager extends Manager {
      */
     public void registerAndUpdateYAML(File file) {
         String fileName = file.getName();
-        String name = FilenameUtils.removeExtension(file.getName());
         try {
             boolean newFile = file.createNewFile();
             if (newFile)
@@ -100,7 +98,6 @@ public class BlobFileManager extends Manager {
             ResourceUtil.updateYml(file.getParentFile(),
                     "/temp" + fileName,
                     fileName, file, getPlugin());
-            addFile(name, file);
         } catch (IOException e) {
             e.printStackTrace();
         }

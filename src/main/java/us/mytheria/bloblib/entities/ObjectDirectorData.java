@@ -12,11 +12,10 @@ public record ObjectDirectorData(String objectDirectory, String objectBuilderKey
                                                       String objectDirectoryFilename,
                                                       String objectName) {
         File file = new File(fileManager.getPluginDirectory() + "/" + objectBuilderFilename + ".yml");
-        String objectDirectory = objectName + "Directory";
-        fileManager.addDirectory(objectDirectory, NamingConventions.toCamelCase(objectDirectoryFilename));
-        String objectBuilderKey = objectName + "Builder";
+        fileManager.addDirectory(objectDirectoryFilename, NamingConventions.toCamelCase(objectDirectoryFilename));
+        fileManager.addFile(objectBuilderFilename, file);
         fileManager.registerAndUpdateYAML(file);
-        return new ObjectDirectorData(objectDirectory, objectBuilderKey, objectName);
+        return new ObjectDirectorData(objectDirectoryFilename, objectBuilderFilename, objectName);
     }
 
     public static ObjectDirectorData simple(BlobFileManager blobFileManager,
