@@ -166,13 +166,15 @@ public abstract class ManagerDirector {
             try {
                 file.createNewFile();
             } catch (IOException e) {
+                if (debug)
+                    logger.debug(" message asset " + fileName + ".yml was not detached");
                 e.printStackTrace();
-                logger.debug(" message asset " + fileName + ".yml was not detached");
                 return this;
             }
         }
         ResourceUtil.updateYml(path, "/temp" + fileName + ".yml", fileName + ".yml", file, plugin);
-        logger.debug(" message asset " + fileName + ".yml successfully detached");
+        if (debug)
+            logger.debug(" message asset " + fileName + ".yml successfully detached");
         return this;
     }
 
@@ -204,13 +206,15 @@ public abstract class ManagerDirector {
             try {
                 file.createNewFile();
             } catch (IOException e) {
+                if (debug)
+                    logger.debug(" sound asset " + fileName + ".yml was not detached");
                 e.printStackTrace();
-                logger.debug(" sound asset " + fileName + ".yml was not detached");
                 return this;
             }
         }
         ResourceUtil.updateYml(path, "/temp" + fileName + ".yml", fileName + ".yml", file, plugin);
-        logger.debug(" sound asset " + fileName + ".yml successfully detached");
+        if (debug)
+            logger.debug(" sound asset " + fileName + ".yml successfully detached");
         return this;
     }
 
@@ -242,13 +246,15 @@ public abstract class ManagerDirector {
             try {
                 file.createNewFile();
             } catch (IOException e) {
+                if (debug)
+                    logger.debug(" inventory asset " + fileName + ".yml was not detached");
                 e.printStackTrace();
-                logger.debug(" inventory asset " + fileName + ".yml was not detached");
                 return this;
             }
         }
-        ResourceUtil.updateYml(path, "/temp" + fileName + ".yml", fileName + ".yml", file, plugin);
-        logger.debug(" inventory asset " + fileName + ".yml successfully detached");
+        getFileManager().registerAndUpdateYAML(file);
+        if (debug)
+            logger.debug(" inventory asset " + fileName + ".yml successfully detached");
         return this;
     }
 

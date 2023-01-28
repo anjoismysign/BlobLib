@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.entities;
 
+import org.apache.commons.io.FilenameUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -83,19 +84,23 @@ public class BlobFileManager extends Manager {
     }
 
     /**
-     * creates and updates a YML file
+     * Register a YAML file. It will auto update it with
+     * the most recent version that's embedded in
+     * the plugin jar.
      *
-     * @param yamlFile the file to create and update.
+     * @param file the YAML file to register and update
      */
-    public void createAndUpdateYML(File yamlFile) {
-        String fileName = yamlFile.getName();
+    public void registerAndUpdateYAML(File file) {
+        String fileName = file.getName();
+        String name = FilenameUtils.removeExtension(file.getName());
         try {
-            boolean newFile = yamlFile.createNewFile();
+            boolean newFile = file.createNewFile();
             if (newFile)
                 return;
-            ResourceUtil.updateYml(yamlFile.getParentFile(),
+            ResourceUtil.updateYml(file.getParentFile(),
                     "/temp" + fileName,
-                    fileName, getDefaultMessages(), getPlugin());
+                    fileName, file, getPlugin());
+            addFile(name, file);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -106,9 +111,9 @@ public class BlobFileManager extends Manager {
      *
      * @param files the files to create and update.
      */
-    public void createAndUpdateYMLs(File... files) {
+    public void registerAndUpdateYAMLs(File... files) {
         for (File file : files) {
-            createAndUpdateYML(file);
+            registerAndUpdateYAML(file);
         }
     }
 
@@ -117,9 +122,9 @@ public class BlobFileManager extends Manager {
      *
      * @param files the files to create and update.
      */
-    public void createAndUpdateYMLs(Collection<File> files) {
+    public void registerAndUpdateYAMLs(Collection<File> files) {
         for (File file : files) {
-            createAndUpdateYML(file);
+            registerAndUpdateYAML(file);
         }
     }
 
@@ -154,6 +159,7 @@ public class BlobFileManager extends Manager {
             if (!pluginDirectory.exists()) pluginDirectory.mkdir();
             if (!messagesDirectory().exists()) messagesDirectory().mkdir();
             if (!soundsDirectory().exists()) soundsDirectory().mkdir();
+            if (!inventoriesDirectory().exists()) inventoriesDirectory().mkdir();
             ///////////////////////////////////////////
             if (!getDefaultSounds().exists()) getDefaultSounds().createNewFile();
             if (!getDefaultMessages().exists()) getDefaultMessages().createNewFile();
