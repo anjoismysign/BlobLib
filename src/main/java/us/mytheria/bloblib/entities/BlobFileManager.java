@@ -36,7 +36,7 @@ public class BlobFileManager extends Manager {
         this.pluginDirectory = new File(pluginDirectoryPathname);
         addFile("messages", new File(pluginDirectory.getPath() + "/BlobMessage"));
         addFile("sounds", new File(pluginDirectory.getPath() + "/BlobSound"));
-        addFile("inventories", new File(pluginDirectory.getPath() + "/Inventories"));
+        addFile("inventories", new File(pluginDirectory.getPath() + "/BlobInventory"));
         addFile("defaultSounds", new File(soundsDirectory().getPath() + "/" + lowercased + "_sounds.yml"));
         addFile("defaultMessages", new File(messagesDirectory().getPath() + "/" + lowercased + "_lang.yml"));
         loadFiles();

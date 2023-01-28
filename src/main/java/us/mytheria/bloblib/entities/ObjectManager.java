@@ -14,12 +14,12 @@ public abstract class ObjectManager<T> extends Manager {
     public ObjectManager(ManagerDirector managerDirector, File loadFilesPath) {
         super(managerDirector);
         this.loadFilesPath = loadFilesPath;
+        loadFiles(loadFilesPath);
     }
 
     @Override
     public void loadInConstructor() {
         objects = new HashMap<>();
-        loadFiles(loadFilesPath);
     }
 
     public abstract void loadFiles(File path);

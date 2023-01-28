@@ -32,6 +32,8 @@ public class ObjectDirector<T> extends Manager implements Listener {
         this.objectManager = new ObjectManager<>(managerDirector, loadFilesPath.get()) {
             @Override
             public void loadFiles(File path) {
+                if (!path.exists())
+                    path.mkdir();
                 File[] listOfFiles = path.listFiles();
                 for (File file : listOfFiles) {
                     if (file.getName().equals(".DS_Store"))
