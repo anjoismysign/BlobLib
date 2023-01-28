@@ -24,7 +24,7 @@ public class BlobLibDevAPI {
 
     /**
      * @return The messages file
-     * @deprecated Use {@link #getMessagesDirectory()} instead
+     * @deprecated Use {@link BlobLibAssetAPI#getMessagesDirectory()} instead
      * to avoid confusion.
      */
     @Deprecated
@@ -34,24 +34,8 @@ public class BlobLibDevAPI {
     }
 
     /**
-     * @return The messages file
-     */
-    @NotNull
-    public static File getMessagesDirectory() {
-        return main.getFileManager().messagesDirectory();
-    }
-
-    /**
-     * @return The messages file path
-     */
-    @NotNull
-    public static String getMessagesFilePath() {
-        return main.getFileManager().messagesDirectory().getPath();
-    }
-
-    /**
      * @return The sounds file
-     * @deprecated Use {@link #getSoundsDirectory()} instead
+     * @deprecated Use {@link BlobLibAssetAPI#getSoundsDirectory()} instead
      * to avoid confusion.
      */
     @Deprecated
@@ -64,7 +48,7 @@ public class BlobLibDevAPI {
      * Retrieves a file from the inventories' directory.
      *
      * @return The inventories file
-     * @deprecated Use {@link #getInventoriesDirectory()} instead
+     * @deprecated Use {@link BlobLibAssetAPI#getInventoriesDirectory()} instead
      * to avoid confusion.
      */
     @Deprecated
@@ -74,116 +58,6 @@ public class BlobLibDevAPI {
     }
 
     /**
-     * @return The sounds file
-     */
-    @NotNull
-    public static File getSoundsDirectory() {
-        return main.getFileManager().soundsDirectory();
-    }
-
-    /**
-     * Retrieves a file from the inventories' directory.
-     *
-     * @return The inventories file
-     */
-    @NotNull
-    public static File getInventoriesDirectory() {
-        return main.getFileManager().inventoriesDirectory();
-    }
-
-    /**
-     * @return The sounds file path
-     */
-    @NotNull
-    public static String getSoundsFilePath() {
-        return main.getFileManager().soundsDirectory().getPath();
-    }
-
-    // DEPRECATED ALL BELOW
-//    private static Result<File> conventionAddDefaultInventoryFile(String fileName, Plugin plugin) {
-//        fileName = NamingConventions.toSnakeCase(fileName);
-//        File path = new File(getInventoriesDirectory() + "/" + plugin.getName());
-//        File file = new File(path +
-//                "/" + fileName + ".yml");
-//        if (!file.exists()) {
-//            try {
-//                file.createNewFile();
-//                ResourceUtil.updateYml(path, "/temp" + fileName + ".yml", fileName + ".yml", file, plugin);
-//                return Result.valid(file);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        return Result.invalid(file);
-//    }
-//
-//    /**
-//     * @param fileName The name of the file
-//     * @param plugin   The plugin
-//     * @return The Result of the file. If the file didn't exist and no exceptions were found, Result will be valid.
-//     * @deprecated Use {@link #conventionAddDefaultMessagesFile(String, Plugin)} to
-//     * ensure that a naming convention is followed.
-//     */
-//    @Deprecated
-//    public static Result<File> addDefaultMessagesFile(String fileName, Plugin plugin) {
-//        File path = new File(getMessagesDirectory() + "/" + plugin.getName());
-//        File file = new File(path +
-//                "/" + fileName + ".yml");
-//        if (!file.exists()) {
-//            try {
-//                file.createNewFile();
-//                ResourceUtil.updateYml(path, "/temp" + fileName + ".yml", fileName + ".yml", file, plugin);
-//                return Result.valid(file);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        return Result.invalid(file);
-//    }
-//
-//    /**
-//     * @param fileName The name of the file. Is converted to snake_case
-//     * @param plugin   The plugin
-//     * @return The Result of the file. If the file didn't exist and no exceptions were found, Result will be valid.
-//     */
-//    public static Result<File> conventionAddDefaultMessagesFile(String fileName, Plugin plugin) {
-//        String snakeCase = NamingConventions.toSnakeCase(fileName);
-//        return addDefaultMessagesFile(snakeCase, plugin);
-//    }
-//
-//    /**
-//     * @param fileName The name of the file
-//     * @param plugin   The plugin
-//     * @return The Result of the file. If the file didn't exist and no exceptions were found, Result will be valid.
-//     */
-//    @Deprecated
-//    public static Result<File> addDefaultSoundsFile(String fileName, Plugin plugin) {
-//        File path = new File(getSoundsDirectory() + "/" + plugin.getName());
-//        File file = new File(path +
-//                "/" + fileName + ".yml");
-//        if (!file.exists()) {
-//            try {
-//                file.createNewFile();
-//                ResourceUtil.updateYml(path, "/temp" + fileName + ".yml", fileName + ".yml", file, plugin);
-//                return Result.valid(file);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        return Result.invalid(file);
-//    }
-//
-//    /**
-//     * @param fileName The name of the file. Is converted to snake_case
-//     * @param plugin   The plugin
-//     * @return The Result of the file. If the file didn't exist and no exceptions were found, Result will be valid.
-//     */
-//    public static Result<File> conventionAddDefaultSoundsFile(String fileName, Plugin plugin) {
-//        String snakeCase = NamingConventions.toSnakeCase(fileName);
-//        return addDefaultSoundsFile(snakeCase, plugin);
-//    }
-
-    /**
      * Adds a new chat listener
      *
      * @param player            The player
@@ -191,7 +65,10 @@ public class BlobLibDevAPI {
      * @param consumer          The consumer. The String is the message sent by the player
      * @param timeoutMessageKey The timeout message key
      * @param timerMessageKey   The timer message key
+     * @deprecated Use {@link BlobLibAPI#addChatListener(Player, long, Consumer, String, String)}
+     * since this class (BlobLibDevAPI) is in subject to change.
      */
+    @Deprecated
     public static void addChatListener(Player player, long timeout, Consumer<String> consumer,
                                        String timeoutMessageKey, String timerMessageKey) {
         BlobLib.getInstance().getChatManager().addChatListener(player,
@@ -204,7 +81,10 @@ public class BlobLibDevAPI {
      * @param player          The player
      * @param consumer        The consumer. The ItemStack is the item dropped.
      * @param timerMessageKey The timer message key
+     * @deprecated Use {@link BlobLibAPI#addDropListener(Player, Consumer, String)} instead
+     * since this class (BlobLibDevAPI) is in subject to change.
      */
+    @Deprecated
     public static void addDropListener(Player player, Consumer<ItemStack> consumer,
                                        String timerMessageKey) {
         BlobLib.getInstance().getDropListenerManager().addDropListener(player,
@@ -219,7 +99,10 @@ public class BlobLibDevAPI {
      * @param consumer          The consumer. The Block is the block clicked.
      * @param timeoutMessageKey The timeout message key
      * @param timerMessageKey   The timer message key
+     * @deprecated Use {@link BlobLibAPI#addPositionListener(Player, long, Consumer, String, String)}
+     * since this class (BlobLibDevAPI) is in subject to change.
      */
+    @Deprecated
     public static void addPositionListener(Player player, long timeout, Consumer<Block> consumer,
                                            String timeoutMessageKey, String timerMessageKey) {
         BlobLib.getInstance().getPositionManager().addPositionListener(player,
@@ -234,7 +117,10 @@ public class BlobLibDevAPI {
      * @param timerMessageKey The timer message key
      * @param selector        The selector
      * @param <T>             The type of the selector
+     * @deprecated Use {@link BlobLibAPI#addSelectorListener(Player, Consumer, String, VariableSelector)}
+     * since this class (BlobLibDevAPI) is in subject to change.
      */
+    @Deprecated
     public static <T> void addSelectorListener(Player player, Consumer<T> consumer,
                                                String timerMessageKey,
                                                VariableSelector<T> selector) {

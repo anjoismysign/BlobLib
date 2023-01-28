@@ -5,8 +5,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
+import us.mytheria.bloblib.BlobLibAPI;
 import us.mytheria.bloblib.BlobLibAssetAPI;
-import us.mytheria.bloblib.BlobLibDevAPI;
 import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
 import us.mytheria.bloblib.utilities.BukkitUtil;
 import us.mytheria.bloblib.utilities.ItemStackUtil;
@@ -21,7 +21,7 @@ public class ObjectBuilderButtonBuilder {
                                                      String timerMessageKey,
                                                      Function<String, Boolean> function) {
         return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibDevAPI.addChatListener(player, timeout,
+                (button, player) -> BlobLibAPI.addChatListener(player, timeout,
                         string -> button.set(string, function),
                         timeoutMessageKey,
                         timerMessageKey)) {
@@ -75,7 +75,7 @@ public class ObjectBuilderButtonBuilder {
                                                  String timerMessageKey,
                                                  Function<Byte, Boolean> function) {
         return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                             try {
                                 byte input = Byte.parseByte(string);
                                 button.set(input, function);
@@ -142,7 +142,7 @@ public class ObjectBuilderButtonBuilder {
      *     ObjectBuilderButtonBuilder.QUICK_OPTIONAL_BYTE("Age", 300, objectBuilder);
      *
      *     assert button.equals(new ObjectBuilderButton&lt;&gt;(buttonKey, Optional.empty(),
-     *                 (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+     *                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
      *                             try {
      *                                 byte input = Byte.parseByte(string);
      *                                 Function&lt;Byte, Boolean&gt; function = value -> {
@@ -174,7 +174,7 @@ public class ObjectBuilderButtonBuilder {
 
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                             try {
                                 byte input = Byte.parseByte(string);
                                 Function<Byte, Boolean> function = value -> {
@@ -201,7 +201,7 @@ public class ObjectBuilderButtonBuilder {
                                                    String timerMessageKey,
                                                    Function<Short, Boolean> function) {
         return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                     try {
                         short input = Short.parseShort(string);
                         button.set(input, function);
@@ -267,7 +267,7 @@ public class ObjectBuilderButtonBuilder {
      *     ObjectBuilderButtonBuilder.QUICK_OPTIONAL_SHORT("Level", 300, objectBuilder);
      *
      *     assert button.equals(new ObjectBuilderButton&lt;&gt;(buttonKey, Optional.empty(),
-     *            (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+     *            (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
      *            try {
      *            short input = Short.parseShort(string);
      *            Function&lt;Short, Boolean&gt; function = value -> {
@@ -299,7 +299,7 @@ public class ObjectBuilderButtonBuilder {
 
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                             try {
                                 short input = Short.parseShort(string);
                                 Function<Short, Boolean> function = value -> {
@@ -326,7 +326,7 @@ public class ObjectBuilderButtonBuilder {
                                                        String timerMessageKey,
                                                        Function<Integer, Boolean> function) {
         return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                     try {
                         int input = Integer.parseInt(string);
                         button.set(input, function);
@@ -392,7 +392,7 @@ public class ObjectBuilderButtonBuilder {
      *     ObjectBuilderButtonBuilder.QUICK_OPTIONAL_INTEGER("Damage", 300, objectBuilder);
      *
      *     assert button.equals(new ObjectBuilderButton&lt;&gt;(buttonKey, Optional.empty(),
-     *       (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+     *       (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
      *       try {
      *       int input = Integer.parseInt(string);
      *       Function&lt;Integer, Boolean&gt; function = value -> {
@@ -424,7 +424,7 @@ public class ObjectBuilderButtonBuilder {
 
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                             try {
                                 int input = Integer.parseInt(string);
                                 Function<Integer, Boolean> function = value -> {
@@ -451,7 +451,7 @@ public class ObjectBuilderButtonBuilder {
                                                  String timerMessageKey,
                                                  Function<Long, Boolean> function) {
         return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                     try {
                         long input = Long.parseLong(string);
                         button.set(input, function);
@@ -517,7 +517,7 @@ public class ObjectBuilderButtonBuilder {
      *     ObjectBuilderButtonBuilder.QUICK_OPTIONAL_LONG("Coins", 300, objectBuilder);
      *
      *     assert button.equals(new ObjectBuilderButton&lt;&gt;(buttonKey, Optional.empty(),
-     *     (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+     *     (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
      *     try {
      *     long input = Long.parseLong(string);
      *     Function&lt;Long, Boolean&gt; function = value -> {
@@ -549,7 +549,7 @@ public class ObjectBuilderButtonBuilder {
 
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                             try {
                                 long input = Long.parseLong(string);
                                 Function<Long, Boolean> function = value -> {
@@ -576,7 +576,7 @@ public class ObjectBuilderButtonBuilder {
                                                    String timerMessageKey,
                                                    Function<Float, Boolean> function) {
         return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                     try {
                         float input = Float.parseFloat(string);
                         button.set(input, function);
@@ -642,7 +642,7 @@ public class ObjectBuilderButtonBuilder {
      *     ObjectBuilderButtonBuilder.QUICK_OPTIONAL_FLOAT("Health", 300, objectBuilder);
      *
      *     assert button.equals(new ObjectBuilderButton&lt;&gt;(buttonKey, Optional.empty(),
-     *     (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+     *     (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
      *     try {
      *     float input = Float.parseFloat(string);
      *     Function&lt;Float, Boolean&gt; function = value -> {
@@ -674,7 +674,7 @@ public class ObjectBuilderButtonBuilder {
 
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                             try {
                                 float input = Float.parseFloat(string);
                                 Function<Float, Boolean> function = value -> {
@@ -701,7 +701,7 @@ public class ObjectBuilderButtonBuilder {
                                                      String timerMessageKey,
                                                      Function<Double, Boolean> function) {
         return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                     try {
                         double input = Double.parseDouble(string);
                         button.set(input, function);
@@ -767,7 +767,7 @@ public class ObjectBuilderButtonBuilder {
      *     ObjectBuilderButtonBuilder.QUICK_OPTIONAL_DOUBLE("Dogecoin", 300, objectBuilder);
      *
      *     assert button.equals(new ObjectBuilderButton&lt;&gt;(buttonKey, Optional.empty(),
-     *     (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+     *     (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
      *     try {
      *     double input = Double.parseDouble(string);
      *     Function&lt;Double, Boolean&gt; function = value -> {
@@ -798,7 +798,7 @@ public class ObjectBuilderButtonBuilder {
                                                                     ObjectBuilder<?> objectBuilder) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibDevAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                             try {
                                 double input = Double.parseDouble(string);
                                 Function<Double, Boolean> function = value -> {
@@ -825,7 +825,7 @@ public class ObjectBuilderButtonBuilder {
                                                    String timerMessageKey,
                                                    Function<Block, Boolean> function) {
         return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibDevAPI.addPositionListener(player, timeout,
+                (button, player) -> BlobLibAPI.addPositionListener(player, timeout,
                         input -> {
                             button.set(input, function);
                         }, timeoutMessageKey, timerMessageKey)) {
@@ -880,7 +880,7 @@ public class ObjectBuilderButtonBuilder {
                                                       String timerMessageKey,
                                                       Function<ItemStack, Boolean> function) {
         return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibDevAPI.addDropListener(player,
+                (button, player) -> BlobLibAPI.addDropListener(player,
                         input -> {
                             button.set(input, function);
                         }, timerMessageKey)) {
@@ -929,7 +929,7 @@ public class ObjectBuilderButtonBuilder {
                                                       Function<T, Boolean> function,
                                                       VariableSelector<T> selector) {
         return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibDevAPI.addSelectorListener(player,
+                (button, player) -> BlobLibAPI.addSelectorListener(player,
                         input -> {
                             button.set(input, function);
                         }, timerMessageKey, selector)) {
@@ -988,7 +988,7 @@ public class ObjectBuilderButtonBuilder {
                                                                     String timerMessageKey,
                                                                     Function<ReferenceBlobMessage, Boolean> function) {
         return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibDevAPI.addChatListener(player, timeout,
+                (button, player) -> BlobLibAPI.addChatListener(player, timeout,
                         string -> {
                             ReferenceBlobMessage message = BlobLibAssetAPI.getMessage(string);
                             button.set(message, function);
@@ -1046,7 +1046,7 @@ public class ObjectBuilderButtonBuilder {
                                                    String timerMessageKey,
                                                    Function<World, Boolean> function) {
         return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibDevAPI.addChatListener(player, timeout,
+                (button, player) -> BlobLibAPI.addChatListener(player, timeout,
                         string -> {
                             World world = Bukkit.getWorld(string);
                             button.set(world, function);

@@ -1,12 +1,15 @@
 package us.mytheria.bloblib;
 
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
 import us.mytheria.bloblib.entities.message.BlobSound;
 import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
 import us.mytheria.bloblib.managers.InventoryManager;
 import us.mytheria.bloblib.managers.MessageManager;
 import us.mytheria.bloblib.managers.SoundManager;
+
+import java.io.File;
 
 public class BlobLibAssetAPI {
     private static final BlobLib main = BlobLib.getInstance();
@@ -70,5 +73,56 @@ public class BlobLibAssetAPI {
      */
     public static void playSound(String key, Player player) {
         getSoundManager().play(player, key);
+    }
+
+
+    /**
+     * @return The messages file
+     */
+    @NotNull
+    public static File getMessagesDirectory() {
+        return main.getFileManager().messagesDirectory();
+    }
+
+    /**
+     * @return The messages file path
+     */
+    @NotNull
+    public static String getMessagesFilePath() {
+        return main.getFileManager().messagesDirectory().getPath();
+    }
+
+    /**
+     * @return The sounds file
+     */
+    @NotNull
+    public static File getSoundsDirectory() {
+        return main.getFileManager().soundsDirectory();
+    }
+
+    /**
+     * @return The sounds file path
+     */
+    @NotNull
+    public static String getSoundsFilePath() {
+        return main.getFileManager().soundsDirectory().getPath();
+    }
+
+    /**
+     * Retrieves a file from the inventories' directory.
+     *
+     * @return The inventories file
+     */
+    @NotNull
+    public static File getInventoriesDirectory() {
+        return main.getFileManager().inventoriesDirectory();
+    }
+
+    /**
+     * @return The inventories file path
+     */
+    @NotNull
+    public static String getInventoriesFilePath() {
+        return main.getFileManager().inventoriesDirectory().getPath();
     }
 }
