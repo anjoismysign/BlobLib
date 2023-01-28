@@ -24,7 +24,7 @@ public record ObjectDirectorData(String objectDirectory, String objectBuilderKey
         File file = new File(blobFileManager.inventoriesDirectory() + "/" + objectBuilderFilename + ".yml");
         blobFileManager.addDirectory(objectDirectoryFilename, NamingConventions.toCamelCase(objectName));
         blobFileManager.addFile(objectBuilderFilename, file);
-        blobFileManager.registerAndUpdateYAML(file);
+        blobFileManager.updateYAML(file);
         return new ObjectDirectorData(objectDirectoryFilename, objectBuilderFilename, objectName);
     }
 

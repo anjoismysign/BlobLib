@@ -1,6 +1,7 @@
 package us.mytheria.bloblib.entities;
 
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
@@ -19,7 +20,7 @@ import java.util.function.Function;
 
 public class ObjectBuilderManager<T> extends Manager {
     protected String title;
-    
+
     private HashMap<String, HashMap<UUID, ObjectBuilder<T>>> builders;
     private ChatListenerManager chatManager;
     private DropListenerManager dropListenerManager;
@@ -59,9 +60,15 @@ public class ObjectBuilderManager<T> extends Manager {
         Optional<File> file = getManagerDirector().getFileManager().searchFile(fileKey);
         if (file.isEmpty())
             throw new RuntimeException("File not found by key '" + fileKey + "'");
+        File f = file.get();
+        Bukkit.getLogger().info("path: " + f.getPath());
         YamlConfiguration inventory = YamlConfiguration.loadConfiguration(file.get());
         /*By default, all BlobInventorie's are forced to have Title, else
         they wouldn't load.*/
+        boolean hasTitle = inventory.contains("Title");
+        Bukkit.getLogger().info("Has title: " + hasTitle);
+        if (!hasTitle)
+            throw new RuntimeException("Inventory file '" + fileKey + "' does not have a title.");
         this.title = ChatColor.translateAlternateColorCodes('&',
                 inventory.getString("Title"));
     }

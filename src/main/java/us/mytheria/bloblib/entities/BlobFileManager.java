@@ -83,34 +83,35 @@ public class BlobFileManager extends Manager {
     }
 
     /**
-     * Register a YAML file. It will auto update it with
-     * the most recent version that's embedded in
-     * the plugin jar.
+     * It will auto update it with the most recent
+     * version that's embedded in the plugin jar.
      *
-     * @param file the YAML file to register and update
+     * @param file the YAML file to update
+     * @return if it's a fresh file / was just created.
      */
-    public void registerAndUpdateYAML(File file) {
+    public boolean updateYAML(File file) {
         String fileName = file.getName();
         try {
-            boolean newFile = file.createNewFile();
-            if (newFile)
-                return;
+            boolean isFresh = file.createNewFile();
             ResourceUtil.updateYml(file.getParentFile(),
                     "/temp" + fileName,
                     fileName, file, getPlugin());
+            return isFresh;
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     /**
-     * creates and updates a YML file array
+     * Updates a YML file array with the most recent
+     * version that's embedded in the plugin jar.
      *
-     * @param files the files to create and update.
+     * @param files the files to update.
      */
-    public void registerAndUpdateYAMLs(File... files) {
+    public void updateYAMLs(File... files) {
         for (File file : files) {
-            registerAndUpdateYAML(file);
+            updateYAML(file);
         }
     }
 
@@ -119,9 +120,9 @@ public class BlobFileManager extends Manager {
      *
      * @param files the files to create and update.
      */
-    public void registerAndUpdateYAMLs(Collection<File> files) {
+    public void updateYAMLs(Collection<File> files) {
         for (File file : files) {
-            registerAndUpdateYAML(file);
+            updateYAML(file);
         }
     }
 

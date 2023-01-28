@@ -241,7 +241,7 @@ public abstract class ManagerDirector {
     public ManagerDirector registerAndUpdateInventoryAsset(String fileName, boolean debug) {
         File file = new File(blobFileManager.inventoriesDirectory() + "/" + fileName + ".yml");
         blobFileManager.addFile(fileName, file);
-        blobFileManager.registerAndUpdateYAML(file);
+        blobFileManager.updateYAML(file);
         if (debug)
             getPlugin().getAnjoLogger().debug(" inventory asset " + fileName + ".yml successfully registered");
         return this;
