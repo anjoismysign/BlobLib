@@ -229,44 +229,4 @@ public abstract class ManagerDirector {
     public ManagerDirector detachSoundAsset(String fileName) {
         return detachSoundAsset(fileName, false);
     }
-
-    /**
-     * Will detach an embedded Inventory file/asset from the plugin jar to
-     * the corresponding directory in the plugin data folder.
-     *
-     * @param fileName The name of the file to detach
-     * @param debug    Whether to print debug messages
-     * @return The ManagerDirector instance for method chaining
-     */
-    public ManagerDirector detachInventoryAsset(String fileName, boolean debug) {
-        Logger logger = getPlugin().getAnjoLogger();
-        File path = getFileManager().inventoriesDirectory();
-        File file = new File(path + "/" + fileName + ".yml");
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                if (debug)
-                    logger.debug(" inventory asset " + fileName + ".yml was not detached");
-                e.printStackTrace();
-                return this;
-            }
-        }
-        getFileManager().registerAndUpdateYAML(file);
-        if (debug)
-            logger.debug(" inventory asset " + fileName + ".yml successfully detached");
-        return this;
-    }
-
-    /**
-     * Will detach an embedded Inventory file/asset from the plugin jar to
-     * the corresponding directory in the plugin data folder.
-     * Will not print debug messages.
-     *
-     * @param fileName The name of the file to detach
-     * @return The ManagerDirector instance for method chaining
-     */
-    public ManagerDirector detachInventoryAsset(String fileName) {
-        return detachInventoryAsset(fileName, false);
-    }
 }
