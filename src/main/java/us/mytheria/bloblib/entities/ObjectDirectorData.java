@@ -7,7 +7,8 @@ import java.io.File;
 public record ObjectDirectorData(String objectDirectory, String objectBuilderKey, String objectName) {
 
     /**
-     * Constructs a new ObjectDirectorData.
+     * Constructs a new ObjectDirectorData. It will register
+     * and update the object builder inventory asset.
      * You should use ObjectDirectorData.simple() instead.
      *
      * @param blobFileManager         The BlobFileManager
