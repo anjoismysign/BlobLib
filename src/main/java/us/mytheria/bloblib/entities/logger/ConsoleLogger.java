@@ -1,4 +1,4 @@
-package us.mytheria.bloblib.entities;
+package us.mytheria.bloblib.entities.logger;
 
 import me.anjoismysign.anjo.logger.Logger;
 import org.bukkit.Bukkit;

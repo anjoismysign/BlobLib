@@ -1,6 +1,9 @@
 package us.mytheria.bloblib.managers;
 
+import me.anjoismysign.anjo.logger.Logger;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
+import us.mytheria.bloblib.entities.logger.BlobPluginLogger;
 import us.mytheria.bloblib.entities.manager.ManagerDirector;
 
 /**
@@ -9,6 +12,8 @@ import us.mytheria.bloblib.entities.manager.ManagerDirector;
  * A BlobPlugin is a plugin that makes use of BlobLib's assets features.
  */
 public abstract class BlobPlugin extends JavaPlugin {
+    private final BlobPluginLogger logger = new BlobPluginLogger(this);
+
     /**
      * This method is called whenever BlobLib needs to reload all
      * plugins' assets, including this one if correctly registered.
@@ -52,4 +57,9 @@ public abstract class BlobPlugin extends JavaPlugin {
      * @return The ManagerDirector of the plugin.
      */
     public abstract ManagerDirector getManagerDirector();
+
+    @NotNull
+    public Logger getAnjoLogger() {
+        return logger;
+    }
 }

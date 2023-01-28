@@ -1,6 +1,6 @@
 package us.mytheria.bloblib.utilities;
 
-import us.mytheria.bloblib.entities.ConsoleLogger;
+import us.mytheria.bloblib.entities.logger.ConsoleLogger;
 
 public class Debug {
     /**
