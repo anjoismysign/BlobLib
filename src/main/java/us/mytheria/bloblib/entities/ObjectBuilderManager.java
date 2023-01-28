@@ -19,20 +19,7 @@ import java.util.function.Function;
 
 public class ObjectBuilderManager<T> extends Manager {
     protected String title;
-    /*
-    Pongamos el ejemplo de que usaremos de ObjectBuilder el objeto abstracto
-    Reward que luego se extiende en PermissionsReward, CashReward e ItemStackReward.
-    Tengo que tener una variable llamada builders que me permita acceder al ObjectBuilder
-    que tenga el jugador (siendo el UUID del jugador el key y el ObjectBuilder el value).
-    No solo eso, me tiene que permitir colocar cualquiera de los tres tipos de Reward
-    dentro de builders.
-    El plan sería investigar cuál es la función que agrega un ObjectBuilder a builders
-    y asegurarme que la variable builders sea de ObjectBuilder<Reward> ya que cualquiera
-    de los tres tipos extienden Reward.
-
-    Sugerencia: crear un nuevo HashMap en el que key sea String y value
-    sea un HashMap de key UUID y value ObjectBuilder<>.
-     */
+    
     private HashMap<String, HashMap<UUID, ObjectBuilder<T>>> builders;
     private ChatListenerManager chatManager;
     private DropListenerManager dropListenerManager;
@@ -48,8 +35,10 @@ public class ObjectBuilderManager<T> extends Manager {
     public ObjectBuilderManager(ManagerDirector managerDirector,
                                 String fileKey) {
         super(managerDirector);
+        this.builders = new HashMap<>();
         this.fileKey = fileKey;
         this.builderFunctions = new HashMap<>();
+        update();
     }
 
     @Override
@@ -58,8 +47,6 @@ public class ObjectBuilderManager<T> extends Manager {
         chatManager = getManagerDirector().getChatListenerManager();
         dropListenerManager = getManagerDirector().getDropListenerManager();
         selectorListenerManager = getManagerDirector().getSelectorManager();
-        update();
-        this.builders = new HashMap<>();
     }
 
     @Override
