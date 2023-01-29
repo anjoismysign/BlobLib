@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.managers;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import us.mytheria.bloblib.BlobLib;
@@ -85,9 +86,18 @@ public class InventoryManager {
 
     @Nullable
     public BlobInventory getInventory(String key) {
+        return inventories.get(key);
+    }
+
+    @Nullable
+    public BlobInventory cloneInventory(String key) {
+        BlobInventory inventory = inventories.get(key);
+        if (inventory == null)
+            return null;
         try {
-            return inventories.get(key).clone();
+            return inventory.clone();
         } catch (CloneNotSupportedException e) {
+            Bukkit.getLogger().info("Failed to clone inventory: " + key);
             e.printStackTrace();
         }
         return null;

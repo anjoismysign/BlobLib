@@ -88,9 +88,12 @@ public class ObjectBuilderManager<T> extends Manager {
         ObjectBuilder<T> objectBuilder = builders.get(builderType).get(uuid);
         if (objectBuilder == null) {
             logger.info("1");
+            logger.info("builderFunction == null: " + (builderFunction == null));
             objectBuilder = builderFunction.apply(uuid);
+            logger.info("2");
             builders.get(builderType).put(uuid, objectBuilder);
         }
+        logger.info("3");
         return objectBuilder;
     }
 
