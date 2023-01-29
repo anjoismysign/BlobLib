@@ -1,6 +1,7 @@
 package us.mytheria.bloblib.entities;
 
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
@@ -16,6 +17,7 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.logging.Logger;
 
 public class ObjectBuilderManager<T> extends Manager {
     protected String title;
@@ -69,15 +71,24 @@ public class ObjectBuilderManager<T> extends Manager {
     }
 
     public ObjectBuilder<T> getOrDefault(UUID uuid, String builderType) {
+        //TODO: Remove logger
+        Logger logger = Bukkit.getLogger();
+        logger.info("getOrDefault");
+        boolean buildersNull = builders == null;
+        if (buildersNull) {
+            logger.info("builders == null");
+            throw new RuntimeException("builders null");
+        }
         HashMap<UUID, ObjectBuilder<T>> builderMap = builders.get(builderType);
         if (builderMap == null) {
             builderMap = new HashMap<>();
             builders.put(builderType, builderMap);
-            if (builderType.equals("default"))
-                throw new RuntimeException("Builder type 'default' was not manually initialized.");
+            logger.severe("Builder type '" + builderType + "' was not initialized.");
+            return getOrDefault(uuid, builderType);
         }
         ObjectBuilder<T> objectBuilder = builders.get(builderType).get(uuid);
         if (objectBuilder == null) {
+            logger.info("1");
             objectBuilder = builderFunctions.get(builderType).apply(uuid);
             builders.get(builderType).put(uuid, objectBuilder);
         }

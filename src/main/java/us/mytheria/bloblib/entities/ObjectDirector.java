@@ -10,6 +10,7 @@ import us.mytheria.bloblib.entities.manager.Manager;
 import us.mytheria.bloblib.entities.manager.ManagerDirector;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -29,7 +30,8 @@ public class ObjectDirector<T> extends Manager implements Listener {
         Optional<File> loadFilesPath = managerDirector.getFileManager().searchFile(loadFilesPathKey);
         if (loadFilesPath.isEmpty())
             throw new IllegalArgumentException("The loadFilesPathKey is not valid");
-        this.objectManager = new ObjectManager<>(managerDirector, loadFilesPath.get()) {
+        this.objectManager = new ObjectManager<>(managerDirector, loadFilesPath.get(),
+                HashMap::new) {
             @Override
             public void loadFiles(File path) {
                 if (!path.exists())
