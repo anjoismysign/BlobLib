@@ -28,7 +28,7 @@ public class ObjectBuilderManager<T> extends Manager {
     private SelectorListenerManager selectorListenerManager;
     private SelPosListenerManager selPosListenerManager;
     private String fileKey;
-    private HashMap<String, Function<UUID, ObjectBuilder>> builderFunctions;
+    private Function<UUID, ObjectBuilder<T>> builderFunction;
 
     public ObjectBuilderManager(ManagerDirector managerDirector) {
         super(managerDirector);
@@ -39,7 +39,6 @@ public class ObjectBuilderManager<T> extends Manager {
         super(managerDirector);
         this.builders = new HashMap<>();
         this.fileKey = fileKey;
-        this.builderFunctions = new HashMap<>();
         update();
     }
 
@@ -89,7 +88,7 @@ public class ObjectBuilderManager<T> extends Manager {
         ObjectBuilder<T> objectBuilder = builders.get(builderType).get(uuid);
         if (objectBuilder == null) {
             logger.info("1");
-            objectBuilder = builderFunctions.get(builderType).apply(uuid);
+            objectBuilder = builderFunction.apply(uuid);
             builders.get(builderType).put(uuid, objectBuilder);
         }
         return objectBuilder;
@@ -154,13 +153,8 @@ public class ObjectBuilderManager<T> extends Manager {
         return this;
     }
 
-    public ObjectBuilderManager<T> addBuilderFunction(String builderType, Function<UUID, ObjectBuilder> function) {
-        builderFunctions.put(builderType, function);
-        return this;
-    }
-
-    public ObjectBuilderManager<T> addBuilderFunction(Function<UUID, ObjectBuilder> function) {
-        addBuilderFunction("default", function);
+    public ObjectBuilderManager<T> setBuilderFunction(Function<UUID, ObjectBuilder<T>> function) {
+        builderFunction = function;
         return this;
     }
 
