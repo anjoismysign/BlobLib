@@ -42,27 +42,19 @@ Builder:
     Message: "&cMaterial '%material%' not found"
   World:
     Type: TITLE
-    Title: "&f&lTYPE IN WORLD%"
+    Title: "&f&lWORLD"
     Subtitle: "&7You are currently in '%world%'"
   World-Timeout:
     Type: TITLE
     Title: '&c&lTIMEOUT'
     Subtitle: '&7You took too long to type in a world'
-  Price:
-    Type: TITLE
-    Title: '&f&lTYPE IN PRICE'
-    Subtitle: '&7It can include decimals'
-  Price-Timeout:
-    Type: TITLE
-    Title: '&c&lTIMEOUT'
-    Subtitle: '&7You took too long to type in a price'
   Position-Timeout:
     Type: TITLE
     Title: '&c&lTIMEOUT'
     Subtitle: '&7You took too long to select a position'
   Material:
     Type: TITLE
-    Title: '&f&lTYPE IN MATERIAL'
+    Title: '&f&lMATERIAL'
     Subtitle: '&7Type in an org.bukkit.Material'
   Material-Timeout:
     Type: TITLE
@@ -70,7 +62,7 @@ Builder:
     Subtitle: '&7You took too long to type in Material'
   Key:
     Type: TITLE
-    Title: '&f&lTYPE IN KEY'
+    Title: '&f&lKEY'
     Subtitle: '&7How you want it to be named'
   Key-Timeout:
     Type: TITLE
@@ -89,12 +81,30 @@ Builder:
   EntityType:
     Type: ACTIONBAR
     Message: '&7Select an EntityType. Close the inventory to cancel'
-  CustomModelData: '&f&lCUSTOMMODELDATA%split%&7Type in a number'
-  CustomModelData-Timeout: '&c&lTIMEOUT%split%&7You took too long to type in CustomModelData'
-  BuyPrice: '&f&lBUY PRICE%split%&7Type in a number'
-  BuyPrice-Timeout: '&c&lTIMEOUT%split%&7You took too long to type in BuyPrice'
-  SellPrice: '&f&lSELL PRICE%split%&7Type in a number'
-  SellPrice-Timeout: '&c&lTIMEOUT%split%&7You took too long to type in SellPrice'
+  CustomModelData:
+    Type: TITLE
+    Title: '&f&lCUSTOM MODEL DATA'
+    Subtitle: '&7Type in a number'
+  CustomModelData-Timeout:
+    Type: TITLE
+    Title: '&c&lTIMEOUT'
+    Subtitle: '&7You took too long to type in CustomModelData'
+  BuyPrice:
+    Type: TITLE
+    Title: '&f&lBUY PRICE'
+    Subtitle: '&7Type in a number'
+  BuyPrice-Timeout:
+    Type: TITLE
+    Title: '&c&lTIMEOUT'
+    Subtitle: '&7You took too long to type in BuyPrice'
+  SellPrice:
+    Type: TITLE
+    Title: '&f&SELL PRICE'
+    Subtitle: '&7Type in a number'
+  SellPrice-Timeout:
+    Type: TITLE
+    Title: '&c&lTIMEOUT'
+    Subtitle: '&7You took too long to type in SellPrice'
 Editor:
   Remove:
     Type: ACTIONBAR
