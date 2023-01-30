@@ -342,7 +342,7 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
     }
 
     /**
-     * Add a quick optional byte button.
+     * Add a positive byte button.
      * if input is lower than 0, button
      * will be empty.
      *
@@ -350,12 +350,12 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
      * @param timeout   the timeout
      * @return this
      */
-    public ObjectBuilder<T> addQuickOptionalByteButton(String buttonKey, long timeout) {
-        return addObjectBuilderButton(ObjectBuilderButtonBuilder.OPTIONAL_QUICK_BYTE(buttonKey, timeout, this));
+    public ObjectBuilder<T> addPositiveByteButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.POSITIVE_BYTE(buttonKey, timeout, this));
     }
 
     /**
-     * Add a quick optional short button.
+     * Add a positive short button.
      * if input is lower than 0, button
      * will be empty.
      *
@@ -363,12 +363,12 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
      * @param timeout   the timeout
      * @return this
      */
-    public ObjectBuilder<T> addQuickOptionalShortButton(String buttonKey, long timeout) {
-        return addObjectBuilderButton(ObjectBuilderButtonBuilder.OPTIONAL_QUICK_SHORT(buttonKey, timeout, this));
+    public ObjectBuilder<T> addPositiveShortButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.POSITIVE_SHORT(buttonKey, timeout, this));
     }
 
     /**
-     * Add a quick optional integer button.
+     * Add a positive integer button.
      * if input is lower than 0, button
      * will be empty.
      *
@@ -376,12 +376,12 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
      * @param timeout   the timeout
      * @return this
      */
-    public ObjectBuilder<T> addQuickOptionalIntegerButton(String buttonKey, long timeout) {
-        return addObjectBuilderButton(ObjectBuilderButtonBuilder.OPTIONAL_QUICK_INTEGER(buttonKey, timeout, this));
+    public ObjectBuilder<T> addPositiveIntegerButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.POSITIVE_INTEGER(buttonKey, timeout, this));
     }
 
     /**
-     * Add a quick optional long button.
+     * Add a positive long button.
      * if input is lower than 0, button
      * will be empty.
      *
@@ -389,12 +389,12 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
      * @param timeout   the timeout
      * @return this
      */
-    public ObjectBuilder<T> addQuickOptionalLongButton(String buttonKey, long timeout) {
-        return addObjectBuilderButton(ObjectBuilderButtonBuilder.OPTIONAL_QUICK_LONG(buttonKey, timeout, this));
+    public ObjectBuilder<T> addPositiveLongButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.POSITIVE_LONG(buttonKey, timeout, this));
     }
 
     /**
-     * Add a quick optional float button.
+     * Add a positive float button.
      * if input is lower than 0, button
      * will be empty.
      *
@@ -402,12 +402,12 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
      * @param timeout   the timeout
      * @return this
      */
-    public ObjectBuilder<T> addQuickOptionalFloatButton(String buttonKey, long timeout) {
-        return addObjectBuilderButton(ObjectBuilderButtonBuilder.OPTIONAL_QUICK_FLOAT(buttonKey, timeout, this));
+    public ObjectBuilder<T> addPositiveFloatButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.POSITIVE_FLOAT(buttonKey, timeout, this));
     }
 
     /**
-     * Add a quick optional double button.
+     * Add a positive double button.
      * if input is lower than 0, button
      * will be empty.
      *
@@ -415,8 +415,86 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
      * @param timeout   the timeout
      * @return this
      */
-    public ObjectBuilder<T> addQuickOptionalDoubleButton(String buttonKey, long timeout) {
-        return addObjectBuilderButton(ObjectBuilderButtonBuilder.OPTIONAL_QUICK_DOUBLE(buttonKey, timeout, this));
+    public ObjectBuilder<T> addPositiveDoubleButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.POSITIVE_DOUBLE(buttonKey, timeout, this));
+    }
+
+    /**
+     * Add a positive double button.
+     * if input equalsIgnoreCase "null", button's
+     * value will be null.
+     *
+     * @param buttonKey the button key
+     * @param timeout   the timeout
+     * @return this
+     */
+    public ObjectBuilder<T> addNullableByteButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.NULLABLE_BYTE(buttonKey, timeout, this));
+    }
+
+    /**
+     * Add a positive double button.
+     * if input equalsIgnoreCase "null", button's
+     * value will be null.
+     *
+     * @param buttonKey the button key
+     * @param timeout   the timeout
+     * @return this
+     */
+    public ObjectBuilder<T> addNullableShortButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.NULLABLE_SHORT(buttonKey, timeout, this));
+    }
+
+    /**
+     * Add a positive double button.
+     * if input equalsIgnoreCase "null", button's
+     * value will be null.
+     *
+     * @param buttonKey the button key
+     * @param timeout   the timeout
+     * @return this
+     */
+    public ObjectBuilder<T> addNullableIntegerButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.NULLABLE_INTEGER(buttonKey, timeout, this));
+    }
+
+    /**
+     * Add a positive double button.
+     * if input equalsIgnoreCase "null", button's
+     * value will be null.
+     *
+     * @param buttonKey the button key
+     * @param timeout   the timeout
+     * @return this
+     */
+    public ObjectBuilder<T> addNullableLongButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.NULLABLE_LONG(buttonKey, timeout, this));
+    }
+
+    /**
+     * Add a positive double button.
+     * if input equalsIgnoreCase "null", button's
+     * value will be null.
+     *
+     * @param buttonKey the button key
+     * @param timeout   the timeout
+     * @return this
+     */
+    public ObjectBuilder<T> addNullableFloatButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.NULLABLE_FLOAT(buttonKey, timeout, this));
+    }
+
+    /**
+     * Add a positive double button.
+     * if input equalsIgnoreCase "null", button's
+     * value will be null.
+     *
+     * @param buttonKey the button key
+     * @param timeout   the timeout
+     * @return this
+     */
+    public ObjectBuilder<T> addNullableDoubleButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.NULLABLE_DOUBLE(buttonKey, timeout, this));
     }
 
     /**

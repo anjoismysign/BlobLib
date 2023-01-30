@@ -97,7 +97,8 @@ public class ObjectBuilderButtonBuilder {
     public static ObjectBuilderButton<Byte> BYTE(String buttonKey, long timeout,
                                                  String timeoutMessageKey,
                                                  String timerMessageKey,
-                                                 Function<Byte, Boolean> function) {
+                                                 Function<Byte, Boolean> function,
+                                                 boolean nullable) {
         ObjectBuilderButton<Byte> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                             try {
@@ -177,8 +178,8 @@ public class ObjectBuilderButtonBuilder {
      * @param objectBuilder The object builder
      * @return The button
      */
-    public static ObjectBuilderButton<Byte> OPTIONAL_QUICK_BYTE(String buttonKey, long timeout,
-                                                                ObjectBuilder<?> objectBuilder) {
+    public static ObjectBuilderButton<Byte> POSITIVE_BYTE(String buttonKey, long timeout,
+                                                          ObjectBuilder<?> objectBuilder) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         Function<Byte, Boolean> function = value -> {
             objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
@@ -222,8 +223,8 @@ public class ObjectBuilderButtonBuilder {
      * @param objectBuilder The object builder
      * @return The button
      */
-    public static ObjectBuilderButton<Byte> NULLABLE_QUICK_BYTE(String buttonKey, long timeout,
-                                                                ObjectBuilder<?> objectBuilder) {
+    public static ObjectBuilderButton<Byte> NULLABLE_BYTE(String buttonKey, long timeout,
+                                                          ObjectBuilder<?> objectBuilder) {
 
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return BYTE(buttonKey, timeout, "Builder." + buttonKey
@@ -328,8 +329,8 @@ public class ObjectBuilderButtonBuilder {
      * @param objectBuilder The object builder
      * @return The button
      */
-    public static ObjectBuilderButton<Short> OPTIONAL_QUICK_SHORT(String buttonKey, long timeout,
-                                                                  ObjectBuilder<?> objectBuilder) {
+    public static ObjectBuilderButton<Short> POSITIVE_SHORT(String buttonKey, long timeout,
+                                                            ObjectBuilder<?> objectBuilder) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         Function<Short, Boolean> function = value -> {
             objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
@@ -364,17 +365,17 @@ public class ObjectBuilderButtonBuilder {
      *     ObjectBuilder&lt;Person&gt; objectBuilder = someRandomObjectBuilderYouHave;
      *
      *     ObjectBuilderButton&lt;Short&gt; button =
-     *     ObjectBuilderButtonBuilder.NULLABLE_QUICK_SHORT("Level", 300, objectBuilder);
+     *     ObjectBuilderButtonBuilder.NULLABLE_SHORT("Level", 300, objectBuilder);
      *     //if button's value is null, default button will display "N/A"
      *       </pre>
      *
-     * @param buttonKey
-     * @param timeout
-     * @param objectBuilder
-     * @return
+     * @param buttonKey     The key of the button
+     * @param timeout       The timeout of the chat listener
+     * @param objectBuilder The object builder
+     * @return The button
      */
-    public static ObjectBuilderButton<Short> NULLABLE_QUICK_SHORT(String buttonKey, long timeout,
-                                                                  ObjectBuilder<?> objectBuilder) {
+    public static ObjectBuilderButton<Short> NULLABLE_SHORT(String buttonKey, long timeout,
+                                                            ObjectBuilder<?> objectBuilder) {
         return SHORT(buttonKey, timeout, "Builder." + buttonKey
                         + "-Timeout", "Builder." + buttonKey,
                 value -> {
@@ -477,8 +478,8 @@ public class ObjectBuilderButtonBuilder {
      * @param objectBuilder The object builder
      * @return The button
      */
-    public static ObjectBuilderButton<Integer> OPTIONAL_QUICK_INTEGER(String buttonKey, long timeout,
-                                                                      ObjectBuilder<?> objectBuilder) {
+    public static ObjectBuilderButton<Integer> POSITIVE_INTEGER(String buttonKey, long timeout,
+                                                                ObjectBuilder<?> objectBuilder) {
 
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         Function<Integer, Boolean> function = value -> {
@@ -513,7 +514,7 @@ public class ObjectBuilderButtonBuilder {
      *     ObjectBuilder&lt;Person&gt; objectBuilder = someRandomObjectBuilderYouHave;
      *
      *     ObjectBuilderButton&lt;Integer&gt; button =
-     *     ObjectBuilderButtonBuilder.NULLABLE_QUICK_INTEGER("Damage", 300, objectBuilder);
+     *     ObjectBuilderButtonBuilder.NULLABLE_INTEGER("Damage", 300, objectBuilder);
      *     //if button's value is null, default button will display "N/A"
      *     </pre>
      *
@@ -522,8 +523,8 @@ public class ObjectBuilderButtonBuilder {
      * @param objectBuilder The object builder
      * @return The button
      */
-    public static ObjectBuilderButton<Integer> NULLABLE_QUICK_INTEGER(String buttonKey, long timeout,
-                                                                      ObjectBuilder<?> objectBuilder) {
+    public static ObjectBuilderButton<Integer> NULLABLE_INTEGER(String buttonKey, long timeout,
+                                                                ObjectBuilder<?> objectBuilder) {
         return INTEGER(buttonKey, timeout, "Builder." + buttonKey
                         + "-Timeout", "Builder." + buttonKey,
                 value -> {
@@ -626,8 +627,8 @@ public class ObjectBuilderButtonBuilder {
      * @param objectBuilder The object builder
      * @return The button
      */
-    public static ObjectBuilderButton<Long> OPTIONAL_QUICK_LONG(String buttonKey, long timeout,
-                                                                ObjectBuilder<?> objectBuilder) {
+    public static ObjectBuilderButton<Long> POSITIVE_LONG(String buttonKey, long timeout,
+                                                          ObjectBuilder<?> objectBuilder) {
 
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         Function<Long, Boolean> function = value -> {
@@ -662,7 +663,7 @@ public class ObjectBuilderButtonBuilder {
      *     ObjectBuilder&lt;Person&gt; objectBuilder = someRandomObjectBuilderYouHave;
      *
      *     ObjectBuilderButton&lt;Long&gt; button =
-     *     ObjectBuilderButtonBuilder.NULLABLE_QUICK_LONG("Coins", 300, objectBuilder);
+     *     ObjectBuilderButtonBuilder.NULLABLE_LONG("Coins", 300, objectBuilder);
      *     //if button's value is null, default button will display "N/A"
      *     </pre>
      *
@@ -671,8 +672,8 @@ public class ObjectBuilderButtonBuilder {
      * @param objectBuilder The object builder
      * @return The button
      */
-    public static ObjectBuilderButton<Long> NULLABLE_QUICK_LONG(String buttonKey, long timeout,
-                                                                ObjectBuilder<?> objectBuilder) {
+    public static ObjectBuilderButton<Long> NULLABLE_LONG(String buttonKey, long timeout,
+                                                          ObjectBuilder<?> objectBuilder) {
         return LONG(buttonKey, timeout, "Builder." + buttonKey
                         + "-Timeout", "Builder." + buttonKey,
                 value -> {
@@ -775,8 +776,8 @@ public class ObjectBuilderButtonBuilder {
      * @param objectBuilder The object builder
      * @return The button
      */
-    public static ObjectBuilderButton<Float> OPTIONAL_QUICK_FLOAT(String buttonKey, long timeout,
-                                                                  ObjectBuilder<?> objectBuilder) {
+    public static ObjectBuilderButton<Float> POSITIVE_FLOAT(String buttonKey, long timeout,
+                                                            ObjectBuilder<?> objectBuilder) {
 
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         Function<Float, Boolean> function = value -> {
@@ -820,8 +821,8 @@ public class ObjectBuilderButtonBuilder {
      * @param objectBuilder The object builder
      * @return The button
      */
-    public static ObjectBuilderButton<Float> NULLABLE_QUICK_FLOAT(String buttonKey, long timeout,
-                                                                  ObjectBuilder<?> objectBuilder) {
+    public static ObjectBuilderButton<Float> NULLABLE_FLOAT(String buttonKey, long timeout,
+                                                            ObjectBuilder<?> objectBuilder) {
         return FLOAT(buttonKey, timeout, "Builder." + buttonKey
                         + "-Timeout", "Builder." + buttonKey,
                 value -> {
@@ -924,8 +925,8 @@ public class ObjectBuilderButtonBuilder {
      * @param objectBuilder The object builder
      * @return The button
      */
-    public static ObjectBuilderButton<Double> OPTIONAL_QUICK_DOUBLE(String buttonKey, long timeout,
-                                                                    ObjectBuilder<?> objectBuilder) {
+    public static ObjectBuilderButton<Double> POSITIVE_DOUBLE(String buttonKey, long timeout,
+                                                              ObjectBuilder<?> objectBuilder) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         Function<Double, Boolean> function = value -> {
             objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
@@ -968,8 +969,8 @@ public class ObjectBuilderButtonBuilder {
      * @param objectBuilder The object builder
      * @return The button
      */
-    public static ObjectBuilderButton<Double> NULLABLE_QUICK_DOUBLE(String buttonKey, long timeout,
-                                                                    ObjectBuilder<?> objectBuilder) {
+    public static ObjectBuilderButton<Double> NULLABLE_DOUBLE(String buttonKey, long timeout,
+                                                              ObjectBuilder<?> objectBuilder) {
         return DOUBLE(buttonKey, timeout, "Builder." + buttonKey
                         + "-Timeout", "Builder." + buttonKey,
                 value -> {
