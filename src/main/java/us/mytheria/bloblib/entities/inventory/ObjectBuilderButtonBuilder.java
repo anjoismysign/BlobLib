@@ -20,12 +20,14 @@ public class ObjectBuilderButtonBuilder {
                                                      String timeoutMessageKey,
                                                      String timerMessageKey,
                                                      Function<String, Boolean> function) {
-        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+        ObjectBuilderButton<String> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout,
                         string -> button.set(string, function),
                         timeoutMessageKey,
                         timerMessageKey)) {
         };
+        function.apply(null);
+        return objectBuilder;
     }
 
     public static ObjectBuilderButton<String> SIMPLE_STRING(String buttonKey, long timeout,
@@ -63,7 +65,7 @@ public class ObjectBuilderButtonBuilder {
                         + "-Timeout", "Builder." + buttonKey,
                 value -> {
                     objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-                            value == null ? "N/A" : value + value);
+                            value == null ? "N/A" : value);
                     objectBuilder.openInventory();
                     return true;
                 });
@@ -74,7 +76,7 @@ public class ObjectBuilderButtonBuilder {
                                                  String timeoutMessageKey,
                                                  String timerMessageKey,
                                                  Function<Byte, Boolean> function) {
-        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+        ObjectBuilderButton<Byte> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                             try {
                                 byte input = Byte.parseByte(string);
@@ -85,6 +87,8 @@ public class ObjectBuilderButtonBuilder {
                         }, timeoutMessageKey,
                         timerMessageKey)) {
         };
+        function.apply(null);
+        return objectBuilder;
     }
 
     public static ObjectBuilderButton<Byte> SIMPLE_BYTE(String buttonKey, long timeout,
@@ -200,7 +204,7 @@ public class ObjectBuilderButtonBuilder {
                                                    String timeoutMessageKey,
                                                    String timerMessageKey,
                                                    Function<Short, Boolean> function) {
-        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+        ObjectBuilderButton<Short> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                     try {
                         short input = Short.parseShort(string);
@@ -210,6 +214,8 @@ public class ObjectBuilderButtonBuilder {
                     }
                 }, timeoutMessageKey, timerMessageKey)) {
         };
+        function.apply(null);
+        return objectBuilder;
     }
 
     public static ObjectBuilderButton<Short> SIMPLE_SHORT(String buttonKey, long timeout,
@@ -325,7 +331,7 @@ public class ObjectBuilderButtonBuilder {
                                                        String timeoutMessageKey,
                                                        String timerMessageKey,
                                                        Function<Integer, Boolean> function) {
-        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+        ObjectBuilderButton<Integer> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                     try {
                         int input = Integer.parseInt(string);
@@ -335,6 +341,8 @@ public class ObjectBuilderButtonBuilder {
                     }
                 }, timeoutMessageKey, timerMessageKey)) {
         };
+        function.apply(null);
+        return objectBuilder;
     }
 
     public static ObjectBuilderButton<Integer> SIMPLE_INTEGER(String buttonKey, long timeout,
@@ -450,7 +458,7 @@ public class ObjectBuilderButtonBuilder {
                                                  String timeoutMessageKey,
                                                  String timerMessageKey,
                                                  Function<Long, Boolean> function) {
-        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+        ObjectBuilderButton<Long> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                     try {
                         long input = Long.parseLong(string);
@@ -460,6 +468,8 @@ public class ObjectBuilderButtonBuilder {
                     }
                 }, timeoutMessageKey, timerMessageKey)) {
         };
+        function.apply(null);
+        return objectBuilder;
     }
 
     public static ObjectBuilderButton<Long> SIMPLE_LONG(String buttonKey, long timeout,
@@ -575,7 +585,7 @@ public class ObjectBuilderButtonBuilder {
                                                    String timeoutMessageKey,
                                                    String timerMessageKey,
                                                    Function<Float, Boolean> function) {
-        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+        ObjectBuilderButton<Float> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                     try {
                         float input = Float.parseFloat(string);
@@ -585,6 +595,8 @@ public class ObjectBuilderButtonBuilder {
                     }
                 }, timeoutMessageKey, timerMessageKey)) {
         };
+        function.apply(null);
+        return objectBuilder;
     }
 
     public static ObjectBuilderButton<Float> SIMPLE_FLOAT(String buttonKey, long timeout,
@@ -700,7 +712,7 @@ public class ObjectBuilderButtonBuilder {
                                                      String timeoutMessageKey,
                                                      String timerMessageKey,
                                                      Function<Double, Boolean> function) {
-        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+        ObjectBuilderButton<Double> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                     try {
                         double input = Double.parseDouble(string);
@@ -710,6 +722,8 @@ public class ObjectBuilderButtonBuilder {
                     }
                 }, timeoutMessageKey, timerMessageKey)) {
         };
+        function.apply(null);
+        return objectBuilder;
     }
 
     public static ObjectBuilderButton<Double> SIMPLE_DOUBLE(String buttonKey, long timeout,

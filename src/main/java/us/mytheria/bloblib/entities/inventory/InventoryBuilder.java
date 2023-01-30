@@ -1,6 +1,7 @@
 package us.mytheria.bloblib.entities.inventory;
 
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Set;
@@ -34,6 +35,7 @@ public abstract class InventoryBuilder {
         this.buttonManager = buttonManager;
     }
 
+    @Nullable
     public Set<Integer> getSlots(String key) {
         return buttonManager.get(key);
     }

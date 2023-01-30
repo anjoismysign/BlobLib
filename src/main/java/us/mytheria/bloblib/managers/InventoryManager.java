@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.managers;
 
+import org.apache.commons.io.FilenameUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -9,6 +10,7 @@ import us.mytheria.bloblib.entities.inventory.BlobInventory;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 public class InventoryManager {
     private final BlobLib main;
@@ -58,8 +60,16 @@ public class InventoryManager {
     }
 
     private void loadYamlConfiguration(File file) {
+        Logger logger = Bukkit.getLogger();
+        logger.info("Loading BlobInventory: " + file.getPath());
+        String fileName = FilenameUtils.removeExtension(file.getName());
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
+        if (yamlConfiguration.isInt("Size")) {
+            add(fileName, BlobInventory.fromConfigurationSection(yamlConfiguration));
+            return;
+        }
         yamlConfiguration.getKeys(false).forEach(key -> {
+            logger.info("key: " + key);
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(key);
             section.getKeys(true).forEach(subKey -> {
                 if (!section.isConfigurationSection(subKey))
@@ -72,7 +82,7 @@ public class InventoryManager {
                     addDuplicate(mapKey);
                     return;
                 }
-                inventories.put(key + "." + subKey, BlobInventory.smartFromConfigurationSection(subSection));
+                add(key + "." + subKey, BlobInventory.fromConfigurationSection(subSection));
             });
         });
     }
@@ -101,5 +111,9 @@ public class InventoryManager {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private void add(String key, BlobInventory inventory) {
+        inventories.put(key, inventory);
     }
 }

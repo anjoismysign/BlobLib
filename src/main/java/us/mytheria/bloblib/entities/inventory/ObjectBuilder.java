@@ -10,8 +10,10 @@ import us.mytheria.bloblib.itemstack.ItemStackModder;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.logging.Logger;
 
 /**
  * @param <T> the type of object to build
@@ -158,11 +160,22 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
      * @param slot   the slot
      * @param player the player
      */
-    public void ifObjectBuilderButtonAddListener(int slot, Player player) {
-        objectBuilderButtons.values().forEach(button -> {
-            if (getSlots(button.getButtonKey()).contains(slot))
-                button.addListener(player);
-        });
+    public boolean ifObjectBuilderButtonAddListener(int slot, Player player) {
+        Logger logger = Bukkit.getLogger();
+        for (ObjectBuilderButton<?> button : objectBuilderButtons.values()) {
+            String key = button.getButtonKey();
+            logger.info("button.getButtonKey() = " + key);
+            Set<Integer> set = getSlots(key);
+            if (set == null) {
+                logger.info("set is null: " + key);
+                continue;
+            }
+            if (getSlots(button.getButtonKey()).contains(slot)) {
+                button.addListener(player, Optional.empty());
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -174,9 +187,19 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
      * @param player the player
      */
     public void handle(int slot, Player player) {
-        ifObjectBuilderButtonAddListener(slot, player);
-        if (isBuildButton(slot))
+        Logger logger = Bukkit.getLogger();
+        logger.info("handling slot " + slot);
+        boolean isObjectBuilderButton = ifObjectBuilderButtonAddListener(slot, player);
+        if (isObjectBuilderButton) {
+            logger.info("Is object builder button");
+            return;
+        }
+        if (isBuildButton(slot)) {
             build();
+            logger.info("Is build button");
+            return;
+        }
+        logger.info("Couldn't handle");
     }
 
     /**

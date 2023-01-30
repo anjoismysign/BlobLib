@@ -1,6 +1,7 @@
 package us.mytheria.bloblib.entities;
 
 import me.anjoismysign.anjo.entities.Tuple2;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.logging.Logger;
 
 public class ObjectDirector<T> extends Manager implements Listener {
     private final ObjectBuilderManager<T> objectBuilderManager;
@@ -50,20 +52,24 @@ public class ObjectDirector<T> extends Manager implements Listener {
             }
         };
         clickEventConsumer = e -> {
+            Logger logger = Bukkit.getLogger();
             String invname = e.getView().getTitle();
+            logger.info("Inventory clicked: " + invname);
             if (!invname.equals(objectBuilderManager.title)) {
                 return;
             }
+            logger.info("Inventory matches: " + invname);
             int slot = e.getRawSlot();
             Player player = (Player) e.getWhoClicked();
-            ObjectBuilder<T> builder = objectBuilderManager.getOrDefault(player.getUniqueId(),
-                    "default");
+            ObjectBuilder<T> builder = objectBuilderManager.getOrDefault(player.getUniqueId());
             if (slot >= builder.getSize()) {
                 return;
             }
+            logger.info("Slot is valid: " + slot);
             e.setCancelled(true);
             builder.handle(slot, player);
         };
+        Bukkit.getPluginManager().registerEvents(this, managerDirector.getPlugin());
     }
 
     public ObjectDirector(ManagerDirector managerDirector,
@@ -80,8 +86,7 @@ public class ObjectDirector<T> extends Manager implements Listener {
             }
             int slot = e.getRawSlot();
             Player player = (Player) e.getWhoClicked();
-            ObjectBuilder<T> builder = objectBuilderManager.getOrDefault(player.getUniqueId(),
-                    "default");
+            ObjectBuilder<T> builder = objectBuilderManager.getOrDefault(player.getUniqueId());
             if (slot >= builder.getSize()) {
                 return;
             }

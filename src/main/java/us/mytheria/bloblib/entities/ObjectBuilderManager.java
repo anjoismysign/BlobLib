@@ -1,7 +1,6 @@
 package us.mytheria.bloblib.entities;
 
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
@@ -17,12 +16,11 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.logging.Logger;
 
 public class ObjectBuilderManager<T> extends Manager {
     protected String title;
 
-    private HashMap<String, HashMap<UUID, ObjectBuilder<T>>> builders;
+    private HashMap<UUID, ObjectBuilder<T>> builders;
     private ChatListenerManager chatManager;
     private DropListenerManager dropListenerManager;
     private SelectorListenerManager selectorListenerManager;
@@ -69,63 +67,21 @@ public class ObjectBuilderManager<T> extends Manager {
                 inventory.getString("Title"));
     }
 
-    public ObjectBuilder<T> getOrDefault(UUID uuid, String builderType) {
-        //TODO: Remove logger
-        Logger logger = Bukkit.getLogger();
-        logger.info("getOrDefault");
-        boolean buildersNull = builders == null;
-        if (buildersNull) {
-            logger.info("builders == null");
-            throw new RuntimeException("builders null");
-        }
-        HashMap<UUID, ObjectBuilder<T>> builderMap = builders.get(builderType);
-        if (builderMap == null) {
-            builderMap = new HashMap<>();
-            builders.put(builderType, builderMap);
-            logger.severe("Builder type '" + builderType + "' was not initialized.");
-            return getOrDefault(uuid, builderType);
-        }
-        ObjectBuilder<T> objectBuilder = builders.get(builderType).get(uuid);
-        if (objectBuilder == null) {
-            logger.info("1");
-            logger.info("builderFunction == null: " + (builderFunction == null));
-            objectBuilder = builderFunction.apply(uuid);
-            logger.info("2");
-            builders.get(builderType).put(uuid, objectBuilder);
-        }
-        logger.info("3");
-        return objectBuilder;
-    }
-
     public ObjectBuilder<T> getOrDefault(UUID uuid) {
-        return getOrDefault(uuid, "default");
-    }
-
-    public ObjectBuilder<T> getOrDefault(Player player, String builderType) {
-        return getOrDefault(player.getUniqueId(), builderType);
+        ObjectBuilder<T> objectBuilder = builders.get(uuid);
+        if (objectBuilder == null) {
+            objectBuilder = builderFunction.apply(uuid);
+            builders.put(uuid, objectBuilder);
+        }
+        return objectBuilder;
     }
 
     public ObjectBuilder<T> getOrDefault(Player player) {
         return getOrDefault(player.getUniqueId());
     }
 
-    public ObjectBuilderManager<T> addBuilder(UUID uuid, ObjectBuilder<T> builder, String builderType) {
-        if (builders.containsKey(builderType)) {
-            builders.get(builderType).put(uuid, builder);
-        } else {
-            builders.put(builderType, new HashMap<>());
-            builders.get(builderType).put(uuid, builder);
-        }
-        return this;
-    }
-
     public ObjectBuilderManager<T> addBuilder(UUID uuid, ObjectBuilder<T> builder) {
-        addBuilder(uuid, builder, "default");
-        return this;
-    }
-
-    public ObjectBuilderManager<T> addBuilder(Player player, ObjectBuilder<T> builder, String builderType) {
-        addBuilder(player.getUniqueId(), builder, builderType);
+        builders.put(uuid, builder);
         return this;
     }
 
@@ -134,20 +90,8 @@ public class ObjectBuilderManager<T> extends Manager {
         return this;
     }
 
-    public ObjectBuilderManager<T> removeBuilder(UUID uuid, String builderType) {
-        if (builders.containsKey(builderType)) {
-            builders.get(builderType).remove(uuid);
-        }
-        return this;
-    }
-
     public ObjectBuilderManager<T> removeBuilder(UUID uuid) {
-        removeBuilder(uuid, "default");
-        return this;
-    }
-
-    public ObjectBuilderManager<T> removeBuilder(Player player, String builderType) {
-        removeBuilder(player.getUniqueId(), builderType);
+        builders.remove(uuid);
         return this;
     }
 

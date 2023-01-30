@@ -66,6 +66,10 @@ public class BlobInventory extends InventoryBuilder implements Cloneable {
 
     /**
      * A another way to create a BlobInventory from a file.
+     * You need to be sure that provided file only
+     * contains a BlobInventory since in InventoryManager
+     * there's a method that can load multiple inventories
+     * inside a single File.
      * This way is a bit more efficient in some IDE's since after
      * typing BlobInventory and a dot, it will show you the
      * static methods, such as 'fromFile' and will also prompt

@@ -56,6 +56,7 @@ public class PluginManager {
     public static void registerPlugin(BlobPlugin plugin) {
         PluginManager manager = BlobLib.getInstance().getPluginManager();
         manager.put(plugin);
+        plugin.blobLibReload();
     }
 
     /**
