@@ -102,6 +102,12 @@ public class ObjectBuilderButtonBuilder {
         ObjectBuilderButton<Byte> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                             try {
+                                if (nullable) {
+                                    if (string.equalsIgnoreCase("null")) {
+                                        button.set(null, function);
+                                        return;
+                                    }
+                                }
                                 byte input = Byte.parseByte(string);
                                 button.set(input, function);
                             } catch (NumberFormatException e) {
@@ -126,7 +132,8 @@ public class ObjectBuilderButtonBuilder {
     public static ObjectBuilderButton<Byte> SIMPLE_BYTE(String buttonKey, long timeout,
                                                         String timeoutMessageKey,
                                                         String timerMessageKey) {
-        return BYTE(buttonKey, timeout, timeoutMessageKey, timerMessageKey, b -> true);
+        return BYTE(buttonKey, timeout, timeoutMessageKey, timerMessageKey, b -> true,
+                true);
     }
 
     /**
@@ -137,7 +144,8 @@ public class ObjectBuilderButtonBuilder {
      *
      *     ObjectBuilderButton&lt;Byte&gt; button =
      *     ObjectBuilderButtonBuilder.QUICK_BYTE("Age", 300, objectBuilder);
-     *     //will always display, even if button's value is null
+     *     //if button's value is null, it will display "N/A"
+     *     //otherwise it will display the value
      *                </pre>
      *
      * @param buttonKey     The key of the button
@@ -153,10 +161,10 @@ public class ObjectBuilderButtonBuilder {
                         + "-Timeout", "Builder." + buttonKey,
                 value -> {
                     objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-                            "" + value);
+                            value == null ? "N/A" : "" + value);
                     objectBuilder.openInventory();
                     return true;
-                });
+                }, true);
 
     }
 
@@ -207,38 +215,6 @@ public class ObjectBuilderButtonBuilder {
     }
 
     /**
-     * A quick nullable ObjectBuilderButton for Byte's
-     * An example of how to use it:
-     *
-     * <pre>
-     *     ObjectBuilder&lt;Person&gt; objectBuilder = someRandomObjectBuilderYouHave;
-     *
-     *     ObjectBuilderButton&lt;Byte&gt; button =
-     *     ObjectBuilderButtonBuilder.QUICK_NULLABLE_BYTE("Age", 300, objectBuilder);
-     *     //if button's value is null will display "N/A", otherwise the value
-     *           </pre>
-     *
-     * @param buttonKey     The key of the button
-     * @param timeout       The timeout of the chat listener
-     * @param objectBuilder The object builder
-     * @return The button
-     */
-    public static ObjectBuilderButton<Byte> NULLABLE_BYTE(String buttonKey, long timeout,
-                                                          ObjectBuilder<?> objectBuilder) {
-
-        String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
-        return BYTE(buttonKey, timeout, "Builder." + buttonKey
-                        + "-Timeout", "Builder." + buttonKey,
-                value -> {
-                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-                            value == null ? "N/A" : "" + value);
-                    objectBuilder.openInventory();
-                    return true;
-                });
-
-    }
-
-    /**
      * An ObjectBuilderButton builder for Short's
      *
      * @param buttonKey         The key of the button
@@ -251,7 +227,8 @@ public class ObjectBuilderButtonBuilder {
     public static ObjectBuilderButton<Short> SHORT(String buttonKey, long timeout,
                                                    String timeoutMessageKey,
                                                    String timerMessageKey,
-                                                   Function<Short, Boolean> function) {
+                                                   Function<Short, Boolean> function,
+                                                   boolean nullable) {
         ObjectBuilderButton<Short> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                     try {
@@ -278,7 +255,8 @@ public class ObjectBuilderButtonBuilder {
     public static ObjectBuilderButton<Short> SIMPLE_SHORT(String buttonKey, long timeout,
                                                           String timeoutMessageKey,
                                                           String timerMessageKey) {
-        return SHORT(buttonKey, timeout, timeoutMessageKey, timerMessageKey, s -> true);
+        return SHORT(buttonKey, timeout, timeoutMessageKey, timerMessageKey, s -> true
+                , true);
     }
 
     /**
@@ -289,7 +267,8 @@ public class ObjectBuilderButtonBuilder {
      *
      *     ObjectBuilderButton&lt;Short&gt; button =
      *     ObjectBuilderButtonBuilder.QUICK_SHORT("Level", 300, objectBuilder);
-     *     //will display button's value, even if it's null
+     *     //if button's value is null will display 'N/A',
+     *     //otherwise it will display the value
      *           </pre>
      *
      * @param buttonKey     The key of the button
@@ -308,7 +287,7 @@ public class ObjectBuilderButtonBuilder {
                             "" + value);
                     objectBuilder.openInventory();
                     return true;
-                });
+                }, true);
 
     }
 
@@ -358,35 +337,6 @@ public class ObjectBuilderButtonBuilder {
     }
 
     /**
-     * A quick nullable ObjectBuilderButton for Short's
-     * An example of how to use it:
-     *
-     * <pre>
-     *     ObjectBuilder&lt;Person&gt; objectBuilder = someRandomObjectBuilderYouHave;
-     *
-     *     ObjectBuilderButton&lt;Short&gt; button =
-     *     ObjectBuilderButtonBuilder.NULLABLE_SHORT("Level", 300, objectBuilder);
-     *     //if button's value is null, default button will display "N/A"
-     *       </pre>
-     *
-     * @param buttonKey     The key of the button
-     * @param timeout       The timeout of the chat listener
-     * @param objectBuilder The object builder
-     * @return The button
-     */
-    public static ObjectBuilderButton<Short> NULLABLE_SHORT(String buttonKey, long timeout,
-                                                            ObjectBuilder<?> objectBuilder) {
-        return SHORT(buttonKey, timeout, "Builder." + buttonKey
-                        + "-Timeout", "Builder." + buttonKey,
-                value -> {
-                    objectBuilder.updateDefaultButton(buttonKey, "%" + NamingConventions.toCamelCase(buttonKey) + "%",
-                            value == null ? "N/A" : "" + value);
-                    objectBuilder.openInventory();
-                    return true;
-                });
-    }
-
-    /**
      * An ObjectBuilderButton builder for Integer's
      *
      * @param buttonKey         The key of the button
@@ -399,7 +349,8 @@ public class ObjectBuilderButtonBuilder {
     public static ObjectBuilderButton<Integer> INTEGER(String buttonKey, long timeout,
                                                        String timeoutMessageKey,
                                                        String timerMessageKey,
-                                                       Function<Integer, Boolean> function) {
+                                                       Function<Integer, Boolean> function,
+                                                       boolean nullable) {
         ObjectBuilderButton<Integer> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                     try {
@@ -426,7 +377,8 @@ public class ObjectBuilderButtonBuilder {
     public static ObjectBuilderButton<Integer> SIMPLE_INTEGER(String buttonKey, long timeout,
                                                               String timeoutMessageKey,
                                                               String timerMessageKey) {
-        return INTEGER(buttonKey, timeout, timeoutMessageKey, timerMessageKey, i -> true);
+        return INTEGER(buttonKey, timeout, timeoutMessageKey, timerMessageKey, i -> true
+                , true);
     }
 
     /**
@@ -437,8 +389,8 @@ public class ObjectBuilderButtonBuilder {
      *
      *     ObjectBuilderButton&lt;Integer&gt; button =
      *     ObjectBuilderButtonBuilder.QUICK_INTEGER("Damage", 300, objectBuilder);
-     *     //no matter what button's value is, default button will display it,
-     *     // even if it's null
+     *     //if button's value is null will display 'N/A',
+     *     //otherwise it will display the value
      *      </pre>
      *
      * @param buttonKey     The key of the button
@@ -457,7 +409,7 @@ public class ObjectBuilderButtonBuilder {
                             "" + value);
                     objectBuilder.openInventory();
                     return true;
-                });
+                }, true);
 
     }
 
@@ -508,34 +460,6 @@ public class ObjectBuilderButtonBuilder {
     }
 
     /**
-     * A nullable ObjectBuilderButton for Integer's
-     * An example of how to use it:
-     * <pre>
-     *     ObjectBuilder&lt;Person&gt; objectBuilder = someRandomObjectBuilderYouHave;
-     *
-     *     ObjectBuilderButton&lt;Integer&gt; button =
-     *     ObjectBuilderButtonBuilder.NULLABLE_INTEGER("Damage", 300, objectBuilder);
-     *     //if button's value is null, default button will display "N/A"
-     *     </pre>
-     *
-     * @param buttonKey     The key of the button
-     * @param timeout       The timeout of the chat listener
-     * @param objectBuilder The object builder
-     * @return The button
-     */
-    public static ObjectBuilderButton<Integer> NULLABLE_INTEGER(String buttonKey, long timeout,
-                                                                ObjectBuilder<?> objectBuilder) {
-        return INTEGER(buttonKey, timeout, "Builder." + buttonKey
-                        + "-Timeout", "Builder." + buttonKey,
-                value -> {
-                    objectBuilder.updateDefaultButton(buttonKey, "%" + NamingConventions.toCamelCase(buttonKey) + "%",
-                            value == null ? "N/A" : "" + value);
-                    objectBuilder.openInventory();
-                    return true;
-                });
-    }
-
-    /**
      * An ObjectBuilderButton builder for Long's.
      *
      * @param buttonKey         The key of the button
@@ -548,7 +472,8 @@ public class ObjectBuilderButtonBuilder {
     public static ObjectBuilderButton<Long> LONG(String buttonKey, long timeout,
                                                  String timeoutMessageKey,
                                                  String timerMessageKey,
-                                                 Function<Long, Boolean> function) {
+                                                 Function<Long, Boolean> function,
+                                                 boolean nullable) {
         ObjectBuilderButton<Long> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                     try {
@@ -575,7 +500,8 @@ public class ObjectBuilderButtonBuilder {
     public static ObjectBuilderButton<Long> SIMPLE_LONG(String buttonKey, long timeout,
                                                         String timeoutMessageKey,
                                                         String timerMessageKey) {
-        return LONG(buttonKey, timeout, timeoutMessageKey, timerMessageKey, l -> true);
+        return LONG(buttonKey, timeout, timeoutMessageKey, timerMessageKey, l -> true
+                , true);
     }
 
     /**
@@ -586,8 +512,8 @@ public class ObjectBuilderButtonBuilder {
      *
      *     ObjectBuilderButton&lt;Long&gt; button =
      *     ObjectBuilderButtonBuilder.QUICK_LONG("Coins", 300, objectBuilder);
-     *     //no matter what button's value is, default button will display it,
-     *     // even if it's null
+     *     //if button's value is null will display 'N/A',
+     *     //otherwise it will display the value
      *     </pre>
      *
      * @param buttonKey     The key of the button
@@ -606,7 +532,7 @@ public class ObjectBuilderButtonBuilder {
                             "" + value);
                     objectBuilder.openInventory();
                     return true;
-                });
+                }, true);
 
     }
 
@@ -657,34 +583,6 @@ public class ObjectBuilderButtonBuilder {
     }
 
     /**
-     * A nullable ObjectBuilderButton for Long's
-     * An example of how to use it:
-     * <pre>
-     *     ObjectBuilder&lt;Person&gt; objectBuilder = someRandomObjectBuilderYouHave;
-     *
-     *     ObjectBuilderButton&lt;Long&gt; button =
-     *     ObjectBuilderButtonBuilder.NULLABLE_LONG("Coins", 300, objectBuilder);
-     *     //if button's value is null, default button will display "N/A"
-     *     </pre>
-     *
-     * @param buttonKey     The key of the button
-     * @param timeout       The timeout of the chat listener
-     * @param objectBuilder The object builder
-     * @return The button
-     */
-    public static ObjectBuilderButton<Long> NULLABLE_LONG(String buttonKey, long timeout,
-                                                          ObjectBuilder<?> objectBuilder) {
-        return LONG(buttonKey, timeout, "Builder." + buttonKey
-                        + "-Timeout", "Builder." + buttonKey,
-                value -> {
-                    objectBuilder.updateDefaultButton(buttonKey, "%" + NamingConventions.toCamelCase(buttonKey) + "%",
-                            value == null ? "N/A" : "" + value);
-                    objectBuilder.openInventory();
-                    return true;
-                });
-    }
-
-    /**
      * An ObjectBuilderButton builder for Float's
      *
      * @param buttonKey         The key of the button
@@ -697,7 +595,8 @@ public class ObjectBuilderButtonBuilder {
     public static ObjectBuilderButton<Float> FLOAT(String buttonKey, long timeout,
                                                    String timeoutMessageKey,
                                                    String timerMessageKey,
-                                                   Function<Float, Boolean> function) {
+                                                   Function<Float, Boolean> function,
+                                                   boolean nullable) {
         ObjectBuilderButton<Float> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                     try {
@@ -724,7 +623,8 @@ public class ObjectBuilderButtonBuilder {
     public static ObjectBuilderButton<Float> SIMPLE_FLOAT(String buttonKey, long timeout,
                                                           String timeoutMessageKey,
                                                           String timerMessageKey) {
-        return FLOAT(buttonKey, timeout, timeoutMessageKey, timerMessageKey, f -> true);
+        return FLOAT(buttonKey, timeout, timeoutMessageKey, timerMessageKey, f -> true
+                , true);
     }
 
     /**
@@ -735,8 +635,8 @@ public class ObjectBuilderButtonBuilder {
      *
      *     ObjectBuilderButton&lt;Float&gt; button =
      *     ObjectBuilderButtonBuilder.QUICK_FLOAT("Health", 300, objectBuilder);
-     *     //no matter what button's value is, default button will display it,
-     *     // even if it's null
+     *     //if button's value is null will display 'N/A',
+     *     //otherwise it will display the value
      *     </pre>
      *
      * @param buttonKey     The key of the button
@@ -755,7 +655,7 @@ public class ObjectBuilderButtonBuilder {
                             "" + value);
                     objectBuilder.openInventory();
                     return true;
-                });
+                }, true);
 
     }
 
@@ -806,34 +706,6 @@ public class ObjectBuilderButtonBuilder {
     }
 
     /**
-     * A quick nullable ObjectBuilderButton for Float's
-     * An example of how to use it:
-     * <pre>
-     *     ObjectBuilder&lt;Person&gt; objectBuilder = someRandomObjectBuilderYouHave;
-     *
-     *     ObjectBuilderButton&lt;Float&gt; button =
-     *     ObjectBuilderButtonBuilder.QUICK_NULLABLE_FLOAT("Health", 300, objectBuilder);
-     *     //if button's value is null, default button will display "N/A"
-     *     </pre>
-     *
-     * @param buttonKey     The key of the button
-     * @param timeout       The timeout of the chat listener
-     * @param objectBuilder The object builder
-     * @return The button
-     */
-    public static ObjectBuilderButton<Float> NULLABLE_FLOAT(String buttonKey, long timeout,
-                                                            ObjectBuilder<?> objectBuilder) {
-        return FLOAT(buttonKey, timeout, "Builder." + buttonKey
-                        + "-Timeout", "Builder." + buttonKey,
-                value -> {
-                    objectBuilder.updateDefaultButton(buttonKey, "%" + NamingConventions.toCamelCase(buttonKey) + "%",
-                            value == null ? "N/A" : "" + value);
-                    objectBuilder.openInventory();
-                    return true;
-                });
-    }
-
-    /**
      * An ObjectBuilderButton builder for Double's
      *
      * @param buttonKey         The key of the button
@@ -846,7 +718,8 @@ public class ObjectBuilderButtonBuilder {
     public static ObjectBuilderButton<Double> DOUBLE(String buttonKey, long timeout,
                                                      String timeoutMessageKey,
                                                      String timerMessageKey,
-                                                     Function<Double, Boolean> function) {
+                                                     Function<Double, Boolean> function,
+                                                     boolean nullable) {
         ObjectBuilderButton<Double> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                     try {
@@ -873,7 +746,8 @@ public class ObjectBuilderButtonBuilder {
     public static ObjectBuilderButton<Double> SIMPLE_DOUBLE(String buttonKey, long timeout,
                                                             String timeoutMessageKey,
                                                             String timerMessageKey) {
-        return DOUBLE(buttonKey, timeout, timeoutMessageKey, timerMessageKey, d -> true);
+        return DOUBLE(buttonKey, timeout, timeoutMessageKey, timerMessageKey, d -> true
+                , true);
     }
 
     /**
@@ -884,8 +758,8 @@ public class ObjectBuilderButtonBuilder {
      *
      *     ObjectBuilderButton&lt;Double&gt; button =
      *     ObjectBuilderButtonBuilder.QUICK_DOUBLE("Dogecoin", 300, objectBuilder);
-     *     //no matter what button's value is, default button will display it,
-     *     // even if it's null
+     *     //if button's value is null will display 'N/A',
+     *     //otherwise it will display the value
      *     </pre>
      *
      * @param buttonKey     The key of the button
@@ -904,7 +778,7 @@ public class ObjectBuilderButtonBuilder {
                             "" + value);
                     objectBuilder.openInventory();
                     return true;
-                });
+                }, true);
 
     }
 
@@ -951,34 +825,6 @@ public class ObjectBuilderButtonBuilder {
         };
         function.apply(-1D);
         return objectBuilderButton;
-    }
-
-    /**
-     * A quick nullable ObjectBuilderButton for Double's
-     * An example of how to use it:
-     * <pre>
-     *     ObjectBuilder&lt;Person&gt; objectBuilder = someRandomObjectBuilderYouHave;
-     *
-     *     ObjectBuilderButton&lt;Double&gt; button =
-     *     ObjectBuilderButtonBuilder.QUICK_OPTIONAL_DOUBLE("Dogecoin", 300, objectBuilder);
-     *     //if button's value is null, default button will display "N/A"
-     *     </pre>
-     *
-     * @param buttonKey     The key of the button
-     * @param timeout       The timeout of the chat listener
-     * @param objectBuilder The object builder
-     * @return The button
-     */
-    public static ObjectBuilderButton<Double> NULLABLE_DOUBLE(String buttonKey, long timeout,
-                                                              ObjectBuilder<?> objectBuilder) {
-        return DOUBLE(buttonKey, timeout, "Builder." + buttonKey
-                        + "-Timeout", "Builder." + buttonKey,
-                value -> {
-                    objectBuilder.updateDefaultButton(buttonKey, "%" + NamingConventions.toCamelCase(buttonKey) + "%",
-                            value == null ? "N/A" : "" + value);
-                    objectBuilder.openInventory();
-                    return true;
-                });
     }
 
     /**

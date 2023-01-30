@@ -213,8 +213,8 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
     }
 
     /**
-     * Add a quick byte button.
-     * accepts negative values.
+     * Add a quick byte button. Accepts negative values.
+     * If input equalsIgnoreCase 'null', button's value will be set null.
      *
      * @param buttonKey the button key
      * @param timeout   the timeout
@@ -225,8 +225,8 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
     }
 
     /**
-     * Add a quick short button.
-     * accepts negative values.
+     * Add a quick short button. Accepts negative values.
+     * If input equalsIgnoreCase 'null', button's value will be set null.
      *
      * @param buttonKey the button key
      * @param timeout   the timeout
@@ -237,8 +237,8 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
     }
 
     /**
-     * Add a quick integer button.
-     * accepts negative values.
+     * Add a quick integer button. Accepts negative values.
+     * If input equalsIgnoreCase 'null', button's value will be set null.
      *
      * @param buttonKey the button key
      * @param timeout   the timeout
@@ -249,8 +249,8 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
     }
 
     /**
-     * Add a quick long button.
-     * accepts negative values.
+     * Add a quick long button. Accepts negative values.
+     * If input equalsIgnoreCase 'null', button's value will be set null.
      *
      * @param buttonKey the button key
      * @param timeout   the timeout
@@ -261,8 +261,8 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
     }
 
     /**
-     * Add a quick float button.
-     * accepts negative values.
+     * Add a quick float button. Accepts negative values.
+     * If input equalsIgnoreCase 'null', button's value will be set null.
      *
      * @param buttonKey the button key
      * @param timeout   the timeout
@@ -273,8 +273,8 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
     }
 
     /**
-     * Add a quick double button.
-     * accepts negative values.
+     * Add a quick double button. Accepts negative values.
+     * If input equalsIgnoreCase 'null', button's value will be set null.
      *
      * @param buttonKey the button key
      * @param timeout   the timeout
@@ -417,84 +417,6 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
      */
     public ObjectBuilder<T> addPositiveDoubleButton(String buttonKey, long timeout) {
         return addObjectBuilderButton(ObjectBuilderButtonBuilder.POSITIVE_DOUBLE(buttonKey, timeout, this));
-    }
-
-    /**
-     * Add a positive double button.
-     * if input equalsIgnoreCase "null", button's
-     * value will be null.
-     *
-     * @param buttonKey the button key
-     * @param timeout   the timeout
-     * @return this
-     */
-    public ObjectBuilder<T> addNullableByteButton(String buttonKey, long timeout) {
-        return addObjectBuilderButton(ObjectBuilderButtonBuilder.NULLABLE_BYTE(buttonKey, timeout, this));
-    }
-
-    /**
-     * Add a positive double button.
-     * if input equalsIgnoreCase "null", button's
-     * value will be null.
-     *
-     * @param buttonKey the button key
-     * @param timeout   the timeout
-     * @return this
-     */
-    public ObjectBuilder<T> addNullableShortButton(String buttonKey, long timeout) {
-        return addObjectBuilderButton(ObjectBuilderButtonBuilder.NULLABLE_SHORT(buttonKey, timeout, this));
-    }
-
-    /**
-     * Add a positive double button.
-     * if input equalsIgnoreCase "null", button's
-     * value will be null.
-     *
-     * @param buttonKey the button key
-     * @param timeout   the timeout
-     * @return this
-     */
-    public ObjectBuilder<T> addNullableIntegerButton(String buttonKey, long timeout) {
-        return addObjectBuilderButton(ObjectBuilderButtonBuilder.NULLABLE_INTEGER(buttonKey, timeout, this));
-    }
-
-    /**
-     * Add a positive double button.
-     * if input equalsIgnoreCase "null", button's
-     * value will be null.
-     *
-     * @param buttonKey the button key
-     * @param timeout   the timeout
-     * @return this
-     */
-    public ObjectBuilder<T> addNullableLongButton(String buttonKey, long timeout) {
-        return addObjectBuilderButton(ObjectBuilderButtonBuilder.NULLABLE_LONG(buttonKey, timeout, this));
-    }
-
-    /**
-     * Add a positive double button.
-     * if input equalsIgnoreCase "null", button's
-     * value will be null.
-     *
-     * @param buttonKey the button key
-     * @param timeout   the timeout
-     * @return this
-     */
-    public ObjectBuilder<T> addNullableFloatButton(String buttonKey, long timeout) {
-        return addObjectBuilderButton(ObjectBuilderButtonBuilder.NULLABLE_FLOAT(buttonKey, timeout, this));
-    }
-
-    /**
-     * Add a positive double button.
-     * if input equalsIgnoreCase "null", button's
-     * value will be null.
-     *
-     * @param buttonKey the button key
-     * @param timeout   the timeout
-     * @return this
-     */
-    public ObjectBuilder<T> addNullableDoubleButton(String buttonKey, long timeout) {
-        return addObjectBuilderButton(ObjectBuilderButtonBuilder.NULLABLE_DOUBLE(buttonKey, timeout, this));
     }
 
     /**
