@@ -944,7 +944,7 @@ public class ObjectBuilderButtonBuilder {
     public static ObjectBuilderButton<ItemStack> QUICK_ITEM(String buttonKey,
                                                             ObjectBuilder<?> objectBuilder) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
-        return ITEM(buttonKey, "Builder." + buttonKey, itemStack -> {
+        return ITEM(buttonKey, "Builder.ItemStack", itemStack -> {
             objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
                     itemStack == null ? "N/A" : ItemStackUtil.display(itemStack));
             objectBuilder.openInventory();
