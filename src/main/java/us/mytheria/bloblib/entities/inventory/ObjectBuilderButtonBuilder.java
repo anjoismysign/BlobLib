@@ -883,6 +883,8 @@ public class ObjectBuilderButtonBuilder {
      *     </pre>
      *
      * @param buttonKey     The key of the button
+     *                      The timeoutmessagekey is "Builder." + buttonKey + "-Timeout"
+     *                      The timermessagekey is "Builder." + buttonKey
      * @param timeout       The timeout of the chat listener
      * @param objectBuilder The object builder
      * @return The button
