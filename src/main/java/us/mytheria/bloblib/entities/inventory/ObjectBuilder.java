@@ -13,7 +13,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.logging.Logger;
 
 /**
  * @param <T> the type of object to build
@@ -161,13 +160,10 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
      * @param player the player
      */
     public boolean ifObjectBuilderButtonAddListener(int slot, Player player) {
-        Logger logger = Bukkit.getLogger();
         for (ObjectBuilderButton<?> button : objectBuilderButtons.values()) {
             String key = button.getButtonKey();
-            logger.info("button.getButtonKey() = " + key);
             Set<Integer> set = getSlots(key);
             if (set == null) {
-                logger.info("set is null: " + key);
                 continue;
             }
             if (getSlots(button.getButtonKey()).contains(slot)) {
@@ -187,19 +183,11 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
      * @param player the player
      */
     public void handle(int slot, Player player) {
-        Logger logger = Bukkit.getLogger();
-        logger.info("handling slot " + slot);
         boolean isObjectBuilderButton = ifObjectBuilderButtonAddListener(slot, player);
-        if (isObjectBuilderButton) {
-            logger.info("Is object builder button");
+        if (isObjectBuilderButton)
             return;
-        }
-        if (isBuildButton(slot)) {
+        if (isBuildButton(slot))
             build();
-            logger.info("Is build button");
-            return;
-        }
-        logger.info("Couldn't handle");
     }
 
     /**

@@ -1,7 +1,6 @@
 package us.mytheria.bloblib.managers;
 
 import org.apache.commons.io.FilenameUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import us.mytheria.bloblib.BlobLib;
@@ -10,7 +9,6 @@ import us.mytheria.bloblib.entities.inventory.BlobInventory;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.util.HashMap;
-import java.util.logging.Logger;
 
 public class InventoryManager {
     private final BlobLib main;
@@ -60,8 +58,6 @@ public class InventoryManager {
     }
 
     private void loadYamlConfiguration(File file) {
-        Logger logger = Bukkit.getLogger();
-        logger.info("Loading BlobInventory: " + file.getPath());
         String fileName = FilenameUtils.removeExtension(file.getName());
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         if (yamlConfiguration.isInt("Size")) {
@@ -69,7 +65,6 @@ public class InventoryManager {
             return;
         }
         yamlConfiguration.getKeys(false).forEach(key -> {
-            logger.info("key: " + key);
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(key);
             section.getKeys(true).forEach(subKey -> {
                 if (!section.isConfigurationSection(subKey))
@@ -107,7 +102,6 @@ public class InventoryManager {
         try {
             return inventory.clone();
         } catch (CloneNotSupportedException e) {
-            Bukkit.getLogger().info("Failed to clone inventory: " + key);
             e.printStackTrace();
         }
         return null;
