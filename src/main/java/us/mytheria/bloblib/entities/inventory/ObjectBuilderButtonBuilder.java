@@ -76,7 +76,7 @@ public class ObjectBuilderButtonBuilder {
                                                  String timeoutMessageKey,
                                                  String timerMessageKey,
                                                  Function<Byte, Boolean> function) {
-        ObjectBuilderButton<Byte> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+        ObjectBuilderButton<Byte> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                             try {
                                 byte input = Byte.parseByte(string);
@@ -88,7 +88,7 @@ public class ObjectBuilderButtonBuilder {
                         timerMessageKey)) {
         };
         function.apply(null);
-        return objectBuilder;
+        return objectBuilderButton;
     }
 
     public static ObjectBuilderButton<Byte> SIMPLE_BYTE(String buttonKey, long timeout,
@@ -175,18 +175,17 @@ public class ObjectBuilderButtonBuilder {
      */
     public static ObjectBuilderButton<Byte> OPTIONAL_QUICK_BYTE(String buttonKey, long timeout,
                                                                 ObjectBuilder<?> objectBuilder) {
-
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
-        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+        Function<Byte, Boolean> function = value -> {
+            objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                    value < 0 ? "N/A" : "" + value);
+            objectBuilder.openInventory();
+            return true;
+        };
+        ObjectBuilderButton<Byte> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                             try {
                                 byte input = Byte.parseByte(string);
-                                Function<Byte, Boolean> function = value -> {
-                                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-                                            value < 0 ? "N/A" : "" + value);
-                                    objectBuilder.openInventory();
-                                    return true;
-                                };
                                 if (input < 0) {
                                     button.set(null, function);
                                 } else {
@@ -198,13 +197,15 @@ public class ObjectBuilderButtonBuilder {
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey)) {
         };
+        function.apply(null);
+        return objectBuilderButton;
     }
 
     public static ObjectBuilderButton<Short> SHORT(String buttonKey, long timeout,
                                                    String timeoutMessageKey,
                                                    String timerMessageKey,
                                                    Function<Short, Boolean> function) {
-        ObjectBuilderButton<Short> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+        ObjectBuilderButton<Short> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                     try {
                         short input = Short.parseShort(string);
@@ -215,7 +216,7 @@ public class ObjectBuilderButtonBuilder {
                 }, timeoutMessageKey, timerMessageKey)) {
         };
         function.apply(null);
-        return objectBuilder;
+        return objectBuilderButton;
     }
 
     public static ObjectBuilderButton<Short> SIMPLE_SHORT(String buttonKey, long timeout,
@@ -302,18 +303,17 @@ public class ObjectBuilderButtonBuilder {
      */
     public static ObjectBuilderButton<Short> OPTIONAL_QUICK_SHORT(String buttonKey, long timeout,
                                                                   ObjectBuilder<?> objectBuilder) {
-
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
-        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+        Function<Short, Boolean> function = value -> {
+            objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                    value < 0 ? "N/A" : "" + value);
+            objectBuilder.openInventory();
+            return true;
+        };
+        ObjectBuilderButton<Short> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                             try {
                                 short input = Short.parseShort(string);
-                                Function<Short, Boolean> function = value -> {
-                                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-                                            value < 0 ? "N/A" : "" + value);
-                                    objectBuilder.openInventory();
-                                    return true;
-                                };
                                 if (input < 0) {
                                     button.set(null, function);
                                 } else {
@@ -325,6 +325,8 @@ public class ObjectBuilderButtonBuilder {
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey)) {
         };
+        function.apply(null);
+        return objectBuilderButton;
     }
 
     public static ObjectBuilderButton<Integer> INTEGER(String buttonKey, long timeout,
@@ -431,16 +433,16 @@ public class ObjectBuilderButtonBuilder {
                                                                       ObjectBuilder<?> objectBuilder) {
 
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
-        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+        Function<Integer, Boolean> function = value -> {
+            objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                    value < 0 ? "N/A" : "" + value);
+            objectBuilder.openInventory();
+            return true;
+        };
+        ObjectBuilderButton<Integer> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                             try {
                                 int input = Integer.parseInt(string);
-                                Function<Integer, Boolean> function = value -> {
-                                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-                                            value < 0 ? "N/A" : "" + value);
-                                    objectBuilder.openInventory();
-                                    return true;
-                                };
                                 if (input < 0) {
                                     button.set(null, function);
                                 } else {
@@ -452,6 +454,8 @@ public class ObjectBuilderButtonBuilder {
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey)) {
         };
+        function.apply(null);
+        return objectBuilderButton;
     }
 
     public static ObjectBuilderButton<Long> LONG(String buttonKey, long timeout,
@@ -558,16 +562,16 @@ public class ObjectBuilderButtonBuilder {
                                                                 ObjectBuilder<?> objectBuilder) {
 
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
-        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+        Function<Long, Boolean> function = value -> {
+            objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                    value < 0 ? "N/A" : "" + value);
+            objectBuilder.openInventory();
+            return true;
+        };
+        ObjectBuilderButton<Long> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                             try {
                                 long input = Long.parseLong(string);
-                                Function<Long, Boolean> function = value -> {
-                                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-                                            value < 0 ? "N/A" : "" + value);
-                                    objectBuilder.openInventory();
-                                    return true;
-                                };
                                 if (input < 0) {
                                     button.set(null, function);
                                 } else {
@@ -579,6 +583,8 @@ public class ObjectBuilderButtonBuilder {
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey)) {
         };
+        function.apply(null);
+        return objectBuilderButton;
     }
 
     public static ObjectBuilderButton<Float> FLOAT(String buttonKey, long timeout,
@@ -685,16 +691,16 @@ public class ObjectBuilderButtonBuilder {
                                                                   ObjectBuilder<?> objectBuilder) {
 
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
-        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+        Function<Float, Boolean> function = value -> {
+            objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                    value < 0 ? "N/A" : "" + value);
+            objectBuilder.openInventory();
+            return true;
+        };
+        ObjectBuilderButton<Float> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                             try {
                                 float input = Float.parseFloat(string);
-                                Function<Float, Boolean> function = value -> {
-                                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-                                            value < 0 ? "N/A" : "" + value);
-                                    objectBuilder.openInventory();
-                                    return true;
-                                };
                                 if (input < 0) {
                                     button.set(null, function);
                                 } else {
@@ -706,6 +712,8 @@ public class ObjectBuilderButtonBuilder {
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey)) {
         };
+        function.apply(null);
+        return objectBuilderButton;
     }
 
     public static ObjectBuilderButton<Double> DOUBLE(String buttonKey, long timeout,
@@ -811,16 +819,16 @@ public class ObjectBuilderButtonBuilder {
     public static ObjectBuilderButton<Double> OPTIONAL_QUICK_DOUBLE(String buttonKey, long timeout,
                                                                     ObjectBuilder<?> objectBuilder) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
-        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+        Function<Double, Boolean> function = value -> {
+            objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                    value < 0 ? "N/A" : "" + value);
+            objectBuilder.openInventory();
+            return true;
+        };
+        ObjectBuilderButton<Double> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                             try {
                                 double input = Double.parseDouble(string);
-                                Function<Double, Boolean> function = value -> {
-                                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-                                            value < 0 ? "N/A" : "" + value);
-                                    objectBuilder.openInventory();
-                                    return true;
-                                };
                                 if (input < 0) {
                                     button.set(null, function);
                                 } else {
@@ -832,18 +840,22 @@ public class ObjectBuilderButtonBuilder {
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey)) {
         };
+        function.apply(null);
+        return objectBuilderButton;
     }
 
     public static ObjectBuilderButton<Block> BLOCK(String buttonKey, long timeout,
                                                    String timeoutMessageKey,
                                                    String timerMessageKey,
                                                    Function<Block, Boolean> function) {
-        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+        ObjectBuilderButton<Block> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addPositionListener(player, timeout,
                         input -> {
                             button.set(input, function);
                         }, timeoutMessageKey, timerMessageKey)) {
         };
+        function.apply(null);
+        return objectBuilderButton;
     }
 
     public static ObjectBuilderButton<Block> SIMPLE_BLOCK(String buttonKey, long timeout,
@@ -893,12 +905,14 @@ public class ObjectBuilderButtonBuilder {
     public static ObjectBuilderButton<ItemStack> ITEM(String buttonKey,
                                                       String timerMessageKey,
                                                       Function<ItemStack, Boolean> function) {
-        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+        ObjectBuilderButton<ItemStack> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addDropListener(player,
                         input -> {
                             button.set(input, function);
                         }, timerMessageKey)) {
         };
+        function.apply(null);
+        return objectBuilderButton;
     }
 
     public static ObjectBuilderButton<ItemStack> SIMPLE_ITEM(String buttonKey,
@@ -942,12 +956,14 @@ public class ObjectBuilderButtonBuilder {
                                                       String timerMessageKey,
                                                       Function<T, Boolean> function,
                                                       VariableSelector<T> selector) {
-        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+        ObjectBuilderButton<T> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addSelectorListener(player,
                         input -> {
                             button.set(input, function);
                         }, timerMessageKey, selector)) {
         };
+        function.apply(null);
+        return objectBuilderButton;
     }
 
     public static <T> ObjectBuilderButton<T> SIMPLE_SELECTOR(String buttonKey,
@@ -1001,7 +1017,7 @@ public class ObjectBuilderButtonBuilder {
                                                                     String timeoutMessageKey,
                                                                     String timerMessageKey,
                                                                     Function<ReferenceBlobMessage, Boolean> function) {
-        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+        ObjectBuilderButton<ReferenceBlobMessage> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout,
                         string -> {
                             ReferenceBlobMessage message = BlobLibAssetAPI.getMessage(string);
@@ -1010,6 +1026,8 @@ public class ObjectBuilderButtonBuilder {
                         timeoutMessageKey,
                         timerMessageKey)) {
         };
+        function.apply(null);
+        return objectBuilderButton;
     }
 
     public static ObjectBuilderButton<ReferenceBlobMessage> SIMPLE_MESSAGE(String buttonKey, long timeout,
@@ -1059,7 +1077,7 @@ public class ObjectBuilderButtonBuilder {
                                                    String timeoutMessageKey,
                                                    String timerMessageKey,
                                                    Function<World, Boolean> function) {
-        return new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+        ObjectBuilderButton<World> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout,
                         string -> {
                             World world = Bukkit.getWorld(string);
@@ -1068,6 +1086,8 @@ public class ObjectBuilderButtonBuilder {
                         timeoutMessageKey,
                         timerMessageKey)) {
         };
+        function.apply(null);
+        return objectBuilderButton;
     }
 
     public static ObjectBuilderButton<World> SIMPLE_WORLD(String buttonKey, long timeout,
