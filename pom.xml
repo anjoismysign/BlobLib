@@ -203,6 +203,7 @@
             <groupId>com.github.anjoismysign</groupId>
             <artifactId>Anjo</artifactId>
             <version>97d18a6645</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>
