@@ -87,7 +87,7 @@ public class ObjectBuilderButtonBuilder {
                         }, timeoutMessageKey,
                         timerMessageKey)) {
         };
-        function.apply(null);
+        function.apply((byte) 0);
         return objectBuilderButton;
     }
 
@@ -197,7 +197,7 @@ public class ObjectBuilderButtonBuilder {
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey)) {
         };
-        function.apply(null);
+        function.apply((byte) -1);
         return objectBuilderButton;
     }
 
@@ -215,7 +215,7 @@ public class ObjectBuilderButtonBuilder {
                     }
                 }, timeoutMessageKey, timerMessageKey)) {
         };
-        function.apply(null);
+        function.apply((short) 0);
         return objectBuilderButton;
     }
 
@@ -325,7 +325,7 @@ public class ObjectBuilderButtonBuilder {
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey)) {
         };
-        function.apply(null);
+        function.apply((short) -1);
         return objectBuilderButton;
     }
 
@@ -343,7 +343,7 @@ public class ObjectBuilderButtonBuilder {
                     }
                 }, timeoutMessageKey, timerMessageKey)) {
         };
-        function.apply(null);
+        function.apply(0);
         return objectBuilder;
     }
 
@@ -454,7 +454,7 @@ public class ObjectBuilderButtonBuilder {
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey)) {
         };
-        function.apply(null);
+        function.apply(-1);
         return objectBuilderButton;
     }
 
@@ -472,7 +472,7 @@ public class ObjectBuilderButtonBuilder {
                     }
                 }, timeoutMessageKey, timerMessageKey)) {
         };
-        function.apply(null);
+        function.apply(0L);
         return objectBuilder;
     }
 
@@ -583,7 +583,7 @@ public class ObjectBuilderButtonBuilder {
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey)) {
         };
-        function.apply(null);
+        function.apply(-1L);
         return objectBuilderButton;
     }
 
@@ -601,7 +601,7 @@ public class ObjectBuilderButtonBuilder {
                     }
                 }, timeoutMessageKey, timerMessageKey)) {
         };
-        function.apply(null);
+        function.apply(0F);
         return objectBuilder;
     }
 
@@ -712,7 +712,7 @@ public class ObjectBuilderButtonBuilder {
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey)) {
         };
-        function.apply(null);
+        function.apply(-1F);
         return objectBuilderButton;
     }
 
@@ -730,7 +730,7 @@ public class ObjectBuilderButtonBuilder {
                     }
                 }, timeoutMessageKey, timerMessageKey)) {
         };
-        function.apply(null);
+        function.apply(0D);
         return objectBuilder;
     }
 
@@ -840,7 +840,7 @@ public class ObjectBuilderButtonBuilder {
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey)) {
         };
-        function.apply(null);
+        function.apply(-1D);
         return objectBuilderButton;
     }
 
@@ -1007,7 +1007,7 @@ public class ObjectBuilderButtonBuilder {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return SELECTOR(buttonKey, "Builder." + buttonKey, t -> {
             objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-                    buttonKey == null ? "N/A" : ifAvailable.apply(t));
+                    t == null ? "N/A" : ifAvailable.apply(t));
             objectBuilder.openInventory();
             return true;
         }, selector);
@@ -1065,12 +1065,13 @@ public class ObjectBuilderButtonBuilder {
                                                                           long timeout,
                                                                           ObjectBuilder<?> objectBuilder) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
-        return MESSAGE(buttonKey, timeout, "Builder." + buttonKey + "-Timeout", "Builder." + buttonKey, message -> {
-            objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-                    message == null ? "N/A" : message.getReference());
-            objectBuilder.openInventory();
-            return true;
-        });
+        return MESSAGE(buttonKey, timeout, "Builder." + buttonKey + "-Timeout",
+                "Builder." + buttonKey, message -> {
+                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                            message == null ? "N/A" : message.getReference());
+                    objectBuilder.openInventory();
+                    return true;
+                });
     }
 
     public static ObjectBuilderButton<World> WORLD(String buttonKey, long timeout,
@@ -1125,11 +1126,12 @@ public class ObjectBuilderButtonBuilder {
                                                          long timeout,
                                                          ObjectBuilder<?> objectBuilder) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
-        return WORLD(buttonKey, timeout, "Builder." + buttonKey + "-Timeout", "Builder." + buttonKey, world -> {
-            objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-                    world == null ? "N/A" : world.getName());
-            objectBuilder.openInventory();
-            return true;
-        });
+        return WORLD(buttonKey, timeout, "Builder." + buttonKey + "-Timeout",
+                "Builder." + buttonKey, world -> {
+                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                            world == null ? "N/A" : world.getName());
+                    objectBuilder.openInventory();
+                    return true;
+                });
     }
 }
