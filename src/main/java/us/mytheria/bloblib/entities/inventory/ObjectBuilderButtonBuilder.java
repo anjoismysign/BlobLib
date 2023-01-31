@@ -12,6 +12,7 @@ import us.mytheria.bloblib.utilities.BukkitUtil;
 import us.mytheria.bloblib.utilities.ItemStackUtil;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class ObjectBuilderButtonBuilder {
@@ -900,6 +901,32 @@ public class ObjectBuilderButtonBuilder {
     }
 
     /**
+     * A quick ObjectBuilderButton for Block's that accepts
+     * a consumer when input is given.
+     *
+     * @param buttonKey     The key of the button
+     * @param timeout       The timeout of the chat listener
+     * @param objectBuilder The object builder
+     * @param consumer      The consumer
+     * @return The button
+     */
+    public static ObjectBuilderButton<Block> QUICK_ACTION_BLOCK(String buttonKey,
+                                                                long timeout,
+                                                                ObjectBuilder<?> objectBuilder,
+                                                                Consumer<Block> consumer) {
+        String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
+        return BLOCK(buttonKey, timeout, "Builder." + buttonKey
+                        + "-Timeout", "Builder." + buttonKey,
+                block -> {
+                    consumer.accept(block);
+                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                            BukkitUtil.printLocation(block.getLocation()));
+                    objectBuilder.openInventory();
+                    return true;
+                });
+    }
+
+    /**
      * An ObjectBuilderButton builder for ItemStack's.
      *
      * @param buttonKey       The key of the button
@@ -951,6 +978,28 @@ public class ObjectBuilderButtonBuilder {
                                                             ObjectBuilder<?> objectBuilder) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return ITEM(buttonKey, "Builder.ItemStack", itemStack -> {
+            objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                    itemStack == null ? "N/A" : ItemStackUtil.display(itemStack));
+            objectBuilder.openInventory();
+            return true;
+        });
+    }
+
+    /**
+     * A quick ObjectBuilderButton for ItemStack's that accepts
+     * a consumer when input is given.
+     *
+     * @param buttonKey     The key of the button
+     * @param objectBuilder The object builder
+     * @param consumer      The consumer (which is an ItemStack)
+     * @return The button
+     */
+    public static ObjectBuilderButton<ItemStack> QUICK_ACTION_ITEM(String buttonKey,
+                                                                   ObjectBuilder<?> objectBuilder,
+                                                                   Consumer<ItemStack> consumer) {
+        String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
+        return ITEM(buttonKey, "Builder.ItemStack", itemStack -> {
+            consumer.accept(itemStack);
             objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
                     itemStack == null ? "N/A" : ItemStackUtil.display(itemStack));
             objectBuilder.openInventory();
@@ -1031,6 +1080,33 @@ public class ObjectBuilderButtonBuilder {
     }
 
     /**
+     * A quick ObjectBuilderButton for Selectors that accepts
+     * a consumer when input is given.
+     *
+     * @param buttonKey     The key of the button
+     * @param selector      The selector
+     * @param ifAvailable   The function to apply if the selector is available
+     * @param objectBuilder The object builder
+     * @param consumer      The consumer (which is of T type)
+     * @param <T>           The type of the selector
+     * @return The button
+     */
+    public static <T> ObjectBuilderButton<T> QUICK_ACTION_SELECTOR(String buttonKey,
+                                                                   VariableSelector<T> selector,
+                                                                   Function<T, String> ifAvailable,
+                                                                   ObjectBuilder<?> objectBuilder,
+                                                                   Consumer<T> consumer) {
+        String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
+        return SELECTOR(buttonKey, "Builder." + buttonKey, t -> {
+            consumer.accept(t);
+            objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                    t == null ? "N/A" : ifAvailable.apply(t));
+            objectBuilder.openInventory();
+            return true;
+        }, selector);
+    }
+
+    /**
      * An ObjectBuilderButton builder for ReferenceBlobMessages.
      *
      * @param buttonKey         The key of the button
@@ -1102,6 +1178,31 @@ public class ObjectBuilderButtonBuilder {
     }
 
     /**
+     * A quick ObjectBuilderButton for ReferenceBlobMessages that accepts
+     * a consumer when input is given.
+     *
+     * @param buttonKey     The key of the button
+     * @param timeout       The timeout
+     * @param objectBuilder The object builder
+     * @param consumer      The consumer (which is a ReferenceBlobMessage)
+     * @return The button
+     */
+    public static ObjectBuilderButton<ReferenceBlobMessage> QUICK_ACTION_MESSAGE(String buttonKey,
+                                                                                 long timeout,
+                                                                                 ObjectBuilder<?> objectBuilder,
+                                                                                 Consumer<ReferenceBlobMessage> consumer) {
+        String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
+        return MESSAGE(buttonKey, timeout, "Builder." + buttonKey + "-Timeout",
+                "Builder." + buttonKey, message -> {
+                    consumer.accept(message);
+                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                            message == null ? "N/A" : message.getReference());
+                    objectBuilder.openInventory();
+                    return true;
+                });
+    }
+
+    /**
      * An ObjectBuilderButton builder for Worlds.
      *
      * @param buttonKey         The key of the button
@@ -1165,6 +1266,31 @@ public class ObjectBuilderButtonBuilder {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return WORLD(buttonKey, timeout, "Builder." + buttonKey + "-Timeout",
                 "Builder." + buttonKey, world -> {
+                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                            world == null ? "N/A" : world.getName());
+                    objectBuilder.openInventory();
+                    return true;
+                });
+    }
+
+    /**
+     * A quick ObjectBuilderButton for Worlds that accepts
+     * a consumer when input is given.
+     *
+     * @param buttonKey     The key of the button
+     * @param timeout       The timeout
+     * @param objectBuilder The object builder
+     * @param consumer      The consumer (which is a World)
+     * @return The button
+     */
+    public static ObjectBuilderButton<World> QUICK_ACTION_WORLD(String buttonKey,
+                                                                long timeout,
+                                                                ObjectBuilder<?> objectBuilder,
+                                                                Consumer<World> consumer) {
+        String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
+        return WORLD(buttonKey, timeout, "Builder." + buttonKey + "-Timeout",
+                "Builder." + buttonKey, world -> {
+                    consumer.accept(world);
                     objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
                             world == null ? "N/A" : world.getName());
                     objectBuilder.openInventory();

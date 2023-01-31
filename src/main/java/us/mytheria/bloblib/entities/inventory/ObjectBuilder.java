@@ -2,9 +2,12 @@ package us.mytheria.bloblib.entities.inventory;
 
 import me.anjoismysign.anjo.entities.Uber;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import us.mytheria.bloblib.entities.message.BlobSound;
+import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
 import us.mytheria.bloblib.itemstack.ItemStackModder;
 
 import javax.annotation.Nullable;
@@ -12,6 +15,7 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -340,6 +344,76 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
     public ObjectBuilder<T> addQuickWorldButton(String buttonKey, long timeout) {
         return addObjectBuilderButton(ObjectBuilderButtonBuilder.QUICK_WORLD(buttonKey, timeout, this));
     }
+
+    /**
+     * Add a quick action block button which accepts a consumer when input is given.
+     *
+     * @param buttonKey the button key
+     * @param timeout   the timeout
+     * @param consumer  the consumer (which is of Block type)
+     * @return The button
+     */
+    public ObjectBuilder<T> addQuickActionBlockButton(String buttonKey, long timeout, Consumer<Block> consumer) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.QUICK_ACTION_BLOCK(
+                buttonKey, timeout, this, consumer));
+    }
+
+    /**
+     * Add a quick action item button which accepts a consumer when input is given.
+     *
+     * @param buttonKey the button key
+     * @param consumer  the consumer (which is of ItemStack type)
+     * @return The button
+     */
+    public ObjectBuilder<T> addQuickActionItemButton(String buttonKey, Consumer<ItemStack> consumer) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.QUICK_ACTION_ITEM(
+                buttonKey, this, consumer));
+    }
+
+    /**
+     * Add a quick action selector button which accepts a consumer when input is given.
+     *
+     * @param buttonKey   The key of the button
+     * @param selector    The selector
+     * @param ifAvailable The if available
+     * @param consumer    The consumer (which is of T type)
+     * @return The button
+     */
+    public ObjectBuilder<T> addQuickActionSelectorButton(String buttonKey,
+                                                         VariableSelector<T> selector,
+                                                         Function<T, String> ifAvailable,
+                                                         Consumer<T> consumer) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.QUICK_ACTION_SELECTOR(
+                buttonKey, selector, ifAvailable, this, consumer));
+    }
+
+    /**
+     * Add a quick world button which accepts a consumer when input is given.
+     *
+     * @param buttonKey The key of the button
+     * @param timeout   The timeout
+     * @param consumer  The consumer (which is a ReferenceBlobMessage)
+     * @return The button
+     */
+    public ObjectBuilder<T> addQuickActionMessageButton(String buttonKey, long timeout, Consumer<ReferenceBlobMessage> consumer) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.QUICK_ACTION_MESSAGE(
+                buttonKey, timeout, this, consumer));
+    }
+
+    /**
+     * A quick ObjectBuilderButton for Worlds that accepts
+     * a consumer when input is given.
+     *
+     * @param buttonKey The key of the button
+     * @param timeout   The timeout
+     * @param consumer  The consumer (which is a World)
+     * @return The button
+     */
+    public ObjectBuilder<T> addQuickActionWorldButton(String buttonKey, long timeout, Consumer<World> consumer) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.QUICK_ACTION_WORLD(
+                buttonKey, timeout, this, consumer));
+    }
+
 
     /**
      * Add a positive byte button.
