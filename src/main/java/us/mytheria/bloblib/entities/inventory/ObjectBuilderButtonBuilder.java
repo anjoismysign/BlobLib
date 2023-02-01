@@ -64,7 +64,7 @@ public class ObjectBuilderButtonBuilder {
      *
      *     ObjectBuilderButton&lt;String&gt; button =
      *     ObjectBuilderButtonBuilder.QUICK_STRING("Password", 300, objectBuilder);
-     *     //will always display, even if button's value is null
+     *     //if value is null, it will be replaced with "N/A"
      * </pre>
      *
      * @param buttonKey The key of the button
@@ -117,7 +117,10 @@ public class ObjectBuilderButtonBuilder {
                         }, timeoutMessageKey,
                         timerMessageKey), function) {
         };
-        function.apply((byte) 0);
+        if (!nullable)
+            function.apply((byte) 0);
+        else
+            function.apply(null);
         return objectBuilderButton;
     }
 
@@ -240,7 +243,10 @@ public class ObjectBuilderButtonBuilder {
                     }
                 }, timeoutMessageKey, timerMessageKey), function) {
         };
-        function.apply((short) 0);
+        if (!nullable)
+            function.apply((short) 0);
+        else
+            function.apply(null);
         return objectBuilderButton;
     }
 
@@ -285,7 +291,7 @@ public class ObjectBuilderButtonBuilder {
                         + "-Timeout", "Builder." + buttonKey,
                 value -> {
                     objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-                            "" + value);
+                            value == null ? "N/A" : "" + value);
                     objectBuilder.openInventory();
                     return true;
                 }, true);
@@ -362,7 +368,10 @@ public class ObjectBuilderButtonBuilder {
                     }
                 }, timeoutMessageKey, timerMessageKey), function) {
         };
-        function.apply(0);
+        if (!nullable)
+            function.apply(0);
+        else
+            function.apply(null);
         return objectBuilder;
     }
 
@@ -407,7 +416,7 @@ public class ObjectBuilderButtonBuilder {
                         + "-Timeout", "Builder." + buttonKey,
                 value -> {
                     objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-                            "" + value);
+                            value == null ? "N/A" : "" + value);
                     objectBuilder.openInventory();
                     return true;
                 }, true);
@@ -485,7 +494,10 @@ public class ObjectBuilderButtonBuilder {
                     }
                 }, timeoutMessageKey, timerMessageKey), function) {
         };
-        function.apply(0L);
+        if (!nullable)
+            function.apply(0L);
+        else
+            function.apply(null);
         return objectBuilder;
     }
 
@@ -530,7 +542,7 @@ public class ObjectBuilderButtonBuilder {
                         + "-Timeout", "Builder." + buttonKey,
                 value -> {
                     objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-                            "" + value);
+                            value == null ? "N/A" : "" + value);
                     objectBuilder.openInventory();
                     return true;
                 }, true);
@@ -608,7 +620,10 @@ public class ObjectBuilderButtonBuilder {
                     }
                 }, timeoutMessageKey, timerMessageKey), function) {
         };
-        function.apply(0F);
+        if (!nullable)
+            function.apply(0F);
+        else
+            function.apply(null);
         return objectBuilder;
     }
 
@@ -653,7 +668,7 @@ public class ObjectBuilderButtonBuilder {
                         + "-Timeout", "Builder." + buttonKey,
                 value -> {
                     objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-                            "" + value);
+                            value == null ? "N/A" : "" + value);
                     objectBuilder.openInventory();
                     return true;
                 }, true);
@@ -731,7 +746,10 @@ public class ObjectBuilderButtonBuilder {
                     }
                 }, timeoutMessageKey, timerMessageKey), function) {
         };
-        function.apply(0D);
+        if (!nullable)
+            function.apply(0D);
+        else
+            function.apply(null);
         return objectBuilder;
     }
 
@@ -776,7 +794,7 @@ public class ObjectBuilderButtonBuilder {
                         + "-Timeout", "Builder." + buttonKey,
                 value -> {
                     objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-                            "" + value);
+                            value == null ? "N/A" : "" + value);
                     objectBuilder.openInventory();
                     return true;
                 }, true);
