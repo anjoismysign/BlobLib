@@ -6,15 +6,14 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import us.mytheria.bloblib.entities.ObjectDirector;
 import us.mytheria.bloblib.entities.message.BlobSound;
 import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
 import us.mytheria.bloblib.itemstack.ItemStackModder;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -31,17 +30,36 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
     private final UUID builderId;
     private final HashMap<String, ObjectBuilderButton<?>> objectBuilderButtons;
     private Function<ObjectBuilder<T>, T> function;
+    private final ObjectDirector<T> objectDirector;
 
     /**
      * Constructs a new ObjectBuilder.
      *
-     * @param blobInventory the inventory to use
-     * @param builderId     the builder's UUID
+     * @param blobInventory  the inventory to use
+     * @param builderId      the builder's UUID
+     * @param objectDirector the ObjectDirector to which this ObjectBuilder belongs to
      */
-    public ObjectBuilder(BlobInventory blobInventory, UUID builderId) {
-        super(blobInventory.getTitle(), blobInventory.getSize(), blobInventory.getButtonManager());
-        this.builderId = builderId;
+    public ObjectBuilder(@NotNull BlobInventory blobInventory,
+                         @NotNull UUID builderId,
+                         @NotNull ObjectDirector<T> objectDirector) {
+        super(Objects.requireNonNull(blobInventory,
+                        "blobInventory cannot be null").getTitle(),
+                blobInventory.getSize(), blobInventory.getButtonManager());
+        this.objectDirector = Objects.requireNonNull(objectDirector,
+                "objectDirector cannot be null");
+        this.builderId = Objects.requireNonNull(builderId,
+                "builderId cannot be null");
         this.objectBuilderButtons = new HashMap<>();
+    }
+
+    /**
+     * Retrieves the ObjectDirector to which
+     * this ObjectBuilder belongs to.
+     *
+     * @return the ObjectDirector
+     */
+    public ObjectDirector<T> getObjectDirector() {
+        return objectDirector;
     }
 
     /**
@@ -107,7 +125,9 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
     }
 
     /**
-     * Will attempt to build the object.
+     * Will attempt to build the object
+     * using the function. The idea is
+     * that the function will
      *
      * @return the object
      */
@@ -116,6 +136,8 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
             return function.apply(this);
         return null;
     }
+
+    public abstract T construct();
 
     /**
      * Checks if it's a build button.
