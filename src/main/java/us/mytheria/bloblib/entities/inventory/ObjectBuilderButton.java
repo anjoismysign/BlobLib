@@ -50,4 +50,12 @@ public abstract class ObjectBuilderButton<T> {
     public void addListener(Player player) {
         addListener(player, Optional.of(BlobLibAssetAPI.getSound("Builder.Button-Click")));
     }
+
+    public boolean isValuePresent() {
+        return value.isPresent();
+    }
+
+    public boolean isValuePresentAndNotNull() {
+        return value.isPresent() && value.get() != null;
+    }
 }
