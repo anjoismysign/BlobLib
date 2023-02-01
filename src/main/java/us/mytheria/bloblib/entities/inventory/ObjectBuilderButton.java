@@ -11,10 +11,13 @@ import java.util.function.Function;
 public abstract class ObjectBuilderButton<T> {
     private final String buttonKey;
     private Optional<T> value;
-    private BiConsumer<ObjectBuilderButton<T>, Player> listenerBiConsumer;
+    private final BiConsumer<ObjectBuilderButton<T>, Player> listenerBiConsumer;
+    private final Function<T, Boolean> function;
 
     protected ObjectBuilderButton(String buttonKey, Optional<T> defaultValue,
-                                  BiConsumer<ObjectBuilderButton<T>, Player> listenerBiConsumer) {
+                                  BiConsumer<ObjectBuilderButton<T>, Player> listenerBiConsumer,
+                                  Function<T, Boolean> function) {
+        this.function = function;
         this.value = defaultValue;
         this.buttonKey = buttonKey;
         this.listenerBiConsumer = listenerBiConsumer;
@@ -33,10 +36,6 @@ public abstract class ObjectBuilderButton<T> {
     }
 
     public void set(T newValue) {
-        this.value = Optional.ofNullable(newValue);
-    }
-
-    public void set(T newValue, Function<T, Boolean> function) {
         boolean success = function.apply(newValue);
         if (success)
             this.value = Optional.ofNullable(newValue);
