@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * @author anjoismysign
@@ -41,7 +42,8 @@ public class BlobInventory extends InventoryBuilder implements Cloneable {
      */
     @Deprecated
     public static BlobInventory smartFromFile(File file) {
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(
+                Objects.requireNonNull(file, "'file' cannot be null!"));
         String title = ChatColor.translateAlternateColorCodes('&',
                 configuration.getString("Title", configuration.getName() + ">NOT-SET"));
         int size = configuration.getInt("Size", -1);
@@ -84,7 +86,8 @@ public class BlobInventory extends InventoryBuilder implements Cloneable {
      * @return The BlobInventory loaded from the file.
      */
     public static BlobInventory fromFile(File file) {
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(
+                Objects.requireNonNull(file, "'file' cannot be null!"));
         String title = ChatColor.translateAlternateColorCodes('&',
                 configuration.getString("Title", configuration.getName() + ">NOT-SET"));
         int size = configuration.getInt("Size", -1);
@@ -110,32 +113,33 @@ public class BlobInventory extends InventoryBuilder implements Cloneable {
     /**
      * Parses a BlobInventory from a ConfigurationSection.
      *
-     * @param section The ConfigurationSection to parse from.
+     * @param configurationSection The ConfigurationSection to parse from.
      * @return The BlobInventory parsed from the ConfigurationSection.
      * @deprecated Smart methods were made during development and are already
      * safe to use. Use {@link #fromConfigurationSection(ConfigurationSection)} instead
      * which is identical to this method.
      */
     @Deprecated
-    public static BlobInventory smartFromConfigurationSection(ConfigurationSection section) {
+    public static BlobInventory smartFromConfigurationSection(ConfigurationSection configurationSection) {
         String title = ChatColor.translateAlternateColorCodes('&',
-                section.getString("Title", section.getName() + ">NOT-SET"));
-        int size = section.getInt("Size", -1);
+                Objects.requireNonNull(configurationSection,
+                        "'configurationSection' cannot be null!").getString("Title", configurationSection.getName() + ">NOT-SET"));
+        int size = configurationSection.getInt("Size", -1);
         if (size < 0 || size % 9 != 0) {
             if (size < 0) {
                 size = 54;
-                Bukkit.getLogger().info(section.getName() + "'s Size is smaller than 0.");
+                Bukkit.getLogger().info(configurationSection.getName() + "'s Size is smaller than 0.");
                 Bukkit.getLogger().info("This was probably due because you never set a Size.");
                 Bukkit.getLogger().info("This is not possible in an inventory so it was set");
                 Bukkit.getLogger().info("to '54' which is default.");
             } else {
                 size = 54;
-                Bukkit.getLogger().info(section.getName() + "'s Size is not a factor of 9.");
+                Bukkit.getLogger().info(configurationSection.getName() + "'s Size is not a factor of 9.");
                 Bukkit.getLogger().info("This is not possible in an inventory so it was set");
                 Bukkit.getLogger().info("to '54' which is default.");
             }
         }
-        BlobButtonManager buttonManager = BlobButtonManager.smartFromConfigurationSection(section.getConfigurationSection("Buttons"));
+        BlobButtonManager buttonManager = BlobButtonManager.smartFromConfigurationSection(configurationSection.getConfigurationSection("Buttons"));
         BlobInventory inventory = new BlobInventory(title, size, buttonManager);
         return inventory;
     }
@@ -143,28 +147,29 @@ public class BlobInventory extends InventoryBuilder implements Cloneable {
     /**
      * Parses a BlobInventory from a ConfigurationSection.
      *
-     * @param section The ConfigurationSection to parse from.
+     * @param configurationSection The ConfigurationSection to parse from.
      * @return The BlobInventory parsed from the ConfigurationSection.
      */
-    public static BlobInventory fromConfigurationSection(ConfigurationSection section) {
+    public static BlobInventory fromConfigurationSection(ConfigurationSection configurationSection) {
         String title = ChatColor.translateAlternateColorCodes('&',
-                section.getString("Title", section.getName() + ">NOT-SET"));
-        int size = section.getInt("Size", -1);
+                Objects.requireNonNull(configurationSection,
+                        "'configurationSection' cannot be null!").getString("Title", configurationSection.getName() + ">NOT-SET"));
+        int size = configurationSection.getInt("Size", -1);
         if (size < 0 || size % 9 != 0) {
             if (size < 0) {
                 size = 54;
-                Bukkit.getLogger().info(section.getName() + "'s Size is smaller than 0.");
+                Bukkit.getLogger().info(configurationSection.getName() + "'s Size is smaller than 0.");
                 Bukkit.getLogger().info("This was probably due because you never set a Size.");
                 Bukkit.getLogger().info("This is not possible in an inventory so it was set");
                 Bukkit.getLogger().info("to '54' which is default.");
             } else {
                 size = 54;
-                Bukkit.getLogger().info(section.getName() + "'s Size is not a factor of 9.");
+                Bukkit.getLogger().info(configurationSection.getName() + "'s Size is not a factor of 9.");
                 Bukkit.getLogger().info("This is not possible in an inventory so it was set");
                 Bukkit.getLogger().info("to '54' which is default.");
             }
         }
-        BlobButtonManager buttonManager = BlobButtonManager.fromConfigurationSection(section.getConfigurationSection("Buttons"));
+        BlobButtonManager buttonManager = BlobButtonManager.fromConfigurationSection(configurationSection.getConfigurationSection("Buttons"));
         BlobInventory inventory = new BlobInventory(title, size, buttonManager);
         return inventory;
     }
@@ -176,10 +181,12 @@ public class BlobInventory extends InventoryBuilder implements Cloneable {
      * @param size          The size of the inventory.
      * @param buttonManager The ButtonManager that will be used to manage the buttons.
      */
-    public BlobInventory(String title, int size, ButtonManager buttonManager) {
-        this.setTitle(title);
+    protected BlobInventory(String title, int size, ButtonManager buttonManager) {
+        this.setTitle(Objects.requireNonNull(title,
+                "'title' cannot be null!"));
         this.setSize(size);
-        this.setButtonManager(buttonManager);
+        this.setButtonManager(Objects.requireNonNull(buttonManager,
+                "'buttonManager' cannot be null!"));
         this.buildInventory();
         this.loadDefaultButtons();
     }
