@@ -1,10 +1,7 @@
 package us.mytheria.bloblib.entities;
 
 import me.anjoismysign.anjo.entities.Result;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLibAssetAPI;
@@ -27,8 +24,11 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
     public BlobExecutor(BlobPlugin plugin, String commandName) {
         commandName = commandName.toLowerCase();
         this.commandName = commandName;
-        plugin.getCommand(commandName).setExecutor(this);
-        plugin.getCommand(commandName).setTabCompleter(this);
+        PluginCommand command = plugin.getCommand(commandName);
+        if (command == null)
+            throw new IllegalArgumentException("Command '" + commandName + "' not found in plugin.yml");
+        command.setExecutor(this);
+        command.setTabCompleter(this);
         this.adminPermission = plugin.getName().toLowerCase() + ".admin";
         this.debugPermission = plugin.getName().toLowerCase() + ".debug";
         tabCompleter = (sender, args) -> {
@@ -39,7 +39,7 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
             list.add("use BlobExecutor#setTabCompleter(null)");
             return list;
         };
-        command = (sender, args) -> {
+        this.command = (sender, args) -> {
             sender.sendMessage("By default, this command does nothing.");
             sender.sendMessage("Use BlobExecutor#setCommand to customize.");
             return false;
