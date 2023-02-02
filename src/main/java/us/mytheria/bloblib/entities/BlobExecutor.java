@@ -25,11 +25,12 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
     private Consumer<CommandSender> debug;
 
     public BlobExecutor(BlobPlugin plugin, String commandName) {
+        commandName = commandName.toLowerCase();
+        this.commandName = commandName;
         plugin.getCommand(commandName).setExecutor(this);
         plugin.getCommand(commandName).setTabCompleter(this);
         this.adminPermission = plugin.getName().toLowerCase() + ".admin";
         this.debugPermission = plugin.getName().toLowerCase() + ".debug";
-        this.commandName = commandName;
         tabCompleter = (sender, args) -> {
             List<String> list = new ArrayList<>();
             list.add("By default, this command has no tab completion.");
@@ -45,7 +46,7 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
         };
         debug = sender -> {
             if (sender.hasPermission(debugPermission)) {
-                sender.sendMessage("/" + commandName);
+                sender.sendMessage("/" + this.commandName);
             }
         };
     }
@@ -213,6 +214,35 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
     }
 
     /**
+     * Will check of CommandSender is instance of Player.
+     * If so, will accept the provided Consumer.
+     *
+     * @param sender   The CommandSender to check.
+     * @param consumer The Consumer to accept if CommandSender is instance of Player.
+     */
+    public boolean ifInstanceOfPlayer(CommandSender sender, Consumer<Player> consumer) {
+        boolean is = isInstanceOfPlayer(sender);
+        if (is)
+            consumer.accept((Player) sender);
+        return is;
+    }
+
+    /**
+     * Will check of CommandSender is instance of Player.
+     * If so, will accept the provided Consumer.
+     * If not, will automatically send a ReferenceBlobMessage with the key of blobMessageKey.
+     *
+     * @param sender         The CommandSender to check.
+     * @param blobMessageKey The key of the ReferenceBlobMessage to send if CommandSender is not instance of Player.
+     * @param consumer       The Consumer to accept if CommandSender is instance of Player.
+     */
+    public void ifInstanceOfPlayer(CommandSender sender, String blobMessageKey, Consumer<Player> consumer) {
+        if (!isInstanceOfPlayer(sender, blobMessageKey))
+            return;
+        consumer.accept((Player) sender);
+    }
+
+    /**
      * Will check if inputted arguments are less than 1.
      * If so, will automatically send a debug message to CommandSender.
      *
@@ -220,7 +250,7 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
      * @param sender The CommandSender to send the debug message to.
      * @return True if inputted arguments are less than 1.
      */
-    public boolean hasNoArguments(String[] args, CommandSender sender) {
+    public boolean hasNoArguments(CommandSender sender, String[] args) {
         if (args.length < 1) {
             debug(sender);
             return true;
@@ -247,15 +277,13 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
      *
      * @param childCommand The child command to retrieve.
      * @param args         The arguments to check.
-     * @param index        The index to check.
      * @return A Result containing the child command if it exists.
      */
     public Result<BlobChildCommand> isChildCommand(String childCommand,
-                                                   String[] args,
-                                                   int index) {
-        if (!args[index].equalsIgnoreCase(childCommand))
+                                                   String[] args) {
+        if (!args[0].equalsIgnoreCase(childCommand))
             return Result.invalidBecauseNull();
-        return Result.valid(new BlobChildCommand(args, index));
+        return Result.valid(new BlobChildCommand(args, 0));
     }
 
     @Override
