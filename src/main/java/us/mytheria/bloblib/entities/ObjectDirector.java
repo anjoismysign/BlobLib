@@ -43,7 +43,7 @@ public class ObjectDirector<T> extends Manager implements Listener {
                         continue;
                     if (file.isFile()) {
                         Tuple2<T, String> tuple = readFunction.apply(file);
-                        objectManager.addObject(tuple.second(), tuple.first());
+                        addObject(tuple.second(), tuple.first());
                     }
                     if (file.isDirectory())
                         loadFiles(file);

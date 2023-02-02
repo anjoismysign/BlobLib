@@ -99,7 +99,7 @@ Builder:
     Subtitle: '&7You took too long to type in BuyPrice'
   SellPrice:
     Type: TITLE
-    Title: '&f&SELL PRICE'
+    Title: '&f&lSELL PRICE'
     Subtitle: '&7Type in a number'
   SellPrice-Timeout:
     Type: TITLE
