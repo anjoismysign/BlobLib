@@ -1,10 +1,10 @@
 package us.mytheria.bloblib.entities.manager;
 
-import org.bukkit.plugin.java.JavaPlugin;
+import us.mytheria.bloblib.managers.BlobPlugin;
 
 public abstract class Manager {
-    private JavaPlugin plugin;
-    private ManagerDirector managerDirector;
+    private final BlobPlugin plugin;
+    private final ManagerDirector managerDirector;
 
     public Manager(ManagerDirector managerDirector) {
         this.managerDirector = managerDirector;
@@ -31,7 +31,7 @@ public abstract class Manager {
         return managerDirector;
     }
 
-    public JavaPlugin getPlugin() {
+    public BlobPlugin getPlugin() {
         return plugin;
     }
 }
