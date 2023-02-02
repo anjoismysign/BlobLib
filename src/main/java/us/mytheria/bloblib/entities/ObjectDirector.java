@@ -27,6 +27,8 @@ public class ObjectDirector<T> extends Manager implements Listener {
     private final BlobExecutor executor;
     private List<BiFunction<BlobExecutor, String[], Boolean>> nonAdminChildCommands;
     private List<BiFunction<BlobExecutor, String[], Boolean>> adminChildCommands;
+    private List<BiFunction<BlobExecutor, String[], List<String>>> nonAdminChildTabCompleter;
+    private List<BiFunction<BlobExecutor, String[], List<String>>> adminChildTabCompleter;
 
     public ObjectDirector(ManagerDirector managerDirector,
                           ObjectDirectorData objectDirectorData,
@@ -73,7 +75,11 @@ public class ObjectDirector<T> extends Manager implements Listener {
         Bukkit.getPluginManager().registerEvents(this, managerDirector.getPlugin());
         nonAdminChildCommands = new ArrayList<>();
         adminChildCommands = new ArrayList<>();
+        nonAdminChildTabCompleter = new ArrayList<>();
+        adminChildTabCompleter = new ArrayList<>();
         executor = new BlobExecutor(getPlugin(), objectDirectorData.objectName());
+        setDefaultCommands();
+        setDefaultTabCompleter();
     }
 
     public ObjectDirector(ManagerDirector managerDirector,
@@ -101,23 +107,10 @@ public class ObjectDirector<T> extends Manager implements Listener {
         executor = new BlobExecutor(getPlugin(), objectName);
         nonAdminChildCommands = new ArrayList<>();
         adminChildCommands = new ArrayList<>();
-        getExecutor().setCommand((sender, args) -> {
-            if (executor.hasNoArguments(sender, args))
-                return true;
-            nonAdminChildCommands.forEach(childCommand -> childCommand.apply(executor, args));
-            if (!executor.hasAdminPermission(sender))
-                return true;
-            adminChildCommands.forEach(childCommand -> childCommand.apply(executor, args));
-            Result<BlobChildCommand> addResult = getExecutor()
-                    .isChildCommand("add", args);
-            if (addResult.isValid()) {
-                return getExecutor().ifInstanceOfPlayer(sender, player -> {
-                    ObjectBuilder<T> builder = objectBuilderManager.getOrDefault(player.getUniqueId());
-                    builder.openInventory();
-                });
-            }
-            return false;
-        });
+        nonAdminChildTabCompleter = new ArrayList<>();
+        adminChildTabCompleter = new ArrayList<>();
+        setDefaultCommands();
+        setDefaultTabCompleter();
     }
 
     /**
@@ -127,7 +120,9 @@ public class ObjectDirector<T> extends Manager implements Listener {
      * You need to initialize a List (such as an ArrayList) and add BiFunctions to it.
      * The BiFunction should take a BlobExecutor and a String[] as parameters and return a Boolean.
      * The BlobExecutor is the executor of the command, the String[] is the arguments of the command.
-     * The Boolean should ONLY BE true if the command was executed successfully, false otherwise.
+     * The Boolean should ONLY BE true if the command was executed successfully and no more code
+     * needs to be executed related to the parent command. Else, it should be false since
+     * it will continue to execute the other child commands.
      * <p>
      * An example would be:
      * <pre>
@@ -146,7 +141,7 @@ public class ObjectDirector<T> extends Manager implements Listener {
      *     setNonAdminChildCommands(childCommands);
      *     </pre>
      *
-     * @param nonAdminChildCommands the BlobChildCommands that can be executed without 'YOURPLUGIN.admin' permission.
+     * @param nonAdminChildCommands the BlobChildCommands that CAN BE EXECUTED WITHOUT 'YOURPLUGIN.admin' permission.
      */
     public void setNonAdminChildCommands(List<BiFunction<BlobExecutor, String[], Boolean>> nonAdminChildCommands) {
         this.nonAdminChildCommands = nonAdminChildCommands;
@@ -159,7 +154,9 @@ public class ObjectDirector<T> extends Manager implements Listener {
      * You need to initialize a List (such as an ArrayList) and add BiFunctions to it.
      * The BiFunction should take a BlobExecutor and a String[] as parameters and return a Boolean.
      * The BlobExecutor is the executor of the command, the String[] is the arguments of the command.
-     * The Boolean should ONLY BE true if the command was executed successfully, false otherwise.
+     * The Boolean should ONLY BE true if the command was executed successfully and no more code
+     * needs to be executed related to the parent command. Else, it should be false since
+     * it will continue to execute the other child commands.
      * <p>
      * * An example would be:
      * * <pre>
@@ -184,6 +181,38 @@ public class ObjectDirector<T> extends Manager implements Listener {
         this.adminChildCommands = adminChildCommands;
     }
 
+    /**
+     * This method is used to add non-admin child tab completer to the executor.
+     * There have not been any checks done regarding permissions prior to this method.
+     * <p>
+     * You need to initialize a List (such as an ArrayList) and add BiFunctions to it.
+     * The BiFunction should take a BlobExecutor and a String[] as parameters and return a List&lt;String&gt;.
+     * The BlobExecutor is the executor of the command, the String[] is the arguments of the command.
+     * The List&lt;String&gt; are the list of tab completions. In case of not matching any tab completions,
+     * return null. Otherwise, return the desired tab completions.
+     *
+     * @param nonAdminChildTabCompleter the BlobChildCommands that CAN BE EXECUTED WITHOUT 'YOURPLUGIN.admin' permission.
+     */
+    public void setNonAdminChildTabCompleter(List<BiFunction<BlobExecutor, String[], List<String>>> nonAdminChildTabCompleter) {
+        this.nonAdminChildTabCompleter = nonAdminChildTabCompleter;
+    }
+
+    /**
+     * This method is used to add admin child tab completer to the executor.
+     * The method BlobExecutor#hasAdminPermission was issued prior to this method.
+     * <p>
+     * You need to initialize a List (such as an ArrayList) and add BiFunctions to it.
+     * The BiFunction should take a BlobExecutor and a String[] as parameters and return a List&lt;String&gt;.
+     * The BlobExecutor is the executor of the command, the String[] is the arguments of the command.
+     * The List&lt;String&gt; are the list of tab completions. In case of not matching any tab completions,
+     * return null. Otherwise, return the desired tab completions.
+     *
+     * @param adminChildTabCompleter the BlobChildCommands that can ONLY be executed with 'YOURPLUGIN.admin' permission.
+     */
+    public void setAdminChildTabCompleter(List<BiFunction<BlobExecutor, String[], List<String>>> adminChildTabCompleter) {
+        this.adminChildTabCompleter = adminChildTabCompleter;
+    }
+
     @EventHandler
     public void onClick(InventoryClickEvent e) {
         clickEventConsumer.accept(e);
@@ -201,7 +230,55 @@ public class ObjectDirector<T> extends Manager implements Listener {
         this.clickEventConsumer = clickEventConsumer;
     }
 
-    public BlobExecutor getExecutor() {
+    private BlobExecutor getExecutor() {
         return executor;
+    }
+
+    private ObjectDirector<T> setDefaultCommands() {
+        getExecutor().setCommand((sender, args) -> {
+            if (executor.hasNoArguments(sender, args))
+                return true;
+            for (BiFunction<BlobExecutor, String[], Boolean> childCommand : nonAdminChildCommands) {
+                if (childCommand.apply(executor, args))
+                    return true;
+            }
+            if (!executor.hasAdminPermission(sender))
+                return true;
+            for (BiFunction<BlobExecutor, String[], Boolean> childCommand : adminChildCommands) {
+                if (childCommand.apply(executor, args))
+                    return true;
+            }
+            Result<BlobChildCommand> addResult = getExecutor()
+                    .isChildCommand("add", args);
+            if (addResult.isValid()) {
+                return getExecutor().ifInstanceOfPlayer(sender, player -> {
+                    ObjectBuilder<T> builder = objectBuilderManager.getOrDefault(player.getUniqueId());
+                    builder.openInventory();
+                });
+            }
+            return false;
+        });
+        return this;
+    }
+
+    private ObjectDirector<T> setDefaultTabCompleter() {
+        List<String> list = new ArrayList<>();
+        getExecutor().setTabCompleter((sender, args) -> {
+            for (BiFunction<BlobExecutor, String[], List<String>> childTabCompleter : nonAdminChildTabCompleter) {
+                List<String> childTabCompletion = childTabCompleter.apply(executor, args);
+                if (childTabCompletion != null)
+                    return childTabCompletion;
+            }
+            if (!executor.hasAdminPermission(sender))
+                return list;
+            for (BiFunction<BlobExecutor, String[], List<String>> childTabCompleter : adminChildTabCompleter) {
+                List<String> childTabCompletion = childTabCompleter.apply(executor, args);
+                if (childTabCompletion != null && !childTabCompletion.isEmpty())
+                    return childTabCompletion;
+            }
+            list.add("add");
+            return list;
+        });
+        return this;
     }
 }
