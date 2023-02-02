@@ -118,7 +118,8 @@ public class ObjectBuilderButtonBuilder {
                                     }
                                 }
                                 byte input = Byte.parseByte(string);
-                                button.set(input);
+                                if (function.apply(input))
+                                    button.set(input);
                             } catch (NumberFormatException e) {
                                 BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
                             }
@@ -244,8 +245,15 @@ public class ObjectBuilderButtonBuilder {
         ObjectBuilderButton<Short> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                     try {
+                        if (nullable) {
+                            if (string.equalsIgnoreCase("null")) {
+                                button.set(null);
+                                return;
+                            }
+                        }
                         short input = Short.parseShort(string);
-                        button.set(input);
+                        if (function.apply(input))
+                            button.set(input);
                     } catch (NumberFormatException e) {
                         BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
                     }
@@ -369,8 +377,15 @@ public class ObjectBuilderButtonBuilder {
         ObjectBuilderButton<Integer> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                     try {
+                        if (nullable) {
+                            if (string.equalsIgnoreCase("null")) {
+                                button.set(null);
+                                return;
+                            }
+                        }
                         int input = Integer.parseInt(string);
-                        button.set(input);
+                        if (function.apply(input))
+                            button.set(input);
                     } catch (NumberFormatException ignored) {
                         BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
                     }
@@ -495,8 +510,15 @@ public class ObjectBuilderButtonBuilder {
         ObjectBuilderButton<Long> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                     try {
+                        if (nullable) {
+                            if (string.equalsIgnoreCase("null")) {
+                                button.set(null);
+                                return;
+                            }
+                        }
                         long input = Long.parseLong(string);
-                        button.set(input);
+                        if (function.apply(input))
+                            button.set(input);
                     } catch (NumberFormatException ignored) {
                         BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
                     }
@@ -621,8 +643,15 @@ public class ObjectBuilderButtonBuilder {
         ObjectBuilderButton<Float> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                     try {
+                        if (nullable) {
+                            if (string.equalsIgnoreCase("null")) {
+                                button.set(null);
+                                return;
+                            }
+                        }
                         float input = Float.parseFloat(string);
-                        button.set(input);
+                        if (function.apply(input))
+                            button.set(input);
                     } catch (NumberFormatException ignored) {
                         BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
                     }
@@ -747,8 +776,15 @@ public class ObjectBuilderButtonBuilder {
         ObjectBuilderButton<Double> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
                     try {
+                        if (nullable) {
+                            if (string.equalsIgnoreCase("null")) {
+                                button.set(null);
+                                return;
+                            }
+                        }
                         double input = Double.parseDouble(string);
-                        button.set(input);
+                        if (function.apply(input))
+                            button.set(input);
                     } catch (NumberFormatException ignored) {
                         BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
                     }
