@@ -15,7 +15,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 public class ObjectBuilderManager<T> extends Manager {
     protected String title;
@@ -25,16 +25,14 @@ public class ObjectBuilderManager<T> extends Manager {
     private DropListenerManager dropListenerManager;
     private SelectorListenerManager selectorListenerManager;
     private SelPosListenerManager selPosListenerManager;
-    private String fileKey;
-    private Function<UUID, ObjectBuilder<T>> builderFunction;
-
-    public ObjectBuilderManager(ManagerDirector managerDirector) {
-        super(managerDirector);
-    }
+    private final String fileKey;
+    private BiFunction<UUID, ObjectDirector<T>, ObjectBuilder<T>> builderBiFunction;
+    private final ObjectDirector<T> objectDirector;
 
     public ObjectBuilderManager(ManagerDirector managerDirector,
-                                String fileKey) {
+                                String fileKey, ObjectDirector<T> objectDirector) {
         super(managerDirector);
+        this.objectDirector = objectDirector;
         this.builders = new HashMap<>();
         this.fileKey = fileKey;
         update();
@@ -46,6 +44,10 @@ public class ObjectBuilderManager<T> extends Manager {
         chatManager = getManagerDirector().getChatListenerManager();
         dropListenerManager = getManagerDirector().getDropListenerManager();
         selectorListenerManager = getManagerDirector().getSelectorManager();
+    }
+
+    public ObjectDirector<T> getObjectDirector() {
+        return objectDirector;
     }
 
     @Override
@@ -70,7 +72,7 @@ public class ObjectBuilderManager<T> extends Manager {
     public ObjectBuilder<T> getOrDefault(UUID uuid) {
         ObjectBuilder<T> objectBuilder = builders.get(uuid);
         if (objectBuilder == null) {
-            objectBuilder = builderFunction.apply(uuid);
+            objectBuilder = builderBiFunction.apply(uuid, getObjectDirector());
             builders.put(uuid, objectBuilder);
         }
         return objectBuilder;
@@ -100,8 +102,8 @@ public class ObjectBuilderManager<T> extends Manager {
         return this;
     }
 
-    public ObjectBuilderManager<T> setBuilderFunction(Function<UUID, ObjectBuilder<T>> function) {
-        builderFunction = function;
+    public ObjectBuilderManager<T> setBuilderBiFunction(BiFunction<UUID, ObjectDirector<T>, ObjectBuilder<T>> function) {
+        builderBiFunction = function;
         return this;
     }
 

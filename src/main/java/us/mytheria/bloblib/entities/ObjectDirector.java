@@ -27,7 +27,7 @@ public class ObjectDirector<T> extends Manager implements Listener {
                           Function<File, Tuple2<T, String>> readFunction) {
         super(managerDirector);
         this.objectBuilderManager = new ObjectBuilderManager<>(managerDirector,
-                fileKey);
+                fileKey, this);
         Optional<File> loadFilesPath = managerDirector.getFileManager().searchFile(loadFilesPathKey);
         if (loadFilesPath.isEmpty())
             throw new IllegalArgumentException("The loadFilesPathKey is not valid");
@@ -72,7 +72,7 @@ public class ObjectDirector<T> extends Manager implements Listener {
                           ObjectManager<T> objectManager) {
         super(managerDirector);
         this.objectBuilderManager = new ObjectBuilderManager<>(managerDirector,
-                fileKey);
+                fileKey, this);
         this.objectManager = objectManager;
         clickEventConsumer = e -> {
             String invname = e.getView().getTitle();
