@@ -34,12 +34,15 @@ Builder:
   Number-Exception:
     Type: CHAT
     Message: '&cPlease enter a valid number'
+    BlobSound: System.Alert
   World-Not-Found:
     Type: CHAT
     Message: "&cWorld '%world%' not found"
+    BlobSound: System.Alert
   Material-Not-Found:
     Type: CHAT
     Message: "&cMaterial '%material%' not found"
+    BlobSound: System.Alert
   World:
     Type: TITLE
     Title: "&f&lWORLD"
@@ -48,10 +51,12 @@ Builder:
     Type: TITLE
     Title: '&c&lTIMEOUT'
     Subtitle: '&7You took too long to type in a world'
+    BlobSound: Builder.Timeout
   Position-Timeout:
     Type: TITLE
     Title: '&c&lTIMEOUT'
     Subtitle: '&7You took too long to select a position'
+    BlobSound: Builder.Timeout
   Material:
     Type: TITLE
     Title: '&f&lMATERIAL'
@@ -60,6 +65,7 @@ Builder:
     Type: TITLE
     Title: '&c&lTIMEOUT'
     Subtitle: '&7You took too long to type in Material'
+    BlobSound: Builder.Timeout
   Key:
     Type: TITLE
     Title: '&f&lKEY'
@@ -68,6 +74,7 @@ Builder:
     Type: TITLE
     Title: '&c&lTIMEOUT'
     Subtitle: '&7You took too long to type in Key'
+    BlobSound: Builder.Timeout
   ItemStack:
     Type: TITLE
     Title: '&f&lDROP ITEM'
@@ -89,6 +96,7 @@ Builder:
     Type: TITLE
     Title: '&c&lTIMEOUT'
     Subtitle: '&7You took too long to type in CustomModelData'
+    BlobSound: Builder.Timeout
   BuyPrice:
     Type: TITLE
     Title: '&f&lBUY PRICE'
@@ -97,6 +105,7 @@ Builder:
     Type: TITLE
     Title: '&c&lTIMEOUT'
     Subtitle: '&7You took too long to type in BuyPrice'
+    BlobSound: Builder.Timeout
   SellPrice:
     Type: TITLE
     Title: '&f&lSELL PRICE'
@@ -105,6 +114,16 @@ Builder:
     Type: TITLE
     Title: '&c&lTIMEOUT'
     Subtitle: '&7You took too long to type in SellPrice'
+    BlobSound: Builder.Timeout
+  Message:
+    Type: TITLE
+    Title: '&f&lMESSAGE'
+    Subtitle: '&7Type in a ReferenceBlobMessage key'
+  Message-Timeout:
+    Type: TITLE
+    Title: '&c&lTIMEOUT'
+    Subtitle: '&7You took too long to type in Message'
+    BlobSound: Builder.Timeout
 Editor:
   Remove:
     Type: ACTIONBAR
