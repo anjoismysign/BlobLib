@@ -6,6 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.managers.BlobPlugin;
 
@@ -112,10 +113,7 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
      * @return True if CommandSender has the admin permission of this command.
      */
     public boolean hasAdminPermission(CommandSender sender, String blobMessageKey) {
-        boolean has = sender.hasPermission(adminPermission);
-        if (!has)
-            BlobLibAssetAPI.getMessage(blobMessageKey).toCommandSender(sender);
-        return has;
+        return hasPermission(sender, adminPermission, blobMessageKey);
     }
 
     /**
@@ -131,12 +129,59 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
 
     /**
      * Will check if CommandSender has the debug permission of this command.
+     * If not and if blobMessageKey is not null, will automatically send a
+     * ReferenceBlobMessage with the key of blobMessageKey.
+     *
+     * @param sender         The CommandSender to check.
+     * @param blobMessageKey The key of the ReferenceBlobMessage to send if CommandSender does not have the provided permission.
+     * @return True if CommandSender has the debug permission of this command.
+     */
+    public boolean hasDebugPermission(CommandSender sender, @Nullable String blobMessageKey) {
+        if (blobMessageKey != null)
+            return hasPermission(sender, debugPermission, blobMessageKey);
+        return sender.hasPermission(debugPermission);
+    }
+
+    /**
+     * Will check if CommandSender has the debug permission of this command.
+     * Won't send any BlobMessage if CommandSender does not have the debug permission.
      *
      * @param sender The CommandSender to check.
      * @return True if CommandSender has the debug permission of this command.
      */
     public boolean hasDebugPermission(CommandSender sender) {
-        return sender.hasPermission(debugPermission);
+        return hasDebugPermission(sender, null);
+    }
+
+    /**
+     * Will check if CommandSender has the provided permission.
+     * If not, will automatically send a ReferenceBlobMessage with the key of blobMessageKey.
+     *
+     * @param sender         The CommandSender to check.
+     * @param permission     The permission to check.
+     * @param blobMessageKey The key of the ReferenceBlobMessage to send if CommandSender does not have the provided permission.
+     * @return True if CommandSender has the provided permission.
+     */
+    public boolean hasPermission(CommandSender sender,
+                                 String permission,
+                                 String blobMessageKey) {
+        boolean has = sender.hasPermission(permission);
+        if (!has)
+            BlobLibAssetAPI.getMessage(blobMessageKey).toCommandSender(sender);
+        return has;
+    }
+
+    /**
+     * Will check if CommandSender has the provided permission.
+     * If not, will automatically send a ReferenceBlobMessage with the key of "System.No-Permission".
+     *
+     * @param sender     The CommandSender to check.
+     * @param permission The permission to check.
+     * @return True if CommandSender has the provided permission.
+     */
+    public boolean hasPermission(CommandSender sender,
+                                 String permission) {
+        return hasPermission(sender, permission, "System.No-Permission");
     }
 
     /**
