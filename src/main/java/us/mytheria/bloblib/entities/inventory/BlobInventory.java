@@ -312,7 +312,11 @@ public class BlobInventory extends InventoryBuilder implements Cloneable {
      */
     public void buildInventory() {
         inventory = Bukkit.createInventory(null, getSize(), getTitle());
-        getButtonManager().getIntegerKeys().forEach((k, v) -> inventory.setItem(k, v));
+        getButtonManager().getIntegerKeys().forEach((integer, itemStack) -> {
+            if (integer >= getSize())
+                throw new IllegalArgumentException("The slot '" + integer + "' is larger than the size of the inventory.");
+            inventory.setItem(integer, itemStack);
+        });
     }
 
     /**
