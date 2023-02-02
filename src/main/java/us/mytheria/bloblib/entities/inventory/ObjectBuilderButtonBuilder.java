@@ -33,7 +33,15 @@ public class ObjectBuilderButtonBuilder {
                                                      Function<String, Boolean> function) {
         ObjectBuilderButton<String> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> BlobLibAPI.addChatListener(player, timeout,
-                        button::set,
+                        string -> {
+                            if (string.equalsIgnoreCase("null")) {
+                                button.set(null);
+                                return;
+                            }
+                            if (function.apply(string)) {
+                                button.set(string);
+                            }
+                        },
                         timeoutMessageKey,
                         timerMessageKey), function) {
         };
