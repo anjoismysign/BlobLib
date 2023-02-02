@@ -62,8 +62,7 @@ public class BlobInventory extends InventoryBuilder implements Cloneable {
             }
         }
         BlobButtonManager buttonManager = BlobButtonManager.smartFromConfigurationSection(configuration.getConfigurationSection("Buttons"));
-        BlobInventory inventory = new BlobInventory(title, size, buttonManager);
-        return inventory;
+        return new BlobInventory(title, size, buttonManager);
     }
 
     /**
@@ -106,8 +105,7 @@ public class BlobInventory extends InventoryBuilder implements Cloneable {
             }
         }
         BlobButtonManager buttonManager = BlobButtonManager.fromConfigurationSection(configuration.getConfigurationSection("Buttons"));
-        BlobInventory inventory = new BlobInventory(title, size, buttonManager);
-        return inventory;
+        return new BlobInventory(title, size, buttonManager);
     }
 
     /**
@@ -140,8 +138,7 @@ public class BlobInventory extends InventoryBuilder implements Cloneable {
             }
         }
         BlobButtonManager buttonManager = BlobButtonManager.smartFromConfigurationSection(configurationSection.getConfigurationSection("Buttons"));
-        BlobInventory inventory = new BlobInventory(title, size, buttonManager);
-        return inventory;
+        return new BlobInventory(title, size, buttonManager);
     }
 
     /**
@@ -170,8 +167,7 @@ public class BlobInventory extends InventoryBuilder implements Cloneable {
             }
         }
         BlobButtonManager buttonManager = BlobButtonManager.fromConfigurationSection(configurationSection.getConfigurationSection("Buttons"));
-        BlobInventory inventory = new BlobInventory(title, size, buttonManager);
-        return inventory;
+        return new BlobInventory(title, size, buttonManager);
     }
 
     /**
@@ -203,18 +199,15 @@ public class BlobInventory extends InventoryBuilder implements Cloneable {
         setSize(configuration.getInt("Size", -1));
         int size = getSize();
         if (size < 0 || size % 9 != 0) {
+            setSize(54);
             if (size < 0) {
-                setSize(54);
                 Bukkit.getLogger().info(configuration.getName() + "'s Size is smaller than 0.");
                 Bukkit.getLogger().info("This was probably due because you never set a Size.");
-                Bukkit.getLogger().info("This is not possible in an inventory so it was set");
-                Bukkit.getLogger().info("to '54' which is default.");
             } else {
-                setSize(54);
                 Bukkit.getLogger().info(configuration.getName() + "'s Size is not a factor of 9.");
-                Bukkit.getLogger().info("This is not possible in an inventory so it was set");
-                Bukkit.getLogger().info("to '54' which is default.");
             }
+            Bukkit.getLogger().info("This is not possible in an inventory so it was set");
+            Bukkit.getLogger().info("to '54' which is default.");
         }
         setButtonManager(BlobButtonManager
                 .fromConfigurationSection(configuration
@@ -225,6 +218,9 @@ public class BlobInventory extends InventoryBuilder implements Cloneable {
 
     /**
      * Creates a new BlobInventory in an empty constructor.
+     * <p>
+     * I recommend you try constructing your BlobInventory
+     * and get used to the API for a strong workflow.
      */
     public BlobInventory() {
     }
@@ -259,9 +255,7 @@ public class BlobInventory extends InventoryBuilder implements Cloneable {
      */
     public void loadDefaultButtons() {
         setDefaultButtons(new HashMap<>());
-        getKeys().forEach(key -> {
-            addDefaultButton(key);
-        });
+        getKeys().forEach(this::addDefaultButton);
     }
 
     /**
@@ -318,9 +312,7 @@ public class BlobInventory extends InventoryBuilder implements Cloneable {
      */
     public void buildInventory() {
         inventory = Bukkit.createInventory(null, getSize(), getTitle());
-        getButtonManager().getIntegerKeys().forEach((k, v) -> {
-            inventory.setItem(k, v);
-        });
+        getButtonManager().getIntegerKeys().forEach((k, v) -> inventory.setItem(k, v));
     }
 
     /**
