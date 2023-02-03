@@ -51,23 +51,38 @@ public class PluginManager {
     /**
      * This method should be called whenever a BlobPlugin is enabled.
      * It inserts it inside a HashMap which will be used to call
-     * the 'blobLibReload()' method.
+     * the 'blobLibReload()' method. Will also load all assets
+     * that can be used by BlobLib.
      */
     public static void registerPlugin(BlobPlugin plugin) {
         PluginManager manager = BlobLib.getInstance().getPluginManager();
         manager.put(plugin);
-        plugin.blobLibReload();
+        loadAssets(plugin);
     }
 
     /**
      * This method should be called whenever a BlobPlugin is disabled.
      * It removes it from the previously mentioned HashMap.
+     * Will also unload all the assets that were loaded by BlobLib.
      *
      * @param plugin The plugin that is being disabled.
      */
     public static void unregisterPlugin(BlobPlugin plugin) {
+        unloadAssets(plugin);
         PluginManager manager = BlobLib.getInstance().getPluginManager();
         manager.remove(plugin);
+    }
+
+    public static void unloadAssets(BlobPlugin plugin) {
+        InventoryManager.unloadBlobPlugin(plugin);
+        MessageManager.unloadBlobPlugin(plugin);
+        SoundManager.unloadBlobPlugin(plugin);
+    }
+
+    public static void loadAssets(BlobPlugin plugin) {
+        SoundManager.loadBlobPlugin(plugin);
+        MessageManager.loadBlobPlugin(plugin);
+        InventoryManager.loadBlobPlugin(plugin);
     }
 
 }

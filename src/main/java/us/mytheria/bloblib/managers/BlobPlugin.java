@@ -21,9 +21,14 @@ public abstract class BlobPlugin extends JavaPlugin {
      * NEVER call this method yourself, it SHOULD be called by BlobLib.
      */
     protected void blobLibReload() {
-        SoundManager.loadBlobPlugin(this);
-        MessageManager.loadBlobPlugin(this);
-        InventoryManager.loadBlobPlugin(this);
+        /*
+        In case of being loaded, it will unload
+        them backwards since some assets can depend
+        on others, such as BlobMessage on BlobSound.
+         */
+        PluginManager.unloadAssets(this);
+        //Loads assets
+        PluginManager.loadAssets(this);
     }
 
     /**

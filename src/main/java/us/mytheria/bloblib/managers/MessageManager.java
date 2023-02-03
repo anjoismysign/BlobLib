@@ -125,8 +125,9 @@ public class MessageManager {
                     addDuplicate(mapKey);
                     return;
                 }
-                messages.put(key + "." + subKey, BlobMessageReader.read(subSection));
-                pluginMessages.get(plugin).add(key + "." + subKey);
+                String reference = key + "." + subKey;
+                messages.put(reference, BlobMessageReader.read(subSection));
+                pluginMessages.get(plugin).add(reference);
             });
         });
     }
