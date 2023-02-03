@@ -1,5 +1,5 @@
 name: BlobLib
-version: ${project.version}.${buildNumber}
+version: ${project.version}
 main: us.mytheria.bloblib.BlobLib
 api-version: 1.16
 load: STARTUP

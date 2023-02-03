@@ -126,4 +126,18 @@ public class BlobMessageReader {
             return Optional.ofNullable(BlobLibAssetAPI.getMessage(parentConfigurationSection.getString("BlobMessage")));
         return Optional.of(read(parentConfigurationSection.getConfigurationSection("BlobMessage")));
     }
+
+    /**
+     * Reads a ReferenceBlobMessage from a ConfigurationSection
+     *
+     * @param section The ConfigurationSection
+     * @return ReferenceBlobMessage
+     */
+    public static Optional<ReferenceBlobMessage> readReference(ConfigurationSection section) {
+        if (!section.contains("BlobMessage"))
+            return Optional.empty();
+        if (!section.isString("BlobMessage"))
+            throw new IllegalArgumentException("'BlobMessage' must be a String");
+        return Optional.ofNullable(BlobLibAssetAPI.getMessage(section.getString("BlobMessage")));
+    }
 }
