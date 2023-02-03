@@ -4,8 +4,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>us.mytheria</groupId>
-    <artifactId>BlobLib</artifactId>
-    <version>1.5</version>
+    <artifactId>bloblib</artifactId>
+    <version>1.592</version>
     <packaging>jar</packaging>
 
     <name>BlobLib</name>
@@ -16,6 +16,14 @@
         <url>https://github.com/anjoismysign/BlobLib</url>
         <tag>1.2.3</tag>
     </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub anjoismysign Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/anjoismysign/BlobLib</url>
+        </repository>
+    </distributionManagement>
 
     <properties>
         <java.version>16</java.version>
@@ -129,7 +137,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.19.1-R0.1-SNAPSHOT</version>
+            <version>1.19.3-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
