@@ -11,10 +11,13 @@ import us.mytheria.bloblib.entities.message.SerialBlobMessage;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MessageManager {
     private final BlobLib main;
     private HashMap<String, SerialBlobMessage> messages;
+    private HashMap<BlobPlugin, Set<String>> pluginMessages;
     private HashMap<String, Integer> duplicates;
 
     public MessageManager() {
@@ -27,18 +30,33 @@ public class MessageManager {
 
     public void load() {
         messages = new HashMap<>();
+        pluginMessages = new HashMap<>();
         duplicates = new HashMap<>();
         loadFiles(main.getFileManager().messagesDirectory());
-        duplicates.forEach((key, value) -> main.getLogger()
-                .severe("Duplicate BlobMessage: '" + key + "' (found " + value + " instances)"));
+        duplicates.forEach((key, value) -> BlobLib.getAnjoLogger()
+                .log("Duplicate BlobMessage: '" + key + "' (found " + value + " instances)"));
     }
 
     public void load(BlobPlugin plugin) {
+        if (pluginMessages.containsKey(plugin))
+            throw new IllegalArgumentException("Plugin '" + plugin.getName() + "' has already been loaded");
+        pluginMessages.put(plugin, new HashSet<>());
         duplicates.clear();
         File directory = plugin.getManagerDirector().getFileManager().messagesDirectory();
-        loadFiles(directory);
-        duplicates.forEach((key, value) -> main.getLogger()
-                .severe("Duplicate BlobMessage: '" + key + "' (found " + value + " instances)"));
+        loadFiles(plugin, directory);
+        duplicates.forEach((key, value) -> plugin.getAnjoLogger()
+                .log("Duplicate BlobMessage: '" + key + "' (found " + value + " instances)"));
+    }
+
+    public void unload(BlobPlugin plugin) {
+        if (!pluginMessages.containsKey(plugin))
+            throw new IllegalArgumentException("Plugin '" + plugin.getName() + "' has not been loaded");
+        pluginMessages.get(plugin).forEach(messages::remove);
+        pluginMessages.remove(plugin);
+    }
+
+    public static void unloadBlobPlugin(BlobPlugin plugin) {
+        BlobLib.getInstance().getMessageManager().unload(plugin);
     }
 
     public static void loadBlobPlugin(BlobPlugin plugin) {
@@ -47,6 +65,19 @@ public class MessageManager {
     }
 
     private void loadFiles(File path) {
+        File[] listOfFiles = path.listFiles();
+        for (File file : listOfFiles) {
+            if (file.isFile()) {
+                if (file.getName().equals(".DS_Store"))
+                    continue;
+                loadYamlConfiguration(file);
+            }
+            if (file.isDirectory())
+                loadFiles(path);
+        }
+    }
+
+    private void loadFiles(BlobPlugin plugin, File path) {
         File[] listOfFiles = path.listFiles();
         for (File file : listOfFiles) {
             if (file.isFile()) {
@@ -75,6 +106,27 @@ public class MessageManager {
                     return;
                 }
                 messages.put(key + "." + subKey, BlobMessageReader.read(subSection));
+            });
+        });
+    }
+
+    private void loadYamlConfiguration(File file, BlobPlugin plugin) {
+        YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
+        yamlConfiguration.getKeys(false).forEach(key -> {
+            ConfigurationSection section = yamlConfiguration.getConfigurationSection(key);
+            section.getKeys(true).forEach(subKey -> {
+                if (!section.isConfigurationSection(subKey))
+                    return;
+                ConfigurationSection subSection = section.getConfigurationSection(subKey);
+                if (!subSection.isString("Type"))
+                    return;
+                String mapKey = key + "." + subKey;
+                if (messages.containsKey(mapKey)) {
+                    addDuplicate(mapKey);
+                    return;
+                }
+                messages.put(key + "." + subKey, BlobMessageReader.read(subSection));
+                pluginMessages.get(plugin).add(key + "." + subKey);
             });
         });
     }

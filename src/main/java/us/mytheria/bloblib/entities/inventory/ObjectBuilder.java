@@ -193,7 +193,7 @@ public abstract class ObjectBuilder<T> extends BlobInventory {
                 continue;
             }
             if (getSlots(button.getButtonKey()).contains(slot)) {
-                button.addListener(player, Optional.empty());
+                button.addListener(player);
                 return true;
             }
         }

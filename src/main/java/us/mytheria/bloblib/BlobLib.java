@@ -3,6 +3,7 @@ package us.mytheria.bloblib;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.mytheria.bloblib.command.BlobLibCmd;
 import us.mytheria.bloblib.enginehub.EngineHubManager;
+import us.mytheria.bloblib.entities.logger.BlobPluginLogger;
 import us.mytheria.bloblib.hologram.HologramManager;
 import us.mytheria.bloblib.managers.*;
 import us.mytheria.bloblib.managers.fillermanager.FillerManager;
@@ -12,6 +13,7 @@ import us.mytheria.bloblib.vault.VaultManager;
  * The main class of the plugin
  */
 public final class BlobLib extends JavaPlugin {
+    private static BlobPluginLogger anjoLogger;
     private VaultManager vaultManager;
     private EngineHubManager engineHubManager;
     private HologramManager hologramManager;
@@ -40,11 +42,21 @@ public final class BlobLib extends JavaPlugin {
     }
 
     /**
+     * Will retrieve the Logger implementation of Anjo framework.
+     *
+     * @return The Logger implementation of Anjo framework.
+     */
+    public static BlobPluginLogger getAnjoLogger() {
+        return anjoLogger;
+    }
+
+    /**
      * Called when the plugin is enabled
      */
     @Override
     public void onEnable() {
         instance = this;
+        anjoLogger = new BlobPluginLogger(this);
         pluginManager = new PluginManager();
         colorManager = new ColorManager();
         fileManager = new BlobLibFileManager();
