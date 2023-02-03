@@ -1,6 +1,7 @@
 jdk:
   - openjdk16
 before_install:
+  - sdk flush candidates
   - sdk update
-  - sdk install java 16.0.1-openjdk
-  - sdk use java 16.0.1-openjdk
+  - sdk install java 16.0.1-open
+  - sdk use java 16.0.1-open
