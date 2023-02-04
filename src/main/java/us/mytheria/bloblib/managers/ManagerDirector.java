@@ -33,7 +33,7 @@ public abstract class ManagerDirector {
         positionListenerManager = BlobLib.getInstance().getPositionManager();
         dropListenerManager = BlobLib.getInstance().getDropListenerManager();
         managers = new HashMap<>();
-        plugin.registerToBlobLib();
+        plugin.registerToBlobLib(this);
     }
 
     /**
@@ -60,7 +60,7 @@ public abstract class ManagerDirector {
         positionListenerManager = BlobLib.getInstance().getPositionManager();
         dropListenerManager = BlobLib.getInstance().getDropListenerManager();
         managers = new HashMap<>();
-        plugin.registerToBlobLib();
+        plugin.registerToBlobLib(this);
     }
 
     /**
@@ -77,7 +77,7 @@ public abstract class ManagerDirector {
         positionListenerManager = BlobLib.getInstance().getPositionManager();
         dropListenerManager = BlobLib.getInstance().getDropListenerManager();
         managers = new HashMap<>();
-        plugin.registerToBlobLib();
+        plugin.registerToBlobLib(this);
     }
 
     public void addManager(String key, Manager manager) {

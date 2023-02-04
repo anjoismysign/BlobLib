@@ -36,21 +36,25 @@ public class InventoryManager {
                 .log("Duplicate BlobInventory: '" + key + "' (found " + value + " instances)"));
     }
 
-    public void load(BlobPlugin plugin) {
+    public void load(BlobPlugin plugin, ManagerDirector director) {
         String pluginName = plugin.getName();
         if (pluginInventories.containsKey(pluginName))
             throw new IllegalArgumentException("Plugin '" + pluginName + "' has already been loaded");
         pluginInventories.put(pluginName, new HashSet<>());
         duplicates.clear();
-        File directory = plugin.getManagerDirector().getFileManager().inventoriesDirectory();
+        File directory = director.getFileManager().inventoriesDirectory();
         loadFiles(plugin, directory);
         duplicates.forEach((key, value) -> plugin.getAnjoLogger()
                 .log("Duplicate BlobInventory: '" + key + "' (found " + value + " instances)"));
     }
 
-    public static void loadBlobPlugin(BlobPlugin plugin) {
+    public static void loadBlobPlugin(BlobPlugin plugin, ManagerDirector director) {
         InventoryManager manager = BlobLib.getInstance().getInventoryManager();
-        manager.load(plugin);
+        manager.load(plugin, director);
+    }
+
+    public static void loadBlobPlugin(BlobPlugin plugin) {
+        loadBlobPlugin(plugin, plugin.getManagerDirector());
     }
 
     public void unload(BlobPlugin plugin) {

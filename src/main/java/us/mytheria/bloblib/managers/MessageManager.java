@@ -37,13 +37,13 @@ public class MessageManager {
                 .log("Duplicate BlobMessage: '" + key + "' (found " + value + " instances)"));
     }
 
-    public void load(BlobPlugin plugin) {
+    public void load(BlobPlugin plugin, ManagerDirector director) {
         String pluginName = plugin.getName();
         if (pluginMessages.containsKey(pluginName))
             throw new IllegalArgumentException("Plugin '" + pluginName + "' has already been loaded");
         pluginMessages.put(pluginName, new HashSet<>());
         duplicates.clear();
-        File directory = plugin.getManagerDirector().getFileManager().messagesDirectory();
+        File directory = director.getFileManager().messagesDirectory();
         loadFiles(plugin, directory);
         duplicates.forEach((key, value) -> plugin.getAnjoLogger()
                 .log("Duplicate BlobMessage: '" + key + "' (found " + value + " instances)"));
@@ -61,9 +61,13 @@ public class MessageManager {
         BlobLib.getInstance().getMessageManager().unload(plugin);
     }
 
-    public static void loadBlobPlugin(BlobPlugin plugin) {
+    public static void loadBlobPlugin(BlobPlugin plugin, ManagerDirector director) {
         MessageManager manager = BlobLib.getInstance().getMessageManager();
-        manager.load(plugin);
+        manager.load(plugin, director);
+    }
+
+    public static void loadBlobPlugin(BlobPlugin plugin) {
+        loadBlobPlugin(plugin, plugin.getManagerDirector());
     }
 
     private void loadFiles(File path) {

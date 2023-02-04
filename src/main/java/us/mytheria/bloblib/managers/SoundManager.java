@@ -36,21 +36,21 @@ public class SoundManager {
                 .severe("Duplicate BlobSound: '" + key + "' (found " + value + " instances)"));
     }
 
-    public void load(BlobPlugin plugin) {
+    public void load(BlobPlugin plugin, ManagerDirector director) {
         String pluginName = plugin.getName();
         if (pluginSounds.containsKey(pluginName))
             throw new IllegalArgumentException("Plugin '" + pluginName + "' has already been loaded");
         pluginSounds.put(pluginName, new HashSet<>());
         duplicates.clear();
-        File directory = plugin.getManagerDirector().getFileManager().soundsDirectory();
+        File directory = director.getFileManager().soundsDirectory();
         loadFiles(plugin, directory);
         duplicates.forEach((key, value) -> main.getLogger()
                 .severe("Duplicate BlobSound: '" + key + "' (found " + value + " instances)"));
     }
 
-    public static void loadBlobPlugin(BlobPlugin plugin) {
+    public static void loadBlobPlugin(BlobPlugin plugin, ManagerDirector director) {
         SoundManager manager = BlobLib.getInstance().getSoundManager();
-        manager.load(plugin);
+        manager.load(plugin, director);
     }
 
     public void unload(BlobPlugin plugin) {

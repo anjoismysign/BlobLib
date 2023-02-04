@@ -59,10 +59,10 @@ public class PluginManager {
      * the 'blobLibReload()' method. Will also load all assets
      * that can be used by BlobLib.
      */
-    public static void registerPlugin(BlobPlugin plugin) {
+    public static void registerPlugin(BlobPlugin plugin, ManagerDirector director) {
         PluginManager manager = BlobLib.getInstance().getPluginManager();
         manager.put(plugin);
-        loadAssets(plugin);
+        loadAssets(plugin, director);
     }
 
     /**
@@ -84,10 +84,14 @@ public class PluginManager {
         SoundManager.unloadBlobPlugin(plugin);
     }
 
+    public static void loadAssets(BlobPlugin plugin, ManagerDirector director) {
+        SoundManager.loadBlobPlugin(plugin, director);
+        MessageManager.loadBlobPlugin(plugin, director);
+        InventoryManager.loadBlobPlugin(plugin, director);
+    }
+
     public static void loadAssets(BlobPlugin plugin) {
-        SoundManager.loadBlobPlugin(plugin);
-        MessageManager.loadBlobPlugin(plugin);
-        InventoryManager.loadBlobPlugin(plugin);
+        loadAssets(plugin, plugin.getManagerDirector());
     }
 
 }
