@@ -31,12 +31,15 @@ public abstract class BlobPlugin extends JavaPlugin {
     }
 
     /**
-     * You NEED to call this method in your JavaPlugin's onEnable() method,
-     * otherwise the plugin will not be registered and the blobLibReload() method
-     * will NEVER be called, which means that BlobLib will never register your
-     * assets.
+     * Call this to register BlobPlugin to BlobLib.
+     * It needs to be called after getManagerDirector()
+     * is initialized and before getManagerDirector()
+     * ObjectDirector's are initialized.
+     * <p>
+     * Currently, it is called inside ManagerDirector
+     * initialization.
      */
-    public void registerToBlobLib() {
+    protected void registerToBlobLib() {
         if (getManagerDirector() == null)
             throw new NullPointerException("ManagerDirector cannot be null! \nBe sure to initialize it before registering to BlobLib!");
         PluginManager.registerPlugin(this);
