@@ -16,7 +16,7 @@ import java.util.Set;
 public class SoundManager {
     private final BlobLib main;
     private HashMap<String, BlobSound> sounds;
-    private HashMap<BlobPlugin, Set<String>> pluginSounds;
+    private HashMap<String, Set<String>> pluginSounds;
     private HashMap<String, Integer> duplicates;
 
     public SoundManager() {
@@ -37,9 +37,10 @@ public class SoundManager {
     }
 
     public void load(BlobPlugin plugin) {
-        if (pluginSounds.containsKey(plugin))
-            throw new IllegalArgumentException("Plugin '" + plugin.getName() + "' has already been loaded");
-        pluginSounds.put(plugin, new HashSet<>());
+        String pluginName = plugin.getName();
+        if (pluginSounds.containsKey(pluginName))
+            throw new IllegalArgumentException("Plugin '" + pluginName + "' has already been loaded");
+        pluginSounds.put(pluginName, new HashSet<>());
         duplicates.clear();
         File directory = plugin.getManagerDirector().getFileManager().soundsDirectory();
         loadFiles(plugin, directory);
@@ -53,10 +54,11 @@ public class SoundManager {
     }
 
     public void unload(BlobPlugin plugin) {
-        if (!pluginSounds.containsKey(plugin))
-            throw new IllegalArgumentException("Plugin '" + plugin.getName() + "' has not been loaded");
-        pluginSounds.get(plugin).forEach(sounds::remove);
-        pluginSounds.remove(plugin);
+        String pluginName = plugin.getName();
+        if (!pluginSounds.containsKey(pluginName))
+            throw new IllegalArgumentException("Plugin '" + pluginName + "' has not been loaded");
+        pluginSounds.get(pluginName).forEach(sounds::remove);
+        pluginSounds.remove(pluginName);
     }
 
     public static void unloadBlobPlugin(BlobPlugin plugin) {
@@ -100,14 +102,13 @@ public class SoundManager {
                 ConfigurationSection subSection = section.getConfigurationSection(subKey);
                 if (!subSection.isString("Sound"))
                     return;
-                String mapKey = key + "." + subKey;
-                if (sounds.containsKey(mapKey)) {
-                    addDuplicate(mapKey);
+                String reference = key + "." + subKey;
+                if (sounds.containsKey(reference)) {
+                    addDuplicate(reference);
                     return;
                 }
-                String reference = key + "." + subKey;
                 sounds.put(reference, BlobSoundReader.read(subSection));
-                pluginSounds.get(plugin).add(reference);
+                pluginSounds.get(plugin.getName()).add(reference);
             });
         });
     }

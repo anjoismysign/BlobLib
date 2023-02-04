@@ -41,10 +41,15 @@ public class PluginManager {
 
     /**
      * Will reload all BlobPlugin's assets.
+     * Will also reload all managers that have the word 'Director' (cAsE sEnSiTiVe)
+     * in their name.
      */
     public void reload() {
         for (BlobPlugin plugin : plugins.values()) {
-            plugin.blobLibReload();
+            loadAssets(plugin);
+            plugin.getManagerDirector().getManagerEntry().stream()
+                    .filter(entry -> entry.getKey().contains("Director"))
+                    .forEach(entry -> entry.getValue().reload());
         }
     }
 

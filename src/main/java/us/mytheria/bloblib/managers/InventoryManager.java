@@ -5,6 +5,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
+import us.mytheria.bloblib.utilities.Debug;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -15,7 +16,7 @@ import java.util.Set;
 public class InventoryManager {
     private final BlobLib main;
     private HashMap<String, BlobInventory> inventories;
-    private HashMap<BlobPlugin, Set<String>> pluginInventories;
+    private HashMap<String, Set<String>> pluginInventories;
     private HashMap<String, Integer> duplicates;
 
     public InventoryManager() {
@@ -36,9 +37,10 @@ public class InventoryManager {
     }
 
     public void load(BlobPlugin plugin) {
-        if (pluginInventories.containsKey(plugin))
-            throw new IllegalArgumentException("Plugin '" + plugin.getName() + "' has already been loaded");
-        pluginInventories.put(plugin, new HashSet<>());
+        String pluginName = plugin.getName();
+        if (pluginInventories.containsKey(pluginName))
+            throw new IllegalArgumentException("Plugin '" + pluginName + "' has already been loaded");
+        pluginInventories.put(pluginName, new HashSet<>());
         duplicates.clear();
         File directory = plugin.getManagerDirector().getFileManager().inventoriesDirectory();
         loadFiles(plugin, directory);
@@ -52,10 +54,11 @@ public class InventoryManager {
     }
 
     public void unload(BlobPlugin plugin) {
-        if (!pluginInventories.containsKey(plugin))
-            throw new IllegalArgumentException("Plugin '" + plugin.getName() + "' has not been loaded");
-        pluginInventories.get(plugin).forEach(inventories::remove);
-        pluginInventories.remove(plugin);
+        String pluginName = plugin.getName();
+        if (!pluginInventories.containsKey(pluginName))
+            throw new IllegalArgumentException("Plugin '" + pluginName + "' has not been loaded");
+        pluginInventories.get(pluginName).forEach(inventories::remove);
+        pluginInventories.remove(pluginName);
     }
 
     public static void unloadBlobPlugin(BlobPlugin plugin) {
@@ -92,8 +95,11 @@ public class InventoryManager {
     private void loadYamlConfiguration(BlobPlugin plugin, File file) {
         String fileName = FilenameUtils.removeExtension(file.getName());
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
-        if (yamlConfiguration.isInt("Size")) {
+        Debug.log("Loading BlobInventory: " + fileName);
+        if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
+            Debug.log("Singular BlobInventory: " + fileName);
             add(fileName, BlobInventory.fromConfigurationSection(yamlConfiguration));
+            pluginInventories.get(plugin.getName()).add(fileName);
             return;
         }
         yamlConfiguration.getKeys(false).forEach(key -> {
@@ -102,16 +108,16 @@ public class InventoryManager {
                 if (!section.isConfigurationSection(subKey))
                     return;
                 ConfigurationSection subSection = section.getConfigurationSection(subKey);
-                if (!subSection.isInt("Size"))
+                if (!subSection.contains("Size") && !subSection.isInt("Size"))
                     return;
-                String mapKey = key + "." + subKey;
-                if (inventories.containsKey(mapKey)) {
-                    addDuplicate(mapKey);
+                String reference = key + "." + subKey;
+                if (inventories.containsKey(reference)) {
+                    addDuplicate(reference);
                     return;
                 }
-                String reference = key + "." + subKey;
+                Debug.log("Multiple BlobInventory: " + reference);
                 add(reference, BlobInventory.fromConfigurationSection(subSection));
-                pluginInventories.get(plugin).add(reference);
+                pluginInventories.get(plugin.getName()).add(reference);
             });
         });
     }
@@ -150,6 +156,8 @@ public class InventoryManager {
 
     @Nullable
     public BlobInventory getInventory(String key) {
+        //TODO: BORRAR ABAJO
+        inventories.forEach((k, v) -> Debug.log(k));
         return inventories.get(key);
     }
 

@@ -1,19 +1,13 @@
 package us.mytheria.bloblib.entities;
 
-import net.md_5.bungee.api.ChatColor;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import us.mytheria.bloblib.BlobLibAssetAPI;
+import us.mytheria.bloblib.entities.inventory.BlobInventory;
 import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
-import us.mytheria.bloblib.entities.manager.Manager;
-import us.mytheria.bloblib.entities.manager.ManagerDirector;
-import us.mytheria.bloblib.managers.ChatListenerManager;
-import us.mytheria.bloblib.managers.DropListenerManager;
-import us.mytheria.bloblib.managers.SelPosListenerManager;
-import us.mytheria.bloblib.managers.SelectorListenerManager;
+import us.mytheria.bloblib.managers.*;
+import us.mytheria.bloblib.utilities.Debug;
 
-import java.io.File;
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiFunction;
 
@@ -33,7 +27,6 @@ public class ObjectBuilderManager<T> extends Manager {
                                 String fileKey, ObjectDirector<T> objectDirector) {
         super(managerDirector);
         this.objectDirector = objectDirector;
-        this.builders = new HashMap<>();
         this.fileKey = fileKey;
         update();
     }
@@ -53,20 +46,23 @@ public class ObjectBuilderManager<T> extends Manager {
     @Override
     public void reload() {
         update();
-        this.builders = new HashMap<>();
     }
 
     public void update() {
-        Optional<File> file = getManagerDirector().getFileManager().searchFile(fileKey);
-        if (file.isEmpty())
-            throw new RuntimeException("File not found by key '" + fileKey + "'");
-        YamlConfiguration inventory = YamlConfiguration.loadConfiguration(file.get());
+        this.builders = new HashMap<>();
+        Debug.log("Loading inventory file '" + fileKey + "'");
+        BlobInventory inventory = BlobLibAssetAPI.getBlobInventory(fileKey);
+        this.title = inventory.getTitle();
+//        Optional<File> file = getManagerDirector().getFileManager().searchFile(fileKey);
+//        if (file.isEmpty())
+//            throw new RuntimeException("File not found by key '" + fileKey + "'");
+//        YamlConfiguration inventory = YamlConfiguration.loadConfiguration(file.get());
         /*By default, all BlobInventorie's are forced to have Title, else
         they wouldn't load.*/
-        if (!inventory.contains("Title"))
-            throw new RuntimeException("Inventory file '" + fileKey + "' does not have a title.");
-        this.title = ChatColor.translateAlternateColorCodes('&',
-                inventory.getString("Title"));
+//        if (!inventory.contains("Title"))
+//            throw new RuntimeException("Inventory file '" + fileKey + "' does not have a title.");
+//        this.title = ChatColor.translateAlternateColorCodes('&',
+//                inventory.getString("Title"));
     }
 
     public ObjectBuilder<T> getOrDefault(UUID uuid) {

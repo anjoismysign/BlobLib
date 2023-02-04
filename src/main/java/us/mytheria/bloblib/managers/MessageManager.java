@@ -17,7 +17,7 @@ import java.util.Set;
 public class MessageManager {
     private final BlobLib main;
     private HashMap<String, SerialBlobMessage> messages;
-    private HashMap<BlobPlugin, Set<String>> pluginMessages;
+    private HashMap<String, Set<String>> pluginMessages;
     private HashMap<String, Integer> duplicates;
 
     public MessageManager() {
@@ -38,9 +38,10 @@ public class MessageManager {
     }
 
     public void load(BlobPlugin plugin) {
-        if (pluginMessages.containsKey(plugin))
-            throw new IllegalArgumentException("Plugin '" + plugin.getName() + "' has already been loaded");
-        pluginMessages.put(plugin, new HashSet<>());
+        String pluginName = plugin.getName();
+        if (pluginMessages.containsKey(pluginName))
+            throw new IllegalArgumentException("Plugin '" + pluginName + "' has already been loaded");
+        pluginMessages.put(pluginName, new HashSet<>());
         duplicates.clear();
         File directory = plugin.getManagerDirector().getFileManager().messagesDirectory();
         loadFiles(plugin, directory);
@@ -49,10 +50,11 @@ public class MessageManager {
     }
 
     public void unload(BlobPlugin plugin) {
-        if (!pluginMessages.containsKey(plugin))
-            throw new IllegalArgumentException("Plugin '" + plugin.getName() + "' has not been loaded");
-        pluginMessages.get(plugin).forEach(messages::remove);
-        pluginMessages.remove(plugin);
+        String pluginName = plugin.getName();
+        if (!pluginMessages.containsKey(pluginName))
+            throw new IllegalArgumentException("Plugin '" + pluginName + "' has not been loaded");
+        pluginMessages.get(pluginName).forEach(messages::remove);
+        pluginMessages.remove(pluginName);
     }
 
     public static void unloadBlobPlugin(BlobPlugin plugin) {
@@ -120,14 +122,13 @@ public class MessageManager {
                 ConfigurationSection subSection = section.getConfigurationSection(subKey);
                 if (!subSection.isString("Type"))
                     return;
-                String mapKey = key + "." + subKey;
-                if (messages.containsKey(mapKey)) {
-                    addDuplicate(mapKey);
+                String reference = key + "." + subKey;
+                if (messages.containsKey(reference)) {
+                    addDuplicate(reference);
                     return;
                 }
-                String reference = key + "." + subKey;
                 messages.put(reference, BlobMessageReader.read(subSection));
-                pluginMessages.get(plugin).add(reference);
+                pluginMessages.get(plugin.getName()).add(reference);
             });
         });
     }

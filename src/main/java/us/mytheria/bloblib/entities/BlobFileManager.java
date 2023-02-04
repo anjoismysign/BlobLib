@@ -4,8 +4,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.mytheria.bloblib.entities.manager.Manager;
-import us.mytheria.bloblib.entities.manager.ManagerDirector;
+import us.mytheria.bloblib.managers.Manager;
+import us.mytheria.bloblib.managers.ManagerDirector;
 import us.mytheria.bloblib.utilities.ResourceUtil;
 
 import java.io.File;

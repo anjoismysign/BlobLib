@@ -8,8 +8,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
-import us.mytheria.bloblib.entities.manager.Manager;
-import us.mytheria.bloblib.entities.manager.ManagerDirector;
+import us.mytheria.bloblib.managers.Manager;
+import us.mytheria.bloblib.managers.ManagerDirector;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -111,6 +111,12 @@ public class ObjectDirector<T> extends Manager implements Listener {
         adminChildTabCompleter = new ArrayList<>();
         setDefaultCommands();
         setDefaultTabCompleter();
+    }
+
+    @Override
+    public void reload() {
+        getObjectManager().reload();
+        getObjectBuilderManager().reload();
     }
 
     /**
@@ -219,6 +225,10 @@ public class ObjectDirector<T> extends Manager implements Listener {
     }
 
     public ObjectBuilderManager<T> getBuilderManager() {
+        return objectBuilderManager;
+    }
+
+    private ObjectBuilderManager<T> getObjectBuilderManager() {
         return objectBuilderManager;
     }
 

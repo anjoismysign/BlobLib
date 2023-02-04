@@ -1,8 +1,8 @@
 package us.mytheria.bloblib.entities;
 
 import me.anjoismysign.anjo.entities.Result;
-import us.mytheria.bloblib.entities.manager.Manager;
-import us.mytheria.bloblib.entities.manager.ManagerDirector;
+import us.mytheria.bloblib.managers.Manager;
+import us.mytheria.bloblib.managers.ManagerDirector;
 
 import java.io.File;
 import java.util.AbstractMap;
@@ -77,6 +77,9 @@ public abstract class ObjectManager<T> extends Manager {
 
     /**
      * Will reload the ObjectManager.
+     * Initializes the objects AbstractMap,
+     * which clears all objects, and then
+     * loads all files from the loadFilesPath.
      */
     @Override
     public void reload() {

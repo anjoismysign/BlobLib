@@ -1,14 +1,15 @@
-package us.mytheria.bloblib.entities.manager;
+package us.mytheria.bloblib.managers;
 
 import me.anjoismysign.anjo.logger.Logger;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.BlobFileManager;
-import us.mytheria.bloblib.managers.*;
 import us.mytheria.bloblib.utilities.ResourceUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public abstract class ManagerDirector {
     private final BlobPlugin plugin;
@@ -32,6 +33,7 @@ public abstract class ManagerDirector {
         positionListenerManager = BlobLib.getInstance().getPositionManager();
         dropListenerManager = BlobLib.getInstance().getDropListenerManager();
         managers = new HashMap<>();
+        plugin.registerToBlobLib();
     }
 
     /**
@@ -58,6 +60,7 @@ public abstract class ManagerDirector {
         positionListenerManager = BlobLib.getInstance().getPositionManager();
         dropListenerManager = BlobLib.getInstance().getDropListenerManager();
         managers = new HashMap<>();
+        plugin.registerToBlobLib();
     }
 
     /**
@@ -74,6 +77,7 @@ public abstract class ManagerDirector {
         positionListenerManager = BlobLib.getInstance().getPositionManager();
         dropListenerManager = BlobLib.getInstance().getDropListenerManager();
         managers = new HashMap<>();
+        plugin.registerToBlobLib();
     }
 
     public void addManager(String key, Manager manager) {
@@ -257,5 +261,9 @@ public abstract class ManagerDirector {
      */
     public ManagerDirector registerAndUpdateInventoryAsset(String fileName) {
         return registerAndUpdateInventoryAsset(fileName, false);
+    }
+
+    protected Set<Map.Entry<String, Manager>> getManagerEntry() {
+        return managers.entrySet();
     }
 }

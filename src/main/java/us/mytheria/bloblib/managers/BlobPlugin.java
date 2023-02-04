@@ -4,7 +4,6 @@ import me.anjoismysign.anjo.logger.Logger;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.entities.logger.BlobPluginLogger;
-import us.mytheria.bloblib.entities.manager.ManagerDirector;
 
 /**
  * @author anjoismysign

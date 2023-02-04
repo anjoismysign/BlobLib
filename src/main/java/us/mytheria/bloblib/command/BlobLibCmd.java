@@ -38,21 +38,26 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
      */
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!sender.hasPermission("bloblib.admin")) {
-            main.getMessageManager().getMessage("System.No-Permission").toCommandSender(sender);
-            return true;
+        try {
+            if (!sender.hasPermission("bloblib.admin")) {
+                main.getMessageManager().getMessage("System.No-Permission").toCommandSender(sender);
+                return true;
+            }
+            if (args.length < 1) {
+                debug(sender);
+                return true;
+            }
+            String arg1 = args[0];
+            if (arg1.equalsIgnoreCase("reload")) {
+                main.reload();
+                main.getMessageManager().getMessage("System.Reload").toCommandSender(sender);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
-        if (args.length < 1) {
-            debug(sender);
-            return true;
-        }
-        String arg1 = args[0];
-        if (arg1.equalsIgnoreCase("reload")) {
-            main.reload();
-            main.getMessageManager().getMessage("System.Reload").toCommandSender(sender);
-            return true;
-        }
-        return false;
     }
 
     /**

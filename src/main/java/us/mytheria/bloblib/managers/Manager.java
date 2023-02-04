@@ -1,6 +1,4 @@
-package us.mytheria.bloblib.entities.manager;
-
-import us.mytheria.bloblib.managers.BlobPlugin;
+package us.mytheria.bloblib.managers;
 
 public abstract class Manager {
     private final BlobPlugin plugin;
