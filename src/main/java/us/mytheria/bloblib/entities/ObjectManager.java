@@ -75,7 +75,7 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
      * @param object The object
      */
     public void addObject(String key, T object, File file) {
-        if (!objectFiles.containsKey(key))
+        if (objectFiles.containsKey(key))
             return;
         objects.put(key, object);
         objectFiles.put(key, file);
@@ -89,7 +89,7 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
      * @param object The object
      */
     public void addObject(String key, T object) {
-        if (!objectFiles.containsKey(key))
+        if (objectFiles.containsKey(key))
             return;
         objects.put(key, object);
         objectFiles.put(key, object.saveToFile());
@@ -101,7 +101,7 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
      * @param key The key of the object
      */
     public void removeObject(String key) {
-        if (!objects.containsKey(key))
+        if (objects.containsKey(key))
             return;
         objects.remove(key);
         File file = objectFiles.get(key);
