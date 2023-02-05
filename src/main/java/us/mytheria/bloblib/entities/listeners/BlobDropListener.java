@@ -20,7 +20,7 @@ import java.util.function.Consumer;
  * A listener that runs a task when the owner drops an item.
  */
 public class BlobDropListener extends DropListener {
-    private List<BlobMessage> messages;
+    private final List<BlobMessage> messages;
     private BukkitTask messageTask;
 
     /**
@@ -30,10 +30,12 @@ public class BlobDropListener extends DropListener {
      * @param inputRunnable the runnable to run when the input is received
      * @param messages      the messages to send to the owner
      * @return the new DropListener
+     * @deprecated use {@link #smart(Player, Consumer, String)} instead
      */
+    @Deprecated
     public static BlobDropListener build(Player owner, Runnable inputRunnable,
                                          List<BlobMessage> messages) {
-        return new BlobDropListener(owner.getName(), inputRunnable, messages);
+        return new BlobDropListener(owner.getName(), inputListener -> inputRunnable.run(), messages);
     }
 
     /**
@@ -50,8 +52,8 @@ public class BlobDropListener extends DropListener {
         DropListenerManager dropManager = main.getDropListenerManager();
         Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibAssetAPI.getMessage(timerMessageKey));
         List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
-        return new BlobDropListener(owner.getName(), () -> {
-            ItemStack input = dropManager.getInput(owner);
+        return new BlobDropListener(owner.getName(), listener -> {
+            ItemStack input = listener.getInput();
             dropManager.removeDropListener(owner);
             Bukkit.getScheduler().runTask(main, () -> {
                 if (owner == null || !owner.isOnline()) {
@@ -66,11 +68,12 @@ public class BlobDropListener extends DropListener {
      * Creates a new DropListener
      *
      * @param owner         the owner of the listener
-     * @param inputRunnable the runnable to run when the input is received
+     * @param inputConsumer the consumer to run when the input is received
      */
-    private BlobDropListener(String owner, Runnable inputRunnable,
+    private BlobDropListener(String owner, Consumer<BlobDropListener> inputConsumer,
                              List<BlobMessage> messages) {
-        super(owner, inputRunnable);
+        super(owner, inputListener ->
+                inputConsumer.accept((BlobDropListener) inputListener));
         this.messages = messages;
     }
 
