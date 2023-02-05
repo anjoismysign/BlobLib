@@ -2,6 +2,8 @@ package us.mytheria.bloblib.entities;
 
 import org.bukkit.configuration.ConfigurationSection;
 
+import java.util.List;
+
 public record SimpleEventListener<T>(boolean register, T value) {
 
     public static <T> SimpleEventListener<T> TRUE(T value) {
@@ -39,6 +41,60 @@ public record SimpleEventListener<T>(boolean register, T value) {
     public static SimpleEventListener<Long> LONG(ConfigurationSection section, String path) {
         boolean register = section.getBoolean("Register");
         long value = section.getLong(path);
+        return new SimpleEventListener<>(register, value);
+    }
+
+    public static SimpleEventListener<List<Byte>> BYTE_LIST(ConfigurationSection section, String path) {
+        boolean register = section.getBoolean("Register");
+        List<Byte> value = section.getByteList(path);
+        return new SimpleEventListener<>(register, value);
+    }
+
+    public static SimpleEventListener<List<Short>> SHORT_LIST(ConfigurationSection section, String path) {
+        boolean register = section.getBoolean("Register");
+        List<Short> value = section.getShortList(path);
+        return new SimpleEventListener<>(register, value);
+    }
+
+    public static SimpleEventListener<List<Integer>> INTEGER_LIST(ConfigurationSection section, String path) {
+        boolean register = section.getBoolean("Register");
+        List<Integer> value = section.getIntegerList(path);
+        return new SimpleEventListener<>(register, value);
+    }
+
+    public static SimpleEventListener<List<Long>> LONG_LIST(ConfigurationSection section, String path) {
+        boolean register = section.getBoolean("Register");
+        List<Long> value = section.getLongList(path);
+        return new SimpleEventListener<>(register, value);
+    }
+
+    public static SimpleEventListener<List<Float>> FLOAT_LIST(ConfigurationSection section, String path) {
+        boolean register = section.getBoolean("Register");
+        List<Float> value = section.getFloatList(path);
+        return new SimpleEventListener<>(register, value);
+    }
+
+    public static SimpleEventListener<List<Double>> DOUBLE_LIST(ConfigurationSection section, String path) {
+        boolean register = section.getBoolean("Register");
+        List<Double> value = section.getDoubleList(path);
+        return new SimpleEventListener<>(register, value);
+    }
+
+    public static SimpleEventListener<List<Boolean>> BOOLEAN_LIST(ConfigurationSection section, String path) {
+        boolean register = section.getBoolean("Register");
+        List<Boolean> value = section.getBooleanList(path);
+        return new SimpleEventListener<>(register, value);
+    }
+
+    public static SimpleEventListener<List<Character>> CHARACTER_LIST(ConfigurationSection section, String path) {
+        boolean register = section.getBoolean("Register");
+        List<Character> value = section.getCharacterList(path);
+        return new SimpleEventListener<>(register, value);
+    }
+
+    public static SimpleEventListener<List<String>> STRING_LIST(ConfigurationSection section, String path) {
+        boolean register = section.getBoolean("Register");
+        List<String> value = section.getStringList(path);
         return new SimpleEventListener<>(register, value);
     }
 
