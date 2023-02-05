@@ -94,42 +94,34 @@ public class SoundManager {
 
     private void loadYamlConfiguration(BlobPlugin plugin, File file) {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
-        yamlConfiguration.getKeys(false).forEach(key -> {
-            ConfigurationSection section = yamlConfiguration.getConfigurationSection(key);
-            section.getKeys(true).forEach(subKey -> {
-                if (!section.isConfigurationSection(subKey))
-                    return;
-                ConfigurationSection subSection = section.getConfigurationSection(subKey);
-                if (!subSection.isString("Sound"))
-                    return;
-                String reference = key + "." + subKey;
-                if (sounds.containsKey(reference)) {
-                    addDuplicate(reference);
-                    return;
-                }
-                sounds.put(reference, BlobSoundReader.read(subSection));
-                pluginSounds.get(plugin.getName()).add(reference);
-            });
+        yamlConfiguration.getKeys(true).forEach(reference -> {
+            ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
+            if (!section.isConfigurationSection(reference))
+                return;
+            if (!section.contains("Sound") && !section.isString("Sound"))
+                return;
+            if (sounds.containsKey(reference)) {
+                addDuplicate(reference);
+                return;
+            }
+            sounds.put(reference, BlobSoundReader.read(section));
+            pluginSounds.get(plugin.getName()).add(reference);
         });
     }
 
     private void loadYamlConfiguration(File file) {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
-        yamlConfiguration.getKeys(false).forEach(key -> {
-            ConfigurationSection section = yamlConfiguration.getConfigurationSection(key);
-            section.getKeys(true).forEach(subKey -> {
-                if (!section.isConfigurationSection(subKey))
-                    return;
-                ConfigurationSection subSection = section.getConfigurationSection(subKey);
-                if (!subSection.isString("Sound"))
-                    return;
-                String mapKey = key + "." + subKey;
-                if (sounds.containsKey(mapKey)) {
-                    addDuplicate(mapKey);
-                    return;
-                }
-                sounds.put(key + "." + subKey, BlobSoundReader.read(subSection));
-            });
+        yamlConfiguration.getKeys(true).forEach(reference -> {
+            ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
+            if (!section.isConfigurationSection(reference))
+                return;
+            if (!section.contains("Sound") && !section.isString("Sound"))
+                return;
+            if (sounds.containsKey(reference)) {
+                addDuplicate(reference);
+                return;
+            }
+            sounds.put(reference, BlobSoundReader.read(section));
         });
     }
 

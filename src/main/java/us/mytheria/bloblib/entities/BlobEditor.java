@@ -12,10 +12,7 @@ import us.mytheria.bloblib.entities.inventory.VariableSelector;
 import us.mytheria.bloblib.entities.listeners.BlobSelectorListener;
 import us.mytheria.bloblib.managers.SelectorListenerManager;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -113,7 +110,10 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
 
     protected BlobEditor(BlobInventory blobInventory, UUID builderId,
                          String dataType, Collection<T> collection) {
-        super(blobInventory, builderId, dataType, null);
+        super(Objects.requireNonNull(blobInventory, "'blobInventory' cannot be null"),
+                Objects.requireNonNull(builderId, "'builderId' cannot be null"),
+                Objects.requireNonNull(dataType, "'dataType' cannot be null"),
+                null);
         this.collection = collection;
         list = null;
         selectorManager = BlobLib.getInstance().getSelectorManager();

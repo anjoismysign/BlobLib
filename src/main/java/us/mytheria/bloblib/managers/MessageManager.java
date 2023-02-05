@@ -98,42 +98,34 @@ public class MessageManager {
 
     private void loadYamlConfiguration(File file) {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
-        yamlConfiguration.getKeys(false).forEach(key -> {
-            ConfigurationSection section = yamlConfiguration.getConfigurationSection(key);
-            section.getKeys(true).forEach(subKey -> {
-                if (!section.isConfigurationSection(subKey))
-                    return;
-                ConfigurationSection subSection = section.getConfigurationSection(subKey);
-                if (!subSection.isString("Type"))
-                    return;
-                String mapKey = key + "." + subKey;
-                if (messages.containsKey(mapKey)) {
-                    addDuplicate(mapKey);
-                    return;
-                }
-                messages.put(key + "." + subKey, BlobMessageReader.read(subSection));
-            });
+        yamlConfiguration.getKeys(true).forEach(reference -> {
+            ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
+            if (!section.isConfigurationSection(reference))
+                return;
+            if (!section.contains("Type") && !section.isString("Type"))
+                return;
+            if (messages.containsKey(reference)) {
+                addDuplicate(reference);
+                return;
+            }
+            messages.put(reference, BlobMessageReader.read(section));
         });
     }
 
     private void loadYamlConfiguration(File file, BlobPlugin plugin) {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
-        yamlConfiguration.getKeys(false).forEach(key -> {
-            ConfigurationSection section = yamlConfiguration.getConfigurationSection(key);
-            section.getKeys(true).forEach(subKey -> {
-                if (!section.isConfigurationSection(subKey))
-                    return;
-                ConfigurationSection subSection = section.getConfigurationSection(subKey);
-                if (!subSection.isString("Type"))
-                    return;
-                String reference = key + "." + subKey;
-                if (messages.containsKey(reference)) {
-                    addDuplicate(reference);
-                    return;
-                }
-                messages.put(reference, BlobMessageReader.read(subSection));
-                pluginMessages.get(plugin.getName()).add(reference);
-            });
+        yamlConfiguration.getKeys(true).forEach(reference -> {
+            ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
+            if (!section.isConfigurationSection(reference))
+                return;
+            if (!section.contains("Type") && !section.isString("Type"))
+                return;
+            if (messages.containsKey(reference)) {
+                addDuplicate(reference);
+                return;
+            }
+            messages.put(reference, BlobMessageReader.read(section));
+            pluginMessages.get(plugin.getName()).add(reference);
         });
     }
 

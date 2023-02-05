@@ -5,6 +5,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
+import us.mytheria.bloblib.utilities.Debug;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -70,6 +71,7 @@ public class InventoryManager {
     }
 
     private void loadFiles(File path) {
+        Debug.log("Loading BlobInventories from: " + path.getPath());
         File[] listOfFiles = path.listFiles();
         for (File file : listOfFiles) {
             if (file.isFile()) {
@@ -103,47 +105,41 @@ public class InventoryManager {
             pluginInventories.get(plugin.getName()).add(fileName);
             return;
         }
-        yamlConfiguration.getKeys(false).forEach(key -> {
-            ConfigurationSection section = yamlConfiguration.getConfigurationSection(key);
-            section.getKeys(true).forEach(subKey -> {
-                if (!section.isConfigurationSection(subKey))
-                    return;
-                ConfigurationSection subSection = section.getConfigurationSection(subKey);
-                if (!subSection.contains("Size") && !subSection.isInt("Size"))
-                    return;
-                String reference = key + "." + subKey;
-                if (inventories.containsKey(reference)) {
-                    addDuplicate(reference);
-                    return;
-                }
-                add(reference, BlobInventory.fromConfigurationSection(subSection));
-                pluginInventories.get(plugin.getName()).add(reference);
-            });
+        yamlConfiguration.getKeys(true).forEach(reference -> {
+            ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
+            if (!section.isConfigurationSection(reference))
+                return;
+            if (!section.contains("Size") && !section.isInt("Size"))
+                return;
+            if (inventories.containsKey(reference)) {
+                addDuplicate(reference);
+                return;
+            }
+            add(reference, BlobInventory.fromConfigurationSection(section));
+            pluginInventories.get(plugin.getName()).add(reference);
         });
     }
 
     private void loadYamlConfiguration(File file) {
         String fileName = FilenameUtils.removeExtension(file.getName());
+        Debug.log("Loading bloblib BlobInventory: " + fileName);
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
-        if (yamlConfiguration.isInt("Size")) {
+        if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
             add(fileName, BlobInventory.fromConfigurationSection(yamlConfiguration));
             return;
         }
-        yamlConfiguration.getKeys(false).forEach(key -> {
-            ConfigurationSection section = yamlConfiguration.getConfigurationSection(key);
-            section.getKeys(true).forEach(subKey -> {
-                if (!section.isConfigurationSection(subKey))
-                    return;
-                ConfigurationSection subSection = section.getConfigurationSection(subKey);
-                if (!subSection.isInt("Size"))
-                    return;
-                String mapKey = key + "." + subKey;
-                if (inventories.containsKey(mapKey)) {
-                    addDuplicate(mapKey);
-                    return;
-                }
-                add(key + "." + subKey, BlobInventory.fromConfigurationSection(subSection));
-            });
+        yamlConfiguration.getKeys(true).forEach(reference -> {
+            ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
+            if (!section.isConfigurationSection(reference))
+                return;
+            if (!section.contains("Size") && !section.isInt("Size"))
+                return;
+            if (inventories.containsKey(reference)) {
+                addDuplicate(reference);
+                return;
+            }
+            add(reference, BlobInventory.fromConfigurationSection(section));
+            Debug.log("Loaded bloblib BlobInventory: " + reference);
         });
     }
 
@@ -156,6 +152,7 @@ public class InventoryManager {
 
     @Nullable
     public BlobInventory getInventory(String key) {
+        Debug.log("Getting inventory: " + key);
         return inventories.get(key);
     }
 

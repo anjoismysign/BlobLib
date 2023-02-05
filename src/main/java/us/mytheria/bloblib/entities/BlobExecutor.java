@@ -1,6 +1,7 @@
 package us.mytheria.bloblib.entities;
 
 import me.anjoismysign.anjo.entities.Result;
+import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 
 public class BlobExecutor implements CommandExecutor, TabCompleter {
     private final String debugPermission;
@@ -288,7 +290,12 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        return command.apply(sender, args);
+        try {
+            return command.apply(sender, args);
+        } catch (Exception exception) {
+            Bukkit.getLogger().log(Level.SEVERE, exception.getMessage(), exception);
+            return false;
+        }
     }
 
     @Override
