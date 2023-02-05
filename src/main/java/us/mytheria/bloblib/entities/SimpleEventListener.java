@@ -42,6 +42,20 @@ public record SimpleEventListener<T>(boolean register, T value) {
         return new SimpleEventListener<>(register, value);
     }
 
+    /**
+     * Writes the SimpleEventListener to the given ConfigurationSection
+     * <p>
+     * An example. If I would like to write it for an event named
+     * "EntityKill" passing "reward" as path, the output for TRUE(9.99) would be:
+     * <pre>
+     *     EntityKill:
+     *       Register: true
+     *       9.99
+     *     </pre>
+     *
+     * @param section The ConfigurationSection to write to
+     * @param path    The path of the value
+     */
     public void write(ConfigurationSection section, String path) {
         section.set("Register", register);
         section.set(path, value);
