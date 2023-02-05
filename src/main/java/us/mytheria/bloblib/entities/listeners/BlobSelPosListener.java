@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public class BlobSelPosListener extends SelPosListener {
-    private List<BlobMessage> messages;
+    private final List<BlobMessage> messages;
     private BukkitTask messageTask;
 
     /**
@@ -24,15 +24,27 @@ public class BlobSelPosListener extends SelPosListener {
      *
      * @param owner           The owner of the SelPosListener
      * @param timeout         The timeout of the SelPosListener
-     * @param inputRunnable   The runnable to run when the SelPosListener receives input
-     * @param timeoutRunnable The runnable to run when the SelPosListener times out
+     * @param inputConsumer   The consumer to run when the SelPosListener receives input
+     * @param timeoutConsumer The consumer to run when the SelPosListener times out
      * @param messages        The messages to send to the player
+     * @deprecated Use {@link #smart(Player, long, Consumer, String, String)} instead
      */
-    public static BlobSelPosListener build(Player owner, long timeout, Runnable inputRunnable,
-                                           Runnable timeoutRunnable, List<BlobMessage> messages) {
-        return new BlobSelPosListener(owner.getName(), timeout, inputRunnable, timeoutRunnable, messages);
+    @Deprecated
+    public static BlobSelPosListener build(Player owner, long timeout, Consumer<BlobSelPosListener> inputConsumer,
+                                           Consumer<BlobSelPosListener> timeoutConsumer, List<BlobMessage> messages) {
+        return new BlobSelPosListener(owner.getName(), timeout, inputConsumer, timeoutConsumer, messages);
     }
 
+    /**
+     * Will run a SelPosListener which will send messages to player every 10 ticks asynchronously
+     *
+     * @param player            The player to send the messages to
+     * @param timeout           The timeout of the SelPosListener
+     * @param consumer          The consumer to run when the SelPosListener receives input
+     * @param timeoutMessageKey The message to send to the player when the SelPosListener times out
+     * @param timerMessageKey   The message to send to the player every 10 ticks
+     * @return The SelPosListener
+     */
     public static BlobSelPosListener smart(Player player, long timeout, Consumer<Block> consumer,
                                            String timeoutMessageKey, String timerMessageKey) {
         BlobLib main = BlobLib.getInstance();
@@ -41,8 +53,8 @@ public class BlobSelPosListener extends SelPosListener {
         Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibAssetAPI.getMessage(timerMessageKey));
         List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
         return new BlobSelPosListener(player.getName(), timeout,
-                () -> {
-                    Block input = selPosManager.getInput(player);
+                inputListener -> {
+                    Block input = inputListener.getInput();
                     selPosManager.removePositionListener(player);
                     Bukkit.getScheduler().runTask(main, () -> {
                         if (player == null || !player.isOnline()) {
@@ -51,24 +63,18 @@ public class BlobSelPosListener extends SelPosListener {
                         consumer.accept(input);
                     });
                 },
-                () -> {
+                timeoutListener -> {
                     selPosManager.removePositionListener(player);
                     timeoutMessage.ifPresent(message -> message.send(player));
                 }, messages);
     }
 
-    /**
-     * Will run a SelPosListener which will send messages to player every 10 ticks asynchronously
-     *
-     * @param owner           The player's name which is owner of the SelPosListener
-     * @param timeout         The timeout of the SelPosListener
-     * @param inputRunnable   The runnable to run when the SelPosListener receives input
-     * @param timeoutRunnable The runnable to run when the SelPosListener times out
-     * @param messages        The messages to send to the player
-     */
-    private BlobSelPosListener(String owner, long timeout, Runnable inputRunnable,
-                               Runnable timeoutRunnable, List<BlobMessage> messages) {
-        super(owner, timeout, inputRunnable, timeoutRunnable);
+    private BlobSelPosListener(String owner, long timeout, Consumer<BlobSelPosListener> inputConsumer,
+                               Consumer<BlobSelPosListener> timeoutConsumer, List<BlobMessage> messages) {
+        super(owner, timeout, inputListener -> inputConsumer
+                        .accept((BlobSelPosListener) inputListener),
+                timeoutListener -> timeoutConsumer
+                        .accept((BlobSelPosListener) timeoutListener));
         this.messages = messages;
     }
 

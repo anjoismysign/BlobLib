@@ -3,13 +3,18 @@ package us.mytheria.bloblib.entities;
 import me.anjoismysign.anjo.entities.Result;
 import me.anjoismysign.anjo.entities.Tuple2;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
+import us.mytheria.bloblib.itemstack.ItemStackBuilder;
 import us.mytheria.bloblib.managers.Manager;
 import us.mytheria.bloblib.managers.ManagerDirector;
+import us.mytheria.bloblib.utilities.ItemStackUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,7 +25,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class ObjectDirector<T> extends Manager implements Listener {
+public class ObjectDirector<T extends BlobObject> extends Manager implements Listener {
     private final ObjectBuilderManager<T> objectBuilderManager;
     private final ObjectManager<T> objectManager;
     private Consumer<InventoryClickEvent> clickEventConsumer;
@@ -29,6 +34,7 @@ public class ObjectDirector<T> extends Manager implements Listener {
     private List<BiFunction<BlobExecutor, String[], Boolean>> adminChildCommands;
     private List<BiFunction<BlobExecutor, String[], List<String>>> nonAdminChildTabCompleter;
     private List<BiFunction<BlobExecutor, String[], List<String>>> adminChildTabCompleter;
+    private final String objectName;
 
     public ObjectDirector(ManagerDirector managerDirector,
                           ObjectDirectorData objectDirectorData,
@@ -40,7 +46,7 @@ public class ObjectDirector<T> extends Manager implements Listener {
         if (loadFilesPath.isEmpty())
             throw new IllegalArgumentException("The loadFilesPathKey is not valid");
         this.objectManager = new ObjectManager<>(managerDirector, loadFilesPath.get(),
-                HashMap::new) {
+                HashMap::new, HashMap::new) {
             @Override
             public void loadFiles(File path) {
                 if (!path.exists())
@@ -51,7 +57,7 @@ public class ObjectDirector<T> extends Manager implements Listener {
                         continue;
                     if (file.isFile()) {
                         Tuple2<T, String> tuple = readFunction.apply(file);
-                        addObject(tuple.second(), tuple.first());
+                        addObject(tuple.second(), tuple.first(), file);
                     }
                     if (file.isDirectory())
                         loadFiles(file);
@@ -78,6 +84,7 @@ public class ObjectDirector<T> extends Manager implements Listener {
         nonAdminChildTabCompleter = new ArrayList<>();
         adminChildTabCompleter = new ArrayList<>();
         executor = new BlobExecutor(getPlugin(), objectDirectorData.objectName());
+        objectName = objectDirectorData.objectName();
         setDefaultCommands();
         setDefaultTabCompleter();
     }
@@ -105,6 +112,7 @@ public class ObjectDirector<T> extends Manager implements Listener {
             builder.handle(slot, player);
         };
         executor = new BlobExecutor(getPlugin(), objectName);
+        this.objectName = objectName;
         nonAdminChildCommands = new ArrayList<>();
         adminChildCommands = new ArrayList<>();
         nonAdminChildTabCompleter = new ArrayList<>();
@@ -266,6 +274,11 @@ public class ObjectDirector<T> extends Manager implements Listener {
                     builder.openInventory();
                 });
             }
+            Result<BlobChildCommand> removeResult = getExecutor()
+                    .isChildCommand("remove", args);
+            if (removeResult.isValid()) {
+                return getExecutor().ifInstanceOfPlayer(sender, this::removeObject);
+            }
             return false;
         });
         return this;
@@ -287,8 +300,53 @@ public class ObjectDirector<T> extends Manager implements Listener {
                     return childTabCompletion;
             }
             list.add("add");
+            list.add("remove");
             return list;
         });
         return this;
+    }
+
+    /**
+     * This method is used to add an object to the object manager.
+     * <p>
+     * Has default support in case the ObjectManager is T extends ItemStack.
+     * Being this the case, will display null if the ItemStack is null.
+     * Will display the Material if the ItemStack has no ItemMeta or
+     * has no display name. Will display the display name if the ItemStack
+     * has ItemMeta and has a display name.
+     * <p>
+     * In case of not being an ItemStack, will use the object's key
+     * as the display name and an empty lore.
+     *
+     * @param player the player who is removing the object.
+     */
+    public void removeObject(Player player) {
+        removeObject(player, key -> {
+            ItemStackBuilder builder = ItemStackBuilder.build(Material.COMMAND_BLOCK);
+            builder.displayName(key);
+            builder.lore();
+            T object = getObjectManager().getObject(key);
+            if (object instanceof ItemStack itemStack) {
+                builder.displayName(ItemStackUtil.display(itemStack));
+                builder.lore();
+            }
+            return builder.build();
+        });
+    }
+
+    /**
+     * This method is used to remove an object from the object manager.
+     *
+     * @param player   the player who is removing the object.
+     * @param function the function that is used to get the ItemStack to display
+     *                 the object to be removed.
+     */
+    public void removeObject(Player player, Function<String, ItemStack> function) {
+        BlobEditor<String> editor = objectManager.makeEditor(player, objectName);
+        editor.removeElement(player, key -> {
+            player.closeInventory();
+            getObjectManager().removeObject(key);
+            BlobLibAssetAPI.getMessage("Editor.Removed").sendAndPlay(player);
+        }, function);
     }
 }

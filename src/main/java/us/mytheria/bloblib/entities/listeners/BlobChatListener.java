@@ -31,10 +31,16 @@ public class BlobChatListener extends ChatListener {
      * @param timeoutRunnable The runnable to run when the ChatListener times out
      * @param messages        The messages to send to the player
      * @return The ChatListener
+     * @deprecated Use {@link #smart(Player, long, Consumer, String, String)} instead
      */
+    @Deprecated
     public static BlobChatListener build(Player owner, long timeout, Runnable inputRunnable,
                                          Runnable timeoutRunnable, List<BlobMessage> messages) {
-        return new BlobChatListener(owner.getName(), timeout, inputRunnable, timeoutRunnable, messages);
+        return new BlobChatListener(owner.getName(), timeout, inputListener -> {
+            inputRunnable.run();
+        }, timeoutListener -> {
+            timeoutRunnable.run();
+        }, messages);
     }
 
     /**
@@ -55,8 +61,8 @@ public class BlobChatListener extends ChatListener {
         Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibAssetAPI.getMessage(timerMessageKey));
         List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
         return new BlobChatListener(owner.getName(), timeout,
-                () -> {
-                    String input = chatManager.getInput(owner);
+                inputListener -> {
+                    String input = inputListener.getInput();
                     chatManager.removeChatListener(owner);
                     Bukkit.getScheduler().runTask(main, () -> {
                         if (owner == null || !owner.isOnline()) {
@@ -65,7 +71,7 @@ public class BlobChatListener extends ChatListener {
                         consumer.accept(input);
                     });
                 },
-                () -> {
+                timeoutListener -> {
                     chatManager.removeChatListener(owner);
                     timeoutMessage.ifPresent(blobMessage -> blobMessage.sendAndPlay(owner));
                 }, messages);
@@ -76,13 +82,16 @@ public class BlobChatListener extends ChatListener {
      *
      * @param owner           The player's name which is owner of the ChatListener
      * @param timeout         The timeout of the ChatListener
-     * @param inputRunnable   The runnable to run when the ChatListener receives input
-     * @param timeoutRunnable The runnable to run when the ChatListener times out
+     * @param inputConsumer   The consumer to run when the ChatListener receives input
+     * @param timeoutConsumer The consumer to run when the ChatListener times out
      * @param messages        The messages to send to the player
      */
-    private BlobChatListener(String owner, long timeout, Runnable inputRunnable,
-                             Runnable timeoutRunnable, List<BlobMessage> messages) {
-        super(owner, timeout, inputRunnable, timeoutRunnable);
+    private BlobChatListener(String owner, long timeout, Consumer<BlobChatListener> inputConsumer,
+                             Consumer<BlobChatListener> timeoutConsumer, List<BlobMessage> messages) {
+        super(owner, timeout, inputListener -> inputConsumer
+                        .accept((BlobChatListener) inputListener),
+                timeoutListener -> timeoutConsumer
+                        .accept((BlobChatListener) timeoutListener));
         this.messages = messages;
     }
 

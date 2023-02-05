@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
 /**
  * @author anjoismysign
@@ -11,17 +12,17 @@ import javax.annotation.Nullable;
  */
 public abstract class InputListener {
     protected final String owner;
-    protected final Runnable inputRunnable;
+    protected final Consumer<InputListener> inputConsumer;
 
     /**
      * Creates a new InputListener
      *
      * @param owner         the owner of this listener
-     * @param inputRunnable the runnable that will be executed when the input is received
+     * @param inputConsumer the consumer that will be executed when the input is received
      */
-    public InputListener(String owner, Runnable inputRunnable) {
+    public InputListener(String owner, Consumer<InputListener> inputConsumer) {
         this.owner = owner;
-        this.inputRunnable = inputRunnable;
+        this.inputConsumer = inputConsumer;
     }
 
     /**
@@ -51,10 +52,10 @@ public abstract class InputListener {
     }
 
     /**
-     * @return the runnable that will be executed when the input is received
+     * @return the consumer that will be executed when the input is received
      */
-    public Runnable getInputRunnable() {
-        return inputRunnable;
+    public Consumer<InputListener> getInputConsumer() {
+        return inputConsumer;
     }
 
     /**

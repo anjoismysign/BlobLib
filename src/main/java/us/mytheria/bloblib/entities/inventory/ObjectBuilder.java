@@ -7,6 +7,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import us.mytheria.bloblib.entities.BlobObject;
 import us.mytheria.bloblib.entities.ObjectDirector;
 import us.mytheria.bloblib.entities.message.BlobSound;
 import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
@@ -26,7 +27,7 @@ import java.util.function.Function;
  * to the Minecraft server, the user can build an object by interacting with
  * a Bukkit Inventory / GUI.
  */
-public abstract class ObjectBuilder<T> extends BlobInventory {
+public abstract class ObjectBuilder<T extends BlobObject> extends BlobInventory {
     private final UUID builderId;
     private final HashMap<String, ObjectBuilderButton<?>> objectBuilderButtons;
     private Function<ObjectBuilder<T>, T> function;

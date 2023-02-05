@@ -5,13 +5,12 @@ import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
 import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
 import us.mytheria.bloblib.managers.*;
-import us.mytheria.bloblib.utilities.Debug;
 
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.function.BiFunction;
 
-public class ObjectBuilderManager<T> extends Manager {
+public class ObjectBuilderManager<T extends BlobObject> extends Manager {
     protected String title;
 
     private HashMap<UUID, ObjectBuilder<T>> builders;
@@ -50,7 +49,6 @@ public class ObjectBuilderManager<T> extends Manager {
 
     public void update() {
         this.builders = new HashMap<>();
-        Debug.log("Loading inventory file '" + fileKey + "'");
         BlobInventory inventory = BlobLibAssetAPI.getBlobInventory(fileKey);
         this.title = inventory.getTitle();
 //        Optional<File> file = getManagerDirector().getFileManager().searchFile(fileKey);

@@ -25,13 +25,26 @@ public class BlobSelectorListener<T> extends SelectorListener<T> {
      * @param owner         The owner of the SelectorListener
      * @param inputRunnable The runnable to run when the SelectorListener receives input
      * @param messages      The messages to send to the player
+     * @deprecated Use {@link #wise(Player, Consumer, String, VariableSelector)} instead.
      */
+    @Deprecated
     public static <T> BlobSelectorListener<T> build(Player owner, Runnable inputRunnable
             , List<BlobMessage> messages, VariableSelector<T> selector) {
         return new BlobSelectorListener<>(owner.getName(),
                 inputRunnable, messages, selector);
     }
 
+    /**
+     * Will run a SelectorListener which will send messages to player every 10 ticks asynchronously
+     *
+     * @param player          The player to send messages to
+     * @param consumer        The consumer to run when the SelectorListener receives input
+     * @param timerMessageKey The key of the message to send to the player
+     * @param selector        The selector to use
+     * @param <T>             The type of the input
+     * @return The SelectorListener
+     */
+    @Deprecated
     public static <T> BlobSelectorListener<T> smart(Player player, Consumer<T> consumer,
                                                     String timerMessageKey,
                                                     VariableSelector<T> selector) {
@@ -54,13 +67,49 @@ public class BlobSelectorListener<T> extends SelectorListener<T> {
     /**
      * Will run a SelectorListener which will send messages to player every 10 ticks asynchronously
      *
+     * @param player          The player to send messages to
+     * @param consumer        The consumer to run when the SelectorListener receives input
+     * @param timerMessageKey The key of the message to send to the player
+     * @param selector        The selector to use
+     * @param <T>             The type of the input
+     * @return The SelectorListener
+     */
+    public static <T> BlobSelectorListener<T> wise(Player player, Consumer<T> consumer,
+                                                   String timerMessageKey,
+                                                   VariableSelector<T> selector) {
+        BlobLib main = BlobLib.getInstance();
+        SelectorListenerManager selectorManager = main.getSelectorManager();
+        Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibAssetAPI.getMessage(timerMessageKey));
+        List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
+        return new BlobSelectorListener<>(player.getName(), selectorListener -> {
+            T input = selectorListener.getInput();
+            selectorManager.removeSelectorListener(player);
+            Bukkit.getScheduler().runTask(main, () -> {
+                if (player == null || !player.isOnline()) {
+                    return;
+                }
+                consumer.accept(input);
+            });
+        }, messages, selector);
+    }
+
+    /**
+     * Will run a SelectorListener which will send messages to player every 10 ticks asynchronously
+     *
      * @param owner         The player's name which is owner of the SelectorListener
      * @param inputRunnable The runnable to run when the SelectorListener receives input
      * @param messages      The messages to send to the player
      */
+    @Deprecated
     private BlobSelectorListener(String owner, Runnable inputRunnable, List<BlobMessage> messages,
                                  VariableSelector<T> selector) {
         super(owner, inputRunnable, selector);
+        this.messages = messages;
+    }
+
+    private BlobSelectorListener(String owner, Consumer<SelectorListener<T>> inputConsumer,
+                                 List<BlobMessage> messages, VariableSelector<T> selector) {
+        super(owner, inputConsumer, selector);
         this.messages = messages;
     }
 

@@ -4,16 +4,20 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import us.mytheria.bloblib.BlobLib;
 
+import java.util.function.Consumer;
+
 public abstract class TimeoutInputListener extends InputListener {
     protected final long timeout;
-    protected final Runnable timeoutRunnable;
+    protected final Consumer<TimeoutInputListener> timeoutConsumer;
     protected BukkitTask task;
 
-    public TimeoutInputListener(String owner, long timeout, Runnable inputRunnable,
-                                Runnable timeoutRunnable) {
-        super(owner, inputRunnable);
+    public TimeoutInputListener(String owner, long timeout,
+                                Consumer<TimeoutInputListener> inputConsumer,
+                                Consumer<TimeoutInputListener> timeoutConsumer) {
+        super(owner, inputListener ->
+                inputConsumer.accept((TimeoutInputListener) inputListener));
         this.timeout = timeout;
-        this.timeoutRunnable = timeoutRunnable;
+        this.timeoutConsumer = timeoutConsumer;
     }
 
     @Override
@@ -22,7 +26,7 @@ public abstract class TimeoutInputListener extends InputListener {
             @Override
             public void run() {
                 TimeoutInputListener.this.cancel();
-                timeoutRunnable.run();
+                timeoutConsumer.accept(TimeoutInputListener.this);
             }
         };
         this.task = bukkitRunnable.runTaskLater(BlobLib.getInstance(), timeout);
@@ -41,7 +45,7 @@ public abstract class TimeoutInputListener extends InputListener {
         return task;
     }
 
-    public Runnable getTimeoutRunnable() {
-        return timeoutRunnable;
+    public Consumer<TimeoutInputListener> getTimeoutConsumer() {
+        return timeoutConsumer;
     }
 }

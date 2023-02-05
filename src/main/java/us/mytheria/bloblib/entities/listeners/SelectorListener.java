@@ -3,12 +3,27 @@ package us.mytheria.bloblib.entities.listeners;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
 
+import java.util.function.Consumer;
+
 public class SelectorListener<T> extends InputListener {
     private T input;
     private final VariableSelector<T> selector;
 
     public SelectorListener(String owner, Runnable inputRunnable, VariableSelector<T> selector) {
-        super(owner, inputRunnable);
+        super(owner, inputListener -> {
+            inputRunnable.run();
+        });
+        this.selector = selector;
+        register();
+        selector.open();
+    }
+
+    @SuppressWarnings("unchecked")
+    public SelectorListener(String owner, Consumer<SelectorListener<T>> inputConsumer,
+                            VariableSelector<T> selector) {
+        super(owner, inputListener -> {
+            inputConsumer.accept((SelectorListener<T>) inputListener);
+        });
         this.selector = selector;
         register();
         selector.open();
@@ -23,11 +38,10 @@ public class SelectorListener<T> extends InputListener {
         return input;
     }
 
-
     public void setInput(T input) {
         this.input = input;
         cancel();
-        inputRunnable.run();
+        inputConsumer.accept(this);
     }
 
     @SuppressWarnings("unchecked")

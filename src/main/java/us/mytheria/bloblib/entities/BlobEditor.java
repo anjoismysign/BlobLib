@@ -1,6 +1,5 @@
 package us.mytheria.bloblib.entities;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -11,10 +10,13 @@ import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
 import us.mytheria.bloblib.entities.listeners.BlobSelectorListener;
-import us.mytheria.bloblib.entities.message.BlobActionbarMessage;
 import us.mytheria.bloblib.managers.SelectorListenerManager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -63,8 +65,9 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      * @param collection the collection to edit
      * @return the new BlobEditor
      */
-    public static <T> BlobEditor<T> COLLECTION_INJECTION(UUID builderId, String dataType, Collection<T> collection) {
-        return new BlobEditor<>(VariableSelector.DEFAULT_ITEMSTACKREADER(), builderId,
+    public static <T> BlobEditor<T> COLLECTION_INJECTION(UUID builderId, String dataType,
+                                                         Collection<T> collection) {
+        return new BlobEditor<>(VariableSelector.DEFAULT(), builderId,
                 dataType, collection);
     }
 
@@ -75,6 +78,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      * @param builderId the id of the builder
      * @param dataType  the data type of the editor
      * @return the new BlobEditor
+     * @deprecated use {@link #DEFAULT(UUID, String)} instead
      */
     @Deprecated
     public static <T> BlobEditor<T> DEFAULT_ITEMSTACKREADER(UUID builderId, String dataType) {
@@ -90,23 +94,25 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      * @param dataType   the data type of the editor
      * @param collection the collection to edit
      * @return the new BlobEditor
+     * @deprecated use {@link #COLLECTION_INJECTION(UUID, String, Collection)} instead
      */
     @Deprecated
-    public static <T> BlobEditor<T> DEFAULT_ITEMSTACKREADER(UUID builderId, String dataType, Collection<T> collection) {
+    public static <T> BlobEditor<T> DEFAULT_ITEMSTACKREADER(UUID builderId, String dataType,
+                                                            Collection<T> collection) {
         return new BlobEditor<>(VariableSelector.DEFAULT_ITEMSTACKREADER(), builderId,
                 dataType, collection);
     }
 
-    private BlobEditor(BlobInventory blobInventory, UUID builderId,
-                       String dataType) {
+    protected BlobEditor(BlobInventory blobInventory, UUID builderId,
+                         String dataType) {
         super(blobInventory, builderId, dataType, null);
         list = new ArrayList<>();
         collection = null;
         selectorManager = BlobLib.getInstance().getSelectorManager();
     }
 
-    private BlobEditor(BlobInventory blobInventory, UUID builderId,
-                       String dataType, Collection<T> collection) {
+    protected BlobEditor(BlobInventory blobInventory, UUID builderId,
+                         String dataType, Collection<T> collection) {
         super(blobInventory, builderId, dataType, null);
         this.collection = collection;
         list = null;
@@ -222,7 +228,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      *
      * @param t the element to remove
      */
-    public void remove(T t) {
+    private void remove(T t) {
         list.remove(t);
     }
 
@@ -230,29 +236,16 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      * removes an element from the list
      *
      * @param player   the player
-     * @param onRemove the runnable to run after the element is removed
+     * @param consumer the consumer to accept the element
      */
-    @SuppressWarnings("unchecked")
-    public void removeElement(Player player, Runnable onRemove) {
+    public void removeElement(Player player, Consumer<T> consumer) {
         loadPage(getPage(), true);
-        selectorManager.addSelectorListener(player, BlobSelectorListener.build(player,
-                () -> {
-                    if (selectorManager.get(player).getInput() == null) {
-                        selectorManager.removeSelectorListener(player);
-                        onRemove.run();
-                        return;
-                    }
+        selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
+                input -> {
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
-                    T input = (T) selectorManager.get(player).getInput();
-                    selectorManager.removeSelectorListener(player);
-                    Bukkit.getScheduler().runTask(BlobLib.getInstance(), () -> {
-                        if (player == null || !player.isOnline()) {
-                            return;
-                        }
-                        remove(input);
-                        onRemove.run();
-                    });
-                }, Collections.singletonList(new BlobActionbarMessage(ChatColor.GRAY + "Click an element to remove it")),
+                    remove(input);
+                    consumer.accept(input);
+                }, "Editor.Remove",
                 this));
     }
 
@@ -260,29 +253,17 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      * removes an element from the list
      *
      * @param player   the player
-     * @param onRemove the runnable to run when the element is removed
+     * @param consumer the consumer to accept the element
      * @param function the function to get the itemstack from the element
      */
-    public void removeElement(Player player, Runnable onRemove, Function<T, ItemStack> function) {
+    public void removeElement(Player player, Consumer<T> consumer, Function<T, ItemStack> function) {
         loadCustomPage(getPage(), true, function);
-        selectorManager.addSelectorListener(player, BlobSelectorListener.build(player,
-                () -> {
-                    if (selectorManager.get(player).getInput() == null) {
-                        selectorManager.removeSelectorListener(player);
-                        onRemove.run();
-                        return;
-                    }
+        selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
+                input -> {
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
-                    T input = (T) selectorManager.get(player).getInput();
-                    selectorManager.removeSelectorListener(player);
-                    Bukkit.getScheduler().runTask(BlobLib.getInstance(), () -> {
-                        if (player == null || !player.isOnline()) {
-                            return;
-                        }
-                        remove(input);
-                        onRemove.run();
-                    });
-                }, Collections.singletonList(new BlobActionbarMessage(ChatColor.GRAY + "Click an element to remove it")),
+                    remove(input);
+                    consumer.accept(input);
+                }, "Editor.Remove",
                 this));
     }
 

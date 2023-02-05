@@ -5,7 +5,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
-import us.mytheria.bloblib.utilities.Debug;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -99,9 +98,7 @@ public class InventoryManager {
     private void loadYamlConfiguration(BlobPlugin plugin, File file) {
         String fileName = FilenameUtils.removeExtension(file.getName());
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
-        Debug.log("Loading BlobInventory: " + fileName);
         if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
-            Debug.log("Singular BlobInventory: " + fileName);
             add(fileName, BlobInventory.fromConfigurationSection(yamlConfiguration));
             pluginInventories.get(plugin.getName()).add(fileName);
             return;
@@ -119,7 +116,6 @@ public class InventoryManager {
                     addDuplicate(reference);
                     return;
                 }
-                Debug.log("Multiple BlobInventory: " + reference);
                 add(reference, BlobInventory.fromConfigurationSection(subSection));
                 pluginInventories.get(plugin.getName()).add(reference);
             });
@@ -160,8 +156,6 @@ public class InventoryManager {
 
     @Nullable
     public BlobInventory getInventory(String key) {
-        //TODO: BORRAR ABAJO
-        inventories.forEach((k, v) -> Debug.log(k));
         return inventories.get(key);
     }
 

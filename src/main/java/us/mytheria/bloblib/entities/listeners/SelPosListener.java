@@ -2,12 +2,15 @@ package us.mytheria.bloblib.entities.listeners;
 
 import org.bukkit.block.Block;
 
+import java.util.function.Consumer;
+
 public class SelPosListener extends TimeoutInputListener {
     private Block input;
 
-    public SelPosListener(String owner, long timeout, Runnable inputRunnable,
-                          Runnable timeoutRunnable) {
-        super(owner, timeout, inputRunnable, timeoutRunnable);
+    public SelPosListener(String owner, long timeout, Consumer<SelPosListener> inputConsumer,
+                          Consumer<SelPosListener> timeoutConsumer) {
+        super(owner, timeout, inputListener -> inputConsumer.accept((SelPosListener) inputListener),
+                timeoutListener -> timeoutConsumer.accept((SelPosListener) timeoutListener));
     }
 
     @Override
@@ -18,6 +21,6 @@ public class SelPosListener extends TimeoutInputListener {
     public void setInput(Block input) {
         this.input = input;
         cancel();
-        inputRunnable.run();
+        inputConsumer.accept(this);
     }
 }

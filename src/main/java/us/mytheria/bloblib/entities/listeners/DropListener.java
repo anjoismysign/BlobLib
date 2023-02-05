@@ -2,11 +2,15 @@ package us.mytheria.bloblib.entities.listeners;
 
 import org.bukkit.inventory.ItemStack;
 
+import java.util.function.Consumer;
+
 public class DropListener extends InputListener {
     private ItemStack input;
 
-    public DropListener(String owner, Runnable inputRunnable) {
-        super(owner, inputRunnable);
+    public DropListener(String owner, Consumer<DropListener> inputConsumer) {
+        super(owner, inputListener -> {
+            inputConsumer.accept((DropListener) inputListener);
+        });
     }
 
     @Override
@@ -18,6 +22,6 @@ public class DropListener extends InputListener {
     public void setInput(ItemStack input) {
         this.input = input;
         cancel();
-        inputRunnable.run();
+        inputConsumer.accept(this);
     }
 }

@@ -77,7 +77,7 @@ public class BlobLibAPI {
                                                String timerMessageKey,
                                                VariableSelector<T> selector) {
         BlobLib.getInstance().getSelectorManager().addSelectorListener(player,
-                BlobSelectorListener.smart(player, consumer, timerMessageKey, selector));
+                BlobSelectorListener.wise(player, consumer, timerMessageKey, selector));
     }
 
     /**

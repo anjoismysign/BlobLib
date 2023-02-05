@@ -6,6 +6,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.entities.VariableFiller;
 import us.mytheria.bloblib.entities.VariableValue;
 import us.mytheria.bloblib.managers.BlobLibFileManager;
@@ -40,15 +41,14 @@ public abstract class VariableSelector<T> extends BlobInventory {
      * @return the new VariableSelector
      */
     public static BlobInventory DEFAULT() {
-        BlobLibFileManager fileManager = BlobLib.getInstance().getFileManager();
-        YamlConfiguration inventories = fileManager.getYml(fileManager.defaultInventoriesFile());
-        return fromConfigurationSection(inventories.getConfigurationSection("VariableSelector"));
+        return BlobLibAssetAPI.getBlobInventory("VariableSelector");
     }
 
     /**
      * Creates a new VariableSelector
      *
      * @return the new VariableSelector
+     * @deprecated use {@link #DEFAULT()} instead
      */
     @Deprecated
     public static BlobInventory DEFAULT_ITEMSTACKREADER() {

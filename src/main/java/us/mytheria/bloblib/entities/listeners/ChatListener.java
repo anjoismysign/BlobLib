@@ -1,11 +1,17 @@
 package us.mytheria.bloblib.entities.listeners;
 
+import java.util.function.Consumer;
+
 public class ChatListener extends TimeoutInputListener {
     private String input;
 
-    public ChatListener(String owner, long timeout, Runnable inputRunnable,
-                        Runnable timeoutRunnable) {
-        super(owner, timeout, inputRunnable, timeoutRunnable);
+    public ChatListener(String owner, long timeout, Consumer<ChatListener> inputConsumer,
+                        Consumer<ChatListener> timeoutConsumer) {
+        super(owner, timeout, inputListener -> {
+            inputConsumer.accept((ChatListener) inputListener);
+        }, timeoutListener -> {
+            timeoutConsumer.accept((ChatListener) timeoutListener);
+        });
     }
 
     @Override
@@ -17,6 +23,6 @@ public class ChatListener extends TimeoutInputListener {
     public void setInput(String input) {
         this.input = input;
         cancel();
-        inputRunnable.run();
+        inputConsumer.accept(this);
     }
 }

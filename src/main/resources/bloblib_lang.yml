@@ -128,6 +128,10 @@ Editor:
   Remove:
     Type: ACTIONBAR
     Message: '&7Click an element to remove it'
+  Removed:
+    Type: TITLE
+    Title: '&f&lREMOVED'
+    Subtitle: '&7%element%'
 Player:
   Not-Found:
     Type: CHAT
