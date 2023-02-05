@@ -1,7 +1,6 @@
 package us.mytheria.bloblib.entities;
 
 import me.anjoismysign.anjo.entities.Result;
-import me.anjoismysign.anjo.entities.Tuple2;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -38,7 +37,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
 
     public ObjectDirector(ManagerDirector managerDirector,
                           ObjectDirectorData objectDirectorData,
-                          Function<File, Tuple2<T, String>> readFunction) {
+                          Function<File, T> readFunction) {
         super(managerDirector);
         this.objectBuilderManager = new ObjectBuilderManager<>(managerDirector,
                 objectDirectorData.objectBuilderKey(), this);
@@ -56,8 +55,8 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                     if (file.getName().equals(".DS_Store"))
                         continue;
                     if (file.isFile()) {
-                        Tuple2<T, String> tuple = readFunction.apply(file);
-                        addObject(tuple.second(), tuple.first(), file);
+                        T blobObject = readFunction.apply(file);
+                        addObject(blobObject.getKey(), blobObject, file);
                     }
                     if (file.isDirectory())
                         loadFiles(file);
