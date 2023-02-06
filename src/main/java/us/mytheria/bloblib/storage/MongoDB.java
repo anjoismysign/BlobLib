@@ -7,13 +7,80 @@ import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import me.anjoismysign.anjo.entities.Result;
 import org.bson.Document;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ * MongoDB is a Document oriented database.
+ * The idea behind it is flexibility and scalability.
+ * <p>
+ * This is a small wrapper for CRUD operations.
+ *
+ * @author anjoismysign
+ */
 public class MongoDB {
     private final String connection;
+
+    /**
+     * Will create a new MongoDB instance with the default localhost connection.
+     *
+     * @return A new MongoDB instance with the default localhost connection.
+     */
+    public static MongoDB LOCALHOST() {
+        return new MongoDB("mongodb://localhost:27017");
+    }
+
+    /**
+     * Will create a new MongoDB instance with the default localhost connection and the provided database.
+     *
+     * @param database The database to use.
+     * @return A new MongoDB instance with the default localhost connection and the provided database.
+     */
+    public static MongoDB LOCALHOST_DATABASE(String database) {
+        return new MongoDB("mongodb://localhost:27017/" + database);
+    }
+
+    /**
+     * Attempts to retrieve a MongoDB instance from the provided configuration section.
+     *
+     * @param configurationSection The configuration section to retrieve from.
+     * @return A valid result if found MongoDB settings, otherwise an invalid result.
+     */
+    public static Result<MongoDB> fromConfigurationSection(ConfigurationSection configurationSection) {
+        if (configurationSection.contains("host") && configurationSection.isString("host") &&
+                configurationSection.contains("port") && configurationSection.isInt("port") &&
+                configurationSection.contains("database") && configurationSection.isString("database") &&
+                configurationSection.contains("username") && configurationSection.isString("username") &&
+                configurationSection.contains("password") && configurationSection.isString("password"))
+            return Result.valid(loadFromConfigurationSection(configurationSection));
+        for (String reference : configurationSection.getKeys(true)) {
+            if (!configurationSection.isConfigurationSection(reference))
+                continue;
+            if (!reference.equalsIgnoreCase("mongodb"))
+                continue;
+            ConfigurationSection section = configurationSection.getConfigurationSection(reference);
+            if (section.contains("host") && section.isString("host") &&
+                    section.contains("port") && section.isInt("port") &&
+                    section.contains("database") && section.isString("database") &&
+                    section.contains("username") && section.isString("username") &&
+                    section.contains("password") && section.isString("password"))
+                return Result.valid(loadFromConfigurationSection(section));
+        }
+        return Result.invalidBecauseNull();
+    }
+
+    private static MongoDB loadFromConfigurationSection(ConfigurationSection configurationSection) {
+        String host = configurationSection.getString("host");
+        int port = configurationSection.getInt("port");
+        String database = configurationSection.getString("database");
+        String username = configurationSection.getString("username");
+        String password = configurationSection.getString("password");
+        String connection = "mongodb://" + username + ":" + password + "@" + host + ":" + port + "/" + database;
+        return new MongoDB(connection);
+    }
 
     /**
      * Creates a new MongoDB instance.
