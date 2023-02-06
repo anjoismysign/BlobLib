@@ -101,7 +101,7 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
      * @param key The key of the object
      */
     public void removeObject(String key) {
-        if (objects.containsKey(key))
+        if (!objects.containsKey(key))
             return;
         objects.remove(key);
         File file = objectFiles.get(key);

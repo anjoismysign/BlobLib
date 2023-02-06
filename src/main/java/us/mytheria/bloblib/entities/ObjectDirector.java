@@ -1,7 +1,6 @@
 package us.mytheria.bloblib.entities;
 
 import me.anjoismysign.anjo.entities.Result;
-import me.anjoismysign.anjo.logger.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -14,7 +13,6 @@ import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
 import us.mytheria.bloblib.itemstack.ItemStackBuilder;
 import us.mytheria.bloblib.managers.Manager;
 import us.mytheria.bloblib.managers.ManagerDirector;
-import us.mytheria.bloblib.utilities.Debug;
 import us.mytheria.bloblib.utilities.ItemStackUtil;
 
 import java.io.File;
@@ -266,7 +264,6 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                         if (childCommand.apply(executor, args))
                             return true;
                     }
-                    Debug.log("executed command");
                     Result<BlobChildCommand> addResult = getExecutor()
                             .isChildCommand("add", args);
                     if (addResult.isValid()) {
@@ -278,10 +275,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                     Result<BlobChildCommand> removeResult = getExecutor()
                             .isChildCommand("remove", args);
                     if (removeResult.isValid()) {
-                        Debug.log("executed remove command");
-                        boolean isInstanceOfPlayer = getExecutor().ifInstanceOfPlayer(sender, this::removeObject);
-                        Debug.log("executed remove command as player: " + isInstanceOfPlayer);
-                        return isInstanceOfPlayer;
+                        return getExecutor().ifInstanceOfPlayer(sender, this::removeObject);
                     }
                     return false;
                 }
@@ -325,16 +319,12 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
      * @param player the player who is removing the object.
      */
     public void removeObject(Player player) {
-        Logger logger = getPlugin().getAnjoLogger();
-        logger.log("removing object");
         removeObject(player, key -> {
-            logger.log("removing object: " + key);
             ItemStackBuilder builder = ItemStackBuilder.build(Material.COMMAND_BLOCK);
             builder.displayName(key);
             builder.lore();
             T object = getObjectManager().getObject(key);
             if (object instanceof ItemStack itemStack) {
-                logger.log("object is ItemStack");
                 builder.displayName(ItemStackUtil.display(itemStack));
                 builder.lore();
             }
@@ -350,17 +340,13 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
      *                 the object to be removed.
      */
     public void removeObject(Player player, Function<String, ItemStack> function) {
-        Logger logger = getPlugin().getAnjoLogger();
-        logger.log("removing object with Function");
         BlobEditor<String> editor = objectManager.makeEditor(player, objectName);
-        logger.log("made player a new editor");
         editor.removeElement(player, key -> {
-            logger.log("attempting to close inventory");
             player.closeInventory();
-            logger.log("attempting to remove object");
             getObjectManager().removeObject(key);
-            logger.log("attempting to send Editor.Removed message");
-            BlobLibAssetAPI.getMessage("Editor.Removed").sendAndPlay(player);
+            BlobLibAssetAPI.getMessage("Editor.Removed")
+                    .modify(s -> s.replace("%element%", key))
+                    .sendAndPlay(player);
         }, function);
     }
 }

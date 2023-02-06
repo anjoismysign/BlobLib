@@ -95,9 +95,9 @@ public class SoundManager {
     private void loadYamlConfiguration(BlobPlugin plugin, File file) {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         yamlConfiguration.getKeys(true).forEach(reference -> {
-            ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
-            if (!section.isConfigurationSection(reference))
+            if (!yamlConfiguration.isConfigurationSection(reference))
                 return;
+            ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (!section.contains("Sound") && !section.isString("Sound"))
                 return;
             if (sounds.containsKey(reference)) {
@@ -112,9 +112,9 @@ public class SoundManager {
     private void loadYamlConfiguration(File file) {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         yamlConfiguration.getKeys(true).forEach(reference -> {
-            ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
-            if (!section.isConfigurationSection(reference))
+            if (!yamlConfiguration.isConfigurationSection(reference))
                 return;
+            ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (!section.contains("Sound") && !section.isString("Sound"))
                 return;
             if (sounds.containsKey(reference)) {

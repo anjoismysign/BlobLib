@@ -5,7 +5,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
-import us.mytheria.bloblib.utilities.Debug;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -71,7 +70,6 @@ public class InventoryManager {
     }
 
     private void loadFiles(File path) {
-        Debug.log("Loading BlobInventories from: " + path.getPath());
         File[] listOfFiles = path.listFiles();
         for (File file : listOfFiles) {
             if (file.isFile()) {
@@ -106,9 +104,9 @@ public class InventoryManager {
             return;
         }
         yamlConfiguration.getKeys(true).forEach(reference -> {
-            ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
-            if (!section.isConfigurationSection(reference))
+            if (!yamlConfiguration.isConfigurationSection(reference))
                 return;
+            ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (!section.contains("Size") && !section.isInt("Size"))
                 return;
             if (inventories.containsKey(reference)) {
@@ -122,16 +120,15 @@ public class InventoryManager {
 
     private void loadYamlConfiguration(File file) {
         String fileName = FilenameUtils.removeExtension(file.getName());
-        Debug.log("Loading bloblib BlobInventory: " + fileName);
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
             add(fileName, BlobInventory.fromConfigurationSection(yamlConfiguration));
             return;
         }
         yamlConfiguration.getKeys(true).forEach(reference -> {
-            ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
-            if (!section.isConfigurationSection(reference))
+            if (!yamlConfiguration.isConfigurationSection(reference))
                 return;
+            ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (!section.contains("Size") && !section.isInt("Size"))
                 return;
             if (inventories.containsKey(reference)) {
@@ -139,7 +136,6 @@ public class InventoryManager {
                 return;
             }
             add(reference, BlobInventory.fromConfigurationSection(section));
-            Debug.log("Loaded bloblib BlobInventory: " + reference);
         });
     }
 
@@ -152,7 +148,6 @@ public class InventoryManager {
 
     @Nullable
     public BlobInventory getInventory(String key) {
-        Debug.log("Getting inventory: " + key);
         return inventories.get(key);
     }
 

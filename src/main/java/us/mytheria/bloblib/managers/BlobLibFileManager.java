@@ -17,7 +17,7 @@ public class BlobLibFileManager {
     private final File inventories = new File(path.getPath() + "/BlobInventory");
     private final File defaultSounds = new File(sounds.getPath() + "/bloblib_sounds.yml");
     private final File defaultMessages = new File(messages.getPath() + "/bloblib_lang.yml");
-    private final File defaultInventories = new File(path.getPath() + "/bloblib_inventories.yml");
+    private final File defaultInventories = new File(inventories.getPath() + "/bloblib_inventories.yml");
 
     /**
      * Will create a new BlobLibFileManager instance
