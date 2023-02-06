@@ -235,7 +235,9 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     }
 
     /**
-     * removes an element from the list
+     * Removes an element from the list. Will not close the
+     * inventory unless input is null.You have to manually
+     * call player.closeInventory() inside the consumer.
      *
      * @param player   the player
      * @param consumer the consumer to accept the element
@@ -244,8 +246,6 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
         loadPage(getPage(), true);
         selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
                 input -> {
-                    if (input == null)
-                        return;
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
                     remove(input);
                     consumer.accept(input);
@@ -254,18 +254,19 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     }
 
     /**
-     * removes an element from the list
+     * Removes an element from the list. Will not close the
+     * inventory unless input is null.You have to manually
+     * call player.closeInventory() inside the consumer.
      *
      * @param player   the player
      * @param consumer the consumer to accept the element
-     * @param function the function to get the itemstack from the element
+     * @param function the function to get the ItemStack to display
+     *                 the elements.
      */
     public void removeElement(Player player, Consumer<T> consumer, Function<T, ItemStack> function) {
         loadCustomPage(getPage(), true, function);
         selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
                 input -> {
-                    if (input == null)
-                        return;
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
                     remove(input);
                     consumer.accept(input);
@@ -323,12 +324,5 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
             return new ArrayList<>(collection);
         }
         return list;
-    }
-
-    //TODO: figure out why GUI is opening multiple times
-    @Override
-    public void open() {
-        super.open();
-        getPlayer().sendMessage("inventory opened");
     }
 }

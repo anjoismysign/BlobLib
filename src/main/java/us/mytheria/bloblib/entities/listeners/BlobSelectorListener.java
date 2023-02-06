@@ -65,7 +65,11 @@ public class BlobSelectorListener<T> extends SelectorListener<T> {
     }
 
     /**
-     * Will run a SelectorListener which will send messages to player every 10 ticks asynchronously
+     * Will run a SelectorListener which will send messages to player every 10 ticks asynchronously.
+     * Will check if input is null. If so, will close player's inventory preventing
+     * dupe exploits and will also return, not running the consumer.
+     * Note that if not null, player's inventory won't be closed so you need to make sure
+     * to close it if you need to, preferably in the consumer.
      *
      * @param player          The player to send messages to
      * @param consumer        The consumer to run when the SelectorListener receives input
@@ -84,6 +88,10 @@ public class BlobSelectorListener<T> extends SelectorListener<T> {
         return new BlobSelectorListener<>(player.getName(), selectorListener -> {
             T input = selectorListener.getInput();
             selectorManager.removeSelectorListener(player);
+            if (input == null) {
+                player.closeInventory();
+                return;
+            }
             Bukkit.getScheduler().runTask(main, () -> {
                 if (player == null || !player.isOnline()) {
                     return;

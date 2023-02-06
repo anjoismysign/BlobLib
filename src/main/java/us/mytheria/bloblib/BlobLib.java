@@ -14,6 +14,7 @@ import us.mytheria.bloblib.vault.VaultManager;
  */
 public final class BlobLib extends JavaPlugin {
     private static BlobPluginLogger anjoLogger;
+    private ScriptManager scriptManager;
     private VaultManager vaultManager;
     private EngineHubManager engineHubManager;
     private HologramManager hologramManager;
@@ -57,6 +58,7 @@ public final class BlobLib extends JavaPlugin {
     public void onEnable() {
         instance = this;
         anjoLogger = new BlobPluginLogger(this);
+        scriptManager = new ScriptManager();
         pluginManager = new PluginManager();
         colorManager = new ColorManager();
         fileManager = new BlobLibFileManager();
@@ -103,6 +105,15 @@ public final class BlobLib extends JavaPlugin {
      */
     public ColorManager getColorManager() {
         return colorManager;
+    }
+
+    /**
+     * Will retrieve the ScriptManager
+     *
+     * @return The ScriptManager
+     */
+    public ScriptManager getScriptManager() {
+        return scriptManager;
     }
 
     /**

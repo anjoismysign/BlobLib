@@ -9,16 +9,16 @@ import java.util.List;
 import java.util.Random;
 
 public class ColorManager {
-    private Random random;
+    private final Random random;
     private final List<ChatColor> chatcolor;
 
     public ColorManager() {
         random = new Random();
         chatcolor = new ArrayList<>();
-        fill();
+        populate();
     }
 
-    private void fill() {
+    private void populate() {
         chatcolor.addAll(Arrays.asList(ChatColor.values()));
     }
 
