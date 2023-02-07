@@ -10,11 +10,10 @@ import org.bson.Document;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * MongoDB is a Document oriented database.
+ * MongoDB is a Document oriented storage.
  * The idea behind it is flexibility and scalability.
  * <p>
  * This is a small wrapper for CRUD operations.
@@ -106,11 +105,8 @@ public class MongoDB {
     public Result<Document> getDocument(String database, String collection, Document searchQuery) {
         try (MongoClient client = connect()) {
             MongoCollection<Document> mongoCollection = client.getDatabase(database).getCollection(collection);
-            List<Document> list = new ArrayList<>();
-            mongoCollection.find(searchQuery).into(list);
-            if (!list.isEmpty())
-                return Result.valid(list.get(0));
-            return Result.invalidBecauseNull();
+            Document iterable = mongoCollection.find(searchQuery).first();
+            return Result.ofNullable(iterable);
         }
     }
 
