@@ -323,8 +323,9 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
             ItemStackBuilder builder = ItemStackBuilder.build(Material.COMMAND_BLOCK);
             builder.displayName(key);
             builder.lore();
-            T object = getObjectManager().getObject(key);
-            if (object instanceof ItemStack itemStack) {
+            Object object = getObjectManager().getObject(key);
+            if (ItemStack.class.isInstance(object.getClass())) {
+                ItemStack itemStack = (ItemStack) object;
                 builder.displayName(ItemStackUtil.display(itemStack));
                 builder.lore();
             }

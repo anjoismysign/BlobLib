@@ -214,9 +214,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.anjoismysign</groupId>
-            <artifactId>Anjo</artifactId>
-            <version>97d18a6645</version>
+            <groupId>me.anjoismysign.anjo</groupId>
+            <artifactId>anjo</artifactId>
+            <version>0.3.8</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
