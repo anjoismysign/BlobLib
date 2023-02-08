@@ -19,7 +19,7 @@ public interface BlobObject {
         getData().put(key, innerData);
     }
 
-    default public <T extends Map<String, String>> Result<T> getMap(String key, Class<T> clazz) {
+    default <T extends Map<String, String>> Result<T> getMap(String key, Class<T> clazz) {
         Document innerData = getData().get(key, Document.class);
         T instance;
         try {
