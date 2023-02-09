@@ -16,7 +16,7 @@ import java.util.function.Supplier;
  * random access memory and tracked by a key.
  */
 public abstract class ObjectManager<T extends BlobObject> extends Manager {
-    private final File loadFilesPath;
+    private final File loadFilesDirectory;
     private final Supplier<AbstractMap<String, T>> objectsSupplier;
     private final Supplier<AbstractMap<String, File>> fileSupplier;
     /**
@@ -29,14 +29,14 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
     /**
      * Constructor for ObjectManager
      *
-     * @param managerDirector The manager director
-     * @param loadFilesPath   The path to load files from
+     * @param managerDirector    The manager director
+     * @param loadFilesDirectory The directory to load files from
      */
-    public ObjectManager(ManagerDirector managerDirector, File loadFilesPath,
+    public ObjectManager(ManagerDirector managerDirector, File loadFilesDirectory,
                          Supplier<AbstractMap<String, T>> supplier,
                          Supplier<AbstractMap<String, File>> fileSupplier) {
         super(managerDirector);
-        this.loadFilesPath = loadFilesPath;
+        this.loadFilesDirectory = loadFilesDirectory;
         this.objectsSupplier = supplier;
         this.fileSupplier = fileSupplier;
         reload();
@@ -92,7 +92,7 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
         if (objectFiles.containsKey(key))
             return;
         objects.put(key, object);
-        objectFiles.put(key, object.saveToFile());
+        objectFiles.put(key, object.saveToFile(getLoadFilesDirectory()));
     }
 
     /**
@@ -119,7 +119,7 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
     @Override
     public void reload() {
         initializeObjects();
-        loadFiles(loadFilesPath);
+        loadFiles(loadFilesDirectory);
     }
 
     /**
@@ -159,7 +159,7 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
      * @return The loadFilesPath directory
      */
     public File getLoadFilesDirectory() {
-        return loadFilesPath;
+        return loadFilesDirectory;
     }
 
     public BlobEditor<String> makeEditor(Player player, String dataType) {

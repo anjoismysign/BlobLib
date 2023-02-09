@@ -41,10 +41,10 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
         super(managerDirector);
         this.objectBuilderManager = new ObjectBuilderManager<>(managerDirector,
                 objectDirectorData.objectBuilderKey(), this);
-        Optional<File> loadFilesPath = managerDirector.getFileManager().searchFile(objectDirectorData.objectDirectory());
-        if (loadFilesPath.isEmpty())
+        Optional<File> loadFilesDirectory = managerDirector.getFileManager().searchFile(objectDirectorData.objectDirectory());
+        if (loadFilesDirectory.isEmpty())
             throw new IllegalArgumentException("The loadFilesPathKey is not valid");
-        this.objectManager = new ObjectManager<>(managerDirector, loadFilesPath.get(),
+        this.objectManager = new ObjectManager<>(managerDirector, loadFilesDirectory.get(),
                 HashMap::new, HashMap::new) {
             @Override
             public void loadFiles(File path) {
