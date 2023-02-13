@@ -14,6 +14,18 @@ import java.util.*;
 
 public class ConfigurationSectionLib {
 
+    public static void serializeStringListMap(Map<String, List<String>> map, ConfigurationSection section, String path) {
+        map.forEach((key, value) -> section.set(path + "." + key, value));
+    }
+
+    public static HashMap<String, List<String>> deserializeStringListMap(ConfigurationSection section, String path) {
+        HashMap<String, List<String>> stringListMap = new HashMap<>();
+        section.getConfigurationSection(path).getKeys(false).forEach(key -> {
+            stringListMap.put(key, section.getStringList(path + "." + key));
+        });
+        return stringListMap;
+    }
+
     public static void serializeStringMap(Map<String, String> map, ConfigurationSection section, String path) {
         map.forEach((key, value) -> section.set(path + "." + key, value));
     }
@@ -24,6 +36,18 @@ public class ConfigurationSectionLib {
             stringMap.put(key, section.getString(path + "." + key));
         });
         return stringMap;
+    }
+
+    public static void serializeByteListMap(Map<String, List<Byte>> map, ConfigurationSection section, String path) {
+        map.forEach((key, value) -> section.set(path + "." + key, value));
+    }
+
+    public static HashMap<String, List<Byte>> deserializeByteListMap(ConfigurationSection section, String path) {
+        HashMap<String, List<Byte>> byteListMap = new HashMap<>();
+        section.getConfigurationSection(path).getKeys(false).forEach(key -> {
+            byteListMap.put(key, section.getByteList(path + "." + key));
+        });
+        return byteListMap;
     }
 
     public static void serializeByteMap(Map<String, Byte> map, ConfigurationSection section, String path) {
@@ -38,6 +62,18 @@ public class ConfigurationSectionLib {
         return byteMap;
     }
 
+    public static void serializeShortListMap(Map<String, List<Short>> map, ConfigurationSection section, String path) {
+        map.forEach((key, value) -> section.set(path + "." + key, value));
+    }
+
+    public static HashMap<String, List<Short>> deserializeShortListMap(ConfigurationSection section, String path) {
+        HashMap<String, List<Short>> shortListMap = new HashMap<>();
+        section.getConfigurationSection(path).getKeys(false).forEach(key -> {
+            shortListMap.put(key, section.getShortList(path + "." + key));
+        });
+        return shortListMap;
+    }
+
     public static void serializeShortMap(Map<String, Short> map, ConfigurationSection section, String path) {
         map.forEach((key, value) -> section.set(path + "." + key, value));
     }
@@ -48,6 +84,18 @@ public class ConfigurationSectionLib {
             shortMap.put(key, (short) section.getInt(path + "." + key));
         });
         return shortMap;
+    }
+
+    public static void serializeIntegerListMap(Map<String, List<Integer>> map, ConfigurationSection section, String path) {
+        map.forEach((key, value) -> section.set(path + "." + key, value));
+    }
+
+    public static HashMap<String, List<Integer>> deserializeIntegerListMap(ConfigurationSection section, String path) {
+        HashMap<String, List<Integer>> integerListMap = new HashMap<>();
+        section.getConfigurationSection(path).getKeys(false).forEach(key -> {
+            integerListMap.put(key, section.getIntegerList(path + "." + key));
+        });
+        return integerListMap;
     }
 
     public static void serializeIntegerMap(Map<String, Integer> map, ConfigurationSection section, String path) {
@@ -62,6 +110,18 @@ public class ConfigurationSectionLib {
         return integerMap;
     }
 
+    public static void serializeLongListMap(Map<String, List<Long>> map, ConfigurationSection section, String path) {
+        map.forEach((key, value) -> section.set(path + "." + key, value));
+    }
+
+    public static HashMap<String, List<Long>> deserializeLongListMap(ConfigurationSection section, String path) {
+        HashMap<String, List<Long>> longListMap = new HashMap<>();
+        section.getConfigurationSection(path).getKeys(false).forEach(key -> {
+            longListMap.put(key, section.getLongList(path + "." + key));
+        });
+        return longListMap;
+    }
+
     public static void serializeLongMap(Map<String, Long> map, ConfigurationSection section, String path) {
         map.forEach((key, value) -> section.set(path + "." + key, value));
     }
@@ -72,6 +132,18 @@ public class ConfigurationSectionLib {
             longMap.put(key, section.getLong(path + "." + key));
         });
         return longMap;
+    }
+
+    public static void serializeFloatListMap(Map<String, List<Float>> map, ConfigurationSection section, String path) {
+        map.forEach((key, value) -> section.set(path + "." + key, value));
+    }
+
+    public static HashMap<String, List<Float>> deserializeFloatListMap(ConfigurationSection section, String path) {
+        HashMap<String, List<Float>> floatListMap = new HashMap<>();
+        section.getConfigurationSection(path).getKeys(false).forEach(key -> {
+            floatListMap.put(key, section.getFloatList(path + "." + key));
+        });
+        return floatListMap;
     }
 
     public static void serializeFloatMap(Map<String, Float> map, ConfigurationSection section, String path) {
@@ -86,6 +158,18 @@ public class ConfigurationSectionLib {
         return floatMap;
     }
 
+    public static void serializeDoubleListMap(Map<String, List<Double>> map, ConfigurationSection section, String path) {
+        map.forEach((key, value) -> section.set(path + "." + key, value));
+    }
+
+    public static HashMap<String, List<Double>> deserializeDoubleListMap(ConfigurationSection section, String path) {
+        HashMap<String, List<Double>> doubleListMap = new HashMap<>();
+        section.getConfigurationSection(path).getKeys(false).forEach(key -> {
+            doubleListMap.put(key, section.getDoubleList(path + "." + key));
+        });
+        return doubleListMap;
+    }
+
     public static void serializeDoubleMap(Map<String, Double> map, ConfigurationSection section, String path) {
         map.forEach((key, value) -> section.set(path + "." + key, value));
     }
@@ -96,6 +180,18 @@ public class ConfigurationSectionLib {
             doubleMap.put(key, section.getDouble(path + "." + key));
         });
         return doubleMap;
+    }
+
+    public static void serializeCharacterListMap(Map<String, List<Character>> map, ConfigurationSection section, String path) {
+        map.forEach((key, value) -> section.set(path + "." + key, value));
+    }
+
+    public static HashMap<String, List<Character>> deserializeCharacterListMap(ConfigurationSection section, String path) {
+        HashMap<String, List<Character>> characterListMap = new HashMap<>();
+        section.getConfigurationSection(path).getKeys(false).forEach(key -> {
+            characterListMap.put(key, section.getCharacterList(path + "." + key));
+        });
+        return characterListMap;
     }
 
     public static void serializeCharacterMap(Map<String, Character> map, ConfigurationSection section, String path) {
@@ -110,6 +206,18 @@ public class ConfigurationSectionLib {
         return characterMap;
     }
 
+    public static void serializeBooleanListMap(Map<String, List<Boolean>> map, ConfigurationSection section, String path) {
+        map.forEach((key, value) -> section.set(path + "." + key, value));
+    }
+
+    public static HashMap<String, List<Boolean>> deserializeBooleanListMap(ConfigurationSection section, String path) {
+        HashMap<String, List<Boolean>> booleanListMap = new HashMap<>();
+        section.getConfigurationSection(path).getKeys(false).forEach(key -> {
+            booleanListMap.put(key, section.getBooleanList(path + "." + key));
+        });
+        return booleanListMap;
+    }
+
     public static void serializeBooleanMap(Map<String, Boolean> map, ConfigurationSection section, String path) {
         map.forEach((key, value) -> section.set(path + "." + key, value));
     }
@@ -120,6 +228,28 @@ public class ConfigurationSectionLib {
             booleanMap.put(key, section.getBoolean(path + "." + key));
         });
         return booleanMap;
+    }
+
+    public static void serializeVectorListMap(Map<String, List<Vector>> map, ConfigurationSection section, String path) {
+        Map<String, List<String>> stringMap = new HashMap<>();
+        map.forEach((key, value) -> {
+            List<String> stringList = new ArrayList<>();
+            value.forEach(vector -> stringList.add(SerializationLib.serialize(vector)));
+            stringMap.put(key, stringList);
+        });
+        stringMap.forEach((key, value) -> section.set(path + "." + key, value));
+    }
+
+    public static HashMap<String, List<Vector>> deserializeVectorListMap(ConfigurationSection section, String path) {
+        HashMap<String, List<Vector>> hashMap = new HashMap<>();
+        section.getConfigurationSection(path).getKeys(false).forEach(key -> {
+            List<Vector> list = new ArrayList<>();
+            section.getStringList(path + "." + key).forEach(string -> {
+                list.add(SerializationLib.deserializeVector(string));
+            });
+            hashMap.put(key, list);
+        });
+        return hashMap;
     }
 
     public static void serializeVectorList(List<Vector> list, ConfigurationSection section, String path) {
@@ -151,6 +281,28 @@ public class ConfigurationSectionLib {
         return vectorMap;
     }
 
+    public static void serializeBlockVectorListMap(Map<String, List<BlockVector>> map, ConfigurationSection section, String path) {
+        Map<String, List<String>> stringMap = new HashMap<>();
+        map.forEach((key, value) -> {
+            List<String> stringList = new ArrayList<>();
+            value.forEach(vector -> stringList.add(SerializationLib.serialize(vector)));
+            stringMap.put(key, stringList);
+        });
+        stringMap.forEach((key, value) -> section.set(path + "." + key, value));
+    }
+
+    public static HashMap<String, List<BlockVector>> deserializeBlockVectorListMap(ConfigurationSection section, String path) {
+        HashMap<String, List<BlockVector>> hashMap = new HashMap<>();
+        section.getConfigurationSection(path).getKeys(false).forEach(key -> {
+            List<BlockVector> list = new ArrayList<>();
+            section.getStringList(path + "." + key).forEach(string -> {
+                list.add(SerializationLib.deserializeBlockVector(string));
+            });
+            hashMap.put(key, list);
+        });
+        return hashMap;
+    }
+
     public static void serializeBlockVectorList(List<BlockVector> list, ConfigurationSection section, String path) {
         List<String> stringList = new ArrayList<>();
         list.forEach(vector -> stringList.add(SerializationLib.serialize(vector)));
@@ -177,6 +329,28 @@ public class ConfigurationSectionLib {
             vectorMap.put(key, SerializationLib.deserializeBlockVector(string));
         });
         return vectorMap;
+    }
+
+    public static void serializeLocationListMap(Map<String, List<Location>> map, ConfigurationSection section, String path) {
+        Map<String, List<String>> stringMap = new HashMap<>();
+        map.forEach((key, value) -> {
+            List<String> stringList = new ArrayList<>();
+            value.forEach(vector -> stringList.add(SerializationLib.serialize(vector)));
+            stringMap.put(key, stringList);
+        });
+        stringMap.forEach((key, value) -> section.set(path + "." + key, value));
+    }
+
+    public static HashMap<String, List<Location>> deserializeLocationListMap(ConfigurationSection section, String path) {
+        HashMap<String, List<Location>> hashMap = new HashMap<>();
+        section.getConfigurationSection(path).getKeys(false).forEach(key -> {
+            List<Location> list = new ArrayList<>();
+            section.getStringList(path + "." + key).forEach(string -> {
+                list.add(SerializationLib.deserializeLocation(string));
+            });
+            hashMap.put(key, list);
+        });
+        return hashMap;
     }
 
     public static void serializeLocationList(List<Location> list, ConfigurationSection section, String path) {
@@ -207,6 +381,28 @@ public class ConfigurationSectionLib {
         return locationMap;
     }
 
+    public static void serializeBlockListMap(Map<String, List<Block>> map, ConfigurationSection section, String path) {
+        Map<String, List<String>> stringMap = new HashMap<>();
+        map.forEach((key, value) -> {
+            List<String> stringList = new ArrayList<>();
+            value.forEach(vector -> stringList.add(SerializationLib.serialize(vector)));
+            stringMap.put(key, stringList);
+        });
+        stringMap.forEach((key, value) -> section.set(path + "." + key, value));
+    }
+
+    public static HashMap<String, List<Block>> deserializeBlockListMap(ConfigurationSection section, String path) {
+        HashMap<String, List<Block>> hashMap = new HashMap<>();
+        section.getConfigurationSection(path).getKeys(false).forEach(key -> {
+            List<Block> list = new ArrayList<>();
+            section.getStringList(path + "." + key).forEach(string -> {
+                list.add(SerializationLib.deserializeBlock(string));
+            });
+            hashMap.put(key, list);
+        });
+        return hashMap;
+    }
+
     public static void serializeBlockList(List<Block> list, ConfigurationSection section, String path) {
         List<String> stringList = new ArrayList<>();
         list.forEach(block -> stringList.add(SerializationLib.serialize(block)));
@@ -233,6 +429,28 @@ public class ConfigurationSectionLib {
             blockMap.put(key, SerializationLib.deserializeBlock(string));
         });
         return blockMap;
+    }
+
+    public static void serializeColorListMap(Map<String, List<Color>> map, ConfigurationSection section, String path) {
+        Map<String, List<String>> stringMap = new HashMap<>();
+        map.forEach((key, value) -> {
+            List<String> stringList = new ArrayList<>();
+            value.forEach(vector -> stringList.add(SerializationLib.serialize(vector)));
+            stringMap.put(key, stringList);
+        });
+        stringMap.forEach((key, value) -> section.set(path + "." + key, value));
+    }
+
+    public static HashMap<String, List<Color>> deserializeColorListMap(ConfigurationSection section, String path) {
+        HashMap<String, List<Color>> hashMap = new HashMap<>();
+        section.getConfigurationSection(path).getKeys(false).forEach(key -> {
+            List<Color> list = new ArrayList<>();
+            section.getStringList(path + "." + key).forEach(string -> {
+                list.add(SerializationLib.deserializeColor(string));
+            });
+            hashMap.put(key, list);
+        });
+        return hashMap;
     }
 
     public static void serializeColorList(List<Color> list, ConfigurationSection section, String path) {
@@ -263,6 +481,28 @@ public class ConfigurationSectionLib {
         return colorMap;
     }
 
+    public static void serializeOfflinePlayerListMap(Map<String, List<OfflinePlayer>> map, ConfigurationSection section, String path) {
+        Map<String, List<String>> stringMap = new HashMap<>();
+        map.forEach((key, value) -> {
+            List<String> stringList = new ArrayList<>();
+            value.forEach(vector -> stringList.add(SerializationLib.serialize(vector)));
+            stringMap.put(key, stringList);
+        });
+        stringMap.forEach((key, value) -> section.set(path + "." + key, value));
+    }
+
+    public static HashMap<String, List<OfflinePlayer>> deserializeOfflinePlayerListMap(ConfigurationSection section, String path) {
+        HashMap<String, List<OfflinePlayer>> hashMap = new HashMap<>();
+        section.getConfigurationSection(path).getKeys(false).forEach(key -> {
+            List<OfflinePlayer> list = new ArrayList<>();
+            section.getStringList(path + "." + key).forEach(string -> {
+                list.add(SerializationLib.deserializeOfflinePlayer(string));
+            });
+            hashMap.put(key, list);
+        });
+        return hashMap;
+    }
+
     public static void serializeOfflinePlayer(List<OfflinePlayer> list, ConfigurationSection section, String path) {
         List<String> stringList = new ArrayList<>();
         list.forEach(player -> stringList.add(SerializationLib.serialize(player)));
@@ -287,6 +527,28 @@ public class ConfigurationSectionLib {
             offlinePlayerMap.put(key, SerializationLib.deserializeOfflinePlayer(string));
         });
         return offlinePlayerMap;
+    }
+
+    public static void serializeUUIDListMap(Map<String, List<UUID>> map, ConfigurationSection section, String path) {
+        Map<String, List<String>> stringMap = new HashMap<>();
+        map.forEach((key, value) -> {
+            List<String> stringList = new ArrayList<>();
+            value.forEach(vector -> stringList.add(SerializationLib.serialize(vector)));
+            stringMap.put(key, stringList);
+        });
+        stringMap.forEach((key, value) -> section.set(path + "." + key, value));
+    }
+
+    public static HashMap<String, List<UUID>> deserializeUUIDListMap(ConfigurationSection section, String path) {
+        HashMap<String, List<UUID>> hashMap = new HashMap<>();
+        section.getConfigurationSection(path).getKeys(false).forEach(key -> {
+            List<UUID> list = new ArrayList<>();
+            section.getStringList(path + "." + key).forEach(string -> {
+                list.add(SerializationLib.deserializeUUID(string));
+            });
+            hashMap.put(key, list);
+        });
+        return hashMap;
     }
 
     public static void serializeUUIDList(List<UUID> list, ConfigurationSection section, String path) {
@@ -315,6 +577,28 @@ public class ConfigurationSectionLib {
         return uuidMap;
     }
 
+    public static void serializeBigIntegerListMap(Map<String, List<BigInteger>> map, ConfigurationSection section, String path) {
+        Map<String, List<String>> stringMap = new HashMap<>();
+        map.forEach((key, value) -> {
+            List<String> stringList = new ArrayList<>();
+            value.forEach(vector -> stringList.add(SerializationLib.serialize(vector)));
+            stringMap.put(key, stringList);
+        });
+        stringMap.forEach((key, value) -> section.set(path + "." + key, value));
+    }
+
+    public static HashMap<String, List<BigInteger>> deserializeBigIntegerListMap(ConfigurationSection section, String path) {
+        HashMap<String, List<BigInteger>> hashMap = new HashMap<>();
+        section.getConfigurationSection(path).getKeys(false).forEach(key -> {
+            List<BigInteger> list = new ArrayList<>();
+            section.getStringList(path + "." + key).forEach(string -> {
+                list.add(SerializationLib.deserializeBigInteger(string));
+            });
+            hashMap.put(key, list);
+        });
+        return hashMap;
+    }
+
     public static void serializeBigIntegerList(List<BigInteger> list, ConfigurationSection section, String path) {
         List<String> stringList = new ArrayList<>();
         list.forEach(bigInteger -> stringList.add(SerializationLib.serialize(bigInteger)));
@@ -339,6 +623,28 @@ public class ConfigurationSectionLib {
             bigIntegerMap.put(key, SerializationLib.deserializeBigInteger(string));
         });
         return bigIntegerMap;
+    }
+
+    public static void serializeBigDecimalListMap(Map<String, List<BigDecimal>> map, ConfigurationSection section, String path) {
+        Map<String, List<String>> stringMap = new HashMap<>();
+        map.forEach((key, value) -> {
+            List<String> stringList = new ArrayList<>();
+            value.forEach(vector -> stringList.add(SerializationLib.serialize(vector)));
+            stringMap.put(key, stringList);
+        });
+        stringMap.forEach((key, value) -> section.set(path + "." + key, value));
+    }
+
+    public static HashMap<String, List<BigDecimal>> deserializeBigDecimalListMap(ConfigurationSection section, String path) {
+        HashMap<String, List<BigDecimal>> hashMap = new HashMap<>();
+        section.getConfigurationSection(path).getKeys(false).forEach(key -> {
+            List<BigDecimal> list = new ArrayList<>();
+            section.getStringList(path + "." + key).forEach(string -> {
+                list.add(SerializationLib.deserializeBigDecimal(string));
+            });
+            hashMap.put(key, list);
+        });
+        return hashMap;
     }
 
     public static void serializeBigDecimalList(List<BigDecimal> list, ConfigurationSection section, String path) {
