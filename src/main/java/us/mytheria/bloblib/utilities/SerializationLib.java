@@ -42,11 +42,11 @@ public class SerializationLib {
     }
 
     public static String serialize(OfflinePlayer player) {
-        return player.getUniqueId().toString();
+        return serialize(player.getUniqueId());
     }
 
     public static OfflinePlayer deserializeOfflinePlayer(String string) {
-        return Bukkit.getOfflinePlayer(UUID.fromString(string));
+        return Bukkit.getOfflinePlayer(deserializeUUID(string));
     }
 
     public static String serialize(UUID uuid) {

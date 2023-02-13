@@ -14,6 +14,18 @@ import java.util.*;
 
 public class ConfigurationSectionLib {
 
+    public static void serializeStringMap(Map<String, String> map, ConfigurationSection section, String path) {
+        map.forEach((key, value) -> section.set(path + "." + key, value));
+    }
+
+    public static HashMap<String, String> deserializeStringMap(ConfigurationSection section, String path) {
+        HashMap<String, String> stringMap = new HashMap<>();
+        section.getConfigurationSection(path).getKeys(false).forEach(key -> {
+            stringMap.put(key, section.getString(path + "." + key));
+        });
+        return stringMap;
+    }
+
     public static void serializeByteMap(Map<String, Byte> map, ConfigurationSection section, String path) {
         map.forEach((key, value) -> section.set(path + "." + key, value));
     }
