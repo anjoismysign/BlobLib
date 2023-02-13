@@ -3,26 +3,30 @@ package us.mytheria.bloblib.entities.logger;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.logging.Logger;
+
 public class BlobPluginLogger extends ConsoleLogger {
     private final JavaPlugin plugin;
+    private final Logger logger;
 
     public BlobPluginLogger(JavaPlugin plugin) {
         this.plugin = plugin;
+        logger = plugin.getLogger();
     }
 
     @Override
     public void log(String message) {
-        super.log(prefix() + start() + message);
+        logger.info(prefix() + start() + message);
     }
 
     @Override
     public void debug(String message) {
-        super.debug(ChatColor.GREEN + prefix() + start() + message);
+        logger.info(ChatColor.GREEN + prefix() + start() + message);
     }
 
     @Override
     public void error(String message) {
-        super.error(ChatColor.RED + prefix() + start() + message);
+        logger.severe(ChatColor.RED + prefix() + start() + message);
     }
 
     public String prefix() {
