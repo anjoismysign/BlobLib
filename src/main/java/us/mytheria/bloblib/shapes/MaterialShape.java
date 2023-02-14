@@ -11,9 +11,15 @@ import java.util.Map;
 
 public class MaterialShape {
 
-    public static <U> HashMap<String, U> materialToStringKeys(Map<Material, U> map) {
+    public static <U> HashMap<String, U> toStringKeys(Map<Material, U> map) {
         HashMap<String, U> newMap = new HashMap<>();
         map.forEach((key, value) -> newMap.put(SerializationLib.serialize(key), value));
+        return newMap;
+    }
+
+    public static <U> HashMap<Material, U> toMaterialKeys(Map<String, U> map) {
+        HashMap<Material, U> newMap = new HashMap<>();
+        map.forEach((key, value) -> newMap.put(SerializationLib.deserializeMaterial(key), value));
         return newMap;
     }
 

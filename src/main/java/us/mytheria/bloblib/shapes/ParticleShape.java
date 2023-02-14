@@ -11,9 +11,15 @@ import java.util.Map;
 
 public class ParticleShape {
 
-    public static <U> HashMap<String, U> particleToStringKeys(Map<Particle, U> map) {
+    public static <U> HashMap<String, U> toStringKeys(Map<Particle, U> map) {
         HashMap<String, U> newMap = new HashMap<>();
         map.forEach((key, value) -> newMap.put(SerializationLib.serialize(key), value));
+        return newMap;
+    }
+
+    public static <U> HashMap<Particle, U> toParticleKeys(Map<String, U> map) {
+        HashMap<Particle, U> newMap = new HashMap<>();
+        map.forEach((key, value) -> newMap.put(SerializationLib.deserializeParticle(key), value));
         return newMap;
     }
 

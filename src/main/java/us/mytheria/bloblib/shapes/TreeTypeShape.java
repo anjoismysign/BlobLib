@@ -11,9 +11,15 @@ import java.util.Map;
 
 public class TreeTypeShape {
 
-    public static <U> HashMap<String, U> treeTypeToStringKeys(Map<TreeType, U> map) {
+    public static <U> HashMap<String, U> toStringKeys(Map<TreeType, U> map) {
         HashMap<String, U> newMap = new HashMap<>();
         map.forEach((key, value) -> newMap.put(SerializationLib.serialize(key), value));
+        return newMap;
+    }
+
+    public static <U> HashMap<TreeType, U> toTreeTypeKeys(Map<String, U> map) {
+        HashMap<TreeType, U> newMap = new HashMap<>();
+        map.forEach((key, value) -> newMap.put(SerializationLib.deserializeTreeType(key), value));
         return newMap;
     }
 

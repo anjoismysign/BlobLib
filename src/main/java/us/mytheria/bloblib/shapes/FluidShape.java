@@ -11,9 +11,15 @@ import java.util.Map;
 
 public class FluidShape {
 
-    public static <U> HashMap<String, U> fluidToStringKeys(Map<Fluid, U> map) {
+    public static <U> HashMap<String, U> toStringKeys(Map<Fluid, U> map) {
         HashMap<String, U> newMap = new HashMap<>();
         map.forEach((key, value) -> newMap.put(SerializationLib.serialize(key), value));
+        return newMap;
+    }
+
+    public static <U> HashMap<Fluid, U> toFluidKeys(Map<String, U> map) {
+        HashMap<Fluid, U> newMap = new HashMap<>();
+        map.forEach((key, value) -> newMap.put(SerializationLib.deserializeFluid(key), value));
         return newMap;
     }
 

@@ -11,9 +11,15 @@ import java.util.Map;
 
 public class EntityTypeShape {
 
-    public static <U> HashMap<String, U> entityTypeToStringKeys(Map<EntityType, U> map) {
+    public static <U> HashMap<String, U> toStringKeys(Map<EntityType, U> map) {
         HashMap<String, U> newMap = new HashMap<>();
         map.forEach((key, value) -> newMap.put(SerializationLib.serialize(key), value));
+        return newMap;
+    }
+
+    public static <U> HashMap<EntityType, U> toEntityTypeKeys(Map<String, U> map) {
+        HashMap<EntityType, U> newMap = new HashMap<>();
+        map.forEach((key, value) -> newMap.put(SerializationLib.deserializeEntityType(key), value));
         return newMap;
     }
 

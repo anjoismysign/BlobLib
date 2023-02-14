@@ -11,9 +11,15 @@ import java.util.Map;
 
 public class EnchantmentShape {
 
-    public static <U> HashMap<String, U> enchantmentToStringKeys(Map<Enchantment, U> map) {
+    public static <U> HashMap<String, U> toStringKeys(Map<Enchantment, U> map) {
         HashMap<String, U> newMap = new HashMap<>();
         map.forEach((key, value) -> newMap.put(SerializationLib.serialize(key), value));
+        return newMap;
+    }
+
+    public static <U> HashMap<Enchantment, U> toEnchantmentKeys(Map<String, U> map) {
+        HashMap<Enchantment, U> newMap = new HashMap<>();
+        map.forEach((key, value) -> newMap.put(SerializationLib.deserializeEnchantment(key), value));
         return newMap;
     }
 

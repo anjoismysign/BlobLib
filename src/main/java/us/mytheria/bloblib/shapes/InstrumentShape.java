@@ -11,9 +11,15 @@ import java.util.Map;
 
 public class InstrumentShape {
 
-    public static <U> HashMap<String, U> instrumentToStringKeys(Map<Instrument, U> map) {
+    public static <U> HashMap<String, U> toStringKeys(Map<Instrument, U> map) {
         HashMap<String, U> newMap = new HashMap<>();
         map.forEach((key, value) -> newMap.put(SerializationLib.serialize(key), value));
+        return newMap;
+    }
+
+    public static <U> HashMap<Instrument, U> toInstrumentKeys(Map<String, U> map) {
+        HashMap<Instrument, U> newMap = new HashMap<>();
+        map.forEach((key, value) -> newMap.put(SerializationLib.deserializeInstrument(key), value));
         return newMap;
     }
 

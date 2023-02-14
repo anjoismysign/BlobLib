@@ -11,9 +11,15 @@ import java.util.Map;
 
 public class EntityEffectShape {
 
-    public static <U> HashMap<String, U> entityEffectToStringKeys(Map<EntityEffect, U> map) {
+    public static <U> HashMap<String, U> toStringKeys(Map<EntityEffect, U> map) {
         HashMap<String, U> newMap = new HashMap<>();
         map.forEach((key, value) -> newMap.put(SerializationLib.serialize(key), value));
+        return newMap;
+    }
+
+    public static <U> HashMap<EntityEffect, U> toEntityEffectKeys(Map<String, U> map) {
+        HashMap<EntityEffect, U> newMap = new HashMap<>();
+        map.forEach((key, value) -> newMap.put(SerializationLib.deserializeEntityEffect(key), value));
         return newMap;
     }
 

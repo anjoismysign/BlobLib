@@ -11,9 +11,15 @@ import java.util.Map;
 
 public class CropStateShape {
 
-    public static <U> HashMap<String, U> cropStateToStringKeys(Map<CropState, U> map) {
+    public static <U> HashMap<String, U> toStringKeys(Map<CropState, U> map) {
         HashMap<String, U> newMap = new HashMap<>();
         map.forEach((key, value) -> newMap.put(SerializationLib.serialize(key), value));
+        return newMap;
+    }
+
+    public static <U> HashMap<CropState, U> toCropStateKeys(Map<String, U> map) {
+        HashMap<CropState, U> newMap = new HashMap<>();
+        map.forEach((key, value) -> newMap.put(SerializationLib.deserializeCropState(key), value));
         return newMap;
     }
 

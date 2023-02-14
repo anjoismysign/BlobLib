@@ -11,9 +11,15 @@ import java.util.Map;
 
 public class EffectShape {
 
-    public static <U> HashMap<String, U> effectToStringKeys(Map<Effect, U> map) {
+    public static <U> HashMap<String, U> toStringKeys(Map<Effect, U> map) {
         HashMap<String, U> newMap = new HashMap<>();
         map.forEach((key, value) -> newMap.put(SerializationLib.serialize(key), value));
+        return newMap;
+    }
+
+    public static <U> HashMap<Effect, U> toEffectKeys(Map<String, U> map) {
+        HashMap<Effect, U> newMap = new HashMap<>();
+        map.forEach((key, value) -> newMap.put(SerializationLib.deserializeEffect(key), value));
         return newMap;
     }
 

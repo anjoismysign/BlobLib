@@ -118,18 +118,6 @@ public class MapLib {
         return newMap;
     }
 
-    public static <U> HashMap<BigInteger, U> toBigIntegerValues(Map<String, U> map) {
-        HashMap<BigInteger, U> newMap = new HashMap<>();
-        map.forEach((key, value) -> newMap.put(SerializationLib.deserializeBigInteger(key), value));
-        return newMap;
-    }
-
-    public static <U> HashMap<BigDecimal, U> toBigDecimalValues(Map<String, U> map) {
-        HashMap<BigDecimal, U> newMap = new HashMap<>();
-        map.forEach((key, value) -> newMap.put(SerializationLib.deserializeBigDecimal(key), value));
-        return newMap;
-    }
-
     public static <T, U> HashMap<String, U> toStringKeys(Map<T, U> map) {
         HashMap<String, U> newMap = new HashMap<>();
         map.forEach((key, value) -> newMap.put(key.toString(), value));

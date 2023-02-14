@@ -11,9 +11,15 @@ import java.util.Map;
 
 public class DyeColorShape {
 
-    public static <U> HashMap<String, U> dyeColorToStringKeys(Map<DyeColor, U> map) {
+    public static <U> HashMap<String, U> toStringKeys(Map<DyeColor, U> map) {
         HashMap<String, U> newMap = new HashMap<>();
         map.forEach((key, value) -> newMap.put(SerializationLib.serialize(key), value));
+        return newMap;
+    }
+
+    public static <U> HashMap<DyeColor, U> toDyeColorKeys(Map<String, U> map) {
+        HashMap<DyeColor, U> newMap = new HashMap<>();
+        map.forEach((key, value) -> newMap.put(SerializationLib.deserializeDyeColor(key), value));
         return newMap;
     }
 

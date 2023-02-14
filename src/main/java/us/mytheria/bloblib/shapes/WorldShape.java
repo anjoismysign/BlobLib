@@ -11,12 +11,25 @@ import java.util.Map;
 
 public class WorldShape {
 
-    public static <U> HashMap<String, U> worldToStringKeys(Map<World, U> map) {
+    public static <U> HashMap<String, U> toStringKeys(Map<World, U> map) {
         HashMap<String, U> newMap = new HashMap<>();
         map.forEach((key, value) -> newMap.put(SerializationLib.serialize(key), value));
         return newMap;
     }
 
+    public static <U> HashMap<World, U> toWorldKeys(Map<String, U> map) {
+        HashMap<World, U> newMap = new HashMap<>();
+        map.forEach((key, value) -> newMap.put(SerializationLib.deserializeWorld(key), value));
+        return newMap;
+    }
+
+    /**
+     * Will convert a Map(String, List(World)) to Map(String, List(String))
+     *
+     * @param map     The map to convert
+     * @param section The section to save the map to
+     * @param path    The path to save the map to
+     */
     public static void serializeWorldListMap(Map<String, List<World>> map, ConfigurationSection section, String path) {
         Map<String, List<String>> stringMap = new HashMap<>();
         map.forEach((key, value) -> {
@@ -27,6 +40,13 @@ public class WorldShape {
         stringMap.forEach((key, value) -> section.set(path + "." + key, value));
     }
 
+    /**
+     * Will convert a Map(String, List(String)) to Map(String, List(World))
+     *
+     * @param section The section to load the map from
+     * @param path    The path to load the map from
+     * @return The converted map
+     */
     public static HashMap<String, List<World>> deserializeWorldListMap(ConfigurationSection section, String path) {
         HashMap<String, List<World>> hashMap = new HashMap<>();
         section.getConfigurationSection(path).getKeys(false).forEach(key -> {

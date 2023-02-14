@@ -11,9 +11,15 @@ import java.util.Map;
 
 public class WeatherTypeShape {
 
-    public static <U> HashMap<String, U> weatherTypeToStringKeys(Map<WeatherType, U> map) {
+    public static <U> HashMap<String, U> toStringKeys(Map<WeatherType, U> map) {
         HashMap<String, U> newMap = new HashMap<>();
         map.forEach((key, value) -> newMap.put(SerializationLib.serialize(key), value));
+        return newMap;
+    }
+
+    public static <U> HashMap<WeatherType, U> toWeatherTypeKeys(Map<String, U> map) {
+        HashMap<WeatherType, U> newMap = new HashMap<>();
+        map.forEach((key, value) -> newMap.put(SerializationLib.deserializeWeatherType(key), value));
         return newMap;
     }
 

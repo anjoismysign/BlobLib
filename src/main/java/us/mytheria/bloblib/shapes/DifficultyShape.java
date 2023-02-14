@@ -11,9 +11,15 @@ import java.util.Map;
 
 public class DifficultyShape {
 
-    public static <U> HashMap<String, U> difficultyToStringKeys(Map<Difficulty, U> map) {
+    public static <U> HashMap<String, U> toStringKeys(Map<Difficulty, U> map) {
         HashMap<String, U> newMap = new HashMap<>();
         map.forEach((key, value) -> newMap.put(SerializationLib.serialize(key), value));
+        return newMap;
+    }
+
+    public static <U> HashMap<Difficulty, U> toDifficultyKeys(Map<String, U> map) {
+        HashMap<Difficulty, U> newMap = new HashMap<>();
+        map.forEach((key, value) -> newMap.put(SerializationLib.deserializeDifficulty(key), value));
         return newMap;
     }
 

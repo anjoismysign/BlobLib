@@ -11,9 +11,15 @@ import java.util.Map;
 
 public class GameModeShape {
 
-    public static <U> HashMap<String, U> gameModeToStringKeys(Map<GameMode, U> map) {
+    public static <U> HashMap<String, U> toStringKeys(Map<GameMode, U> map) {
         HashMap<String, U> newMap = new HashMap<>();
         map.forEach((key, value) -> newMap.put(SerializationLib.serialize(key), value));
+        return newMap;
+    }
+
+    public static <U> HashMap<GameMode, U> toGameModeKeys(Map<String, U> map) {
+        HashMap<GameMode, U> newMap = new HashMap<>();
+        map.forEach((key, value) -> newMap.put(SerializationLib.deserializeGameMode(key), value));
         return newMap;
     }
 
