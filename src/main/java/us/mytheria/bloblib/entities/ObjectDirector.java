@@ -84,6 +84,10 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
         adminChildTabCompleter = new ArrayList<>();
         executor = new BlobExecutor(getPlugin(), objectDirectorData.objectName());
         objectName = objectDirectorData.objectName();
+        this.adminChildCommands = new ArrayList<>();
+        this.adminChildTabCompleter = new ArrayList<>();
+        this.nonAdminChildCommands = new ArrayList<>();
+        this.nonAdminChildTabCompleter = new ArrayList<>();
         setDefaultCommands().setDefaultTabCompleter();
     }
 
@@ -129,7 +133,6 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
      * This method is used to add non-admin child commands to the executor.
      * There have not been any checks done regarding permissions prior to this method.
      * <p>
-     * You need to initialize a List (such as an ArrayList) and add BiFunctions to it.
      * The BiFunction should take a BlobExecutor and a String[] as parameters and return a Boolean.
      * The BlobExecutor is the executor of the command, the String[] is the arguments of the command.
      * The Boolean should ONLY BE true if the command was executed successfully and no more code
@@ -153,17 +156,16 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
      *     setNonAdminChildCommands(childCommands);
      *     </pre>
      *
-     * @param nonAdminChildCommands the BlobChildCommands that CAN BE EXECUTED WITHOUT 'YOURPLUGIN.admin' permission.
+     * @param nonAdminChildCommand the BlobChildCommands that CAN BE EXECUTED WITHOUT 'YOURPLUGIN.admin' permission.
      */
-    public void setNonAdminChildCommands(List<BiFunction<BlobExecutor, String[], Boolean>> nonAdminChildCommands) {
-        this.nonAdminChildCommands = nonAdminChildCommands;
+    public void addNonAdminChildCommand(BiFunction<BlobExecutor, String[], Boolean> nonAdminChildCommand) {
+        this.nonAdminChildCommands.add(nonAdminChildCommand);
     }
 
     /**
      * This method is used to add admin child commands to the executor.
      * The method BlobExecutor#hasAdminPermission was issued prior to this method.
      * <p>
-     * You need to initialize a List (such as an ArrayList) and add BiFunctions to it.
      * The BiFunction should take a BlobExecutor and a String[] as parameters and return a Boolean.
      * The BlobExecutor is the executor of the command, the String[] is the arguments of the command.
      * The Boolean should ONLY BE true if the command was executed successfully and no more code
@@ -187,17 +189,16 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
      *      *     setAdminChildCommands(childCommands);
      *      *     </pre>
      *
-     * @param adminChildCommands the BlobChildCommands that can ONLY be executed with 'YOURPLUGIN.admin' permission.
+     * @param adminChildCommand the BlobChildCommands that can ONLY be executed with 'YOURPLUGIN.admin' permission.
      */
-    public void setAdminChildCommands(List<BiFunction<BlobExecutor, String[], Boolean>> adminChildCommands) {
-        this.adminChildCommands = adminChildCommands;
+    public void addAdminChildCommand(BiFunction<BlobExecutor, String[], Boolean> adminChildCommand) {
+        this.adminChildCommands.add(adminChildCommand);
     }
 
     /**
      * This method is used to add non-admin child tab completer to the executor.
      * There have not been any checks done regarding permissions prior to this method.
      * <p>
-     * You need to initialize a List (such as an ArrayList) and add BiFunctions to it.
      * The BiFunction should take a BlobExecutor and a String[] as parameters and return a List&lt;String&gt;.
      * The BlobExecutor is the executor of the command, the String[] is the arguments of the command.
      * The List&lt;String&gt; are the list of tab completions. In case of not matching any tab completions,
@@ -205,15 +206,14 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
      *
      * @param nonAdminChildTabCompleter the BlobChildCommands that CAN BE EXECUTED WITHOUT 'YOURPLUGIN.admin' permission.
      */
-    public void setNonAdminChildTabCompleter(List<BiFunction<BlobExecutor, String[], List<String>>> nonAdminChildTabCompleter) {
-        this.nonAdminChildTabCompleter = nonAdminChildTabCompleter;
+    public void addNonAdminChildTabCompleter(BiFunction<BlobExecutor, String[], List<String>> nonAdminChildTabCompleter) {
+        this.nonAdminChildTabCompleter.add(nonAdminChildTabCompleter);
     }
 
     /**
      * This method is used to add admin child tab completer to the executor.
      * The method BlobExecutor#hasAdminPermission was issued prior to this method.
      * <p>
-     * You need to initialize a List (such as an ArrayList) and add BiFunctions to it.
      * The BiFunction should take a BlobExecutor and a String[] as parameters and return a List&lt;String&gt;.
      * The BlobExecutor is the executor of the command, the String[] is the arguments of the command.
      * The List&lt;String&gt; are the list of tab completions. In case of not matching any tab completions,
@@ -221,8 +221,24 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
      *
      * @param adminChildTabCompleter the BlobChildCommands that can ONLY be executed with 'YOURPLUGIN.admin' permission.
      */
-    public void setAdminChildTabCompleter(List<BiFunction<BlobExecutor, String[], List<String>>> adminChildTabCompleter) {
-        this.adminChildTabCompleter = adminChildTabCompleter;
+    public void addAdminChildTabCompleter(BiFunction<BlobExecutor, String[], List<String>> adminChildTabCompleter) {
+        this.adminChildTabCompleter.add(adminChildTabCompleter);
+    }
+
+    public List<BiFunction<BlobExecutor, String[], Boolean>> getAdminChildCommands() {
+        return adminChildCommands;
+    }
+
+    public List<BiFunction<BlobExecutor, String[], Boolean>> getNonAdminChildCommands() {
+        return nonAdminChildCommands;
+    }
+
+    public List<BiFunction<BlobExecutor, String[], List<String>>> getAdminChildTabCompleter() {
+        return adminChildTabCompleter;
+    }
+
+    public List<BiFunction<BlobExecutor, String[], List<String>>> getNonAdminChildTabCompleter() {
+        return nonAdminChildTabCompleter;
     }
 
     @EventHandler
