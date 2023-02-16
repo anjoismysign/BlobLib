@@ -159,10 +159,4 @@ public class MapLib {
         map.forEach((key, value) -> newMap.put(SerializationLib.serialize(key), value));
         return newMap;
     }
-
-    public static <U> HashMap<String, U> uuidToStringKeys(Map<UUID, U> map) {
-        HashMap<String, U> newMap = new HashMap<>();
-        map.forEach((key, value) -> newMap.put(SerializationLib.serialize(key), value));
-        return newMap;
-    }
 }
