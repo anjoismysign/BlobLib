@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -29,10 +28,10 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
     private final ObjectManager<T> objectManager;
     private Consumer<InventoryClickEvent> clickEventConsumer;
     private final BlobExecutor executor;
-    private final List<BiFunction<BlobExecutor, String[], Boolean>> nonAdminChildCommands;
-    private final List<BiFunction<BlobExecutor, String[], Boolean>> adminChildCommands;
-    private final List<BiFunction<BlobExecutor, String[], List<String>>> nonAdminChildTabCompleter;
-    private final List<BiFunction<BlobExecutor, String[], List<String>>> adminChildTabCompleter;
+    private final List<Function<ExecutorData, Boolean>> nonAdminChildCommands;
+    private final List<Function<ExecutorData, Boolean>> adminChildCommands;
+    private final List<Function<ExecutorData, List<String>>> nonAdminChildTabCompleter;
+    private final List<Function<ExecutorData, List<String>>> adminChildTabCompleter;
     private final String objectName;
 
     public ObjectDirector(ManagerDirector managerDirector,
@@ -153,7 +152,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
      *
      * @param nonAdminChildCommand the BlobChildCommands that CAN BE EXECUTED WITHOUT 'YOURPLUGIN.admin' permission.
      */
-    public void addNonAdminChildCommand(BiFunction<BlobExecutor, String[], Boolean> nonAdminChildCommand) {
+    public void addNonAdminChildCommand(Function<ExecutorData, Boolean> nonAdminChildCommand) {
         this.nonAdminChildCommands.add(nonAdminChildCommand);
     }
 
@@ -186,7 +185,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
      *
      * @param adminChildCommand the BlobChildCommands that can ONLY be executed with 'YOURPLUGIN.admin' permission.
      */
-    public void addAdminChildCommand(BiFunction<BlobExecutor, String[], Boolean> adminChildCommand) {
+    public void addAdminChildCommand(Function<ExecutorData, Boolean> adminChildCommand) {
         this.adminChildCommands.add(adminChildCommand);
     }
 
@@ -201,7 +200,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
      *
      * @param nonAdminChildTabCompleter the BlobChildCommands that CAN BE EXECUTED WITHOUT 'YOURPLUGIN.admin' permission.
      */
-    public void addNonAdminChildTabCompleter(BiFunction<BlobExecutor, String[], List<String>> nonAdminChildTabCompleter) {
+    public void addNonAdminChildTabCompleter(Function<ExecutorData, List<String>> nonAdminChildTabCompleter) {
         this.nonAdminChildTabCompleter.add(nonAdminChildTabCompleter);
     }
 
@@ -216,23 +215,23 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
      *
      * @param adminChildTabCompleter the BlobChildCommands that can ONLY be executed with 'YOURPLUGIN.admin' permission.
      */
-    public void addAdminChildTabCompleter(BiFunction<BlobExecutor, String[], List<String>> adminChildTabCompleter) {
+    public void addAdminChildTabCompleter(Function<ExecutorData, List<String>> adminChildTabCompleter) {
         this.adminChildTabCompleter.add(adminChildTabCompleter);
     }
 
-    public List<BiFunction<BlobExecutor, String[], Boolean>> getAdminChildCommands() {
+    public List<Function<ExecutorData, Boolean>> getAdminChildCommands() {
         return adminChildCommands;
     }
 
-    public List<BiFunction<BlobExecutor, String[], Boolean>> getNonAdminChildCommands() {
+    public List<Function<ExecutorData, Boolean>> getNonAdminChildCommands() {
         return nonAdminChildCommands;
     }
 
-    public List<BiFunction<BlobExecutor, String[], List<String>>> getAdminChildTabCompleter() {
+    public List<Function<ExecutorData, List<String>>> getAdminChildTabCompleter() {
         return adminChildTabCompleter;
     }
 
-    public List<BiFunction<BlobExecutor, String[], List<String>>> getNonAdminChildTabCompleter() {
+    public List<Function<ExecutorData, List<String>>> getNonAdminChildTabCompleter() {
         return nonAdminChildTabCompleter;
     }
 
@@ -269,35 +268,35 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
         getExecutor().setCommand((sender, args) -> {
                     if (executor.hasNoArguments(sender, args))
                         return true;
-                    for (BiFunction<BlobExecutor, String[], Boolean> childCommand : nonAdminChildCommands) {
-                        if (childCommand.apply(executor, args))
+                    for (Function<ExecutorData, Boolean> childCommand : nonAdminChildCommands) {
+                        if (childCommand.apply(new ExecutorData(executor, args, sender)))
                             return true;
                     }
                     if (!executor.hasAdminPermission(sender))
                         return true;
                     if (hasObjectBuilderManager) {
-                        addAdminChildCommand((executor, arguments) -> {
-                            Result<BlobChildCommand> result = executor
-                                    .isChildCommand("add", arguments);
+                        addAdminChildCommand(data -> {
+                            Result<BlobChildCommand> result = data.executor()
+                                    .isChildCommand("add", data.args());
                             if (result.isValid()) {
-                                return getExecutor().ifInstanceOfPlayer(sender, player -> {
+                                return getExecutor().ifInstanceOfPlayer(data.sender(), player -> {
                                     ObjectBuilder<T> builder = objectBuilderManager.getOrDefault(player.getUniqueId());
                                     builder.openInventory();
                                 });
                             }
                             return false;
                         });
-                        addAdminChildCommand((executor, arguments) -> {
-                            Result<BlobChildCommand> result = executor
-                                    .isChildCommand("remove", arguments);
+                        addAdminChildCommand(data -> {
+                            Result<BlobChildCommand> result = data.executor()
+                                    .isChildCommand("remove", data.args());
                             if (result.isValid()) {
-                                return getExecutor().ifInstanceOfPlayer(sender, this::removeObject);
+                                return getExecutor().ifInstanceOfPlayer(data.sender(), this::removeObject);
                             }
                             return false;
                         });
                     }
-                    for (BiFunction<BlobExecutor, String[], Boolean> childCommand : adminChildCommands) {
-                        if (childCommand.apply(executor, args))
+                    for (Function<ExecutorData, Boolean> childCommand : adminChildCommands) {
+                        if (childCommand.apply(new ExecutorData(executor, args, sender)))
                             return true;
                     }
                     return false;
@@ -313,21 +312,21 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
     private void setDefaultTabCompleter(boolean hasObjectBuilderManager) {
         List<String> list = new ArrayList<>();
         getExecutor().setTabCompleter((sender, args) -> {
-            for (BiFunction<BlobExecutor, String[], List<String>> childTabCompleter : nonAdminChildTabCompleter) {
-                List<String> childTabCompletion = childTabCompleter.apply(executor, args);
+            for (Function<ExecutorData, List<String>> childTabCompleter : nonAdminChildTabCompleter) {
+                List<String> childTabCompletion = childTabCompleter.apply(new ExecutorData(executor, args, sender));
                 if (childTabCompletion != null)
                     return childTabCompletion;
             }
             if (!executor.hasAdminPermission(sender))
                 return list;
-            addAdminChildTabCompleter((executor, arguments) -> {
+            addAdminChildTabCompleter(data -> {
                 List<String> stringList = new ArrayList<>();
                 stringList.add("add");
                 stringList.add("remove");
                 return stringList;
             });
-            for (BiFunction<BlobExecutor, String[], List<String>> childTabCompleter : adminChildTabCompleter) {
-                List<String> childTabCompletion = childTabCompleter.apply(executor, args);
+            for (Function<ExecutorData, List<String>> childTabCompleter : adminChildTabCompleter) {
+                List<String> childTabCompletion = childTabCompleter.apply(new ExecutorData(executor, args, sender));
                 if (childTabCompletion != null && !childTabCompletion.isEmpty())
                     return childTabCompletion;
             }
