@@ -29,10 +29,10 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
     private final ObjectManager<T> objectManager;
     private Consumer<InventoryClickEvent> clickEventConsumer;
     private final BlobExecutor executor;
-    private List<BiFunction<BlobExecutor, String[], Boolean>> nonAdminChildCommands;
-    private List<BiFunction<BlobExecutor, String[], Boolean>> adminChildCommands;
-    private List<BiFunction<BlobExecutor, String[], List<String>>> nonAdminChildTabCompleter;
-    private List<BiFunction<BlobExecutor, String[], List<String>>> adminChildTabCompleter;
+    private final List<BiFunction<BlobExecutor, String[], Boolean>> nonAdminChildCommands;
+    private final List<BiFunction<BlobExecutor, String[], Boolean>> adminChildCommands;
+    private final List<BiFunction<BlobExecutor, String[], List<String>>> nonAdminChildTabCompleter;
+    private final List<BiFunction<BlobExecutor, String[], List<String>>> adminChildTabCompleter;
     private final String objectName;
 
     public ObjectDirector(ManagerDirector managerDirector,
@@ -84,10 +84,6 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
         adminChildTabCompleter = new ArrayList<>();
         executor = new BlobExecutor(getPlugin(), objectDirectorData.objectName());
         objectName = objectDirectorData.objectName();
-        this.adminChildCommands = new ArrayList<>();
-        this.adminChildTabCompleter = new ArrayList<>();
-        this.nonAdminChildCommands = new ArrayList<>();
-        this.nonAdminChildTabCompleter = new ArrayList<>();
         setDefaultCommands().setDefaultTabCompleter();
     }
 
@@ -119,8 +115,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
         adminChildCommands = new ArrayList<>();
         nonAdminChildTabCompleter = new ArrayList<>();
         adminChildTabCompleter = new ArrayList<>();
-        setDefaultCommands();
-        setDefaultTabCompleter();
+        setDefaultCommands().setDefaultTabCompleter();
     }
 
     @Override
@@ -267,6 +262,10 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
     }
 
     private ObjectDirector<T> setDefaultCommands() {
+        return setDefaultCommands(true);
+    }
+
+    private ObjectDirector<T> setDefaultCommands(boolean hasObjectBuilderManager) {
         getExecutor().setCommand((sender, args) -> {
                     if (executor.hasNoArguments(sender, args))
                         return true;
@@ -276,22 +275,30 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                     }
                     if (!executor.hasAdminPermission(sender))
                         return true;
+                    if (hasObjectBuilderManager) {
+                        addAdminChildCommand((executor, arguments) -> {
+                            Result<BlobChildCommand> result = executor
+                                    .isChildCommand("add", arguments);
+                            if (result.isValid()) {
+                                return getExecutor().ifInstanceOfPlayer(sender, player -> {
+                                    ObjectBuilder<T> builder = objectBuilderManager.getOrDefault(player.getUniqueId());
+                                    builder.openInventory();
+                                });
+                            }
+                            return false;
+                        });
+                        addAdminChildCommand((executor, arguments) -> {
+                            Result<BlobChildCommand> result = executor
+                                    .isChildCommand("remove", arguments);
+                            if (result.isValid()) {
+                                return getExecutor().ifInstanceOfPlayer(sender, this::removeObject);
+                            }
+                            return false;
+                        });
+                    }
                     for (BiFunction<BlobExecutor, String[], Boolean> childCommand : adminChildCommands) {
                         if (childCommand.apply(executor, args))
                             return true;
-                    }
-                    Result<BlobChildCommand> addResult = getExecutor()
-                            .isChildCommand("add", args);
-                    if (addResult.isValid()) {
-                        return getExecutor().ifInstanceOfPlayer(sender, player -> {
-                            ObjectBuilder<T> builder = objectBuilderManager.getOrDefault(player.getUniqueId());
-                            builder.openInventory();
-                        });
-                    }
-                    Result<BlobChildCommand> removeResult = getExecutor()
-                            .isChildCommand("remove", args);
-                    if (removeResult.isValid()) {
-                        return getExecutor().ifInstanceOfPlayer(sender, this::removeObject);
                     }
                     return false;
                 }
@@ -300,6 +307,10 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
     }
 
     private void setDefaultTabCompleter() {
+        setDefaultTabCompleter(true);
+    }
+
+    private void setDefaultTabCompleter(boolean hasObjectBuilderManager) {
         List<String> list = new ArrayList<>();
         getExecutor().setTabCompleter((sender, args) -> {
             for (BiFunction<BlobExecutor, String[], List<String>> childTabCompleter : nonAdminChildTabCompleter) {
@@ -309,13 +320,17 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
             }
             if (!executor.hasAdminPermission(sender))
                 return list;
+            addAdminChildTabCompleter((executor, arguments) -> {
+                List<String> stringList = new ArrayList<>();
+                stringList.add("add");
+                stringList.add("remove");
+                return stringList;
+            });
             for (BiFunction<BlobExecutor, String[], List<String>> childTabCompleter : adminChildTabCompleter) {
                 List<String> childTabCompletion = childTabCompleter.apply(executor, args);
                 if (childTabCompletion != null && !childTabCompletion.isEmpty())
                     return childTabCompletion;
             }
-            list.add("add");
-            list.add("remove");
             return list;
         });
     }
@@ -365,5 +380,9 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                     .modify(s -> s.replace("%element%", key))
                     .sendAndPlay(player);
         }, function);
+    }
+
+    public void setHasObjectBuilderManager(boolean hasObjectBuilderManager) {
+        setDefaultCommands(hasObjectBuilderManager).setDefaultTabCompleter(hasObjectBuilderManager);
     }
 }
