@@ -8,6 +8,7 @@ import us.mytheria.bloblib.managers.ManagerDirector;
 import java.io.File;
 import java.util.AbstractMap;
 import java.util.Collection;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -151,6 +152,15 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
      */
     public Collection<T> values() {
         return objects.values();
+    }
+
+    /**
+     * Will retrieve all keys as a Set
+     *
+     * @return all keys as a Set
+     */
+    public Set<String> keys() {
+        return objects.keySet();
     }
 
     /**

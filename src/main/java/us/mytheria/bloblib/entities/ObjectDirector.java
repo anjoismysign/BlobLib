@@ -33,13 +33,24 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
     private final List<Function<ExecutorData, List<String>>> nonAdminChildTabCompleter;
     private final List<Function<ExecutorData, List<String>>> adminChildTabCompleter;
     private final String objectName;
+    private final boolean hasObjectBuilderManager;
 
     public ObjectDirector(ManagerDirector managerDirector,
                           ObjectDirectorData objectDirectorData,
                           Function<File, T> readFunction) {
+        this(managerDirector, objectDirectorData, readFunction, true);
+    }
+
+    public ObjectDirector(ManagerDirector managerDirector,
+                          ObjectDirectorData objectDirectorData,
+                          Function<File, T> readFunction, boolean hasObjectBuilderManager) {
         super(managerDirector);
-        this.objectBuilderManager = new ObjectBuilderManager<>(managerDirector,
-                objectDirectorData.objectBuilderKey(), this);
+        this.hasObjectBuilderManager = hasObjectBuilderManager;
+        if (hasObjectBuilderManager)
+            this.objectBuilderManager = new ObjectBuilderManager<>(managerDirector,
+                    objectDirectorData.objectBuilderKey(), this);
+        else
+            this.objectBuilderManager = null;
         Optional<File> loadFilesDirectory = managerDirector.getFileManager().searchFile(objectDirectorData.objectDirectory());
         if (loadFilesDirectory.isEmpty())
             throw new IllegalArgumentException("The loadFilesPathKey is not valid");
@@ -83,37 +94,6 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
         adminChildTabCompleter = new ArrayList<>();
         executor = new BlobExecutor(getPlugin(), objectDirectorData.objectName());
         objectName = objectDirectorData.objectName();
-        setDefaultCommands().setDefaultTabCompleter();
-    }
-
-    public ObjectDirector(ManagerDirector managerDirector,
-                          String fileKey,
-                          ObjectManager<T> objectManager,
-                          String objectName) {
-        super(managerDirector);
-        this.objectBuilderManager = new ObjectBuilderManager<>(managerDirector,
-                fileKey, this);
-        this.objectManager = objectManager;
-        clickEventConsumer = e -> {
-            String invname = e.getView().getTitle();
-            if (!invname.equals(objectBuilderManager.title)) {
-                return;
-            }
-            int slot = e.getRawSlot();
-            Player player = (Player) e.getWhoClicked();
-            ObjectBuilder<T> builder = objectBuilderManager.getOrDefault(player.getUniqueId());
-            if (slot >= builder.getSize()) {
-                return;
-            }
-            e.setCancelled(true);
-            builder.handle(slot, player);
-        };
-        executor = new BlobExecutor(getPlugin(), objectName);
-        this.objectName = objectName;
-        nonAdminChildCommands = new ArrayList<>();
-        adminChildCommands = new ArrayList<>();
-        nonAdminChildTabCompleter = new ArrayList<>();
-        adminChildTabCompleter = new ArrayList<>();
         setDefaultCommands().setDefaultTabCompleter();
     }
 
@@ -237,6 +217,8 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
 
     @EventHandler
     public void onClick(InventoryClickEvent e) {
+        if (!this.hasObjectBuilderManager)
+            return;
         clickEventConsumer.accept(e);
     }
 
@@ -261,10 +243,6 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
     }
 
     private ObjectDirector<T> setDefaultCommands() {
-        return setDefaultCommands(true);
-    }
-
-    private ObjectDirector<T> setDefaultCommands(boolean hasObjectBuilderManager) {
         getExecutor().setCommand((sender, args) -> {
                     if (executor.hasNoArguments(sender, args))
                         return true;
@@ -306,10 +284,6 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
     }
 
     private void setDefaultTabCompleter() {
-        setDefaultTabCompleter(true);
-    }
-
-    private void setDefaultTabCompleter(boolean hasObjectBuilderManager) {
         List<String> list = new ArrayList<>();
         getExecutor().setTabCompleter((sender, args) -> {
             for (Function<ExecutorData, List<String>> childTabCompleter : nonAdminChildTabCompleter) {
@@ -319,12 +293,13 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
             }
             if (!executor.hasAdminPermission(sender))
                 return list;
-            addAdminChildTabCompleter(data -> {
-                List<String> stringList = new ArrayList<>();
-                stringList.add("add");
-                stringList.add("remove");
-                return stringList;
-            });
+            if (hasObjectBuilderManager)
+                addAdminChildTabCompleter(data -> {
+                    List<String> stringList = new ArrayList<>();
+                    stringList.add("add");
+                    stringList.add("remove");
+                    return stringList;
+                });
             for (Function<ExecutorData, List<String>> childTabCompleter : adminChildTabCompleter) {
                 List<String> childTabCompletion = childTabCompleter.apply(new ExecutorData(executor, args, sender));
                 if (childTabCompletion != null && !childTabCompletion.isEmpty())
@@ -379,9 +354,5 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                     .modify(s -> s.replace("%element%", key))
                     .sendAndPlay(player);
         }, function);
-    }
-
-    public void setHasObjectBuilderManager(boolean hasObjectBuilderManager) {
-        setDefaultCommands(hasObjectBuilderManager).setDefaultTabCompleter(hasObjectBuilderManager);
     }
 }

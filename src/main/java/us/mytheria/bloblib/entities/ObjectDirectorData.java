@@ -21,10 +21,14 @@ public record ObjectDirectorData(String objectDirectory, String objectBuilderKey
                                                       String objectBuilderFilename,
                                                       String objectDirectoryFilename,
                                                       String objectName) {
+
         File file = new File(blobFileManager.inventoriesDirectory() + "/" + objectBuilderFilename + ".yml");
+        String fileName = file.getName();
         blobFileManager.addDirectory(objectDirectoryFilename, NamingConventions.toCamelCase(objectName));
-        blobFileManager.addFile(objectBuilderFilename, file);
-        blobFileManager.updateYAML(file);
+        if (blobFileManager.getPlugin().getResource(fileName) != null) {
+            blobFileManager.addFile(objectBuilderFilename, file);
+            blobFileManager.updateYAML(file);
+        }
         return new ObjectDirectorData(objectDirectoryFilename, objectBuilderFilename, objectName);
     }
 
