@@ -1,9 +1,10 @@
 package us.mytheria.bloblib.utilities;
 
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
+
+import java.util.function.Function;
 
 
 public class BlockUtil {
@@ -55,4 +56,35 @@ public class BlockUtil {
     public static void setLight(Location pos1, Location pos2) {
         set(pos1.getWorld(), pos1.toVector(), pos2.toVector(), Material.LIGHT);
     }
+
+    public static void playSoundFromSoundGroup(Block block, Function<SoundGroup, Sound> soundGroupConsumer,
+                                               float volume, float pitch) {
+        block.getWorld().playSound(block.getLocation(), soundGroupConsumer.apply(block.getBlockData()
+                .getSoundGroup()), volume, pitch);
+    }
+
+    public static void playSoundFromSoundGroup(Block block, Function<SoundGroup, Sound> soundGroupConsumer) {
+        playSoundFromSoundGroup(block, soundGroupConsumer, 1, 1);
+    }
+
+    public static void playPlaceSound(Block block) {
+        playSoundFromSoundGroup(block, SoundGroup::getPlaceSound);
+    }
+
+    public static void playBreakSound(Block block) {
+        playSoundFromSoundGroup(block, SoundGroup::getBreakSound);
+    }
+
+    public static void playStepSound(Block block) {
+        playSoundFromSoundGroup(block, SoundGroup::getStepSound);
+    }
+
+    public static void playHitSound(Block block) {
+        playSoundFromSoundGroup(block, SoundGroup::getHitSound);
+    }
+
+    public static void playFallSound(Block block) {
+        playSoundFromSoundGroup(block, SoundGroup::getFallSound);
+    }
+
 }
