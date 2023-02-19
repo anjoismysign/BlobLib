@@ -6,6 +6,7 @@ import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import us.mytheria.bloblib.SkullCreator;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -16,12 +17,17 @@ public class ItemStackReader {
 
     public static ItemStackBuilder read(ConfigurationSection section) {
         String inputMaterial = section.getString("Material", "DIRT");
-        Material material = Material.getMaterial(inputMaterial);
-        if (material == null) {
-            Bukkit.getLogger().severe("Material " + inputMaterial + " is not a valid material. Using DIRT instead.");
-            material = Material.DIRT;
-        }
-        ItemStackBuilder builder = ItemStackBuilder.build(material);
+        ItemStackBuilder builder;
+        if (!inputMaterial.startsWith("HEAD-")) {
+            Material material = Material.getMaterial(inputMaterial);
+            if (material == null) {
+                Bukkit.getLogger().severe("Material " + inputMaterial + " is not a valid material. Using DIRT instead.");
+                material = Material.DIRT;
+            }
+            builder = ItemStackBuilder.build(material);
+        } else
+            builder = ItemStackBuilder.build(SkullCreator.itemFromUrl(inputMaterial.substring(5)));
+
         if (section.contains("Amount")) {
             builder = builder.amount(section.getInt("Amount"));
         }
