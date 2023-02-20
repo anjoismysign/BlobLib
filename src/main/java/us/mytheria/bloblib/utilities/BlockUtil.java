@@ -2,6 +2,7 @@ package us.mytheria.bloblib.utilities;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.util.Vector;
 
 import java.util.function.Function;
@@ -59,8 +60,7 @@ public class BlockUtil {
 
     public static void playSoundFromSoundGroup(Block block, Function<SoundGroup, Sound> soundGroupConsumer,
                                                float volume, float pitch) {
-        block.getWorld().playSound(block.getLocation(), soundGroupConsumer.apply(block.getBlockData()
-                .getSoundGroup()), volume, pitch);
+        playSoundFromSoundGroup(block.getState(), soundGroupConsumer, volume, pitch);
     }
 
     public static void playSoundFromSoundGroup(Block block, Function<SoundGroup, Sound> soundGroupConsumer) {
@@ -87,4 +87,33 @@ public class BlockUtil {
         playSoundFromSoundGroup(block, SoundGroup::getFallSound);
     }
 
+    public static void playSoundFromSoundGroup(BlockState blockState, Function<SoundGroup, Sound> soundGroupConsumer,
+                                               float volume, float pitch) {
+        blockState.getWorld().playSound(blockState.getLocation(), soundGroupConsumer.apply(blockState.getBlockData()
+                .getSoundGroup()), volume, pitch);
+    }
+
+    public static void playSoundFromSoundGroup(BlockState blockState, Function<SoundGroup, Sound> soundGroupConsumer) {
+        playSoundFromSoundGroup(blockState, soundGroupConsumer, 1, 1);
+    }
+
+    public static void playPlaceSound(BlockState blockState) {
+        playSoundFromSoundGroup(blockState, SoundGroup::getPlaceSound);
+    }
+
+    public static void playBreakSound(BlockState blockState) {
+        playSoundFromSoundGroup(blockState, SoundGroup::getBreakSound);
+    }
+
+    public static void playStepSound(BlockState blockState) {
+        playSoundFromSoundGroup(blockState, SoundGroup::getStepSound);
+    }
+
+    public static void playHitSound(BlockState blockState) {
+        playSoundFromSoundGroup(blockState, SoundGroup::getHitSound);
+    }
+
+    public static void playFallSound(BlockState blockState) {
+        playSoundFromSoundGroup(blockState, SoundGroup::getFallSound);
+    }
 }
