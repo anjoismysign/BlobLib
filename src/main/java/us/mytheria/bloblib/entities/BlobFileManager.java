@@ -39,6 +39,7 @@ public class BlobFileManager extends Manager {
         addFile("inventories", new File(pluginDirectory.getPath() + "/BlobInventory"));
         addFile("defaultSounds", new File(soundsDirectory().getPath() + "/" + lowercased + "_sounds.yml"));
         addFile("defaultMessages", new File(messagesDirectory().getPath() + "/" + lowercased + "_lang.yml"));
+        addFile("defaultInventories", new File(inventoriesDirectory().getPath() + "/" + lowercased + "_inventories.yml"));
         loadFiles();
     }
 
@@ -168,6 +169,9 @@ public class BlobFileManager extends Manager {
             Optional<InputStream> langOptional = Optional.ofNullable(main.getResource(lowercased + "_lang.yml"));
             if (langOptional.isPresent())
                 ResourceUtil.updateYml(messagesDirectory(), "/temp" + lowercased + "_lang.yml", lowercased + "_lang.yml", getDefaultMessages(), getPlugin());
+            Optional<InputStream> inventoriesOptional = Optional.ofNullable(main.getResource(lowercased + "_inventories.yml"));
+            if (inventoriesOptional.isPresent())
+                ResourceUtil.updateYml(inventoriesDirectory(), "/temp" + lowercased + "_inventories.yml", lowercased + "_inventories.yml", getDefaultInventories(), getPlugin());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -241,5 +245,15 @@ public class BlobFileManager extends Manager {
     @NotNull
     public File getDefaultSounds() {
         return getFile("defaultSounds");
+    }
+
+    /**
+     * Returns the default inventories file.
+     *
+     * @return the default inventories file.
+     */
+    @NotNull
+    public File getDefaultInventories() {
+        return getFile("defaultInventories");
     }
 }
