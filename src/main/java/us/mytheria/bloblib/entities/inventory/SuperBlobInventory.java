@@ -106,4 +106,9 @@ public class SuperBlobInventory extends BlobInventory {
     private SuperBlobInventory(String title, int size, ButtonManager buttonManager) {
         super(title, size, buttonManager);
     }
+
+    @Override
+    public SuperBlobButtonManager getButtonManager() {
+        return (SuperBlobButtonManager) super.getButtonManager();
+    }
 }
