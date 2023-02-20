@@ -160,18 +160,23 @@ public class BlobFileManager extends Manager {
             if (!soundsDirectory().exists()) soundsDirectory().mkdir();
             if (!inventoriesDirectory().exists()) inventoriesDirectory().mkdir();
             ///////////////////////////////////////////
-            if (!getDefaultSounds().exists()) getDefaultSounds().createNewFile();
-            if (!getDefaultMessages().exists()) getDefaultMessages().createNewFile();
+
             JavaPlugin main = getPlugin();
             Optional<InputStream> soundsOptional = Optional.ofNullable(main.getResource(lowercased + "_sounds.yml"));
-            if (soundsOptional.isPresent())
+            if (soundsOptional.isPresent()) {
+                if (!getDefaultSounds().exists()) getDefaultSounds().createNewFile();
                 ResourceUtil.updateYml(soundsDirectory(), "/temp" + lowercased + "_sounds.yml", lowercased + "_sounds.yml", getDefaultSounds(), getPlugin());
+            }
             Optional<InputStream> langOptional = Optional.ofNullable(main.getResource(lowercased + "_lang.yml"));
-            if (langOptional.isPresent())
+            if (langOptional.isPresent()) {
+                if (!getDefaultMessages().exists()) getDefaultMessages().createNewFile();
                 ResourceUtil.updateYml(messagesDirectory(), "/temp" + lowercased + "_lang.yml", lowercased + "_lang.yml", getDefaultMessages(), getPlugin());
+            }
             Optional<InputStream> inventoriesOptional = Optional.ofNullable(main.getResource(lowercased + "_inventories.yml"));
-            if (inventoriesOptional.isPresent())
+            if (inventoriesOptional.isPresent()) {
+                if (!getDefaultInventories().exists()) getDefaultInventories().createNewFile();
                 ResourceUtil.updateYml(inventoriesDirectory(), "/temp" + lowercased + "_inventories.yml", lowercased + "_inventories.yml", getDefaultInventories(), getPlugin());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
