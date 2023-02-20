@@ -1,5 +1,7 @@
 package us.mytheria.bloblib.entities;
 
+import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
+
 import java.io.File;
 
 public interface BlobObject {
@@ -21,4 +23,14 @@ public interface BlobObject {
      * @return The file that was saved
      */
     File saveToFile(File directory);
+
+    /**
+     * Should return a new ObjectBuilder that will automatically
+     * apply the attributes saved inside this BlobObject.
+     *
+     * @return The ObjectBuilder
+     */
+    default ObjectBuilder<BlobObject> edit() {
+        return null;
+    }
 }

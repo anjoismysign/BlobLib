@@ -34,6 +34,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
     private final List<Function<ExecutorData, List<String>>> adminChildTabCompleter;
     private final String objectName;
     private final boolean hasObjectBuilderManager;
+    private boolean objectIsEditable;
 
     public ObjectDirector(ManagerDirector managerDirector,
                           ObjectDirectorData objectDirectorData,
@@ -45,6 +46,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                           ObjectDirectorData objectDirectorData,
                           Function<File, T> readFunction, boolean hasObjectBuilderManager) {
         super(managerDirector);
+        objectIsEditable = false;
         this.hasObjectBuilderManager = hasObjectBuilderManager;
         if (hasObjectBuilderManager)
             this.objectBuilderManager = new ObjectBuilderManager<>(managerDirector,
@@ -66,6 +68,8 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                         continue;
                     if (file.isFile()) {
                         T blobObject = readFunction.apply(file);
+                        if (blobObject.edit() != null)
+                            objectIsEditable = true;
                         addObject(blobObject.getKey(), blobObject, file);
                     }
                     if (file.isDirectory())
@@ -100,7 +104,8 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
     @Override
     public void reload() {
         getObjectManager().reload();
-        getObjectBuilderManager().reload();
+        if (getObjectBuilderManager() != null)
+            getObjectBuilderManager().reload();
     }
 
     /**
@@ -272,6 +277,19 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                             }
                             return false;
                         });
+                        addAdminChildCommand(data -> {
+                            Result<BlobChildCommand> result = data.executor()
+                                    .isChildCommand("edit", data.args());
+                            if (result.isValid()) {
+                                if (args.length != 2)
+                                    return false;
+                                String input = args[1];
+                                return getExecutor().ifInstanceOfPlayer(data.sender(), player -> {
+                                    editObject(player, input);
+                                });
+                            }
+                            return false;
+                        });
                     }
                     for (Function<ExecutorData, Boolean> childCommand : adminChildCommands) {
                         if (childCommand.apply(new ExecutorData(executor, args, sender)))
@@ -298,6 +316,8 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                     List<String> stringList = new ArrayList<>();
                     stringList.add("add");
                     stringList.add("remove");
+                    if (objectIsEditable)
+                        stringList.add("edit");
                     return stringList;
                 });
             for (Function<ExecutorData, List<String>> childTabCompleter : adminChildTabCompleter) {
@@ -354,5 +374,24 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                     .modify(s -> s.replace("%element%", key))
                     .sendAndPlay(player);
         }, function);
+    }
+
+    public boolean objectIsEditable() {
+        return objectIsEditable;
+    }
+
+    @SuppressWarnings("unchecked")
+    public void editObject(Player player, String key) {
+        if (!objectIsEditable) {
+            BlobLibAssetAPI.getMessage("Object.Not-Editable").sendAndPlay(player);
+            return;
+        }
+        T object = objectManager.getObject(key);
+        if (object == null) {
+            BlobLibAssetAPI.getMessage("Object.Not-Found").sendAndPlay(player);
+            return;
+        }
+        ObjectBuilder<T> builder = (ObjectBuilder<T>) object.edit();
+        getObjectBuilderManager().addBuilder(player.getUniqueId(), builder);
     }
 }

@@ -2,6 +2,7 @@ package us.mytheria.bloblib.entities;
 
 import me.anjoismysign.anjo.entities.Result;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.managers.Manager;
 import us.mytheria.bloblib.managers.ManagerDirector;
 
@@ -123,6 +124,7 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
         loadFiles(loadFilesDirectory);
     }
 
+    @Nullable
     /**
      * @param key The key/fileName of the object
      * @return The object if found, null otherwise

@@ -27,6 +27,13 @@ System:
     Title: '&f&lDONE'
     Subtitle: '&7Reload complete'
     BlobSound: System.Done
+Object:
+  Not-Found:
+    Type: CHAT
+    Message: '&cObject not found'
+  Not-Editable:
+    Type: CHAT
+    Message: '&cObject is not editable'
 Builder:
   Invalid-Input:
     Type: CHAT
