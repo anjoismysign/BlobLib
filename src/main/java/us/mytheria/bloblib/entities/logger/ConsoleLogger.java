@@ -1,7 +1,9 @@
 package us.mytheria.bloblib.entities.logger;
 
 import me.anjoismysign.anjo.logger.Logger;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import us.mytheria.bloblib.managers.ColorManager;
 
 /**
  * @author anjoismysign
@@ -39,5 +41,14 @@ public class ConsoleLogger implements Logger {
     @Override
     public void debug(String message) {
         logger.fine(message);
+    }
+
+    /**
+     * Will get a random color from the ColorManager
+     *
+     * @return a random color
+     */
+    public ChatColor getRandomColor() {
+        return ColorManager.getRandomColor();
     }
 }
