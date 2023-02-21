@@ -3,6 +3,7 @@ package us.mytheria.bloblib.entities;
 import me.anjoismysign.anjo.entities.Result;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -284,9 +285,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                                 if (args.length != 2)
                                     return false;
                                 String input = args[1];
-                                return getExecutor().ifInstanceOfPlayer(data.sender(), player -> {
-                                    editObject(player, input);
-                                });
+                                return getExecutor().ifInstanceOfPlayer(data.sender(), player -> editObject(player, input));
                             }
                             return false;
                         });
@@ -302,17 +301,19 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
     }
 
     private void setDefaultTabCompleter() {
-        List<String> list = new ArrayList<>();
-        getExecutor().setTabCompleter((sender, args) -> {
+        getExecutor().setTabCompleter(tabCompleterData -> {
+            CommandSender sender = tabCompleterData.sender();
+            String[] args = tabCompleterData.args();
+            List<String> suggestions = tabCompleterData.suggestions();
             for (Function<ExecutorData, List<String>> childTabCompleter : nonAdminChildTabCompleter) {
                 List<String> childTabCompletion = childTabCompleter.apply(new ExecutorData(executor, args, sender));
                 if (childTabCompletion != null)
-                    list.addAll(childTabCompletion);
+                    suggestions.addAll(childTabCompletion);
             }
             if (!executor.hasAdminPermission(sender))
-                return list;
+                return suggestions;
             if (hasObjectBuilderManager)
-                addAdminChildTabCompleter(data -> {
+                addAdminChildTabCompleter(executorData -> {
                     List<String> stringList = new ArrayList<>();
                     stringList.add("add");
                     stringList.add("remove");
@@ -323,9 +324,9 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
             for (Function<ExecutorData, List<String>> childTabCompleter : adminChildTabCompleter) {
                 List<String> childTabCompletion = childTabCompleter.apply(new ExecutorData(executor, args, sender));
                 if (childTabCompletion != null && !childTabCompletion.isEmpty())
-                    list.addAll(childTabCompletion);
+                    suggestions.addAll(childTabCompletion);
             }
-            return list;
+            return suggestions;
         });
     }
 

@@ -13,13 +13,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.logging.Level;
 
 public class BlobExecutor implements CommandExecutor, TabCompleter {
     private final String debugPermission;
     private final String adminPermission;
     private final String commandName;
-    private BiFunction<CommandSender, String[], List<String>> tabCompleter;
+    private Function<TabCompleterData, List<String>> tabCompleter;
     private BiFunction<CommandSender, String[], Boolean> command;
     private Consumer<CommandSender> debug;
 
@@ -33,7 +34,7 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
         command.setTabCompleter(this);
         this.adminPermission = plugin.getName().toLowerCase() + ".admin";
         this.debugPermission = plugin.getName().toLowerCase() + ".debug";
-        tabCompleter = (sender, args) -> {
+        tabCompleter = data -> {
             List<String> list = new ArrayList<>();
             list.add("By default, this command has no tab completion.");
             list.add("Use BlobExecutor#setTabCompleter to customize.");
@@ -77,8 +78,8 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
      *                     String[] are the arguments of the command.
      *                     List<String> is the list of suggestions of tab completion.
      */
-    public void setTabCompleter(BiFunction<CommandSender, String[], List<String>> tabCompleter) {
-        this.tabCompleter = Objects.requireNonNullElseGet(tabCompleter, () -> (sender, args) -> new ArrayList<>());
+    public void setTabCompleter(Function<TabCompleterData, List<String>> tabCompleter) {
+        this.tabCompleter = Objects.requireNonNullElseGet(tabCompleter, () -> data -> new ArrayList<>());
     }
 
     /**
@@ -301,7 +302,7 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (command.getName().equalsIgnoreCase(commandName)) {
-            return tabCompleter.apply(sender, args);
+            return tabCompleter.apply(new TabCompleterData(sender, args, new ArrayList<>()));
         }
         return null;
     }

@@ -13,6 +13,16 @@ public abstract class BlobPlugin extends JavaPlugin {
     private final BlobPluginLogger logger = new BlobPluginLogger(this);
 
     /**
+     * Will unregister from BlobLib and
+     * call unload method on the ManagerDirector.
+     */
+    @Override
+    public void onDisable() {
+        unregisterFromBlobLib();
+        getManagerDirector().unload();
+    }
+
+    /**
      * This method is called whenever BlobLib needs to reload all
      * plugins' assets, including this one if correctly registered.
      * <p>

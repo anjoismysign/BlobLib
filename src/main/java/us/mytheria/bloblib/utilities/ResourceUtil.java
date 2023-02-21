@@ -64,8 +64,8 @@ public class ResourceUtil {
         }
     }
 
-    public static void updateYml(File path, String tempPath, String fileName, File existingFile, Plugin main) {
-        File tempFile = new File(path.getPath() + tempPath);
+    public static void updateYml(File path, String tempFileName, String fileName, File existingFile, Plugin main) {
+        File tempFile = new File(path.getPath() + tempFileName);
         ResourceUtil.inputStreamToFile(tempFile, main.getResource(fileName)); // writes defaults to temp file
         YamlConfiguration tempYamlConfiguration = YamlConfiguration.loadConfiguration(tempFile);
         ResourceUtil.writeNewValues(existingFile,

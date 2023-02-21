@@ -97,7 +97,6 @@ public class InventoryManager {
 
     private void loadYamlConfiguration(BlobPlugin plugin, File file) {
         String fileName = FilenameUtils.removeExtension(file.getName());
-        plugin.getAnjoLogger().log("Loading BlobInventory: " + fileName);
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
             if (inventories.containsKey(fileName)) {
@@ -123,6 +122,26 @@ public class InventoryManager {
         });
     }
 
+    public static void continueLoading(BlobPlugin plugin, boolean warnDuplicates, File... files) {
+        InventoryManager manager = BlobLib.getInstance().getInventoryManager();
+        manager.duplicates.clear();
+        for (File file : files)
+            manager.loadYamlConfiguration(plugin, file);
+        if (warnDuplicates)
+            manager.duplicates.forEach((key, value) -> plugin.getAnjoLogger()
+                    .log("Duplicate BlobInventory: '" + key + "' (found " + value + " instances)"));
+    }
+
+    public static void continueLoading(BlobPlugin plugin, File... files) {
+        continueLoading(plugin, true, files);
+    }
+
+    /**
+     * @param plugin The plugin that is loading the inventory
+     * @param file   The file to load
+     * @deprecated Use {@link #continueLoading(BlobPlugin, File...)} instead
+     */
+    @Deprecated
     public static void loadAndRegisterYamlConfiguration(BlobPlugin plugin, File file) {
         InventoryManager manager = BlobLib.getInstance().getInventoryManager();
         manager.loadYamlConfiguration(plugin, file);

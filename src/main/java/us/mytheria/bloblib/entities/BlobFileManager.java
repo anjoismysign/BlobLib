@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.entities;
 
+import org.apache.commons.io.FilenameUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -91,12 +92,13 @@ public class BlobFileManager extends Manager {
      * @return if it's a fresh file / was just created.
      */
     public boolean updateYAML(File file) {
-        String fileName = file.getName();
+        String fileName = FilenameUtils.removeExtension(file.getName());
         try {
             boolean isFresh = file.createNewFile();
-            ResourceUtil.updateYml(file.getParentFile(),
-                    "/temp" + fileName,
-                    fileName, file, getPlugin());
+            if (isFresh)
+                ResourceUtil.updateYml(file.getParentFile(),
+                        "/temp" + fileName + ".yml",
+                        fileName + ".yml", file, getPlugin());
             return isFresh;
         } catch (IOException e) {
             e.printStackTrace();
@@ -213,9 +215,9 @@ public class BlobFileManager extends Manager {
     }
 
     /**
-     * Returns the sounds folder.
+     * Returns the sounds' folder.
      *
-     * @return the sounds folder.
+     * @return the sounds' folder.
      */
     @NotNull
     public File soundsDirectory() {
@@ -223,9 +225,9 @@ public class BlobFileManager extends Manager {
     }
 
     /**
-     * Returns the inventories folder.
+     * Returns the inventories' folder.
      *
-     * @return the inventories folder.
+     * @return the inventories' folder.
      */
     @NotNull
     public File inventoriesDirectory() {
