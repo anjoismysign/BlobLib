@@ -1,6 +1,5 @@
 package us.mytheria.bloblib.managers;
 
-import me.anjoismysign.anjo.logger.Logger;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.entities.logger.BlobPluginLogger;
@@ -64,7 +63,7 @@ public abstract class BlobPlugin extends JavaPlugin {
     public abstract ManagerDirector getManagerDirector();
 
     @NotNull
-    public Logger getAnjoLogger() {
+    public BlobPluginLogger getAnjoLogger() {
         return logger;
     }
 }
