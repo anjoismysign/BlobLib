@@ -3,7 +3,6 @@ package us.mytheria.bloblib.entities;
 import me.anjoismysign.anjo.entities.Result;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -100,6 +99,50 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
         executor = new BlobExecutor(getPlugin(), objectDirectorData.objectName());
         objectName = objectDirectorData.objectName();
         setDefaultCommands().setDefaultTabCompleter();
+        if (hasObjectBuilderManager) {
+            addAdminChildTabCompleter(executorData -> {
+                String[] args = executorData.args();
+                if (args.length != 1)
+                    return null;
+                List<String> list = new ArrayList<>();
+                list.add("add");
+                list.add("remove");
+                if (objectIsEditable)
+                    list.add("edit");
+                return list;
+            });
+            addAdminChildCommand(data -> {
+                Result<BlobChildCommand> result = data.executor()
+                        .isChildCommand("add", data.args());
+                if (result.isValid()) {
+                    return getExecutor().ifInstanceOfPlayer(data.sender(), player -> {
+                        ObjectBuilder<T> builder = objectBuilderManager.getOrDefault(player.getUniqueId());
+                        builder.openInventory();
+                    });
+                }
+                return false;
+            });
+            addAdminChildCommand(data -> {
+                Result<BlobChildCommand> result = data.executor()
+                        .isChildCommand("remove", data.args());
+                if (result.isValid()) {
+                    return getExecutor().ifInstanceOfPlayer(data.sender(), this::removeObject);
+                }
+                return false;
+            });
+            addAdminChildCommand(data -> {
+                String[] args = data.args();
+                Result<BlobChildCommand> result = data.executor()
+                        .isChildCommand("edit", data.args());
+                if (result.isValid()) {
+                    if (args.length != 2)
+                        return false;
+                    String input = args[1];
+                    return getExecutor().ifInstanceOfPlayer(data.sender(), player -> editObject(player, input));
+                }
+                return false;
+            });
+        }
     }
 
     @Override
@@ -258,38 +301,6 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                     }
                     if (!executor.hasAdminPermission(sender))
                         return true;
-                    if (hasObjectBuilderManager) {
-                        addAdminChildCommand(data -> {
-                            Result<BlobChildCommand> result = data.executor()
-                                    .isChildCommand("add", data.args());
-                            if (result.isValid()) {
-                                return getExecutor().ifInstanceOfPlayer(data.sender(), player -> {
-                                    ObjectBuilder<T> builder = objectBuilderManager.getOrDefault(player.getUniqueId());
-                                    builder.openInventory();
-                                });
-                            }
-                            return false;
-                        });
-                        addAdminChildCommand(data -> {
-                            Result<BlobChildCommand> result = data.executor()
-                                    .isChildCommand("remove", data.args());
-                            if (result.isValid()) {
-                                return getExecutor().ifInstanceOfPlayer(data.sender(), this::removeObject);
-                            }
-                            return false;
-                        });
-                        addAdminChildCommand(data -> {
-                            Result<BlobChildCommand> result = data.executor()
-                                    .isChildCommand("edit", data.args());
-                            if (result.isValid()) {
-                                if (args.length != 2)
-                                    return false;
-                                String input = args[1];
-                                return getExecutor().ifInstanceOfPlayer(data.sender(), player -> editObject(player, input));
-                            }
-                            return false;
-                        });
-                    }
                     for (Function<ExecutorData, Boolean> childCommand : adminChildCommands) {
                         if (childCommand.apply(new ExecutorData(executor, args, sender)))
                             return true;
@@ -301,26 +312,15 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
     }
 
     private void setDefaultTabCompleter() {
-        getExecutor().setTabCompleter(tabCompleterData -> {
-            CommandSender sender = tabCompleterData.sender();
-            String[] args = tabCompleterData.args();
-            List<String> suggestions = tabCompleterData.suggestions();
+        getExecutor().setTabCompleter((sender, args) -> {
+            List<String> suggestions = new ArrayList<>();
             for (Function<ExecutorData, List<String>> childTabCompleter : nonAdminChildTabCompleter) {
                 List<String> childTabCompletion = childTabCompleter.apply(new ExecutorData(executor, args, sender));
-                if (childTabCompletion != null)
+                if (childTabCompletion != null && !childTabCompletion.isEmpty())
                     suggestions.addAll(childTabCompletion);
             }
             if (!executor.hasAdminPermission(sender))
                 return suggestions;
-            if (hasObjectBuilderManager)
-                addAdminChildTabCompleter(executorData -> {
-                    List<String> stringList = new ArrayList<>();
-                    stringList.add("add");
-                    stringList.add("remove");
-                    if (objectIsEditable)
-                        stringList.add("edit");
-                    return stringList;
-                });
             for (Function<ExecutorData, List<String>> childTabCompleter : adminChildTabCompleter) {
                 List<String> childTabCompletion = childTabCompleter.apply(new ExecutorData(executor, args, sender));
                 if (childTabCompletion != null && !childTabCompletion.isEmpty())

@@ -18,8 +18,8 @@ public abstract class BlobPlugin extends JavaPlugin {
      */
     @Override
     public void onDisable() {
-        unregisterFromBlobLib();
         getManagerDirector().unload();
+        unregisterFromBlobLib();
     }
 
     /**

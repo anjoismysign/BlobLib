@@ -13,14 +13,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.logging.Level;
 
 public class BlobExecutor implements CommandExecutor, TabCompleter {
     private final String debugPermission;
     private final String adminPermission;
     private final String commandName;
-    private Function<TabCompleterData, List<String>> tabCompleter;
+    private BiFunction<CommandSender, String[], List<String>> tabCompleter;
     private BiFunction<CommandSender, String[], Boolean> command;
     private Consumer<CommandSender> debug;
 
@@ -34,7 +33,7 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
         command.setTabCompleter(this);
         this.adminPermission = plugin.getName().toLowerCase() + ".admin";
         this.debugPermission = plugin.getName().toLowerCase() + ".debug";
-        tabCompleter = data -> {
+        tabCompleter = (sender, args) -> {
             List<String> list = new ArrayList<>();
             list.add("By default, this command has no tab completion.");
             list.add("Use BlobExecutor#setTabCompleter to customize.");
@@ -76,10 +75,11 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
      * @param tabCompleter CommandSender is the sender of the command.
      *                     Could be from console to even a Player.
      *                     String[] are the arguments of the command.
-     *                     List<String> is the list of suggestions of tab completion.
+     *                     List&lt;String&gt; is the list of suggestions of tab completion.
      */
-    public void setTabCompleter(Function<TabCompleterData, List<String>> tabCompleter) {
-        this.tabCompleter = Objects.requireNonNullElseGet(tabCompleter, () -> data -> new ArrayList<>());
+    public void setTabCompleter(BiFunction<CommandSender, String[], List<String>> tabCompleter) {
+        this.tabCompleter = Objects.requireNonNullElseGet(tabCompleter, () -> (sender, args)
+                -> new ArrayList<>());
     }
 
     /**
@@ -302,7 +302,7 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (command.getName().equalsIgnoreCase(commandName)) {
-            return tabCompleter.apply(new TabCompleterData(sender, args, new ArrayList<>()));
+            return tabCompleter.apply(sender, args);
         }
         return null;
     }
