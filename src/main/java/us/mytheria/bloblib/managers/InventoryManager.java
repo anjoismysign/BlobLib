@@ -168,12 +168,7 @@ public class InventoryManager {
         BlobInventory inventory = inventories.get(key);
         if (inventory == null)
             return null;
-        try {
-            return inventory.clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return inventory.copy();
     }
 
     private void add(String key, BlobInventory inventory) {

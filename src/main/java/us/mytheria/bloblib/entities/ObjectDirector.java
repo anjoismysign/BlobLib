@@ -307,7 +307,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
             for (Function<ExecutorData, List<String>> childTabCompleter : nonAdminChildTabCompleter) {
                 List<String> childTabCompletion = childTabCompleter.apply(new ExecutorData(executor, args, sender));
                 if (childTabCompletion != null)
-                    return childTabCompletion;
+                    list.addAll(childTabCompletion);
             }
             if (!executor.hasAdminPermission(sender))
                 return list;
@@ -323,7 +323,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
             for (Function<ExecutorData, List<String>> childTabCompleter : adminChildTabCompleter) {
                 List<String> childTabCompletion = childTabCompleter.apply(new ExecutorData(executor, args, sender));
                 if (childTabCompletion != null && !childTabCompletion.isEmpty())
-                    return childTabCompletion;
+                    list.addAll(childTabCompletion);
             }
             return list;
         });
