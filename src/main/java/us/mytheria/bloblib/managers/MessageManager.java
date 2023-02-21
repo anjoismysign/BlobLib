@@ -129,6 +129,26 @@ public class MessageManager {
         });
     }
 
+    /**
+     * Loads a YamlConfiguration from a file and registers it to the plugin.
+     * Will return false if the plugin has not been loaded.
+     * Will print duplicates.
+     * NOTE: Printing duplicates runs for each time you call this method!
+     *
+     * @param file   The file to load
+     * @param plugin The plugin to register the messages to
+     * @return Whether the plugin has been loaded
+     */
+    public static boolean loadAndRegisterYamlConfiguration(File file, BlobPlugin plugin) {
+        MessageManager manager = BlobLib.getInstance().getMessageManager();
+        if (!manager.pluginMessages.containsKey(plugin.getName()))
+            return false;
+        manager.loadYamlConfiguration(file, plugin);
+        manager.duplicates.forEach((key, value) -> BlobLib.getAnjoLogger()
+                .log("Duplicate BlobMessage: '" + key + "' (found " + value + " instances)"));
+        return true;
+    }
+
     private void addDuplicate(String key) {
         if (duplicates.containsKey(key))
             duplicates.put(key, duplicates.get(key) + 1);

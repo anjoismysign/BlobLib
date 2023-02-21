@@ -49,7 +49,10 @@ public class ObjectBuilderManager<T extends BlobObject> extends Manager {
 
     public void update() {
         this.builders = new HashMap<>();
+        getPlugin().getAnjoLogger().log("Loading ObjectBuilderManager for file '" + fileKey + "'");
         BlobInventory inventory = BlobLibAssetAPI.getBlobInventory(fileKey);
+        if (inventory == null)
+            throw new RuntimeException("Inventory file '" + fileKey + "' not found.");
         this.title = inventory.getTitle();
 //        Optional<File> file = getManagerDirector().getFileManager().searchFile(fileKey);
 //        if (file.isEmpty())

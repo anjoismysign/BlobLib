@@ -97,8 +97,13 @@ public class InventoryManager {
 
     private void loadYamlConfiguration(BlobPlugin plugin, File file) {
         String fileName = FilenameUtils.removeExtension(file.getName());
+        plugin.getAnjoLogger().log("Loading BlobInventory: " + fileName);
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
+            if (inventories.containsKey(fileName)) {
+                addDuplicate(fileName);
+                return;
+            }
             add(fileName, BlobInventory.fromConfigurationSection(yamlConfiguration));
             pluginInventories.get(plugin.getName()).add(fileName);
             return;
@@ -116,6 +121,13 @@ public class InventoryManager {
             add(reference, BlobInventory.fromConfigurationSection(section));
             pluginInventories.get(plugin.getName()).add(reference);
         });
+    }
+
+    public static void loadAndRegisterYamlConfiguration(BlobPlugin plugin, File file) {
+        InventoryManager manager = BlobLib.getInstance().getInventoryManager();
+        manager.loadYamlConfiguration(plugin, file);
+        manager.duplicates.forEach((key, value) -> BlobLib.getAnjoLogger()
+                .log("Duplicate BlobInventory: '" + key + "' (found " + value + " instances)"));
     }
 
     private void loadYamlConfiguration(File file) {

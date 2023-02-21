@@ -43,6 +43,10 @@ public class ConsoleLogger implements Logger {
         logger.fine(message);
     }
 
+    public void exception(Exception exception) {
+        logger.severe(exception.getMessage());
+    }
+
     /**
      * Will get a random color from the ColorManager
      *

@@ -9,7 +9,7 @@ public class BlobPluginLogger extends ConsoleLogger {
     /**
      * Whenever debugging, will print GOLD messages.
      * Whenever logging, will print GREEN messages.
-     * Whenever erroring, will print RED messages.
+     * Whenever an error, will print RED messages.
      * Example output:
      * <p>
      * <{BlobLib}> This is a debug message.
@@ -34,6 +34,11 @@ public class BlobPluginLogger extends ConsoleLogger {
     @Override
     public void error(String message) {
         super.error(ChatColor.RED + prefix() + start() + message);
+    }
+
+    @Override
+    public void exception(Exception exception) {
+        error(exception.getMessage());
     }
 
     public String prefix() {

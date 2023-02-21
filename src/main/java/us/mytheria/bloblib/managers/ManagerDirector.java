@@ -177,7 +177,8 @@ public abstract class ManagerDirector {
             }
         }
         ResourceUtil.updateYml(path, "/temp" + fileName + ".yml", fileName + ".yml", file, plugin);
-        if (debug)
+        boolean successful = MessageManager.loadAndRegisterYamlConfiguration(file, plugin);
+        if (debug && successful)
             logger.debug(" message asset " + fileName + ".yml successfully detached");
         return this;
     }
@@ -217,6 +218,7 @@ public abstract class ManagerDirector {
             }
         }
         ResourceUtil.updateYml(path, "/temp" + fileName + ".yml", fileName + ".yml", file, plugin);
+        SoundManager.loadAndRegisterYamlConfiguration(plugin, file);
         if (debug)
             logger.debug(" sound asset " + fileName + ".yml successfully detached");
         return this;
@@ -243,9 +245,10 @@ public abstract class ManagerDirector {
      * @return The ManagerDirector instance for method chaining
      */
     public ManagerDirector registerAndUpdateInventoryAsset(String fileName, boolean debug) {
-        File file = new File(blobFileManager.inventoriesDirectory() + "/" + fileName + ".yml");
-        blobFileManager.addFile(fileName, file);
+        File path = getFileManager().inventoriesDirectory();
+        File file = new File(path + "/" + fileName + ".yml");
         blobFileManager.updateYAML(file);
+        InventoryManager.loadAndRegisterYamlConfiguration(plugin, file);
         if (debug)
             getPlugin().getAnjoLogger().debug(" inventory asset " + fileName + ".yml successfully registered");
         return this;

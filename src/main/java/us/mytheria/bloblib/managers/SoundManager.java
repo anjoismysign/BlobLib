@@ -109,6 +109,14 @@ public class SoundManager {
         });
     }
 
+    public static boolean loadAndRegisterYamlConfiguration(BlobPlugin plugin, File file) {
+        SoundManager manager = BlobLib.getInstance().getSoundManager();
+        manager.loadYamlConfiguration(plugin, file);
+        manager.duplicates.forEach((key, value) -> BlobLib.getAnjoLogger()
+                .log("Duplicate BlobSound: '" + key + "' (found " + value + " instances)"));
+        return true;
+    }
+
     private void loadYamlConfiguration(File file) {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         yamlConfiguration.getKeys(true).forEach(reference -> {
