@@ -55,7 +55,7 @@ public abstract class BlobPlugin extends JavaPlugin {
 
     /**
      * A BlobPlugin is meant to have a ManagerDirector.
-     * The idea behind it is so you can implement your own
+     * The idea behind it is, so you can implement your own
      * ManagerDirector and use it to manage your managers.
      *
      * @return The ManagerDirector of the plugin.

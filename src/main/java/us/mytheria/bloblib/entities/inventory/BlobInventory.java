@@ -18,7 +18,7 @@ import java.util.Objects;
  * It's my own version/way for managing GUI's / inventories
  * using the Bukkit API.
  */
-public class BlobInventory extends InventoryBuilder implements Cloneable {
+public class BlobInventory extends InventoryBuilder {
     private Inventory inventory;
     private HashMap<String, ItemStack> defaultButtons;
 
@@ -226,14 +226,12 @@ public class BlobInventory extends InventoryBuilder implements Cloneable {
     }
 
     /**
-     * Clones itself to a new reference.
+     * Copies itself to a new reference.
      *
      * @return The cloned inventory
-     * @throws CloneNotSupportedException If the inventory cannot be cloned.
      */
-    @Override
-    public BlobInventory clone() throws CloneNotSupportedException {
-        return (BlobInventory) super.clone();
+    public BlobInventory copy() {
+        return new BlobInventory(getTitle(), getSize(), getButtonManager());
     }
 
     /**
