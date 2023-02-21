@@ -1,6 +1,7 @@
 package us.mytheria.bloblib.entities.logger;
 
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Logger;
@@ -11,7 +12,7 @@ public class BlobPluginLogger extends ConsoleLogger {
 
     public BlobPluginLogger(JavaPlugin plugin) {
         this.plugin = plugin;
-        logger = plugin.getLogger();
+        logger = Bukkit.getLogger();
     }
 
     @Override
