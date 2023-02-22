@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Set;
 
 public class ResourceUtil {
@@ -31,19 +32,32 @@ public class ResourceUtil {
     }
 
     /**
-     * @param newFile               the file to write to
-     * @param tempYamlConfiguration the file to read from
+     * Will only overwrite ConfigurationSections that
+     * are not already present in the existing file
+     * but are so in the temp file.
+     * Comments will be overwritten by the new updated file.
+     *
+     * @param newFile                 the file to write to
+     * @param updateYamlConfiguration the file to read from
      */
-    public static void writeNewValues(File newFile, YamlConfiguration tempYamlConfiguration) {
+    public static void writeNewValues(File newFile, YamlConfiguration updateYamlConfiguration) {
         FileConfiguration existingYamlConfig = YamlConfiguration.loadConfiguration(newFile);
-        Set<String> keys = tempYamlConfiguration.getConfigurationSection("").getKeys(true);
+        Set<String> keys = updateYamlConfiguration.getConfigurationSection("").getKeys(true);
         keys.forEach(key -> {
-            if (!tempYamlConfiguration.isConfigurationSection(key)) return; // if it's not a section, it's a value
+            if (!updateYamlConfiguration.isConfigurationSection(key)) {
+                List<String> comments = updateYamlConfiguration.getComments(key);
+                List<String> inLine = updateYamlConfiguration.getInlineComments(key);
+                if (comments.size() > 0)
+                    existingYamlConfig.setComments(key, comments);
+                if (inLine.size() > 0)
+                    existingYamlConfig.setInlineComments(key, inLine);
+                // if it's not a section, it's a value
+            }
             if (existingYamlConfig.isConfigurationSection(key)) return; //if it exists, skip
-            existingYamlConfig.set(key, existingYamlConfig.get(key)); // write
+            existingYamlConfig.set(key, updateYamlConfiguration.get(key)); // write
         });
         try {
-            tempYamlConfiguration.save(newFile);
+            updateYamlConfiguration.save(newFile);
         } catch (IOException e) {
             e.printStackTrace();
         }

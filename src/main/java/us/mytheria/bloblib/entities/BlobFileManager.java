@@ -166,22 +166,65 @@ public class BlobFileManager extends Manager {
             JavaPlugin main = getPlugin();
             Optional<InputStream> soundsOptional = Optional.ofNullable(main.getResource(lowercased + "_sounds.yml"));
             if (soundsOptional.isPresent()) {
-                if (!getDefaultSounds().exists()) getDefaultSounds().createNewFile();
+                if (getDefaultSounds().createNewFile())
+                    return;
                 ResourceUtil.updateYml(soundsDirectory(), "/temp" + lowercased + "_sounds.yml", lowercased + "_sounds.yml", getDefaultSounds(), getPlugin());
             }
             Optional<InputStream> langOptional = Optional.ofNullable(main.getResource(lowercased + "_lang.yml"));
             if (langOptional.isPresent()) {
-                if (!getDefaultMessages().exists()) getDefaultMessages().createNewFile();
+                if (getDefaultMessages().createNewFile())
+                    return;
                 ResourceUtil.updateYml(messagesDirectory(), "/temp" + lowercased + "_lang.yml", lowercased + "_lang.yml", getDefaultMessages(), getPlugin());
             }
             Optional<InputStream> inventoriesOptional = Optional.ofNullable(main.getResource(lowercased + "_inventories.yml"));
             if (inventoriesOptional.isPresent()) {
-                if (!getDefaultInventories().exists()) getDefaultInventories().createNewFile();
+                if (getDefaultInventories().createNewFile())
+                    return;
                 ResourceUtil.updateYml(inventoriesDirectory(), "/temp" + lowercased + "_inventories.yml", lowercased + "_inventories.yml", getDefaultInventories(), getPlugin());
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Unpacks an embedded file from the plugin's jar's resources folder.
+     * If updatable is true, it will attempt to update the file the same
+     * way it updates the default messages, sounds, and inventories.
+     * If false, it will only generate it one time in their
+     * entire lifetime unless the file is deleted.
+     *
+     * @param path        the path to the file
+     * @param fileName    the name of the file
+     * @param isUpdatable if the file is updatable
+     */
+    public void unpackYamlFile(String path, String fileName, boolean isUpdatable) {
+        File directory = new File(pluginDirectory.getPath() + path);
+        File file = new File(directory + "/" + fileName + ".yml");
+        Optional<InputStream> optional = Optional.ofNullable(getPlugin().getResource(fileName + ".yml"));
+        if (optional.isPresent()) {
+            try {
+                if (file.createNewFile())
+                    return;
+                if (isUpdatable)
+                    ResourceUtil.updateYml(directory, "/temp" + fileName + ".yml",
+                            fileName + ".yml", file, getPlugin());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Unpacks an embedded file from the plugin's jar's resources folder.
+     * Will only generate it one time in their
+     * entire lifetime unless the file is deleted.
+     *
+     * @param path     the path to the file
+     * @param fileName the name of the file
+     */
+    public void unpackYamlFile(String path, String fileName) {
+        unpackYamlFile(path, fileName, false);
     }
 
     /**

@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import us.mytheria.bloblib.managers.Manager;
 import us.mytheria.bloblib.managers.ManagerDirector;
@@ -16,14 +17,29 @@ import us.mytheria.bloblib.managers.ManagerDirector;
 import java.util.*;
 
 public class FloatingPetManager<T extends FloatingPet> extends Manager implements Listener {
-    private final Map<UUID, List<T>> ownerMap;
-    private final Map<UUID, T> petMap;
+    private Map<UUID, List<T>> ownerMap;
+    private Map<UUID, T> petMap;
 
     public FloatingPetManager(ManagerDirector managerDirector) {
         super(managerDirector);
         ownerMap = new HashMap<>();
         petMap = new HashMap<>();
         Bukkit.getPluginManager().registerEvents(this, managerDirector.getPlugin());
+    }
+
+    @Override
+    public void unload() {
+        for (List<T> t : ownerMap.values()) {
+            for (T floatingPet : t) {
+                floatingPet.destroy();
+            }
+        }
+    }
+
+    @Override
+    public void reload() {
+        ownerMap = new HashMap<>();
+        petMap = new HashMap<>();
     }
 
     /**
@@ -113,5 +129,23 @@ public class FloatingPetManager<T extends FloatingPet> extends Manager implement
             pet.teleport(location);
             pet.setPauseLogic(false);
         }));
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent e) {
+        Player player = e.getPlayer();
+        hasPets(player).ifPresent(pets -> pets.forEach(pet -> {
+            petMap.remove(pet.getArmorStand().getUniqueId());
+            pet.destroy();
+        }));
+        ownerMap.remove(player.getUniqueId());
+    }
+
+    public Map<UUID, List<T>> getOwnerMap() {
+        return ownerMap;
+    }
+
+    public Map<UUID, T> getPetMap() {
+        return petMap;
     }
 }

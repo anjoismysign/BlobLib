@@ -49,13 +49,14 @@ public class FloatingPet {
     }
 
     /**
-     * Spawns the pet
+     * Spawns the pet.
+     * NEEDS TO BE CALLED SYNCHRONOUSLY!
      */
     public void spawn() {
-        setActivated(true);
+        setActive(true);
         Location loc = getOwner().getLocation().clone();
         loc.setX(loc.getX() - 1);
-        loc.setY(loc.getY() + 0.75);
+        loc.setY(loc.getY() + 0.85);
         setLocation(loc);
         spawnArmorStand(loc);
     }
@@ -96,8 +97,12 @@ public class FloatingPet {
 
     private void initLogic(JavaPlugin plugin) {
         logicTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
-            spawnParticles();
             Player owner = getOwner();
+            if (owner == null || !owner.isOnline()) {
+                destroy();
+                return;
+            }
+            spawnParticles();
             if (!isPauseLogic()) {
                 double distance = Math.sqrt(Math.pow(getLocation().getX() - owner.getLocation().getX(), 2) + Math.pow(getLocation().getZ() - owner.getLocation().getZ(), 2));
                 if (distance >= 2.5D || Math.abs(owner.getLocation().getY() - getLocation().getY()) > 1D)
@@ -108,7 +113,7 @@ public class FloatingPet {
                     idle();
                 }
             }
-        }, 0, 0);
+        }, 0, 1);
     }
 
     private void moveAway() {
@@ -128,7 +133,7 @@ public class FloatingPet {
      * Will mark the pet as deactivated and will remove the armorstand.
      */
     public void destroy() {
-        setActivated(false);
+        setActive(false);
         Bukkit.getScheduler().cancelTask(logicTask.getTaskId());
         if (armorStand != null) {
             armorStand.remove();
@@ -267,7 +272,7 @@ public class FloatingPet {
         return activated;
     }
 
-    private void setActivated(boolean activated) {
+    private void setActive(boolean activated) {
         this.activated = activated;
     }
 
