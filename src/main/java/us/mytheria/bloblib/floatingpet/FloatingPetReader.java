@@ -7,9 +7,21 @@ import us.mytheria.bloblib.itemstack.ItemStackBuilder;
 import us.mytheria.bloblib.itemstack.ItemStackReader;
 import us.mytheria.bloblib.utilities.SerializationLib;
 
-public class FloatingPetReader {
-
-    public static FloatingPetData read(ConfigurationSection section) {
+/**
+ * A data carrier for the basic FloatingPet data.
+ * The idea for a more complex data carrier is that
+ * you extend FloatingPetData and implement your
+ * own FloatingPetReader which will inject into
+ * the FloatingPetData. We recommend to not allow
+ * any type of FloatingPetReader as a parameter
+ * for any FloatingPet constructor.
+ *
+ * @param itemStack  the ItemStack to display
+ * @param particle   the particle to display
+ * @param customName the custom name to display
+ */
+public record FloatingPetReader(ItemStack itemStack, Particle particle, String customName) {
+    public static FloatingPetReader read(ConfigurationSection section) {
         ItemStackBuilder builder = ItemStackReader.read(section.getConfigurationSection("ItemStack"));
         ItemStack itemStack = builder.build();
         Particle particle = null;
@@ -19,6 +31,6 @@ public class FloatingPetReader {
         if (section.contains("CustomName"))
             customName = section.getString("CustomName");
 
-        return new FloatingPetData(itemStack, particle, customName);
+        return new FloatingPetReader(itemStack, particle, customName);
     }
 }

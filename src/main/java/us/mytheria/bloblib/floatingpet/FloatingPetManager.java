@@ -5,12 +5,14 @@ import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.managers.Manager;
 import us.mytheria.bloblib.managers.ManagerDirector;
 
@@ -19,11 +21,26 @@ import java.util.*;
 public class FloatingPetManager<T extends FloatingPet> extends Manager implements Listener {
     private Map<UUID, List<T>> ownerMap;
     private Map<UUID, T> petMap;
+    @Nullable
+    private final Event destroyEvent;
 
-    public FloatingPetManager(ManagerDirector managerDirector) {
+    /**
+     * Manages simple events relating to floating pets
+     * such as teleporting them to the owner when they
+     * respawn or when they change worlds, preventing
+     * them from being interacted with, and destroying
+     * them when the owner quits.
+     *
+     * @param managerDirector The manager director
+     * @param destroyEvent    Will be called when a pet is destroyed because
+     *                        of a player quitting. Will run SYNCHRONOUSLY.
+     *                        If null, no event will be called.
+     */
+    public FloatingPetManager(ManagerDirector managerDirector, @Nullable Event destroyEvent) {
         super(managerDirector);
         ownerMap = new HashMap<>();
         petMap = new HashMap<>();
+        this.destroyEvent = destroyEvent;
         Bukkit.getPluginManager().registerEvents(this, managerDirector.getPlugin());
     }
 
@@ -136,6 +153,8 @@ public class FloatingPetManager<T extends FloatingPet> extends Manager implement
         Player player = e.getPlayer();
         hasPets(player).ifPresent(pets -> pets.forEach(pet -> {
             petMap.remove(pet.getArmorStand().getUniqueId());
+            if (destroyEvent != null)
+                Bukkit.getPluginManager().callEvent(destroyEvent);
             pet.destroy();
         }));
         ownerMap.remove(player.getUniqueId());
