@@ -15,9 +15,9 @@ import us.mytheria.bloblib.managers.ManagerDirector;
 
 import java.util.*;
 
-public class FloatingPetManager extends Manager implements Listener {
-    private final Map<UUID, List<FloatingPet>> ownerMap;
-    private final Map<UUID, FloatingPet> petMap;
+public class FloatingPetManager<T extends FloatingPet> extends Manager implements Listener {
+    private final Map<UUID, List<T>> ownerMap;
+    private final Map<UUID, T> petMap;
 
     public FloatingPetManager(ManagerDirector managerDirector) {
         super(managerDirector);
@@ -32,7 +32,7 @@ public class FloatingPetManager extends Manager implements Listener {
      *
      * @param floatingPet - the pet to add
      */
-    public void addPet(FloatingPet floatingPet) {
+    public void addPet(T floatingPet) {
         petMap.put(floatingPet.getArmorStand().getUniqueId(), floatingPet);
         ownerMap.computeIfAbsent(floatingPet.getOwner().getUniqueId(), k -> new ArrayList<>()).add(floatingPet);
     }
@@ -44,7 +44,7 @@ public class FloatingPetManager extends Manager implements Listener {
      * @param player - the player to check
      * @return an Optional containing the list of pets
      */
-    public Optional<List<FloatingPet>> hasPets(Player player) {
+    public Optional<List<T>> hasPets(Player player) {
         return hasPets(player.getUniqueId());
     }
 
@@ -55,7 +55,7 @@ public class FloatingPetManager extends Manager implements Listener {
      * @param uuid - the UUID to check
      * @return an Optional containing the list of pets
      */
-    public Optional<List<FloatingPet>> hasPets(UUID uuid) {
+    public Optional<List<T>> hasPets(UUID uuid) {
         return Optional.ofNullable(ownerMap.get(uuid));
     }
 
@@ -66,7 +66,7 @@ public class FloatingPetManager extends Manager implements Listener {
      * @param uuid - the UUID to check
      * @return an Optional containing the pet
      */
-    public Optional<FloatingPet> isPet(UUID uuid) {
+    public Optional<T> isPet(UUID uuid) {
         return Optional.ofNullable(petMap.get(uuid));
     }
 
@@ -77,7 +77,7 @@ public class FloatingPetManager extends Manager implements Listener {
      * @param entity - the Entity to check
      * @return an Optional containing the pet
      */
-    public Optional<FloatingPet> isPet(Entity entity) {
+    public Optional<T> isPet(Entity entity) {
         return isPet(entity.getUniqueId());
     }
 
