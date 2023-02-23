@@ -12,6 +12,7 @@ import us.mytheria.bloblib.utilities.ResourceUtil;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.*;
 
 /**
@@ -166,20 +167,17 @@ public class BlobFileManager extends Manager {
             JavaPlugin main = getPlugin();
             Optional<InputStream> soundsOptional = Optional.ofNullable(main.getResource(lowercased + "_sounds.yml"));
             if (soundsOptional.isPresent()) {
-                if (getDefaultSounds().createNewFile())
-                    return;
+                getDefaultSounds().createNewFile();
                 ResourceUtil.updateYml(soundsDirectory(), "/temp" + lowercased + "_sounds.yml", lowercased + "_sounds.yml", getDefaultSounds(), getPlugin());
             }
             Optional<InputStream> langOptional = Optional.ofNullable(main.getResource(lowercased + "_lang.yml"));
             if (langOptional.isPresent()) {
-                if (getDefaultMessages().createNewFile())
-                    return;
+                getDefaultMessages().createNewFile();
                 ResourceUtil.updateYml(messagesDirectory(), "/temp" + lowercased + "_lang.yml", lowercased + "_lang.yml", getDefaultMessages(), getPlugin());
             }
             Optional<InputStream> inventoriesOptional = Optional.ofNullable(main.getResource(lowercased + "_inventories.yml"));
             if (inventoriesOptional.isPresent()) {
-                if (getDefaultInventories().createNewFile())
-                    return;
+                getDefaultInventories().createNewFile();
                 ResourceUtil.updateYml(inventoriesDirectory(), "/temp" + lowercased + "_inventories.yml", lowercased + "_inventories.yml", getDefaultInventories(), getPlugin());
             }
         } catch (Exception e) {
@@ -189,42 +187,37 @@ public class BlobFileManager extends Manager {
 
     /**
      * Unpacks an embedded file from the plugin's jar's resources folder.
-     * If updatable is true, it will attempt to update the file the same
-     * way it updates the default messages, sounds, and inventories.
-     * If false, it will only generate it one time in their
-     * entire lifetime unless the file is deleted.
-     *
-     * @param path        the path to the file
-     * @param fileName    the name of the file
-     * @param isUpdatable if the file is updatable
-     */
-    public void unpackYamlFile(String path, String fileName, boolean isUpdatable) {
-        File directory = new File(pluginDirectory.getPath() + path);
-        File file = new File(directory + "/" + fileName + ".yml");
-        Optional<InputStream> optional = Optional.ofNullable(getPlugin().getResource(fileName + ".yml"));
-        if (optional.isPresent()) {
-            try {
-                if (file.createNewFile())
-                    return;
-                if (isUpdatable)
-                    ResourceUtil.updateYml(directory, "/temp" + fileName + ".yml",
-                            fileName + ".yml", file, getPlugin());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * Unpacks an embedded file from the plugin's jar's resources folder.
-     * Will only generate it one time in their
-     * entire lifetime unless the file is deleted.
+     * If softUpdate is true, it will only generate the file if it doesn't
+     * already exist, like if server admin removed it.
+     * If softUpdate is false, it will always try to attempt to update
+     * the file with the most recent version embedded in the plugin jar.
+     * Default sounds, messages, and inventories are 'hard' updated.
+     * In case you would like to let the user modify the file and not
+     * have it overwritten, you can use softUpdate!
      *
      * @param path     the path to the file
      * @param fileName the name of the file
      */
-    public void unpackYamlFile(String path, String fileName) {
-        unpackYamlFile(path, fileName, false);
+    public void unpackYamlFile(String path, String fileName, boolean softUpdate) {
+        File directory = new File(pluginDirectory.getPath() + path);
+        try {
+            Files.createDirectories(directory.toPath());
+            File file = new File(directory + "/" + fileName + ".yml");
+            Optional<InputStream> optional = Optional.ofNullable(getPlugin().getResource(fileName + ".yml"));
+            if (optional.isPresent()) {
+                try {
+                    if (softUpdate && file.exists())
+                        return;
+                    file.createNewFile();
+                    ResourceUtil.updateYml(directory, "/temp" + fileName + ".yml",
+                            fileName + ".yml", file, getPlugin());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

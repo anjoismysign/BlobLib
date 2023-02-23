@@ -17,12 +17,13 @@ import us.mytheria.bloblib.managers.Manager;
 import us.mytheria.bloblib.managers.ManagerDirector;
 
 import java.util.*;
+import java.util.function.Function;
 
 public class FloatingPetManager<T extends FloatingPet> extends Manager implements Listener {
     private Map<UUID, List<T>> ownerMap;
     private Map<UUID, T> petMap;
     @Nullable
-    private final Event destroyEvent;
+    private final Function<T, Event> destroyEvent;
 
     /**
      * Manages simple events relating to floating pets
@@ -35,8 +36,9 @@ public class FloatingPetManager<T extends FloatingPet> extends Manager implement
      * @param destroyEvent    Will be called when a pet is destroyed because
      *                        of a player quitting. Will run SYNCHRONOUSLY.
      *                        If null, no event will be called.
+     *                        Event CANNOT implement Cancelable!
      */
-    public FloatingPetManager(ManagerDirector managerDirector, @Nullable Event destroyEvent) {
+    public FloatingPetManager(ManagerDirector managerDirector, @Nullable Function<T, Event> destroyEvent) {
         super(managerDirector);
         ownerMap = new HashMap<>();
         petMap = new HashMap<>();
@@ -153,8 +155,10 @@ public class FloatingPetManager<T extends FloatingPet> extends Manager implement
         Player player = e.getPlayer();
         hasPets(player).ifPresent(pets -> pets.forEach(pet -> {
             petMap.remove(pet.getArmorStand().getUniqueId());
-            if (destroyEvent != null)
-                Bukkit.getPluginManager().callEvent(destroyEvent);
+            if (destroyEvent != null) {
+                Event event = destroyEvent.apply(pet);
+                Bukkit.getPluginManager().callEvent(event);
+            }
             pet.destroy();
         }));
         ownerMap.remove(player.getUniqueId());

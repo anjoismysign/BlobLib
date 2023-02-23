@@ -1,6 +1,7 @@
 package us.mytheria.bloblib.floatingpet;
 
 import org.bukkit.Particle;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -18,22 +19,13 @@ public class FloatingPetData {
      * it is that FloatingPetData could be stored
      * in a manager and later used to make new instances
      * of FloatingPets.
-     * We recommend not to allow any type of FloatingPetReader
-     * as a parameter for any FloatingPet constructor but their
-     * attributes instead as it will take more time for maintaining
-     * your code in case of later wanting to extend your custom
-     * FloatingPet object!
-     * Don't make FloatingPetData a record unless you are sure
-     * you won't need to extend it in the future!
      *
-     * @param itemStack  the ItemStack to display
-     * @param particle   the particle to display
-     * @param customName the custom name to display
+     * @param record the FloatingPetRecord to pass from
      */
-    public FloatingPetData(ItemStack itemStack, @Nullable Particle particle, @Nullable String customName) {
-        this.itemStack = itemStack;
-        this.particle = particle;
-        this.customName = customName;
+    public FloatingPetData(FloatingPetRecord record) {
+        this.itemStack = record.itemStack();
+        this.particle = record.particle();
+        this.customName = record.customName();
     }
 
     public FloatingPet toPlayer(Player owner) {
@@ -58,5 +50,10 @@ public class FloatingPetData {
     @Nullable
     public String getCustomName() {
         return customName;
+    }
+
+    public void serialize(ConfigurationSection configurationSection, String path) {
+        FloatingPetRecord record = new FloatingPetRecord(itemStack, particle, customName);
+        record.serialize(configurationSection, path);
     }
 }
