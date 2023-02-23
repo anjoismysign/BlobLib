@@ -18,16 +18,16 @@ import java.util.logging.Level;
 public class BlobExecutor implements CommandExecutor, TabCompleter {
     private final String debugPermission;
     private final String adminPermission;
-    private final String commandName;
+    private final PluginCommand pluginCommand;
     private BiFunction<CommandSender, String[], List<String>> tabCompleter;
     private BiFunction<CommandSender, String[], Boolean> command;
     private Consumer<CommandSender> debug;
-    private final List<String> aliases;
+    private final List<String> callers;
 
     public BlobExecutor(BlobPlugin plugin, String commandName) {
         commandName = commandName.toLowerCase();
-        this.commandName = commandName;
         PluginCommand command = plugin.getCommand(commandName);
+        this.pluginCommand = command;
         if (command == null)
             throw new IllegalArgumentException("Command '" + commandName + "' not found in plugin.yml");
         command.setExecutor(this);
@@ -49,10 +49,12 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
         };
         debug = sender -> {
             if (sender.hasPermission(debugPermission)) {
-                sender.sendMessage("/" + this.commandName);
+                sender.sendMessage(command.getUsage());
             }
         };
-        this.aliases = command.getAliases().stream().map(String::toLowerCase).toList();
+        this.callers = new ArrayList<>();
+        command.getAliases().forEach(alias -> callers.add(alias.toLowerCase()));
+        callers.add(commandName.toLowerCase());
     }
 
     /**
@@ -303,9 +305,13 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (aliases.contains(command.getName().toLowerCase())) {
+        if (callers.contains(command.getName().toLowerCase())) {
             return tabCompleter.apply(sender, args);
         }
         return null;
+    }
+
+    public PluginCommand getPluginCommand() {
+        return pluginCommand;
     }
 }
