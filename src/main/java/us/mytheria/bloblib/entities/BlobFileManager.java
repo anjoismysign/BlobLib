@@ -195,8 +195,9 @@ public class BlobFileManager extends Manager {
      * In case you would like to let the user modify the file and not
      * have it overwritten, you can use softUpdate!
      *
-     * @param path     the path to the file
-     * @param fileName the name of the file
+     * @param path       the path to the file
+     * @param fileName   the name of the file
+     * @param softUpdate if it should only update if the file doesn't exist
      */
     public void unpackYamlFile(String path, String fileName, boolean softUpdate) {
         File directory = new File(pluginDirectory.getPath() + path);
@@ -218,6 +219,18 @@ public class BlobFileManager extends Manager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Unpacks an embedded file from the plugin's jar's resources folder.
+     * It will only generate the file if it doesn't
+     * already exist, like if server admin removed it.
+     *
+     * @param path     the path to the file
+     * @param fileName the name of the file
+     */
+    public void unpackYamlFile(String path, String fileName) {
+        unpackYamlFile(path, fileName, true);
     }
 
     /**

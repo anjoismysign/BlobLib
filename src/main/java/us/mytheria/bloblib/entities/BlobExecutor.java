@@ -22,6 +22,7 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
     private BiFunction<CommandSender, String[], List<String>> tabCompleter;
     private BiFunction<CommandSender, String[], Boolean> command;
     private Consumer<CommandSender> debug;
+    private final List<String> aliases;
 
     public BlobExecutor(BlobPlugin plugin, String commandName) {
         commandName = commandName.toLowerCase();
@@ -51,6 +52,7 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
                 sender.sendMessage("/" + this.commandName);
             }
         };
+        this.aliases = command.getAliases().stream().map(String::toLowerCase).toList();
     }
 
     /**
@@ -301,7 +303,7 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (command.getName().equalsIgnoreCase(commandName)) {
+        if (aliases.contains(command.getName().toLowerCase())) {
             return tabCompleter.apply(sender, args);
         }
         return null;
