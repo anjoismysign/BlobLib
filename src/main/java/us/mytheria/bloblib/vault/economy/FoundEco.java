@@ -4,7 +4,7 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.entity.Player;
 
 public class FoundEco implements VaultEconomyWorker {
-    private Economy economy;
+    private final Economy economy;
 
     public FoundEco(Economy economy) {
         this.economy = economy;

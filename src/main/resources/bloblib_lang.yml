@@ -149,3 +149,45 @@ Player:
     Title: '&c&lERROR'
     Subtitle: '&7You must perform this command through console'
     BlobSound: System.Alert
+  Not-Inside-Plugin-Cache:
+    Type: CHAT
+    Message: "&cPlayer not found in plugin's cache"
+    BlobSound: System.Alert
+Currency:
+  Not-Found:
+    Type: CHAT
+    Message: '&cCurrency not found'
+    BlobSound: System.Alert
+Economy:
+  Deposit:
+    Type: CHAT
+    Message: '&aGave %display% %currency% to %player%'
+  Withdraw:
+    Type: CHAT
+    Message: '&aTook %display% %currency% from %player%'
+  Set:
+    Type: CHAT
+    Message: '&aSet %display% %currency% to %player%'
+  Reset:
+    Type: CHAT
+    Message: '&aReset %currency% to %player%'
+  Not-Enough:
+    Type: CHAT
+    Message: '&cYou are missing %display%'
+    BlobSound: System.Alert
+  Not-Enough-Others:
+    Type: CHAT
+    Message: '&%player% is missing %display%'
+    BlobSound: System.Alert
+  Cannot-Bankrupt:
+    Type: CHAT
+    Message: '&cYou cannot bankrupt yourself. You are missing %display%'
+    BlobSound: System.Alert
+  Cannot-Bankrupt-Others:
+    Type: CHAT
+    Message: '&cNot proceeding. %player% would go bankrupt since they are missing %display%'
+    BlobSound: System.Alert
+  Number-Exception:
+    Type: CHAT
+    Message: '&cProvided amount is not a valid number'
+    BlobSound: System.Alert

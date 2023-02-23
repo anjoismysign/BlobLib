@@ -4,6 +4,14 @@ import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
 
 import java.io.File;
 
+/**
+ * Represents an object that can be saved to a YAML file
+ * and later be loaded from it.
+ * The idea is to allow ObjectManager and ObjectBuilder manage
+ * these objects.
+ * And example of this is link {@link us.mytheria.bloblib.entities.currency.Currency}.
+ * and link {@link us.mytheria.bloblib.entities.currency.CurrencyBuilder}.
+ */
 public interface BlobObject {
     /**
      * The key to identify the object by, inside the ObjectManager.

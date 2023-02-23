@@ -28,10 +28,6 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
         commandName = commandName.toLowerCase();
         PluginCommand command = plugin.getCommand(commandName);
         this.pluginCommand = command;
-        if (command == null)
-            throw new IllegalArgumentException("Command '" + commandName + "' not found in plugin.yml");
-        command.setExecutor(this);
-        command.setTabCompleter(this);
         this.adminPermission = plugin.getName().toLowerCase() + ".admin";
         this.debugPermission = plugin.getName().toLowerCase() + ".debug";
         tabCompleter = (sender, args) -> {
@@ -55,6 +51,12 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
         this.callers = new ArrayList<>();
         command.getAliases().forEach(alias -> callers.add(alias.toLowerCase()));
         callers.add(commandName.toLowerCase());
+        if (command == null) {
+            plugin.getAnjoLogger().debug("Command " + commandName + " not found inside plugin.yml");
+            return;
+        }
+        command.setExecutor(this);
+        command.setTabCompleter(this);
     }
 
     /**

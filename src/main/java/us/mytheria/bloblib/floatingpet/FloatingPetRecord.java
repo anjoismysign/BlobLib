@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.floatingpet;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
@@ -27,7 +28,7 @@ public record FloatingPetRecord(ItemStack itemStack, Particle particle, String c
             particle = SerializationLib.deserializeParticle(section.getString("Particle"));
         String customName = null;
         if (section.contains("CustomName"))
-            customName = section.getString("CustomName");
+            customName = ChatColor.translateAlternateColorCodes('&', section.getString("CustomName"));
 
         return new FloatingPetRecord(itemStack, particle, customName);
     }

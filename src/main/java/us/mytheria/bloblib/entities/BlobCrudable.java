@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class BlobCrudable implements Crudable {
+public final class BlobCrudable implements Crudable {
     private final UUID id;
     private final Document document;
 

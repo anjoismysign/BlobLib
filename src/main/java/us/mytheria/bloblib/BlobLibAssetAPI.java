@@ -125,4 +125,19 @@ public class BlobLibAssetAPI {
     public static String getInventoriesFilePath() {
         return main.getFileManager().inventoriesDirectory().getPath();
     }
+
+    /**
+     * Attempts to build an inventory from the given file name.
+     * If the inventory is not found, a NullPointerException is thrown.
+     *
+     * @param fileName The file name
+     * @return The inventory
+     */
+    public static BlobInventory buildInventory(String fileName) {
+        BlobInventory inventory = BlobLibAssetAPI.getInventoryManager().cloneInventory(fileName);
+        if (inventory == null) {
+            throw new NullPointerException("Inventory '" + fileName + "' not found");
+        }
+        return inventory;
+    }
 }
