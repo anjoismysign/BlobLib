@@ -37,9 +37,11 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
     private final String crudableName;
     private final @Nullable Function<T, Event> joinEvent;
     private final @Nullable Function<T, Event> quitEvent;
-    private boolean registeredEconomy;
+    private boolean registeredEconomy, registeredPAPI;
     private String defaultCurrency;
     protected ObjectDirector<Currency> currencyDirector;
+    @Nullable
+    private EconomyPHExpansion<T> economyPHExpansion;
 
     protected WalletOwnerManager(ManagerDirector managerDirector, Function<UUID, BlobCrudable> newBorn,
                                  Function<BlobCrudable, T> walletOwner,
@@ -212,5 +214,29 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         registerBlobEconomyCommand(currencyDirector, "eco",
                 "give", "take",
                 "set", "reset");
+    }
+
+    @Nullable
+    public EconomyPHExpansion<T> registerPlaceholderAPIExpansion() {
+        if (registeredPAPI)
+            throw new IllegalStateException("BlobPlugin already registered their PlaceholderAPI expansion");
+        if (!registeredEconomy)
+            throw new IllegalStateException("BlobPlugin has not registered their BlobEconomy");
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null)
+            return null;
+        registeredPAPI = true;
+        EconomyPHExpansion<T> expansion = new EconomyPHExpansion<>(this);
+        expansion.register();
+        economyPHExpansion = expansion;
+        return expansion;
+    }
+
+    public WalletOwnerManager<T> unregisterPlaceholderAPIExpansion() {
+        if (!registeredPAPI)
+            throw new IllegalStateException("BlobPlugin has not registered their PlaceholderAPI expansion");
+        economyPHExpansion.unregister();
+        economyPHExpansion = null;
+        registeredPAPI = false;
+        return this;
     }
 }

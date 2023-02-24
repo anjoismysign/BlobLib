@@ -3,6 +3,7 @@ package us.mytheria.bloblib.entities.currency;
 import org.apache.commons.io.FilenameUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 import us.mytheria.bloblib.entities.BlobObject;
+import us.mytheria.bloblib.utilities.Formatter;
 import us.mytheria.bloblib.utilities.TextColor;
 
 import java.io.File;
@@ -59,7 +60,10 @@ public class Currency implements BlobObject {
      * @return the formatted String
      */
     public String display(double amount) {
-        return display.replace("%balance%", decimalFormat.format(amount));
+        return display.replace("%balance%", decimalFormat.format(amount)).replace(
+                "%wattsBalance%", Formatter.WATTS((float) amount)).replace(
+                "%bytesBalance%", Formatter.BYTES((float) amount)).replace(
+                "%gramsBalance%", Formatter.GRAMS((float) amount));
     }
 
     /**

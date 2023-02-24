@@ -52,7 +52,7 @@ public class MessageManager {
     public void unload(BlobPlugin plugin) {
         String pluginName = plugin.getName();
         if (!pluginMessages.containsKey(pluginName))
-            throw new IllegalArgumentException("Plugin '" + pluginName + "' has not been loaded");
+            return;
         pluginMessages.get(pluginName).forEach(messages::remove);
         pluginMessages.remove(pluginName);
     }

@@ -220,14 +220,17 @@ public class BlobEconomyCommand<T extends WalletOwner> {
                     suggestions.addAll(Bukkit.getOnlinePlayers().stream().map(Player::getName).toList());
                 return suggestions;
             }
+            case 3 -> {
+                if (executor.isChildCommand(resetArgumentName, args).isValid())
+                    suggestions.addAll(currencyManager.keys());
+                return suggestions;
+            }
             case 4 -> {
                 if (executor.isChildCommand(withdrawArgumentName, args).isValid())
                     suggestions.addAll(currencyManager.keys());
                 if (executor.isChildCommand(depositArgumentName, args).isValid())
                     suggestions.addAll(currencyManager.keys());
                 if (executor.isChildCommand(setArgumentName, args).isValid())
-                    suggestions.addAll(currencyManager.keys());
-                if (executor.isChildCommand(resetArgumentName, args).isValid())
                     suggestions.addAll(currencyManager.keys());
                 return suggestions;
             }

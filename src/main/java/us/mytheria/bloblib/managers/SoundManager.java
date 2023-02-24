@@ -56,7 +56,7 @@ public class SoundManager {
     public void unload(BlobPlugin plugin) {
         String pluginName = plugin.getName();
         if (!pluginSounds.containsKey(pluginName))
-            throw new IllegalArgumentException("Plugin '" + pluginName + "' has not been loaded");
+            return;
         pluginSounds.get(pluginName).forEach(sounds::remove);
         pluginSounds.remove(pluginName);
     }

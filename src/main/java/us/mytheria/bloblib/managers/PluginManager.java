@@ -45,12 +45,7 @@ public class PluginManager {
      * in their name.
      */
     public void reload() {
-        for (BlobPlugin plugin : plugins.values()) {
-            loadAssets(plugin);
-            plugin.getManagerDirector().getManagerEntry().stream()
-                    .filter(entry -> entry.getKey().contains("Director"))
-                    .forEach(entry -> entry.getValue().reload());
-        }
+        plugins.values().forEach(BlobPlugin::blobLibReload);
     }
 
     /**

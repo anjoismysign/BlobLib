@@ -59,7 +59,7 @@ public class InventoryManager {
     public void unload(BlobPlugin plugin) {
         String pluginName = plugin.getName();
         if (!pluginInventories.containsKey(pluginName))
-            throw new IllegalArgumentException("Plugin '" + pluginName + "' has not been loaded");
+            return;
         pluginInventories.get(pluginName).forEach(inventories::remove);
         pluginInventories.remove(pluginName);
     }
