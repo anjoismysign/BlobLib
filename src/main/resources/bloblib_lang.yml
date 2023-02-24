@@ -161,23 +161,23 @@ Currency:
 Economy:
   Deposit:
     Type: CHAT
-    Message: '&fGave %display% %currency% &fto &7%player%'
+    Message: '&7Gave %display% %currency% &7to %player%'
   Withdraw:
     Type: CHAT
-    Message: '&aTook %display% %currency% &ffrom &7%player%'
+    Message: '&7Took %display% %currency% &7from %player%'
   Set:
     Type: CHAT
-    Message: '&aSet %display% %currency% &fto &7%player%'
+    Message: '&7Set %display% %currency% &7to %player%'
   Reset:
     Type: CHAT
-    Message: '&aReset %currency% to %player%'
+    Message: '&7Reset %currency% to %player%'
   Not-Enough:
     Type: CHAT
     Message: '&cYou are missing %display%'
     BlobSound: System.Alert
   Not-Enough-Others:
     Type: CHAT
-    Message: '&%player% is missing %display%'
+    Message: '&c%player% is missing %display%'
     BlobSound: System.Alert
   Cannot-Bankrupt:
     Type: CHAT

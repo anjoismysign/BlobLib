@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 public class TextColor {
 
     public String translateHexColorCodes(char alternateColorCode, String message) {
-        final Pattern hexPattern = Pattern.compile(alternateColorCode + "#([A-Fa-f0-9]{6})" + "");
+        final Pattern hexPattern = Pattern.compile("&#([A-Fa-f0-9]{6})");
         Matcher matcher = hexPattern.matcher(message);
         StringBuffer buffer = new StringBuffer(message.length() + 4 * 8);
         while (matcher.find()) {
@@ -45,6 +45,6 @@ public class TextColor {
      * @return The translated text.
      */
     public static String PARSE(String textToTranslate) {
-        return ChatColor.translateAlternateColorCodes('&', textToTranslate);
+        return CUSTOM_PARSE('&', textToTranslate);
     }
 }

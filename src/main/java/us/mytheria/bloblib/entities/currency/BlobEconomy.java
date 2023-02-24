@@ -16,12 +16,10 @@ import java.util.UUID;
 public class BlobEconomy<T extends WalletOwner> implements Economy {
     private final WalletOwnerManager<T> manager;
     private final BlobPlugin plugin;
-    private final Currency vaultCurrency;
 
-    protected BlobEconomy(WalletOwnerManager<T> manager, Currency vaultCurrency) {
+    protected BlobEconomy(WalletOwnerManager<T> manager) {
         this.manager = manager;
         this.plugin = manager.getPlugin();
-        this.vaultCurrency = vaultCurrency;
         Plugin vault = Bukkit.getPluginManager().getPlugin("Vault");
         if (vault != null)
             Bukkit.getServicesManager().register(Economy.class, this, vault, ServicePriority.Normal);
@@ -41,12 +39,12 @@ public class BlobEconomy<T extends WalletOwner> implements Economy {
     public double getBalance(UUID uuid) {
         if (manager.owners.containsKey(uuid)) {
             T walletOwner = manager.owners.get(uuid);
-            return walletOwner.getBalance(vaultCurrency);
+            return walletOwner.getBalance(manager.getDefaultCurrency());
         }
         if (!hasRecord(uuid))
             return 0.0;
         T walletOwner = manager.read(uuid).join();
-        return walletOwner.getBalance(vaultCurrency);
+        return walletOwner.getBalance(manager.getDefaultCurrency());
     }
 
     public boolean has(UUID uuid, double amount) {
@@ -56,29 +54,29 @@ public class BlobEconomy<T extends WalletOwner> implements Economy {
     public EconomyResponse withdraw(UUID uuid, double amount) {
         if (manager.owners.containsKey(uuid)) {
             T walletOwner = manager.owners.get(uuid);
-            walletOwner.withdraw(vaultCurrency, amount);
-            return new EconomyResponse(amount, walletOwner.getBalance(vaultCurrency), EconomyResponse.ResponseType.SUCCESS, null);
+            walletOwner.withdraw(manager.getDefaultCurrency(), amount);
+            return new EconomyResponse(amount, walletOwner.getBalance(manager.getDefaultCurrency()), EconomyResponse.ResponseType.SUCCESS, null);
         }
         if (!hasRecord(uuid))
             return new EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.FAILURE, "No record found.");
         T walletOwner = manager.read(uuid).join();
-        walletOwner.withdraw(vaultCurrency, amount);
+        walletOwner.withdraw(manager.getDefaultCurrency(), amount);
         updateAsynchronously(walletOwner);
-        return new EconomyResponse(amount, walletOwner.getBalance(vaultCurrency), EconomyResponse.ResponseType.SUCCESS, null);
+        return new EconomyResponse(amount, walletOwner.getBalance(manager.getDefaultCurrency()), EconomyResponse.ResponseType.SUCCESS, null);
     }
 
     public EconomyResponse deposit(UUID uuid, double amount) {
         if (manager.owners.containsKey(uuid)) {
             T walletOwner = manager.owners.get(uuid);
-            walletOwner.deposit(vaultCurrency, amount);
-            return new EconomyResponse(amount, walletOwner.getBalance(vaultCurrency), EconomyResponse.ResponseType.SUCCESS, null);
+            walletOwner.deposit(manager.getDefaultCurrency(), amount);
+            return new EconomyResponse(amount, walletOwner.getBalance(manager.getDefaultCurrency()), EconomyResponse.ResponseType.SUCCESS, null);
         }
         if (!hasRecord(uuid))
             return new EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.FAILURE, "No record found.");
         T walletOwner = manager.read(uuid).join();
-        walletOwner.deposit(vaultCurrency, amount);
+        walletOwner.deposit(manager.getDefaultCurrency(), amount);
         updateAsynchronously(walletOwner);
-        return new EconomyResponse(amount, walletOwner.getBalance(vaultCurrency), EconomyResponse.ResponseType.SUCCESS, null);
+        return new EconomyResponse(amount, walletOwner.getBalance(manager.getDefaultCurrency()), EconomyResponse.ResponseType.SUCCESS, null);
     }
 
     @Override
@@ -98,12 +96,12 @@ public class BlobEconomy<T extends WalletOwner> implements Economy {
 
     @Override
     public int fractionalDigits() {
-        return vaultCurrency.getDecimalFormat().getMaximumFractionDigits();
+        return manager.getDefaultCurrency().getDecimalFormat().getMaximumFractionDigits();
     }
 
     @Override
     public String format(double amount) {
-        return vaultCurrency.display(amount);
+        return manager.getDefaultCurrency().display(amount);
     }
 
     @Override

@@ -38,7 +38,8 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
     private final @Nullable Function<T, Event> joinEvent;
     private final @Nullable Function<T, Event> quitEvent;
     private boolean registeredEconomy;
-    private Currency defaultCurrency;
+    private String defaultCurrency;
+    protected ObjectDirector<Currency> currencyDirector;
 
     protected WalletOwnerManager(ManagerDirector managerDirector, Function<UUID, BlobCrudable> newBorn,
                                  Function<BlobCrudable, T> walletOwner,
@@ -66,6 +67,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
 
     @Override
     public void reload() {
+        unload();
         saving = new HashSet<>();
         boolean useSQLite = getPlugin().getConfig().getBoolean("Database.UseSQLite");
         if (useSQLite) {
@@ -94,7 +96,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
                 owners.put(uuid, walletOwner.apply(sqlCrudManager.read(uuid.toString())));
                 return;
             }
-            T walletOwner = this.walletOwner.apply(newBorn.apply(uuid));
+            T walletOwner = this.walletOwner.apply(sqlCrudManager.createAndRegister(uuid.toString()));
             owners.put(uuid, walletOwner);
             future.complete(walletOwner);
         });
@@ -156,21 +158,22 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
      * later want to use it.
      */
     @NotNull
-    public BlobEconomy<T> registerEconomy(Currency defaultCurrency) {
+    public BlobEconomy<T> registerEconomy(Currency defaultCurrency, ObjectDirector<Currency> currencyDirector) {
         if (registeredEconomy)
             throw new IllegalStateException("BlobPlugin already registered their BlobEconomy");
         registeredEconomy = true;
-        this.defaultCurrency = defaultCurrency;
-        return new BlobEconomy<>(this, defaultCurrency);
+        this.defaultCurrency = defaultCurrency.getKey();
+        this.currencyDirector = currencyDirector;
+        return new BlobEconomy<>(this);
     }
 
     @Nullable
     public Currency getDefaultCurrency() {
-        return defaultCurrency;
+        return currencyDirector.getObjectManager().getObject(defaultCurrency);
     }
 
     public void setDefaultCurrency(Currency defaultCurrency) {
-        this.defaultCurrency = defaultCurrency;
+        this.defaultCurrency = defaultCurrency.getKey();
     }
 
     /**
