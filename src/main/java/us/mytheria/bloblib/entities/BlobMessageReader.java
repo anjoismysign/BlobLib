@@ -57,9 +57,9 @@ public class BlobMessageReader {
                 int fadeIn = section.getInt("FadeIn", 10);
                 int stay = section.getInt("Stay", 40);
                 int fadeOut = section.getInt("FadeOut", 10);
-                return new BlobActionbarTitleMessage(TextColor.PARSE(section.getString("Title")),
+                return new BlobActionbarTitleMessage(TextColor.PARSE(section.getString("Actionbar")),
+                        TextColor.PARSE(section.getString("Title")),
                         TextColor.PARSE(section.getString("Subtitle")),
-                        TextColor.PARSE(section.getString("Actionbar")),
                         fadeIn, stay, fadeOut, sound.orElse(null));
             }
             case "CHAT_ACTIONBAR" -> {
