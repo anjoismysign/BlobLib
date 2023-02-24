@@ -1,9 +1,9 @@
 package us.mytheria.bloblib.entities;
 
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.entities.message.*;
+import us.mytheria.bloblib.utilities.TextColor;
 
 import java.util.Optional;
 
@@ -28,9 +28,7 @@ public class BlobMessageReader {
             case "ACTIONBAR" -> {
                 if (!section.contains("Message"))
                     throw new IllegalArgumentException("'Message' is required for ACTIONBAR messages.");
-                return new BlobActionbarMessage(ChatColor
-                        .translateAlternateColorCodes('&', section
-                                .getString("Message")), sound.orElse(null));
+                return new BlobActionbarMessage(TextColor.PARSE(section.getString("Message")), sound.orElse(null));
             }
             case "TITLE" -> {
                 if (!section.contains("Title"))
@@ -40,15 +38,14 @@ public class BlobMessageReader {
                 int fadeIn = section.getInt("FadeIn", 10);
                 int stay = section.getInt("Stay", 40);
                 int fadeOut = section.getInt("FadeOut", 10);
-                return new BlobTitleMessage(ChatColor.translateAlternateColorCodes('&', section.getString("Title")),
-                        ChatColor.translateAlternateColorCodes('&', section.getString("Subtitle")),
+                return new BlobTitleMessage(TextColor.PARSE(section.getString("Title")),
+                        TextColor.PARSE(section.getString("Subtitle")),
                         fadeIn, stay, fadeOut, sound.orElse(null));
             }
             case "CHAT" -> {
                 if (!section.contains("Message"))
                     throw new IllegalArgumentException("'Message' is required for CHAT messages.");
-                return new BlobChatMessage(section.getString("Message"),
-                        sound.orElse(null));
+                return new BlobChatMessage(TextColor.PARSE(section.getString("Message")), sound.orElse(null));
             }
             case "ACTIONBAR_TITLE" -> {
                 if (!section.contains("Title"))
@@ -60,9 +57,9 @@ public class BlobMessageReader {
                 int fadeIn = section.getInt("FadeIn", 10);
                 int stay = section.getInt("Stay", 40);
                 int fadeOut = section.getInt("FadeOut", 10);
-                return new BlobActionbarTitleMessage(ChatColor.translateAlternateColorCodes('&', section.getString("Title")),
-                        ChatColor.translateAlternateColorCodes('&', section.getString("Subtitle")),
-                        ChatColor.translateAlternateColorCodes('&', section.getString("Actionbar")),
+                return new BlobActionbarTitleMessage(TextColor.PARSE(section.getString("Title")),
+                        TextColor.PARSE(section.getString("Subtitle")),
+                        TextColor.PARSE(section.getString("Actionbar")),
                         fadeIn, stay, fadeOut, sound.orElse(null));
             }
             case "CHAT_ACTIONBAR" -> {
@@ -70,8 +67,8 @@ public class BlobMessageReader {
                     throw new IllegalArgumentException("'Chat' is required for CHAT_ACTIONBAR messages.");
                 if (!section.contains("Actionbar"))
                     throw new IllegalArgumentException("'Actionbar' is required for CHAT_ACTIONBAR messages.");
-                return new BlobChatActionbarMessage(ChatColor.translateAlternateColorCodes('&', section.getString("Chat")),
-                        ChatColor.translateAlternateColorCodes('&', section.getString("Actionbar")),
+                return new BlobChatActionbarMessage(TextColor.PARSE(section.getString("Chat")),
+                        TextColor.PARSE(section.getString("Actionbar")),
                         sound.orElse(null));
             }
             case "CHAT_TITLE" -> {
@@ -84,9 +81,9 @@ public class BlobMessageReader {
                 int fadeIn = section.getInt("FadeIn", 10);
                 int stay = section.getInt("Stay", 40);
                 int fadeOut = section.getInt("FadeOut", 10);
-                return new BlobChatTitleMessage(ChatColor.translateAlternateColorCodes('&', section.getString("Chat")),
-                        ChatColor.translateAlternateColorCodes('&', section.getString("Title")),
-                        ChatColor.translateAlternateColorCodes('&', section.getString("Subtitle")),
+                return new BlobChatTitleMessage(TextColor.PARSE(section.getString("Chat")),
+                        TextColor.PARSE(section.getString("Title")),
+                        TextColor.PARSE(section.getString("Subtitle")),
                         fadeIn, stay, fadeOut, sound.orElse(null));
             }
             case "CHAT_ACTIONBAR_TITLE" -> {
@@ -101,10 +98,10 @@ public class BlobMessageReader {
                 int fadeIn = section.getInt("FadeIn", 10);
                 int stay = section.getInt("Stay", 40);
                 int fadeOut = section.getInt("FadeOut", 10);
-                return new BlobChatActionbarTitleMessage(ChatColor.translateAlternateColorCodes('&', section.getString("Chat")),
-                        ChatColor.translateAlternateColorCodes('&', section.getString("Actionbar")),
-                        ChatColor.translateAlternateColorCodes('&', section.getString("Title")),
-                        ChatColor.translateAlternateColorCodes('&', section.getString("Subtitle")),
+                return new BlobChatActionbarTitleMessage(TextColor.PARSE(section.getString("Chat")),
+                        TextColor.PARSE(section.getString("Actionbar")),
+                        TextColor.PARSE(section.getString("Title")),
+                        TextColor.PARSE(section.getString("Subtitle")),
                         fadeIn, stay, fadeOut, sound.orElse(null));
             }
             default -> throw new IllegalArgumentException("Invalid message type: " + type);

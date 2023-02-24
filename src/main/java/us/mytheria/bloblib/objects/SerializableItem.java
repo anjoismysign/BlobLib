@@ -1,11 +1,11 @@
 package us.mytheria.bloblib.objects;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mytheria.bloblib.SkullCreator;
+import us.mytheria.bloblib.utilities.TextColor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ public class SerializableItem {
         }
         String displayName;
         if (section != null)
-            displayName = ChatColor.translateAlternateColorCodes('&', section.getString("DisplayName", "NULL"));
+            displayName = TextColor.PARSE(section.getString("DisplayName", "NULL"));
         else
             displayName = "NULL";
         List<String> lore;
@@ -57,7 +57,7 @@ public class SerializableItem {
     public static List<String> getLore(ConfigurationSection section, String path) {
         List<String> lore = new ArrayList<>();
         for (String s : section.getStringList(path)) {
-            lore.add(ChatColor.translateAlternateColorCodes('&', s));
+            lore.add(TextColor.PARSE(s));
         }
         return lore;
     }

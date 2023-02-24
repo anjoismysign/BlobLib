@@ -1,9 +1,9 @@
 package us.mytheria.bloblib.entities.inventory;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import us.mytheria.bloblib.utilities.TextColor;
 
 import java.io.File;
 
@@ -11,8 +11,7 @@ public class SuperBlobInventory extends BlobInventory {
 
     public static SuperBlobInventory smartFromFile(File file) {
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-        String title = ChatColor.translateAlternateColorCodes('&',
-                configuration.getString("Title", configuration.getName() + ">NOT-SET"));
+        String title = TextColor.PARSE(configuration.getString("Title", configuration.getName() + ">NOT-SET"));
         int size = configuration.getInt("Size", -1);
         if (size < 0 || size % 9 != 0) {
             if (size < 0) {
@@ -35,8 +34,7 @@ public class SuperBlobInventory extends BlobInventory {
 
     public static SuperBlobInventory fromFile(File file) {
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-        String title = ChatColor.translateAlternateColorCodes('&',
-                configuration.getString("Title", configuration.getName() + ">NOT-SET"));
+        String title = TextColor.PARSE(configuration.getString("Title", configuration.getName() + ">NOT-SET"));
         int size = configuration.getInt("Size", -1);
         if (size < 0 || size % 9 != 0) {
             if (size < 0) {
@@ -58,8 +56,7 @@ public class SuperBlobInventory extends BlobInventory {
     }
 
     public static SuperBlobInventory smarFromConfigurationSection(ConfigurationSection section) {
-        String title = ChatColor.translateAlternateColorCodes('&',
-                section.getString("Title", section.getName() + ">NOT-SET"));
+        String title = TextColor.PARSE(section.getString("Title", section.getName() + ">NOT-SET"));
         int size = section.getInt("Size", -1);
         if (size < 0 || size % 9 != 0) {
             if (size < 0) {
@@ -81,8 +78,7 @@ public class SuperBlobInventory extends BlobInventory {
     }
 
     public static SuperBlobInventory fromConfigurationSection(ConfigurationSection section) {
-        String title = ChatColor.translateAlternateColorCodes('&',
-                section.getString("Title", section.getName() + ">NOT-SET"));
+        String title = TextColor.PARSE(section.getString("Title", section.getName() + ">NOT-SET"));
         int size = section.getInt("Size", -1);
         if (size < 0 || size % 9 != 0) {
             if (size < 0) {

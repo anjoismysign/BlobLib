@@ -45,6 +45,7 @@ public class BlobEconomyCommand<T extends WalletOwner> {
         this.executor = new BlobExecutor(manager.getPlugin(), commandName);
         this.walletOwnerManager = manager;
         this.currencyManager = currencyManager;
+        setDefaultCommands().setDefaultTabCompleter();
         addAdminChildCommand(this::command);
         addAdminChildTabCompleter(this::tabCompleter);
     }

@@ -161,13 +161,13 @@ Currency:
 Economy:
   Deposit:
     Type: CHAT
-    Message: '&aGave %display% %currency% to %player%'
+    Message: '&fGave %display% %currency% &fto &7%player%'
   Withdraw:
     Type: CHAT
-    Message: '&aTook %display% %currency% from %player%'
+    Message: '&aTook %display% %currency% &ffrom &7%player%'
   Set:
     Type: CHAT
-    Message: '&aSet %display% %currency% to %player%'
+    Message: '&aSet %display% %currency% &fto &7%player%'
   Reset:
     Type: CHAT
     Message: '&aReset %currency% to %player%'

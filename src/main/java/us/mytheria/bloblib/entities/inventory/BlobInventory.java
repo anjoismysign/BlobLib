@@ -1,11 +1,11 @@
 package us.mytheria.bloblib.entities.inventory;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import us.mytheria.bloblib.utilities.TextColor;
 
 import java.io.File;
 import java.util.HashMap;
@@ -44,8 +44,7 @@ public class BlobInventory extends InventoryBuilder {
     public static BlobInventory smartFromFile(File file) {
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(
                 Objects.requireNonNull(file, "'file' cannot be null!"));
-        String title = ChatColor.translateAlternateColorCodes('&',
-                configuration.getString("Title", configuration.getName() + ">NOT-SET"));
+        String title = TextColor.PARSE(configuration.getString("Title", configuration.getName() + ">NOT-SET"));
         int size = configuration.getInt("Size", -1);
         if (size < 0 || size % 9 != 0) {
             if (size < 0) {
@@ -87,8 +86,7 @@ public class BlobInventory extends InventoryBuilder {
     public static BlobInventory fromFile(File file) {
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(
                 Objects.requireNonNull(file, "'file' cannot be null!"));
-        String title = ChatColor.translateAlternateColorCodes('&',
-                configuration.getString("Title", configuration.getName() + ">NOT-SET"));
+        String title = TextColor.PARSE(configuration.getString("Title", configuration.getName() + ">NOT-SET"));
         int size = configuration.getInt("Size", -1);
         if (size < 0 || size % 9 != 0) {
             if (size < 0) {
@@ -119,9 +117,8 @@ public class BlobInventory extends InventoryBuilder {
      */
     @Deprecated
     public static BlobInventory smartFromConfigurationSection(ConfigurationSection configurationSection) {
-        String title = ChatColor.translateAlternateColorCodes('&',
-                Objects.requireNonNull(configurationSection,
-                        "'configurationSection' cannot be null!").getString("Title", configurationSection.getName() + ">NOT-SET"));
+        String title = TextColor.PARSE(Objects.requireNonNull(configurationSection,
+                "'configurationSection' cannot be null!").getString("Title", configurationSection.getName() + ">NOT-SET"));
         int size = configurationSection.getInt("Size", -1);
         if (size < 0 || size % 9 != 0) {
             if (size < 0) {
@@ -148,9 +145,8 @@ public class BlobInventory extends InventoryBuilder {
      * @return The BlobInventory parsed from the ConfigurationSection.
      */
     public static BlobInventory fromConfigurationSection(ConfigurationSection configurationSection) {
-        String title = ChatColor.translateAlternateColorCodes('&',
-                Objects.requireNonNull(configurationSection,
-                        "'configurationSection' cannot be null!").getString("Title", configurationSection.getName() + ">NOT-SET"));
+        String title = TextColor.PARSE(Objects.requireNonNull(configurationSection,
+                "'configurationSection' cannot be null!").getString("Title", configurationSection.getName() + ">NOT-SET"));
         int size = configurationSection.getInt("Size", -1);
         if (size < 0 || size % 9 != 0) {
             if (size < 0) {
@@ -194,8 +190,7 @@ public class BlobInventory extends InventoryBuilder {
      */
     public BlobInventory(File file) {
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-        setTitle(ChatColor.translateAlternateColorCodes('&',
-                configuration.getString("Title", configuration.getName() + ">NOT-SET")));
+        setTitle(TextColor.PARSE(configuration.getString("Title", configuration.getName() + ">NOT-SET")));
         setSize(configuration.getInt("Size", -1));
         int size = getSize();
         if (size < 0 || size % 9 != 0) {

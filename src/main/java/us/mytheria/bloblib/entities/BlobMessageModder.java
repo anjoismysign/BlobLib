@@ -2,6 +2,7 @@ package us.mytheria.bloblib.entities;
 
 import net.md_5.bungee.api.ChatColor;
 import us.mytheria.bloblib.entities.message.BlobMessage;
+import us.mytheria.bloblib.utilities.TextColor;
 
 import java.util.Locale;
 import java.util.function.Function;
@@ -170,8 +171,8 @@ public class BlobMessageModder<T extends BlobMessage> {
      * @param altColorChar The alternate color code character to replace. Ex: &amp;
      * @return the modified message
      */
-    public BlobMessageModder<T> translateAlternateColorCodes(char altColorChar) {
-        return modify(s -> ChatColor.translateAlternateColorCodes(altColorChar, s));
+    public BlobMessageModder<T> translateRGBAndChatColors(char altColorChar) {
+        return modify(s -> TextColor.CUSTOM_PARSE(altColorChar, s));
     }
 
     /**

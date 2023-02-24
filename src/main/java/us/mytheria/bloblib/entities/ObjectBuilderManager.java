@@ -53,16 +53,6 @@ public class ObjectBuilderManager<T extends BlobObject> extends Manager {
         if (inventory == null)
             throw new RuntimeException("Inventory file '" + fileKey + "' not found.");
         this.title = inventory.getTitle();
-//        Optional<File> file = getManagerDirector().getFileManager().searchFile(fileKey);
-//        if (file.isEmpty())
-//            throw new RuntimeException("File not found by key '" + fileKey + "'");
-//        YamlConfiguration inventory = YamlConfiguration.loadConfiguration(file.get());
-        /*By default, all BlobInventorie's are forced to have Title, else
-        they wouldn't load.*/
-//        if (!inventory.contains("Title"))
-//            throw new RuntimeException("Inventory file '" + fileKey + "' does not have a title.");
-//        this.title = ChatColor.translateAlternateColorCodes('&',
-//                inventory.getString("Title"));
     }
 
     public ObjectBuilder<T> getOrDefault(UUID uuid) {

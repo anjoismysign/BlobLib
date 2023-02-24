@@ -3,6 +3,7 @@ package us.mytheria.bloblib.entities.currency;
 import org.apache.commons.io.FilenameUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 import us.mytheria.bloblib.entities.BlobObject;
+import us.mytheria.bloblib.utilities.TextColor;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -108,11 +109,11 @@ public class Currency implements BlobObject {
     public static Currency fromFile(File file) {
         String fileName = file.getName();
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
-        String customName = yamlConfiguration.getString("Display");
+        String display = TextColor.PARSE(yamlConfiguration.getString("Display"));
         double initialBalance = yamlConfiguration.getDouble("InitialBalance");
         boolean isPersistent = yamlConfiguration.getBoolean("Persistent");
         String pattern = yamlConfiguration.getString("DecimalFormat");
         String key = FilenameUtils.removeExtension(fileName);
-        return new Currency(customName, initialBalance, isPersistent, pattern, key);
+        return new Currency(display, initialBalance, isPersistent, pattern, key);
     }
 }

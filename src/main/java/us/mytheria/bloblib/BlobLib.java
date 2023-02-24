@@ -62,6 +62,8 @@ public final class BlobLib extends JavaPlugin {
         pluginManager = new PluginManager();
         colorManager = new ColorManager();
         fileManager = new BlobLibFileManager();
+        fileManager.unpackYamlFile("/BlobInventory", "CurrencyBuilder", false);
+        
         inventoryManager = new InventoryManager();
         messageManager = new MessageManager();
         soundManager = new SoundManager();

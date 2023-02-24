@@ -49,12 +49,12 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
             }
         };
         this.callers = new ArrayList<>();
-        command.getAliases().forEach(alias -> callers.add(alias.toLowerCase()));
-        callers.add(commandName.toLowerCase());
         if (command == null) {
             plugin.getAnjoLogger().debug("Command " + commandName + " not found inside plugin.yml");
             return;
         }
+        command.getAliases().forEach(alias -> callers.add(alias.toLowerCase()));
+        callers.add(commandName.toLowerCase());
         command.setExecutor(this);
         command.setTabCompleter(this);
     }

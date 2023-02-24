@@ -5,12 +5,16 @@ import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.utilities.ResourceUtil;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.util.Optional;
 
 /**
  * @author anjoismysign
  */
 public class BlobLibFileManager {
-    private final BlobLib main;
+    private final BlobLib plugin;
     private final File path = new File("plugins/BlobLib");
     private final File messages = new File(path.getPath() + "/BlobMessage");
     private final File sounds = new File(path.getPath() + "/BlobSound");
@@ -23,7 +27,7 @@ public class BlobLibFileManager {
      * Will create a new BlobLibFileManager instance
      */
     public BlobLibFileManager() {
-        this.main = BlobLib.getInstance();
+        this.plugin = BlobLib.getInstance();
         loadFiles();
     }
 
@@ -40,9 +44,9 @@ public class BlobLibFileManager {
             if (!defaultSounds.exists()) defaultSounds.createNewFile();
             if (!defaultMessages.exists()) defaultMessages.createNewFile();
             if (!defaultInventories.exists()) defaultInventories.createNewFile();
-            ResourceUtil.updateYml(sounds, "/tempbloblib_sounds.yml", "bloblib_sounds.yml", defaultSounds, main);
-            ResourceUtil.updateYml(messages, "/tempbloblib_lang.yml", "bloblib_lang.yml", defaultMessages, main);
-            ResourceUtil.updateYml(inventories, "/tempInventories.yml", "bloblib_inventories.yml", defaultInventories, main);
+            ResourceUtil.updateYml(sounds, "/tempbloblib_sounds.yml", "bloblib_sounds.yml", defaultSounds, plugin);
+            ResourceUtil.updateYml(messages, "/tempbloblib_lang.yml", "bloblib_lang.yml", defaultMessages, plugin);
+            ResourceUtil.updateYml(inventories, "/tempInventories.yml", "bloblib_inventories.yml", defaultInventories, plugin);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -126,5 +130,41 @@ public class BlobLibFileManager {
      */
     public File defaultInventoriesFile() {
         return defaultInventories;
+    }
+
+    /**
+     * Unpacks an embedded file from the plugin's jar's resources folder.
+     * If softUpdate is true, it will only generate the file if it doesn't
+     * already exist, like if server admin removed it.
+     * If softUpdate is false, it will always try to attempt to update
+     * the file with the most recent version embedded in the plugin jar.
+     * Default sounds, messages, and inventories are 'hard' updated.
+     * In case you would like to let the user modify the file and not
+     * have it overwritten, you can use softUpdate!
+     *
+     * @param path       the path to the file
+     * @param fileName   the name of the file
+     * @param softUpdate if it should only update if the file doesn't exist
+     */
+    public void unpackYamlFile(String path, String fileName, boolean softUpdate) {
+        File directory = new File(this.path + path);
+        try {
+            Files.createDirectories(directory.toPath());
+            File file = new File(directory + "/" + fileName + ".yml");
+            Optional<InputStream> optional = Optional.ofNullable(plugin.getResource(fileName + ".yml"));
+            if (optional.isPresent()) {
+                try {
+                    if (softUpdate && file.exists())
+                        return;
+                    file.createNewFile();
+                    ResourceUtil.updateYml(directory, "/temp" + fileName + ".yml",
+                            fileName + ".yml", file, plugin);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

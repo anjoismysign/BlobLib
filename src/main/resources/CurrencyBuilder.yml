@@ -41,7 +41,7 @@ Buttons:
     Slot: 4
   Persistent:
     ItemStack:
-      Material: TOTEM
+      Material: TOTEM_OF_UNDYING
       CustomModelData: 0
       DisplayName: "&6Persistent"
       Lore:
