@@ -6,14 +6,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TextColor {
-    private final char COLOR_CHAR = ChatColor.COLOR_CHAR;
 
-    private String translateHexColorCodes(String message, char colorCodeCharacter) {
-        //Sourced from this post by imDaniX: https://github.com/SpigotMC/BungeeCord/pull/2883#issuecomment-653955600
-        Matcher matcher = Pattern.compile(colorCodeCharacter + "(#[A-Fa-f0-9]{6})").matcher(message);
+    public String translateHexColorCodes(char alternateColorCode, String message) {
+        final Pattern hexPattern = Pattern.compile(alternateColorCode + "#([A-Fa-f0-9]{6})" + "");
+        Matcher matcher = hexPattern.matcher(message);
         StringBuffer buffer = new StringBuffer(message.length() + 4 * 8);
         while (matcher.find()) {
             String group = matcher.group(1);
+            char COLOR_CHAR = ChatColor.COLOR_CHAR;
             matcher.appendReplacement(buffer, COLOR_CHAR + "x"
                     + COLOR_CHAR + group.charAt(0) + COLOR_CHAR + group.charAt(1)
                     + COLOR_CHAR + group.charAt(2) + COLOR_CHAR + group.charAt(3)
@@ -33,7 +33,7 @@ public class TextColor {
      */
     public static String CUSTOM_PARSE(char alternateColorChar, String textToTranslate) {
         TextColor textColor = new TextColor();
-        return ChatColor.translateAlternateColorCodes(alternateColorChar, textColor.translateHexColorCodes(textToTranslate, alternateColorChar));
+        return ChatColor.translateAlternateColorCodes(alternateColorChar, textColor.translateHexColorCodes(alternateColorChar, textToTranslate));
     }
 
     /**
