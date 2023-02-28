@@ -1,4 +1,4 @@
-package us.mytheria.bloblib.entities;
+package us.mytheria.bloblib.entities.inventory;
 
 import java.util.Set;
 

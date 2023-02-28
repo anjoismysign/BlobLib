@@ -2,7 +2,9 @@ package us.mytheria.bloblib.entities.currency;
 
 import org.apache.commons.io.FilenameUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
+import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.BlobObject;
+import us.mytheria.bloblib.entities.logger.BlobPluginLogger;
 import us.mytheria.bloblib.utilities.Formatter;
 import us.mytheria.bloblib.utilities.TextColor;
 
@@ -111,6 +113,7 @@ public class Currency implements BlobObject {
     }
 
     public static Currency fromFile(File file) {
+        BlobPluginLogger logger = BlobLib.getAnjoLogger();
         String fileName = file.getName();
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         String display = TextColor.PARSE(yamlConfiguration.getString("Display"));

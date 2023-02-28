@@ -16,10 +16,10 @@ public class Formatter {
     }
 
     public static String BYTES(float value) {
-        String[] arr = {"", "K", "M", "G", "T", "P", "E", "Z", "Y"};
+        String[] arr = {"", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi"};
         int index = 0;
-        while ((value / 1000) >= 1) {
-            value = value / 1000;
+        while ((value / 1024) >= 1) {
+            value = value / 1024;
             index++;
         }
         DecimalFormat decimalFormat = new DecimalFormat("#.##");

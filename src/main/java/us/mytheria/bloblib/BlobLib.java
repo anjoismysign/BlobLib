@@ -63,7 +63,7 @@ public final class BlobLib extends JavaPlugin {
         colorManager = new ColorManager();
         fileManager = new BlobLibFileManager();
         fileManager.unpackYamlFile("/BlobInventory", "CurrencyBuilder", false);
-        
+
         inventoryManager = new InventoryManager();
         messageManager = new MessageManager();
         soundManager = new SoundManager();
@@ -161,6 +161,15 @@ public final class BlobLib extends JavaPlugin {
      */
     public VaultManager getVaultManager() {
         return vaultManager;
+    }
+
+    /**
+     * Will retrieve the VaultManager
+     *
+     * @return The VaultManager
+     */
+    public static VaultManager vaultManager() {
+        return getInstance().getVaultManager();
     }
 
     /**

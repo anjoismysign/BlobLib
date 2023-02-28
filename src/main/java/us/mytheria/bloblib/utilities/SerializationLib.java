@@ -97,7 +97,12 @@ public class SerializationLib {
     }
 
     public static World deserializeWorld(String string) {
-        return Bukkit.getWorld(string);
+        World world = Bukkit.getWorld(string);
+        if (world == null) {
+            BlobLib.getAnjoLogger().error("World " + string + " not found!");
+            throw new IllegalArgumentException();
+        }
+        return world;
     }
 
     public static String serialize(Material material) {

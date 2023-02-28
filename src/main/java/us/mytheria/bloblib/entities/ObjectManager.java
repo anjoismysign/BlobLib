@@ -3,6 +3,7 @@ package us.mytheria.bloblib.entities;
 import me.anjoismysign.anjo.entities.Result;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.entities.logger.BlobPluginLogger;
 import us.mytheria.bloblib.managers.Manager;
 import us.mytheria.bloblib.managers.ManagerDirector;
 
@@ -10,6 +11,8 @@ import java.io.File;
 import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -21,6 +24,7 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
     private final File loadFilesDirectory;
     private final Supplier<AbstractMap<String, T>> objectsSupplier;
     private final Supplier<AbstractMap<String, File>> fileSupplier;
+    private CompletableFuture<Void> loadFiles;
     /**
      * The objects that are loaded in random access memory.
      * Should be initialized in loadInConstructor() method.
@@ -66,7 +70,7 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
      *
      * @param path The directory to load files from
      */
-    public abstract void loadFiles(File path);
+    public abstract CompletableFuture<Void> loadFiles(File path);
 
     /**
      * Adds an object to the manager and
@@ -121,7 +125,7 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
     @Override
     public void reload() {
         initializeObjects();
-        loadFiles(loadFilesDirectory);
+        updateLoadFiles(getLoadFilesDirectory());
     }
 
     @Nullable
@@ -176,5 +180,24 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
 
     public BlobEditor<String> makeEditor(Player player, String dataType) {
         return BlobEditor.COLLECTION_INJECTION(player.getUniqueId(), dataType, objects.keySet());
+    }
+
+    public CompletableFuture<Void> getLoadFiles() {
+        return loadFiles;
+    }
+
+    public void updateLoadFiles(File path) {
+        this.loadFiles = loadFiles(path);
+    }
+
+    public void whenFilesLoad(Consumer<ObjectManager<T>> consumer) {
+        BlobPluginLogger logger = getPlugin().getAnjoLogger();
+        loadFiles.whenComplete((objectManager, throwable) -> {
+            if (throwable != null) {
+                logger.singleError(throwable.getMessage());
+                return;
+            }
+            consumer.accept(this);
+        });
     }
 }

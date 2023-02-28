@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -35,6 +36,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
     private final String objectName;
     private final boolean hasObjectBuilderManager;
     private boolean objectIsEditable;
+    protected CompletableFuture<Void> loadFilesFuture;
 
     public ObjectDirector(ManagerDirector managerDirector,
                           ObjectDirectorData objectDirectorData,
@@ -58,23 +60,37 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
             throw new IllegalArgumentException("The loadFilesPathKey is not valid");
         this.objectManager = new ObjectManager<>(managerDirector, loadFilesDirectory.get(),
                 HashMap::new, HashMap::new) {
-            @Override
-            public void loadFiles(File path) {
+            public CompletableFuture<Void> loadFiles(File path) {
                 if (!path.exists())
                     path.mkdir();
-                File[] listOfFiles = path.listFiles();
-                for (File file : listOfFiles) {
-                    if (file.getName().equals(".DS_Store"))
-                        continue;
-                    if (file.isFile()) {
-                        T blobObject = readFunction.apply(file);
-                        if (blobObject.edit() != null)
-                            objectIsEditable = true;
-                        addObject(blobObject.getKey(), blobObject, file);
+                CompletableFuture<Void> future = new CompletableFuture<>();
+                Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () -> {
+                    try {
+                        File[] listOfFiles = path.listFiles();
+                        List<CompletableFuture<Void>> futures = new ArrayList<>();
+                        for (File file : listOfFiles) {
+                            if (!file.getName().endsWith(".yml"))
+                                continue;
+                            if (file.isFile()) {
+                                CompletableFuture<Void> fileFuture = CompletableFuture.runAsync(() -> {
+                                    T blobObject = readFunction.apply(file);
+                                    if (blobObject.edit() != null)
+                                        objectIsEditable = true;
+                                    addObject(blobObject.getKey(), blobObject, file);
+                                });
+                                futures.add(fileFuture);
+                            }
+                            if (file.isDirectory()) {
+                                futures.add(loadFiles(file));
+                            }
+                        }
+                        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+                        future.complete(null);
+                    } catch (Exception e) {
+                        future.completeExceptionally(e);
                     }
-                    if (file.isDirectory())
-                        loadFiles(file);
-                }
+                });
+                return future;
             }
         };
         clickEventConsumer = e -> {
@@ -394,5 +410,9 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
         }
         ObjectBuilder<T> builder = (ObjectBuilder<T>) object.edit();
         getObjectBuilderManager().addBuilder(player.getUniqueId(), builder);
+    }
+
+    public void whenObjectManagerFilesLoad(Consumer<ObjectManager<T>> consumer) {
+        this.objectManager.whenFilesLoad(consumer);
     }
 }

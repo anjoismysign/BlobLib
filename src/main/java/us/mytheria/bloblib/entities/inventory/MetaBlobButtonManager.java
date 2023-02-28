@@ -3,6 +3,8 @@ package us.mytheria.bloblib.entities.inventory;
 import me.anjoismysign.anjo.entities.Uber;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
+import us.mytheria.bloblib.entities.BlobMetaMultiSlotable;
+import us.mytheria.bloblib.entities.MetaButtonManager;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -19,7 +21,7 @@ import java.util.Set;
  * <p>
  * It handles the above through HashMaps giving it a O(1) time complexity.
  */
-public class BlobButtonManager extends ButtonManager {
+public class MetaBlobButtonManager extends MetaButtonManager {
     /**
      * Builds a ButtonManager through the specified ConfigurationSection.
      * Uses HashMap to store buttons.
@@ -27,33 +29,16 @@ public class BlobButtonManager extends ButtonManager {
      * @param section configuration section which contains all the buttons
      * @return a non abstract ButtonManager.
      */
-    public static BlobButtonManager fromConfigurationSection(ConfigurationSection section) {
-        BlobButtonManager blobButtonManager = new BlobButtonManager();
+    public static MetaBlobButtonManager fromConfigurationSection(ConfigurationSection section) {
+        MetaBlobButtonManager blobButtonManager = new MetaBlobButtonManager();
         blobButtonManager.add(section);
-        return blobButtonManager;
-    }
-
-    /**
-     * Builds a ButtonManager through the specified ConfigurationSection.
-     * Uses HashMap to store buttons.
-     *
-     * @param section configuration section which contains all the buttons
-     * @return a non abstract ButtonManager.
-     * @deprecated Smart methods were made during development and are already
-     * safe to use. Use {@link #fromConfigurationSection(ConfigurationSection)} instead
-     * which is identical to this method.
-     */
-    @Deprecated
-    public static BlobButtonManager smartFromConfigurationSection(ConfigurationSection section) {
-        BlobButtonManager blobButtonManager = new BlobButtonManager();
-        blobButtonManager.read(section);
         return blobButtonManager;
     }
 
     /**
      * Builds a non abstract ButtonManager without any buttons stored yet.
      */
-    public BlobButtonManager() {
+    public MetaBlobButtonManager() {
         super(new HashMap<>(), new HashMap<>());
     }
 
@@ -87,7 +72,10 @@ public class BlobButtonManager extends ButtonManager {
      */
     @Override
     public Set<Integer> get(String key) {
-        return getStringKeys().get(key);
+        if (contains(key)) {
+            return getStringKeys().get(key).getSlots();
+        }
+        throw new IllegalArgumentException("MetaInventoryButton with key " + key + " does not exist");
     }
 
     /**
@@ -134,7 +122,7 @@ public class BlobButtonManager extends ButtonManager {
         Uber<Boolean> madeChanges = new Uber<>(false);
         set.stream().filter(key -> !contains(key)).forEach(key -> {
             madeChanges.talk(true);
-            BlobMultiSlotable slotable = BlobMultiSlotable.read(section.getConfigurationSection(key), key);
+            BlobMetaMultiSlotable slotable = BlobMetaMultiSlotable.read(section.getConfigurationSection(key), key);
             slotable.setInButtonManager(this);
         });
         return madeChanges.thanks();
@@ -157,7 +145,7 @@ public class BlobButtonManager extends ButtonManager {
         Uber<Boolean> madeChanges = new Uber<>(false);
         set.stream().filter(key -> !contains(key)).forEach(key -> {
             madeChanges.talk(true);
-            BlobMultiSlotable slotable = BlobMultiSlotable.read(section.getConfigurationSection(key), key);
+            BlobMetaMultiSlotable slotable = BlobMetaMultiSlotable.read(section.getConfigurationSection(key), key);
             slotable.setInButtonManager(this);
         });
         return madeChanges.thanks();

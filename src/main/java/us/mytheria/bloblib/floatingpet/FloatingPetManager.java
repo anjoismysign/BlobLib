@@ -40,14 +40,15 @@ public class FloatingPetManager<T extends FloatingPet> extends Manager implement
      */
     public FloatingPetManager(ManagerDirector managerDirector, @Nullable Function<T, Event> destroyEvent) {
         super(managerDirector);
-        ownerMap = new HashMap<>();
-        petMap = new HashMap<>();
+        reload();
         this.destroyEvent = destroyEvent;
         Bukkit.getPluginManager().registerEvents(this, managerDirector.getPlugin());
     }
 
     @Override
     public void unload() {
+        if (ownerMap == null)
+            return;
         for (List<T> t : ownerMap.values()) {
             for (T floatingPet : t) {
                 floatingPet.destroy();
@@ -55,8 +56,13 @@ public class FloatingPetManager<T extends FloatingPet> extends Manager implement
         }
     }
 
+    /**
+     * Will destroy all current loaded pets and clean
+     * the memory.
+     */
     @Override
     public void reload() {
+        unload();
         ownerMap = new HashMap<>();
         petMap = new HashMap<>();
     }

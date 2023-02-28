@@ -1,11 +1,10 @@
-package us.mytheria.bloblib.entities;
+package us.mytheria.bloblib.entities.inventory;
 
 import me.anjoismysign.anjo.entities.Result;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import us.mytheria.bloblib.entities.inventory.SuperBlobButtonManager;
 import us.mytheria.bloblib.itemstack.ItemStackReader;
 import us.mytheria.bloblib.objects.SerializableItem;
 

@@ -20,9 +20,13 @@ public class BlobEconomy<T extends WalletOwner> implements Economy {
     protected BlobEconomy(WalletOwnerManager<T> manager) {
         this.manager = manager;
         this.plugin = manager.getPlugin();
-        Plugin vault = Bukkit.getPluginManager().getPlugin("Vault");
-        if (vault != null)
-            Bukkit.getServicesManager().register(Economy.class, this, vault, ServicePriority.Normal);
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            Plugin vault = Bukkit.getPluginManager().getPlugin("Vault");
+            if (vault != null) {
+                Bukkit.getServicesManager().register(Economy.class, this,
+                        vault, ServicePriority.Normal);
+            }
+        });
     }
 
     private void updateAsynchronously(T walletOwner) {
