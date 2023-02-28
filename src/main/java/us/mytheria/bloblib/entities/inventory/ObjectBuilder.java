@@ -27,7 +27,7 @@ import java.util.function.Function;
  * to the Minecraft server, the user can build an object by interacting with
  * a Bukkit Inventory / GUI.
  */
-public abstract class ObjectBuilder<T extends BlobObject> extends SharableInventory {
+public abstract class ObjectBuilder<T extends BlobObject> extends BlobInventory {
     private final UUID builderId;
     private final HashMap<String, ObjectBuilderButton<?>> objectBuilderButtons;
     private Function<ObjectBuilder<T>, T> function;

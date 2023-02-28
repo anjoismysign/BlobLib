@@ -80,7 +80,7 @@ public class BlobInventory extends SharableInventory<InventoryButton> {
         return new BlobInventory(title, size, buttonManager);
     }
 
-    private BlobInventory(String title, int size, BlobButtonManager buttonManager) {
+    public BlobInventory(String title, int size, ButtonManager<InventoryButton> buttonManager) {
         super(title, size, buttonManager);
     }
 

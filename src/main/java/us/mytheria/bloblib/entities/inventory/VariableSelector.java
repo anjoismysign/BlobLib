@@ -2,14 +2,11 @@ package us.mytheria.bloblib.entities.inventory;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.entities.VariableFiller;
 import us.mytheria.bloblib.entities.VariableValue;
-import us.mytheria.bloblib.managers.BlobLibFileManager;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -27,7 +24,7 @@ import java.util.function.Function;
  * would be displayed as an ItemStack inside the GUI since VariableSelector
  * extends BlobInventory.
  */
-public abstract class VariableSelector<T> extends SharableInventory {
+public abstract class VariableSelector<T> extends BlobInventory {
     private final String dataType;
     private final HashMap<Integer, T> values;
     private final UUID builderId;
@@ -40,21 +37,8 @@ public abstract class VariableSelector<T> extends SharableInventory {
      *
      * @return the new VariableSelector
      */
-    public static SharableInventory DEFAULT() {
+    public static BlobInventory DEFAULT() {
         return BlobLibAssetAPI.getBlobInventory("VariableSelector");
-    }
-
-    /**
-     * Creates a new VariableSelector
-     *
-     * @return the new VariableSelector
-     * @deprecated use {@link #DEFAULT()} instead
-     */
-    @Deprecated
-    public static SharableInventory DEFAULT_ITEMSTACKREADER() {
-        BlobLibFileManager fileManager = BlobLib.getInstance().getFileManager();
-        YamlConfiguration inventories = fileManager.getYml(fileManager.defaultInventoriesFile());
-        return smartFromConfigurationSection(inventories.getConfigurationSection("VariableSelector"));
     }
 
     /**
@@ -65,7 +49,7 @@ public abstract class VariableSelector<T> extends SharableInventory {
      * @param dataType      the data type
      * @param filler        the filler to use
      */
-    public VariableSelector(SharableInventory blobInventory, UUID builderId,
+    public VariableSelector(BlobInventory blobInventory, UUID builderId,
                             String dataType, VariableFiller<T> filler) {
         super(blobInventory.getTitle(), blobInventory.getSize(), blobInventory.getButtonManager());
         this.filler = filler;

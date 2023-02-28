@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.entities.inventory.SharableInventory;
+import us.mytheria.bloblib.entities.inventory.BlobInventory;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
 import us.mytheria.bloblib.entities.listeners.BlobSelectorListener;
 import us.mytheria.bloblib.managers.SelectorListenerManager;
@@ -34,7 +34,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      * @param dataType      the data type of the editor
      * @return the new BlobEditor
      */
-    public static <T> BlobEditor<T> build(SharableInventory blobInventory, UUID builderId,
+    public static <T> BlobEditor<T> build(BlobInventory blobInventory, UUID builderId,
                                           String dataType) {
         return new BlobEditor<>(blobInventory, builderId,
                 dataType);
@@ -68,39 +68,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
                 dataType, collection);
     }
 
-    /**
-     * Creates a new BlobEditor.
-     *
-     * @param <T>       the type of the collection
-     * @param builderId the id of the builder
-     * @param dataType  the data type of the editor
-     * @return the new BlobEditor
-     * @deprecated use {@link #DEFAULT(UUID, String)} instead
-     */
-    @Deprecated
-    public static <T> BlobEditor<T> DEFAULT_ITEMSTACKREADER(UUID builderId, String dataType) {
-        return new BlobEditor<>(VariableSelector.DEFAULT_ITEMSTACKREADER(), builderId,
-                dataType);
-    }
-
-    /**
-     * Creates a new BlobEditor passing specific collection.
-     *
-     * @param <T>        the type of the collection
-     * @param builderId  the id of the builder
-     * @param dataType   the data type of the editor
-     * @param collection the collection to edit
-     * @return the new BlobEditor
-     * @deprecated use {@link #COLLECTION_INJECTION(UUID, String, Collection)} instead
-     */
-    @Deprecated
-    public static <T> BlobEditor<T> DEFAULT_ITEMSTACKREADER(UUID builderId, String dataType,
-                                                            Collection<T> collection) {
-        return new BlobEditor<>(VariableSelector.DEFAULT_ITEMSTACKREADER(), builderId,
-                dataType, collection);
-    }
-
-    protected BlobEditor(SharableInventory blobInventory, UUID builderId,
+    protected BlobEditor(BlobInventory blobInventory, UUID builderId,
                          String dataType) {
         super(blobInventory, builderId, dataType, null);
         list = new ArrayList<>();
@@ -108,7 +76,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
         selectorManager = BlobLib.getInstance().getSelectorManager();
     }
 
-    protected BlobEditor(SharableInventory blobInventory, UUID builderId,
+    protected BlobEditor(BlobInventory blobInventory, UUID builderId,
                          String dataType, Collection<T> collection) {
         super(Objects.requireNonNull(blobInventory, "'blobInventory' cannot be null"),
                 Objects.requireNonNull(builderId, "'builderId' cannot be null"),

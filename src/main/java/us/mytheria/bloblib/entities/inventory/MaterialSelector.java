@@ -8,11 +8,11 @@ import java.util.UUID;
 public class MaterialSelector extends VariableSelector<Material> {
 
     public static MaterialSelector build(UUID builderId) {
-        SharableInventory inventory = VariableSelector.DEFAULT();
+        BlobInventory inventory = VariableSelector.DEFAULT();
         return new MaterialSelector(inventory, builderId);
     }
 
-    private MaterialSelector(SharableInventory blobInventory, UUID builderId) {
+    private MaterialSelector(BlobInventory blobInventory, UUID builderId) {
         super(blobInventory, builderId, "MATERIAL",
                 BlobLib.getInstance().getFillerManager().getMaterialFiller());
     }

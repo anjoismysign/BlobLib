@@ -8,11 +8,11 @@ import java.util.UUID;
 public class SpawnableEntitySelector extends VariableSelector<EntityType> {
 
     public static SpawnableEntitySelector build(UUID builderId) {
-        SharableInventory inventory = VariableSelector.DEFAULT();
+        BlobInventory inventory = VariableSelector.DEFAULT();
         return new SpawnableEntitySelector(inventory, builderId);
     }
 
-    private SpawnableEntitySelector(SharableInventory blobInventory, UUID builderId) {
+    private SpawnableEntitySelector(BlobInventory blobInventory, UUID builderId) {
         super(blobInventory, builderId, "ENTITYTYPE",
                 BlobLib.getInstance().getFillerManager().getSpawnableEntityTypeFiller());
     }

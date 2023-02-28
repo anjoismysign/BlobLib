@@ -2,6 +2,7 @@ package us.mytheria.bloblib;
 
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import us.mytheria.bloblib.entities.inventory.BlobInventory;
 import us.mytheria.bloblib.entities.inventory.SharableInventory;
 import us.mytheria.bloblib.entities.message.BlobSound;
 import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
@@ -39,7 +40,7 @@ public class BlobLibAssetAPI {
      * @param key Key that points to the inventory
      * @return The inventory
      */
-    public static SharableInventory getBlobInventory(String key) {
+    public static BlobInventory getBlobInventory(String key) {
         return getInventoryManager().getInventory(key);
     }
 
