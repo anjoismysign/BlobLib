@@ -1,6 +1,4 @@
-package us.mytheria.bloblib.entities;
-
-import us.mytheria.bloblib.entities.inventory.InventoryButton;
+package us.mytheria.bloblib.entities.inventory;
 
 import java.util.Set;
 

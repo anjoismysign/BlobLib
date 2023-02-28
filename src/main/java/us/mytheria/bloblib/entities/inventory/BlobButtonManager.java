@@ -19,7 +19,7 @@ import java.util.Set;
  * <p>
  * It handles the above through HashMaps giving it a O(1) time complexity.
  */
-public class BlobButtonManager extends ButtonManager {
+public class BlobButtonManager extends ButtonManager<InventoryButton> {
     /**
      * Builds a ButtonManager through the specified ConfigurationSection.
      * Uses HashMap to store buttons.
@@ -82,12 +82,15 @@ public class BlobButtonManager extends ButtonManager {
     /**
      * Gets all buttons stored in this ButtonManager that belong to the specified key
      *
-     * @param key the key of the buttons
-     * @return all buttons stored in this ButtonManager that belong to the specified key
+     * @param key the key of the InventoryButton
+     * @return all buttons stored in this ButtonManager that belong to the specified key.
+     * null if the key is not stored in this ButtonManager
      */
     @Override
     public Set<Integer> get(String key) {
-        return getStringKeys().get(key);
+        if (contains(key))
+            return getStringKeys().get(key).getSlots();
+        return null;
     }
 
     /**

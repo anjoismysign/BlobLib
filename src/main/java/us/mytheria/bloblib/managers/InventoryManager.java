@@ -4,7 +4,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.entities.inventory.BlobInventory;
+import us.mytheria.bloblib.entities.inventory.SharableInventory;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -14,7 +14,7 @@ import java.util.Set;
 
 public class InventoryManager {
     private final BlobLib main;
-    private HashMap<String, BlobInventory> inventories;
+    private HashMap<String, SharableInventory> inventories;
     private HashMap<String, Set<String>> pluginInventories;
     private HashMap<String, Integer> duplicates;
 
@@ -103,7 +103,7 @@ public class InventoryManager {
                 addDuplicate(fileName);
                 return;
             }
-            add(fileName, BlobInventory.fromConfigurationSection(yamlConfiguration));
+            add(fileName, SharableInventory.fromConfigurationSection(yamlConfiguration));
             pluginInventories.get(plugin.getName()).add(fileName);
             return;
         }
@@ -117,7 +117,7 @@ public class InventoryManager {
                 addDuplicate(reference);
                 return;
             }
-            add(reference, BlobInventory.fromConfigurationSection(section));
+            add(reference, SharableInventory.fromConfigurationSection(section));
             pluginInventories.get(plugin.getName()).add(reference);
         });
     }
@@ -153,7 +153,7 @@ public class InventoryManager {
         String fileName = FilenameUtils.removeExtension(file.getName());
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
-            add(fileName, BlobInventory.fromConfigurationSection(yamlConfiguration));
+            add(fileName, SharableInventory.fromConfigurationSection(yamlConfiguration));
             return;
         }
         yamlConfiguration.getKeys(true).forEach(reference -> {
@@ -166,7 +166,7 @@ public class InventoryManager {
                 addDuplicate(reference);
                 return;
             }
-            add(reference, BlobInventory.fromConfigurationSection(section));
+            add(reference, SharableInventory.fromConfigurationSection(section));
         });
     }
 
@@ -178,19 +178,19 @@ public class InventoryManager {
     }
 
     @Nullable
-    public BlobInventory getInventory(String key) {
+    public SharableInventory getInventory(String key) {
         return inventories.get(key);
     }
 
     @Nullable
-    public BlobInventory cloneInventory(String key) {
-        BlobInventory inventory = inventories.get(key);
+    public SharableInventory cloneInventory(String key) {
+        SharableInventory inventory = inventories.get(key);
         if (inventory == null)
             return null;
         return inventory.copy();
     }
 
-    private void add(String key, BlobInventory inventory) {
+    private void add(String key, SharableInventory inventory) {
         inventories.put(key, inventory);
     }
 }

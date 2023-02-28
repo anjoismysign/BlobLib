@@ -104,6 +104,10 @@ public class BlobMultiSlotable extends MultiSlotable {
         }
     }
 
+    public InventoryButton toInventoryButton() {
+        return new InventoryButton(key, getSlots());
+    }
+
     /**
      * Writes in a ButtonManager (in case of working
      * with BlobLib's GUI system) the BlobMultiSlotable
@@ -111,8 +115,8 @@ public class BlobMultiSlotable extends MultiSlotable {
      * @param buttonManager The ButtonManager to write in
      *                      the BlobMultiSlotable
      */
-    public void setInButtonManager(ButtonManager buttonManager) {
-        buttonManager.getStringKeys().put(key, this.getSlots());
+    public void setInButtonManager(ButtonManager<InventoryButton> buttonManager) {
+        buttonManager.getStringKeys().put(key, toInventoryButton());
         for (Integer slot : getSlots()) {
             buttonManager.getIntegerKeys().put(slot, getItemStack());
         }

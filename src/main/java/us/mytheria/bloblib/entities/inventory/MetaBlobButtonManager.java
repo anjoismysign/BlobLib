@@ -3,8 +3,6 @@ package us.mytheria.bloblib.entities.inventory;
 import me.anjoismysign.anjo.entities.Uber;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
-import us.mytheria.bloblib.entities.BlobMetaMultiSlotable;
-import us.mytheria.bloblib.entities.MetaButtonManager;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,7 +19,7 @@ import java.util.Set;
  * <p>
  * It handles the above through HashMaps giving it a O(1) time complexity.
  */
-public class MetaBlobButtonManager extends MetaButtonManager {
+public class MetaBlobButtonManager extends ButtonManager<MetaInventoryButton> {
     /**
      * Builds a ButtonManager through the specified ConfigurationSection.
      * Uses HashMap to store buttons.
@@ -69,13 +67,14 @@ public class MetaBlobButtonManager extends MetaButtonManager {
      *
      * @param key the key of the buttons
      * @return all buttons stored in this ButtonManager that belong to the specified key
+     * null if the key is not stored in this ButtonManager
      */
     @Override
     public Set<Integer> get(String key) {
         if (contains(key)) {
             return getStringKeys().get(key).getSlots();
         }
-        throw new IllegalArgumentException("MetaInventoryButton with key " + key + " does not exist");
+        return null;
     }
 
     /**
@@ -122,7 +121,7 @@ public class MetaBlobButtonManager extends MetaButtonManager {
         Uber<Boolean> madeChanges = new Uber<>(false);
         set.stream().filter(key -> !contains(key)).forEach(key -> {
             madeChanges.talk(true);
-            BlobMetaMultiSlotable slotable = BlobMetaMultiSlotable.read(section.getConfigurationSection(key), key);
+            MetaBlobMultiSlotable slotable = MetaBlobMultiSlotable.read(section.getConfigurationSection(key), key);
             slotable.setInButtonManager(this);
         });
         return madeChanges.thanks();
@@ -145,7 +144,7 @@ public class MetaBlobButtonManager extends MetaButtonManager {
         Uber<Boolean> madeChanges = new Uber<>(false);
         set.stream().filter(key -> !contains(key)).forEach(key -> {
             madeChanges.talk(true);
-            BlobMetaMultiSlotable slotable = BlobMetaMultiSlotable.read(section.getConfigurationSection(key), key);
+            MetaBlobMultiSlotable slotable = MetaBlobMultiSlotable.read(section.getConfigurationSection(key), key);
             slotable.setInButtonManager(this);
         });
         return madeChanges.thanks();

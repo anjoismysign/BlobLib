@@ -27,7 +27,7 @@ import java.util.function.Function;
  * would be displayed as an ItemStack inside the GUI since VariableSelector
  * extends BlobInventory.
  */
-public abstract class VariableSelector<T> extends BlobInventory {
+public abstract class VariableSelector<T> extends SharableInventory {
     private final String dataType;
     private final HashMap<Integer, T> values;
     private final UUID builderId;
@@ -40,7 +40,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
      *
      * @return the new VariableSelector
      */
-    public static BlobInventory DEFAULT() {
+    public static SharableInventory DEFAULT() {
         return BlobLibAssetAPI.getBlobInventory("VariableSelector");
     }
 
@@ -51,7 +51,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
      * @deprecated use {@link #DEFAULT()} instead
      */
     @Deprecated
-    public static BlobInventory DEFAULT_ITEMSTACKREADER() {
+    public static SharableInventory DEFAULT_ITEMSTACKREADER() {
         BlobLibFileManager fileManager = BlobLib.getInstance().getFileManager();
         YamlConfiguration inventories = fileManager.getYml(fileManager.defaultInventoriesFile());
         return smartFromConfigurationSection(inventories.getConfigurationSection("VariableSelector"));
@@ -65,7 +65,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
      * @param dataType      the data type
      * @param filler        the filler to use
      */
-    public VariableSelector(BlobInventory blobInventory, UUID builderId,
+    public VariableSelector(SharableInventory blobInventory, UUID builderId,
                             String dataType, VariableFiller<T> filler) {
         super(blobInventory.getTitle(), blobInventory.getSize(), blobInventory.getButtonManager());
         this.filler = filler;

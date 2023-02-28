@@ -1,11 +1,10 @@
-package us.mytheria.bloblib.entities;
+package us.mytheria.bloblib.entities.inventory;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import us.mytheria.bloblib.entities.inventory.MultiSlotable;
 import us.mytheria.bloblib.itemstack.ItemStackReader;
 
 import java.util.HashSet;
@@ -24,7 +23,7 @@ import java.util.Set;
  * The 'key' attribute is used to identify the BlobMultiSlotable
  * in case of failure to be able to detail/trace the error.
  */
-public class BlobMetaMultiSlotable extends MultiSlotable {
+public class MetaBlobMultiSlotable extends MultiSlotable {
     private final String key;
     private final String meta;
     private final String subMeta;
@@ -36,7 +35,7 @@ public class BlobMetaMultiSlotable extends MultiSlotable {
      * @param key     The key of the BlobMultiSlotable which was intended to read from.
      * @return The BlobMultiSlotable which was read from the ConfigurationSection.
      */
-    public static BlobMetaMultiSlotable read(ConfigurationSection section, String key) {
+    public static MetaBlobMultiSlotable read(ConfigurationSection section, String key) {
         ConfigurationSection itemStackSection = section.getConfigurationSection("ItemStack");
         if (itemStackSection == null) {
             Bukkit.getLogger().severe("ItemStack section is null for " + key);
@@ -58,7 +57,7 @@ public class BlobMetaMultiSlotable extends MultiSlotable {
         if (section.isString("SubMeta")) {
             subMeta = section.getString("SubMeta");
         }
-        return new BlobMetaMultiSlotable(set, itemStack, key, meta, subMeta);
+        return new MetaBlobMultiSlotable(set, itemStack, key, meta, subMeta);
     }
 
     /**
@@ -68,7 +67,7 @@ public class BlobMetaMultiSlotable extends MultiSlotable {
      * @param itemStack The item to add
      * @param key       The key to use for the item
      */
-    public BlobMetaMultiSlotable(Set<Integer> slots, ItemStack itemStack, String key,
+    public MetaBlobMultiSlotable(Set<Integer> slots, ItemStack itemStack, String key,
                                  String meta, @Nullable String subMeta) {
         super(slots, itemStack);
         this.key = key;
@@ -100,7 +99,7 @@ public class BlobMetaMultiSlotable extends MultiSlotable {
      * @param buttonManager The ButtonManager to write in
      *                      the BlobMultiSlotable
      */
-    public void setInButtonManager(MetaButtonManager buttonManager) {
+    public void setInButtonManager(ButtonManager<MetaInventoryButton> buttonManager) {
         buttonManager.getStringKeys().put(key, toMetaInventoryButton());
         for (Integer slot : getSlots()) {
             buttonManager.getIntegerKeys().put(slot, getItemStack());

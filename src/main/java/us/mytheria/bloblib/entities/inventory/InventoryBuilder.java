@@ -6,10 +6,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Set;
 
-public abstract class InventoryBuilder {
+public abstract class InventoryBuilder<T extends InventoryButton> {
     private String title;
     private int size;
-    private ButtonManager buttonManager;
+    private ButtonManager<T> buttonManager;
 
     public String getTitle() {
         return title;
@@ -27,11 +27,11 @@ public abstract class InventoryBuilder {
         this.size = size;
     }
 
-    public ButtonManager getButtonManager() {
+    public ButtonManager<T> getButtonManager() {
         return buttonManager;
     }
 
-    public void setButtonManager(ButtonManager buttonManager) {
+    public void setButtonManager(ButtonManager<T> buttonManager) {
         this.buttonManager = buttonManager;
     }
 
@@ -42,6 +42,10 @@ public abstract class InventoryBuilder {
 
     public ItemStack getButton(int slot) {
         return buttonManager.get(slot);
+    }
+
+    public T getButton(String key) {
+        return buttonManager.getButton(key);
     }
 
     public Collection<String> getKeys() {

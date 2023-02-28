@@ -8,8 +8,8 @@ import java.util.Set;
 
 public interface ButtonManagerMethods {
     /**
-     * @param key the key of the ItemStack
-     * @return true if the specified key is stored in this ButtonManager
+     * @param key the key of the InventoryButton
+     * @return true if the specified key points to a stored InventoryButton in this ButtonManager
      */
     boolean contains(String key);
 
@@ -20,7 +20,7 @@ public interface ButtonManagerMethods {
     boolean contains(int slot);
 
     /**
-     * @param key the key of the ItemStack
+     * @param key the key of the InventoryButton
      * @return the slots in which the ItemStack is stored
      */
     Set<Integer> get(String key);
@@ -57,4 +57,10 @@ public interface ButtonManagerMethods {
      * @return a set of all the keys stored in this ButtonManager
      */
     Collection<String> keys();
+
+    /**
+     * @param key the key of the InventoryButton
+     * @return the InventoryButton stored in this ButtonManager
+     */
+    InventoryButton getButton(String key);
 }

@@ -1,15 +1,18 @@
 package us.mytheria.bloblib.entities.inventory;
 
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class ButtonManager implements ButtonManagerMethods {
-    private Map<String, Set<Integer>> stringKeys;
+public abstract class ButtonManager<T extends InventoryButton> implements ButtonManagerMethods {
+    private Map<String, T> stringKeys;
     private Map<Integer, ItemStack> integerKeys;
 
-    public ButtonManager(Map<String, Set<Integer>> stringKeys,
+    public ButtonManager(Map<String, T> stringKeys,
                          Map<Integer, ItemStack> integerKeys) {
         this.stringKeys = stringKeys;
         this.integerKeys = integerKeys;
@@ -22,7 +25,7 @@ public abstract class ButtonManager implements ButtonManagerMethods {
         return integerKeys;
     }
 
-    public Map<String, Set<Integer>> getStringKeys() {
+    public Map<String, T> getStringKeys() {
         return stringKeys;
     }
 
@@ -30,7 +33,7 @@ public abstract class ButtonManager implements ButtonManagerMethods {
         this.integerKeys = integerKeys;
     }
 
-    public void setStringKeys(Map<String, Set<Integer>> stringKeys) {
+    public void setStringKeys(Map<String, T> stringKeys) {
         this.stringKeys = stringKeys;
     }
 
@@ -38,10 +41,24 @@ public abstract class ButtonManager implements ButtonManagerMethods {
         return get(key);
     }
 
-    public InventoryButton getButton(String key) {
-        return new InventoryButton(key, getSlots(key));
+    /**
+     * Checks if the InventoryButton for the specified key is stored in this ButtonManager
+     *
+     * @param key the key of the InventoryButton
+     * @return the InventoryButton for the specified key is stored in this ButtonManager
+     * null if the InventoryButton for the specified key is not stored in this ButtonManager
+     */
+    @Override
+    @Nullable
+    public T getButton(String key) {
+        return getStringKeys().get(key);
     }
 
-    public void addCommand(String key, String command) {
+    /**
+     * @return all InventoryButtons stored in this ButtonManager
+     */
+    @NotNull
+    public Collection<T> getAllButtons() {
+        return getStringKeys().values();
     }
 }
