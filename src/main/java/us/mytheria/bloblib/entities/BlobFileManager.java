@@ -38,10 +38,12 @@ public class BlobFileManager extends Manager {
         this.pluginDirectory = new File(pluginDirectoryPathname);
         addFile("messages", new File(pluginDirectory.getPath() + "/BlobMessage"));
         addFile("sounds", new File(pluginDirectory.getPath() + "/BlobSound"));
-        addFile("inventories", new File(pluginDirectory.getPath() + "/BlobInventory"));
+        addFile("blobInventories", new File(pluginDirectory.getPath() + "/BlobInventory"));
+        addFile("metaBlobInventories", new File(pluginDirectory.getPath() + "/MetaBlobInventory"));
         addFile("defaultSounds", new File(soundsDirectory().getPath() + "/" + lowercased + "_sounds.yml"));
         addFile("defaultMessages", new File(messagesDirectory().getPath() + "/" + lowercased + "_lang.yml"));
-        addFile("defaultInventories", new File(inventoriesDirectory().getPath() + "/" + lowercased + "_inventories.yml"));
+        addFile("defaultBlobInventories", new File(inventoriesDirectory().getPath() + "/" + lowercased + "_inventories.yml"));
+        addFile("defaultMetaBlobInventories", new File(metaInventoriesDirectory().getPath() + "/" + lowercased + "_meta_inventories.yml"));
         loadFiles();
     }
 
@@ -280,7 +282,12 @@ public class BlobFileManager extends Manager {
      */
     @NotNull
     public File inventoriesDirectory() {
-        return getFile("inventories");
+        return getFile("blobInventories");
+    }
+
+    @NotNull
+    public File metaInventoriesDirectory() {
+        return getFile("metaInventories");
     }
 
     /**
@@ -310,6 +317,11 @@ public class BlobFileManager extends Manager {
      */
     @NotNull
     public File getDefaultInventories() {
-        return getFile("defaultInventories");
+        return getFile("defaultBlobInventories");
+    }
+
+    @NotNull
+    public File getDefaultMetaInventories() {
+        return getFile("defaultMetaInventories");
     }
 }

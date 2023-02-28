@@ -4,7 +4,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.entities.BlobFileManager;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
+import us.mytheria.bloblib.entities.inventory.MetaBlobInventory;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -14,8 +16,10 @@ import java.util.Set;
 
 public class InventoryManager {
     private final BlobLib main;
-    private HashMap<String, BlobInventory> inventories;
-    private HashMap<String, Set<String>> pluginInventories;
+    private HashMap<String, BlobInventory> blobInventories;
+    private HashMap<String, MetaBlobInventory> metaInventories;
+    private HashMap<String, Set<String>> pluginBlobInventories;
+    private HashMap<String, Set<String>> pluginMetaInventories;
     private HashMap<String, Integer> duplicates;
 
     public InventoryManager() {
@@ -27,24 +31,31 @@ public class InventoryManager {
     }
 
     public void load() {
-        inventories = new HashMap<>();
-        pluginInventories = new HashMap<>();
+        blobInventories = new HashMap<>();
+        metaInventories = new HashMap<>();
+        pluginBlobInventories = new HashMap<>();
+        pluginMetaInventories = new HashMap<>();
         duplicates = new HashMap<>();
-        loadFiles(main.getFileManager().inventoriesDirectory());
+        loadBlobInventories(main.getFileManager().inventoriesDirectory());
+        loadMetaInventories(main.getFileManager().metaInventoriesDirectory());
         duplicates.forEach((key, value) -> BlobLib.getAnjoLogger()
-                .log("Duplicate BlobInventory: '" + key + "' (found " + value + " instances)"));
+                .log("Duplicate Inventory: '" + key + "' (found " + value + " instances)"));
     }
 
     public void load(BlobPlugin plugin, ManagerDirector director) {
         String pluginName = plugin.getName();
-        if (pluginInventories.containsKey(pluginName))
+        if (pluginBlobInventories.containsKey(pluginName))
             throw new IllegalArgumentException("Plugin '" + pluginName + "' has already been loaded");
-        pluginInventories.put(pluginName, new HashSet<>());
+        pluginBlobInventories.put(pluginName, new HashSet<>());
+        pluginMetaInventories.put(pluginName, new HashSet<>());
         duplicates.clear();
-        File directory = director.getFileManager().inventoriesDirectory();
-        loadFiles(plugin, directory);
+        BlobFileManager fileManager = director.getFileManager();
+        File blobDirectory = fileManager.inventoriesDirectory();
+        loadBlobInventories(plugin, blobDirectory);
+        File metaDirectory = fileManager.metaInventoriesDirectory();
+        loadMetaInventories(plugin, metaDirectory);
         duplicates.forEach((key, value) -> plugin.getAnjoLogger()
-                .log("Duplicate BlobInventory: '" + key + "' (found " + value + " instances)"));
+                .log("Duplicate Inventory: '" + key + "' (found " + value + " instances)"));
     }
 
     public static void loadBlobPlugin(BlobPlugin plugin, ManagerDirector director) {
@@ -58,10 +69,12 @@ public class InventoryManager {
 
     public void unload(BlobPlugin plugin) {
         String pluginName = plugin.getName();
-        if (!pluginInventories.containsKey(pluginName))
+        if (!pluginBlobInventories.containsKey(pluginName))
             return;
-        pluginInventories.get(pluginName).forEach(inventories::remove);
-        pluginInventories.remove(pluginName);
+        pluginBlobInventories.get(pluginName).forEach(blobInventories::remove);
+        pluginMetaInventories.get(pluginName).forEach(metaInventories::remove);
+        pluginBlobInventories.remove(pluginName);
+        pluginMetaInventories.remove(pluginName);
     }
 
     public static void unloadBlobPlugin(BlobPlugin plugin) {
@@ -69,42 +82,68 @@ public class InventoryManager {
         manager.unload(plugin);
     }
 
-    private void loadFiles(File path) {
+    private void loadBlobInventories(File path) {
         File[] listOfFiles = path.listFiles();
         for (File file : listOfFiles) {
             if (file.isFile()) {
-                if (file.getName().equals(".DS_Store"))
+                if (!file.getName().endsWith(".yml"))
                     continue;
-                loadYamlConfiguration(file);
+                loadBlobInventory(file);
             }
             if (file.isDirectory())
-                loadFiles(path);
+                loadBlobInventories(path);
         }
     }
 
-    private void loadFiles(BlobPlugin plugin, File path) {
+    private void loadMetaInventories(File path) {
         File[] listOfFiles = path.listFiles();
         for (File file : listOfFiles) {
             if (file.isFile()) {
-                if (file.getName().equals(".DS_Store"))
+                if (!file.getName().endsWith(".yml"))
                     continue;
-                loadYamlConfiguration(plugin, file);
+                loadMetaInventory(file);
             }
             if (file.isDirectory())
-                loadFiles(plugin, path);
+                loadMetaInventories(path);
         }
     }
 
-    private void loadYamlConfiguration(BlobPlugin plugin, File file) {
+    private void loadBlobInventories(BlobPlugin plugin, File path) {
+        File[] listOfFiles = path.listFiles();
+        for (File file : listOfFiles) {
+            if (file.isFile()) {
+                if (!file.getName().endsWith(".yml"))
+                    continue;
+                loadBlobInventory(plugin, file);
+            }
+            if (file.isDirectory())
+                loadBlobInventories(plugin, path);
+        }
+    }
+
+    private void loadMetaInventories(BlobPlugin plugin, File path) {
+        File[] listOfFiles = path.listFiles();
+        for (File file : listOfFiles) {
+            if (file.isFile()) {
+                if (!file.getName().endsWith(".yml"))
+                    continue;
+                loadMetaInventory(plugin, file);
+            }
+            if (file.isDirectory())
+                loadMetaInventory(plugin, path);
+        }
+    }
+
+    private void loadBlobInventory(BlobPlugin plugin, File file) {
         String fileName = FilenameUtils.removeExtension(file.getName());
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
-            if (inventories.containsKey(fileName)) {
+            if (blobInventories.containsKey(fileName)) {
                 addDuplicate(fileName);
                 return;
             }
-            add(fileName, BlobInventory.fromConfigurationSection(yamlConfiguration));
-            pluginInventories.get(plugin.getName()).add(fileName);
+            addBlobInventory(fileName, BlobInventory.fromConfigurationSection(yamlConfiguration));
+            pluginBlobInventories.get(plugin.getName()).add(fileName);
             return;
         }
         yamlConfiguration.getKeys(true).forEach(reference -> {
@@ -113,47 +152,75 @@ public class InventoryManager {
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (!section.contains("Size") && !section.isInt("Size"))
                 return;
-            if (inventories.containsKey(reference)) {
+            if (blobInventories.containsKey(reference)) {
                 addDuplicate(reference);
                 return;
             }
-            add(reference, BlobInventory.fromConfigurationSection(section));
-            pluginInventories.get(plugin.getName()).add(reference);
+            addBlobInventory(reference, BlobInventory.fromConfigurationSection(section));
+            pluginBlobInventories.get(plugin.getName()).add(reference);
         });
     }
 
-    public static void continueLoading(BlobPlugin plugin, boolean warnDuplicates, File... files) {
+    private void loadMetaInventory(BlobPlugin plugin, File file) {
+        String fileName = FilenameUtils.removeExtension(file.getName());
+        YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
+        if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
+            if (metaInventories.containsKey(fileName)) {
+                addDuplicate(fileName);
+                return;
+            }
+            addMetaInventory(fileName, MetaBlobInventory.fromConfigurationSection(yamlConfiguration));
+            pluginMetaInventories.get(plugin.getName()).add(fileName);
+            return;
+        }
+        yamlConfiguration.getKeys(true).forEach(reference -> {
+            if (!yamlConfiguration.isConfigurationSection(reference))
+                return;
+            ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
+            if (!section.contains("Size") && !section.isInt("Size"))
+                return;
+            if (metaInventories.containsKey(reference)) {
+                addDuplicate(reference);
+                return;
+            }
+            addMetaInventory(reference, MetaBlobInventory.fromConfigurationSection(section));
+            pluginMetaInventories.get(plugin.getName()).add(reference);
+        });
+    }
+
+    public static void continueLoadingBlobInventories(BlobPlugin plugin, boolean warnDuplicates, File... files) {
         InventoryManager manager = BlobLib.getInstance().getInventoryManager();
         manager.duplicates.clear();
         for (File file : files)
-            manager.loadYamlConfiguration(plugin, file);
+            manager.loadBlobInventory(plugin, file);
         if (warnDuplicates)
             manager.duplicates.forEach((key, value) -> plugin.getAnjoLogger()
                     .log("Duplicate BlobInventory: '" + key + "' (found " + value + " instances)"));
     }
 
-    public static void continueLoading(BlobPlugin plugin, File... files) {
-        continueLoading(plugin, true, files);
+    public static void continueLoadingBlobInventories(BlobPlugin plugin, File... files) {
+        continueLoadingBlobInventories(plugin, true, files);
     }
 
-    /**
-     * @param plugin The plugin that is loading the inventory
-     * @param file   The file to load
-     * @deprecated Use {@link #continueLoading(BlobPlugin, File...)} instead
-     */
-    @Deprecated
-    public static void loadAndRegisterYamlConfiguration(BlobPlugin plugin, File file) {
+    public static void continueLoadingMetaInventories(BlobPlugin plugin, boolean warnDuplicates, File... files) {
         InventoryManager manager = BlobLib.getInstance().getInventoryManager();
-        manager.loadYamlConfiguration(plugin, file);
-        manager.duplicates.forEach((key, value) -> BlobLib.getAnjoLogger()
-                .log("Duplicate BlobInventory: '" + key + "' (found " + value + " instances)"));
+        manager.duplicates.clear();
+        for (File file : files)
+            manager.loadMetaInventory(plugin, file);
+        if (warnDuplicates)
+            manager.duplicates.forEach((key, value) -> plugin.getAnjoLogger()
+                    .log("Duplicate MetaBlobInventory: '" + key + "' (found " + value + " instances)"));
     }
 
-    private void loadYamlConfiguration(File file) {
+    public static void continueLoadingMetaInventories(BlobPlugin plugin, File... files) {
+        continueLoadingMetaInventories(plugin, true, files);
+    }
+
+    private void loadBlobInventory(File file) {
         String fileName = FilenameUtils.removeExtension(file.getName());
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
-            add(fileName, BlobInventory.fromConfigurationSection(yamlConfiguration));
+            addBlobInventory(fileName, BlobInventory.fromConfigurationSection(yamlConfiguration));
             return;
         }
         yamlConfiguration.getKeys(true).forEach(reference -> {
@@ -162,13 +229,35 @@ public class InventoryManager {
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (!section.contains("Size") && !section.isInt("Size"))
                 return;
-            if (inventories.containsKey(reference)) {
+            if (blobInventories.containsKey(reference)) {
                 addDuplicate(reference);
                 return;
             }
-            add(reference, BlobInventory.fromConfigurationSection(section));
+            addBlobInventory(reference, BlobInventory.fromConfigurationSection(section));
         });
     }
+
+    private void loadMetaInventory(File file) {
+        String fileName = FilenameUtils.removeExtension(file.getName());
+        YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
+        if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
+            addMetaInventory(fileName, MetaBlobInventory.fromConfigurationSection(yamlConfiguration));
+            return;
+        }
+        yamlConfiguration.getKeys(true).forEach(reference -> {
+            if (!yamlConfiguration.isConfigurationSection(reference))
+                return;
+            ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
+            if (!section.contains("Size") && !section.isInt("Size"))
+                return;
+            if (blobInventories.containsKey(reference)) {
+                addDuplicate(reference);
+                return;
+            }
+            addMetaInventory(reference, MetaBlobInventory.fromConfigurationSection(section));
+        });
+    }
+
 
     private void addDuplicate(String key) {
         if (duplicates.containsKey(key))
@@ -179,18 +268,35 @@ public class InventoryManager {
 
     @Nullable
     public BlobInventory getInventory(String key) {
-        return inventories.get(key);
+        return blobInventories.get(key);
     }
 
     @Nullable
     public BlobInventory cloneInventory(String key) {
-        BlobInventory inventory = inventories.get(key);
+        BlobInventory inventory = blobInventories.get(key);
         if (inventory == null)
             return null;
         return inventory.copy();
     }
 
-    private void add(String key, BlobInventory inventory) {
-        inventories.put(key, inventory);
+    @Nullable
+    public MetaBlobInventory getMetaInventory(String key) {
+        return metaInventories.get(key);
+    }
+
+    @Nullable
+    public MetaBlobInventory cloneMetaInventory(String key) {
+        MetaBlobInventory inventory = metaInventories.get(key);
+        if (inventory == null)
+            return null;
+        return inventory.copy();
+    }
+
+    private void addBlobInventory(String key, BlobInventory inventory) {
+        blobInventories.put(key, inventory);
+    }
+
+    private void addMetaInventory(String key, MetaBlobInventory inventory) {
+        metaInventories.put(key, inventory);
     }
 }

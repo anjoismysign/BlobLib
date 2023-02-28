@@ -248,7 +248,7 @@ public abstract class ManagerDirector {
         File path = getFileManager().inventoriesDirectory();
         File file = new File(path + "/" + fileName + ".yml");
         blobFileManager.updateYAML(file);
-        InventoryManager.continueLoading(plugin, file);
+        InventoryManager.continueLoadingBlobInventories(plugin, file);
         if (debug)
             getPlugin().getAnjoLogger().debug(" inventory asset " + fileName + ".yml successfully registered");
         return this;

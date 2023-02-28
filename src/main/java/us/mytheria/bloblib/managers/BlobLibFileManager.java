@@ -19,9 +19,11 @@ public class BlobLibFileManager {
     private final File messages = new File(path.getPath() + "/BlobMessage");
     private final File sounds = new File(path.getPath() + "/BlobSound");
     private final File inventories = new File(path.getPath() + "/BlobInventory");
+    private final File metaInventories = new File(path.getPath() + "/MetaBlobInventory");
     private final File defaultSounds = new File(sounds.getPath() + "/bloblib_sounds.yml");
     private final File defaultMessages = new File(messages.getPath() + "/bloblib_lang.yml");
     private final File defaultInventories = new File(inventories.getPath() + "/bloblib_inventories.yml");
+    private final File defaultMetaInventories = new File(metaInventories.getPath() + "/bloblib_meta_inventories.yml");
 
     /**
      * Will create a new BlobLibFileManager instance
@@ -124,12 +126,30 @@ public class BlobLibFileManager {
     }
 
     /**
+     * Will return meta inventories' directory (INSIDE BlobLib PLUGIN DIRECTORY)
+     *
+     * @return The meta inventories directory
+     */
+    public File metaInventoriesDirectory() {
+        return metaInventories;
+    }
+
+    /**
      * Will return the default inventories file
      *
      * @return The default inventories file
      */
     public File defaultInventoriesFile() {
         return defaultInventories;
+    }
+
+    /**
+     * Will return the default meta inventories file
+     *
+     * @return The default meta inventories file
+     */
+    public File defaultMetaInventoriesFile() {
+        return defaultMetaInventories;
     }
 
     /**
