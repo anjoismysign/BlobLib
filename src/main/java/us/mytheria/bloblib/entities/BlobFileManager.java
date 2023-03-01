@@ -164,6 +164,7 @@ public class BlobFileManager extends Manager {
             if (!messagesDirectory().exists()) messagesDirectory().mkdir();
             if (!soundsDirectory().exists()) soundsDirectory().mkdir();
             if (!inventoriesDirectory().exists()) inventoriesDirectory().mkdir();
+            if (!metaInventoriesDirectory().exists()) metaInventoriesDirectory().mkdir();
             ///////////////////////////////////////////
 
             JavaPlugin main = getPlugin();
@@ -181,6 +182,11 @@ public class BlobFileManager extends Manager {
             if (inventoriesOptional.isPresent()) {
                 getDefaultInventories().createNewFile();
                 ResourceUtil.updateYml(inventoriesDirectory(), "/temp" + lowercased + "_inventories.yml", lowercased + "_inventories.yml", getDefaultInventories(), getPlugin());
+            }
+            Optional<InputStream> metaInventoriesOptional = Optional.ofNullable(main.getResource(lowercased + "_meta_inventories.yml"));
+            if (metaInventoriesOptional.isPresent()) {
+                getDefaultMetaInventories().createNewFile();
+                ResourceUtil.updateYml(metaInventoriesDirectory(), "/temp" + lowercased + "_meta_inventories.yml", lowercased + "_meta_inventories.yml", getDefaultMetaInventories(), getPlugin());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -287,7 +293,7 @@ public class BlobFileManager extends Manager {
 
     @NotNull
     public File metaInventoriesDirectory() {
-        return getFile("metaInventories");
+        return getFile("metaBlobInventories");
     }
 
     /**

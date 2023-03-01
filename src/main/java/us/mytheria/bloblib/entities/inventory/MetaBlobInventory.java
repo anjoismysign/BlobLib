@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.entities.inventory;
 
+import me.anjoismysign.anjo.entities.Result;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -87,5 +88,20 @@ public class MetaBlobInventory extends SharableInventory<MetaInventoryButton> {
     @Override
     public MetaBlobInventory copy() {
         return (MetaBlobInventory) super.copy();
+    }
+
+    /**
+     * Checks if a slot belongs to a button.
+     *
+     * @param slot The slot to check.
+     * @return The button that the slot belongs to.
+     */
+    public Result<MetaInventoryButton> belongsToAButton(int slot) {
+        for (String key : getKeys()) {
+            MetaInventoryButton button = getButton(key);
+            if (!button.getSlots().contains(slot)) continue;
+            return Result.valid(button);
+        }
+        return Result.invalidBecauseNull();
     }
 }

@@ -42,13 +42,16 @@ public class BlobLibFileManager {
             if (!messages.exists()) messages.mkdir();
             if (!sounds.exists()) sounds.mkdir();
             if (!inventories.exists()) inventories.mkdir();
+            if (!metaInventories.exists()) metaInventories.mkdir();
             ///////////////////////////////////////////
             if (!defaultSounds.exists()) defaultSounds.createNewFile();
             if (!defaultMessages.exists()) defaultMessages.createNewFile();
             if (!defaultInventories.exists()) defaultInventories.createNewFile();
+            if (!defaultMetaInventories.exists()) defaultMetaInventories.createNewFile();
             ResourceUtil.updateYml(sounds, "/tempbloblib_sounds.yml", "bloblib_sounds.yml", defaultSounds, plugin);
             ResourceUtil.updateYml(messages, "/tempbloblib_lang.yml", "bloblib_lang.yml", defaultMessages, plugin);
             ResourceUtil.updateYml(inventories, "/tempInventories.yml", "bloblib_inventories.yml", defaultInventories, plugin);
+            ResourceUtil.updateYml(metaInventories, "/tempMetaInventories.yml", "bloblib_meta_inventories.yml", defaultMetaInventories, plugin);
         } catch (Exception e) {
             e.printStackTrace();
         }
