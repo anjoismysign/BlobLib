@@ -166,11 +166,11 @@ Economy:
   Received-Deposit:
     Type: CHAT
     Message: '&7+ %display%'
-    BlobSound: Received-Deposit
+    BlobSound: Economy.Received-Deposit
   Received-Withdrawal:
     Type: CHAT
     Message: '&7- %display%'
-    BlobSound: Received-Withdrawal
+    BlobSound: Economy.Received-Withdrawal
   Deposit:
     Type: CHAT
     Message: '&7Gave %display% %currency% &7to %player%'
