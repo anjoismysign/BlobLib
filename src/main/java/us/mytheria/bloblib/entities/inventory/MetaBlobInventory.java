@@ -81,7 +81,7 @@ public class MetaBlobInventory extends SharableInventory<MetaInventoryButton> {
         return new MetaBlobInventory(title, size, buttonManager);
     }
 
-    private MetaBlobInventory(String title, int size, MetaBlobButtonManager buttonManager) {
+    public MetaBlobInventory(String title, int size, ButtonManager<MetaInventoryButton> buttonManager) {
         super(title, size, buttonManager);
     }
 
@@ -91,17 +91,18 @@ public class MetaBlobInventory extends SharableInventory<MetaInventoryButton> {
     }
 
     /**
-     * Checks if a slot belongs to a button.
+     * Will filter between buttons and will check if they have a valid Meta.
+     * First button from this filter to contain the provided slot will be returned
+     * as a valid Result. An invalid Result will be returned if no candidate was found.
      *
      * @param slot The slot to check.
-     * @return The button that the slot belongs to.
+     * @return The button that has a valid Meta and contains provided slot.
      */
-    public Result<MetaInventoryButton> belongsToAButton(int slot) {
-        for (String key : getKeys()) {
-            MetaInventoryButton button = getButton(key);
-            if (!button.getSlots().contains(slot)) continue;
-            return Result.valid(button);
-        }
-        return Result.invalidBecauseNull();
+    public Result<MetaInventoryButton> belongsToAMetaButton(int slot) {
+        MetaInventoryButton metaInventoryButton =
+                getKeys().stream().map(this::getButton).filter(MetaInventoryButton::hasMeta)
+                        .filter(button -> button.getSlots().contains(slot)).findFirst()
+                        .orElse(null);
+        return Result.ofNullable(metaInventoryButton);
     }
 }

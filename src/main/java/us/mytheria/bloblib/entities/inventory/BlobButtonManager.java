@@ -34,23 +34,6 @@ public class BlobButtonManager extends ButtonManager<InventoryButton> {
     }
 
     /**
-     * Builds a ButtonManager through the specified ConfigurationSection.
-     * Uses HashMap to store buttons.
-     *
-     * @param section configuration section which contains all the buttons
-     * @return a non abstract ButtonManager.
-     * @deprecated Smart methods were made during development and are already
-     * safe to use. Use {@link #fromConfigurationSection(ConfigurationSection)} instead
-     * which is identical to this method.
-     */
-    @Deprecated
-    public static BlobButtonManager smartFromConfigurationSection(ConfigurationSection section) {
-        BlobButtonManager blobButtonManager = new BlobButtonManager();
-        blobButtonManager.read(section);
-        return blobButtonManager;
-    }
-
-    /**
      * Builds a non abstract ButtonManager without any buttons stored yet.
      */
     public BlobButtonManager() {
@@ -133,29 +116,6 @@ public class BlobButtonManager extends ButtonManager<InventoryButton> {
      */
     @Override
     public boolean add(ConfigurationSection section) {
-        Set<String> set = section.getKeys(false);
-        Uber<Boolean> madeChanges = new Uber<>(false);
-        set.stream().filter(key -> !contains(key)).forEach(key -> {
-            madeChanges.talk(true);
-            BlobMultiSlotable slotable = BlobMultiSlotable.read(section.getConfigurationSection(key), key);
-            slotable.setInButtonManager(this);
-        });
-        return madeChanges.thanks();
-    }
-
-    /**
-     * adds all buttons inside a configuration section through parsing
-     *
-     * @param section configuration section which contains all the buttons
-     * @return true if at least one button was succesfully added.
-     * this is determined in case the being called after the first add call
-     * @deprecated 'read' method was made during development but is ready and
-     * safe to use. Use {@link #add(ConfigurationSection)} instead which
-     * is identical to this method.
-     */
-    @Deprecated
-    @Override
-    public boolean read(ConfigurationSection section) {
         Set<String> set = section.getKeys(false);
         Uber<Boolean> madeChanges = new Uber<>(false);
         set.stream().filter(key -> !contains(key)).forEach(key -> {

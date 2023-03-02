@@ -45,15 +45,6 @@ public interface ButtonManagerMethods {
     boolean add(ConfigurationSection section);
 
     /**
-     * adds all buttons inside a configuration section through parsing
-     *
-     * @param section the configuration section to read from
-     * @return true if all buttons were added successfully
-     */
-    @Deprecated
-    boolean read(ConfigurationSection section);
-
-    /**
      * @return a set of all the keys stored in this ButtonManager
      */
     Collection<String> keys();

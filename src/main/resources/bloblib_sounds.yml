@@ -20,3 +20,12 @@ Builder:
     Sound: BLOCK_NOTE_BLOCK_FLUTE
     Volume: 1.0
     Pitch: 0.9
+Economy:
+  Received-Deposit:
+    Sound: BLOCK_NOTE_BLOCK_PLING
+    Volume: 1.0
+    Pitch: 2.0
+  Received-Withdrawal:
+    Sound: BLOCK_NOTE_BLOCK_PLING
+    Volume: 1.0
+    Pitch: 0.85

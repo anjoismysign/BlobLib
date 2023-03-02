@@ -26,7 +26,7 @@ public class MetaInventoryButton extends InventoryButton {
      * @return Whether the MetaInventoryButton has meta or not
      */
     public boolean hasMeta() {
-        return !meta.equals("NONE");
+        return !getMeta().equals("NONE");
     }
 
     /**

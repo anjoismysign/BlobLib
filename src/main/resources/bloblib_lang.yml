@@ -1,4 +1,8 @@
 System:
+  Error:
+    Type: CHAT
+    Message: '&cAn error has occurred. Please contact the server administrators.'
+    BlobSound: System.Alert
   No-Permission:
     Type: CHAT
     Message: '&cI''m sorry, but you do not have permission to perform this command.
@@ -159,6 +163,14 @@ Currency:
     Message: '&cCurrency not found'
     BlobSound: System.Alert
 Economy:
+  Received-Deposit:
+    Type: CHAT
+    Message: '&7+ %display%'
+    BlobSound: Received-Deposit
+  Received-Withdrawal:
+    Type: CHAT
+    Message: '&7- %display%'
+    BlobSound: Received-Withdrawal
   Deposit:
     Type: CHAT
     Message: '&7Gave %display% %currency% &7to %player%'
