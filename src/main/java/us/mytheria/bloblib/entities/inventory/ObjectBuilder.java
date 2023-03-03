@@ -40,7 +40,7 @@ public abstract class ObjectBuilder<T extends BlobObject> extends BlobInventory 
      * @param builderId      the builder's UUID
      * @param objectDirector the ObjectDirector to which this ObjectBuilder belongs to
      */
-    public ObjectBuilder(@NotNull SharableInventory blobInventory,
+    public ObjectBuilder(@NotNull BlobInventory blobInventory,
                          @NotNull UUID builderId,
                          @NotNull ObjectDirector<T> objectDirector) {
         super(Objects.requireNonNull(blobInventory,
@@ -516,12 +516,41 @@ public abstract class ObjectBuilder<T extends BlobObject> extends BlobInventory 
         return addObjectBuilderButton(ObjectBuilderButtonBuilder.POSITIVE_DOUBLE(buttonKey, timeout, this));
     }
 
+    /**
+     * A quick navigator for booleans.
+     * Value cannot be empty nor null.
+     * By default, the value is false.
+     *
+     * @param buttonKey The key of the button
+     * @return The button
+     */
     public ObjectBuilder<T> addBoolean(String buttonKey) {
         return addObjectBuilderButton(ObjectBuilderButtonBuilder.BOOLEAN(buttonKey, this));
     }
 
+    /**
+     * A quick navigator for booleans.
+     * Value cannot be empty nor null.
+     * By default, the value is true.
+     *
+     * @param buttonKey The key of the button
+     * @return The button
+     */
     public ObjectBuilder<T> addBooleanDefaultTrue(String buttonKey) {
         return addObjectBuilderButton(ObjectBuilderButtonBuilder.BOOLEAN_DEFAULT_TRUE(buttonKey, this));
+    }
+
+    /**
+     * A quick navigator for any type of array.
+     * Value cannot be empty nor null.
+     * By default, the value is the first element of the array.
+     *
+     * @param buttonKey The key of the button
+     * @param enumClass The enum class
+     * @return The button
+     */
+    public <E extends Enum<E>> ObjectBuilder<T> addEnumNavigator(String buttonKey, Class<E> enumClass) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.ENUM_NAVIGATOR(buttonKey, enumClass, this));
     }
 
     /**

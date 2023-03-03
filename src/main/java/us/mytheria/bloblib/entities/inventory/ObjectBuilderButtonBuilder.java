@@ -1360,8 +1360,8 @@ public class ObjectBuilderButtonBuilder {
      * Value cannot be empty nor null.
      * By default, the value is false.
      *
-     * @param buttonKey The key of the button
-     * @param function  The function to apply
+     * @param buttonKey     The key of the button
+     * @param objectBuilder The object builder
      * @return The button
      */
     public static ObjectBuilderButton<Boolean> BOOLEAN(String buttonKey,
@@ -1380,8 +1380,8 @@ public class ObjectBuilderButtonBuilder {
      * Value cannot be empty nor null.
      * By default, the value is true.
      *
-     * @param buttonKey The key of the button
-     * @param function  The function to apply
+     * @param buttonKey     The key of the button
+     * @param objectBuilder The object builder
      * @return The button
      */
     public static ObjectBuilderButton<Boolean> BOOLEAN_DEFAULT_TRUE(String buttonKey,
@@ -1425,17 +1425,21 @@ public class ObjectBuilderButtonBuilder {
      * Value cannot be empty nor null.
      * By default, the value is the first element of the array.
      *
-     * @param buttonKey The key of the button
-     * @param enumClass The enum class
-     * @param function  The function to apply
-     * @param <T>       The type of the enum
+     * @param buttonKey     The key of the button
+     * @param enumClass     The enum class
+     * @param <T>           The type of the enum
+     * @param objectBuilder The object builder
      * @return The button
      */
-    public static <T> ObjectBuilderButton<T> ENUM_NAVIGATOR(String buttonKey,
-                                                            Class<T> enumClass,
-                                                            Function<T, Boolean> function) {
-        if (!enumClass.isEnum())
-            throw new IllegalArgumentException("Class must be an enum");
-        return NAVIGATOR(buttonKey, enumClass.getEnumConstants(), function);
+    public static <T extends Enum<T>> ObjectBuilderButton<T> ENUM_NAVIGATOR(String buttonKey,
+                                                                            Class<T> enumClass,
+                                                                            ObjectBuilder<?> objectBuilder) {
+        String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
+        return NAVIGATOR(buttonKey, enumClass.getEnumConstants(), value -> {
+            objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                    value.name());
+            objectBuilder.openInventory();
+            return true;
+        });
     }
 }
