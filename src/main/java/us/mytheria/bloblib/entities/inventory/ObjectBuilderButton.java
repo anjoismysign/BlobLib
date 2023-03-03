@@ -14,6 +14,12 @@ public abstract class ObjectBuilderButton<T> {
     private final BiConsumer<ObjectBuilderButton<T>, Player> listenerBiConsumer;
     private final Function<T, Boolean> function;
 
+    /**
+     * @param buttonKey          The key/reference of the button inside the Inventory
+     * @param defaultValue       The default value of the button
+     * @param listenerBiConsumer The listener that will be called when the button is clicked
+     * @param function           The function that will be called when the listener is fini
+     */
     protected ObjectBuilderButton(String buttonKey, Optional<T> defaultValue,
                                   BiConsumer<ObjectBuilderButton<T>, Player> listenerBiConsumer,
                                   Function<T, Boolean> function) {

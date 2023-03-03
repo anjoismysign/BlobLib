@@ -516,6 +516,14 @@ public abstract class ObjectBuilder<T extends BlobObject> extends BlobInventory 
         return addObjectBuilderButton(ObjectBuilderButtonBuilder.POSITIVE_DOUBLE(buttonKey, timeout, this));
     }
 
+    public ObjectBuilder<T> addBoolean(String buttonKey) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.BOOLEAN(buttonKey, this));
+    }
+
+    public ObjectBuilder<T> addBooleanDefaultTrue(String buttonKey) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.BOOLEAN_DEFAULT_TRUE(buttonKey, this));
+    }
+
     /**
      * Set the function to be called when the build button is clicked
      *

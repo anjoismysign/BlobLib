@@ -43,6 +43,7 @@ public class BlobSelectorListener<T> extends SelectorListener<T> {
      * @param selector        The selector to use
      * @param <T>             The type of the input
      * @return The SelectorListener
+     * @deprecated Use {@link #wise(Player, Consumer, String, VariableSelector)} instead.
      */
     @Deprecated
     public static <T> BlobSelectorListener<T> smart(Player player, Consumer<T> consumer,
