@@ -44,4 +44,12 @@ public interface VaultEconomyWorker {
      * @return Amount of cash the player has
      */
     double getCash(Player player);
+
+    /**
+     * Formats the given amount of cash.
+     *
+     * @param amount Amount to format
+     * @return Formatted amount
+     */
+    String format(double amount);
 }

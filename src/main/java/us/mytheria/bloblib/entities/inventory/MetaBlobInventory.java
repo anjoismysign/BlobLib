@@ -87,7 +87,7 @@ public class MetaBlobInventory extends SharableInventory<MetaInventoryButton> {
 
     @Override
     public MetaBlobInventory copy() {
-        return (MetaBlobInventory) super.copy();
+        return new MetaBlobInventory(getTitle(), getSize(), getButtonManager());
     }
 
     /**

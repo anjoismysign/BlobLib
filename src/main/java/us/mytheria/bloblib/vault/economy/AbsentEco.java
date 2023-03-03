@@ -60,4 +60,15 @@ public class AbsentEco implements VaultEconomyWorker {
     public double getCash(Player player) {
         return 0;
     }
+
+    /**
+     * Does nothing since there is no economy plugin.
+     *
+     * @param amount Amount to format
+     * @return 0
+     */
+    @Override
+    public String format(double amount) {
+        return amount + "";
+    }
 }

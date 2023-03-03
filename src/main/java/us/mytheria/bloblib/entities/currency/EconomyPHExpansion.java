@@ -35,7 +35,7 @@ public class EconomyPHExpansion<T extends WalletOwner> extends PlaceholderExpans
         if (split.length == 2) {
             Set<String> customCrypto = ownerManager.currencyDirector.getObjectManager().keys();
             if (!customCrypto.contains(split[0]))
-                return "Invalid crypto: " + split[0];
+                return "Invalid currency: " + split[0];
             Optional<T> optional = ownerManager.isWalletOwner(player.getUniqueId());
             if (optional.isEmpty())
                 return "Invalid player: " + player.getName();

@@ -3,7 +3,6 @@ package us.mytheria.bloblib;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
-import us.mytheria.bloblib.entities.inventory.SharableInventory;
 import us.mytheria.bloblib.entities.message.BlobSound;
 import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
 import us.mytheria.bloblib.managers.InventoryManager;
@@ -134,8 +133,8 @@ public class BlobLibAssetAPI {
      * @param fileName The file name
      * @return The inventory
      */
-    public static SharableInventory buildInventory(String fileName) {
-        SharableInventory inventory = BlobLibAssetAPI.getInventoryManager().cloneInventory(fileName);
+    public static BlobInventory buildInventory(String fileName) {
+        BlobInventory inventory = BlobLibAssetAPI.getInventoryManager().cloneInventory(fileName);
         if (inventory == null) {
             throw new NullPointerException("Inventory '" + fileName + "' not found");
         }

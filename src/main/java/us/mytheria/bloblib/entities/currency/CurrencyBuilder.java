@@ -3,10 +3,10 @@ package us.mytheria.bloblib.entities.currency;
 import org.bukkit.entity.Player;
 import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.entities.ObjectDirector;
+import us.mytheria.bloblib.entities.inventory.BlobInventory;
 import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
 import us.mytheria.bloblib.entities.inventory.ObjectBuilderButton;
 import us.mytheria.bloblib.entities.inventory.ObjectBuilderButtonBuilder;
-import us.mytheria.bloblib.entities.inventory.SharableInventory;
 import us.mytheria.bloblib.entities.message.BlobSound;
 
 import java.util.UUID;
@@ -25,7 +25,7 @@ public class CurrencyBuilder extends ObjectBuilder<Currency> {
                 objectDirector);
     }
 
-    private CurrencyBuilder(SharableInventory blobInventory, UUID builderId,
+    private CurrencyBuilder(BlobInventory blobInventory, UUID builderId,
                             ObjectDirector<Currency> objectDirector) {
         super(blobInventory, builderId, objectDirector);
         ObjectBuilderButton<String> keyButton = ObjectBuilderButtonBuilder.QUICK_STRING(

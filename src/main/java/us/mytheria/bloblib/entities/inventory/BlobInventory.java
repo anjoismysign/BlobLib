@@ -86,6 +86,6 @@ public class BlobInventory extends SharableInventory<InventoryButton> {
 
     @Override
     public BlobInventory copy() {
-        return (BlobInventory) super.copy();
+        return new BlobInventory(getTitle(), getSize(), getButtonManager());
     }
 }

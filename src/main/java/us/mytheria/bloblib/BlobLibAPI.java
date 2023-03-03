@@ -81,6 +81,16 @@ public class BlobLibAPI {
     }
 
     /**
+     * Formats the given amount of cash.
+     *
+     * @param amount Amount to format
+     * @return Formatted amount
+     */
+    public static String format(double amount) {
+        return main.getVaultManager().getVaultEconomyWorker().format(amount);
+    }
+
+    /**
      * Deposit an amount to a player - DO NOT USE NEGATIVE AMOUNTS
      *
      * @param player to deposit to

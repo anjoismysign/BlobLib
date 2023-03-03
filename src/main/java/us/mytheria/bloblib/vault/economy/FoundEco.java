@@ -42,4 +42,9 @@ public class FoundEco implements VaultEconomyWorker {
     public double getCash(Player player) {
         return economy.getBalance(player);
     }
+
+    @Override
+    public String format(double amount) {
+        return economy.format(amount);
+    }
 }
