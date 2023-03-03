@@ -64,7 +64,8 @@ public class CurrencyBuilder extends ObjectBuilder<Currency> {
         ObjectBuilderButton<String> pattern = (ObjectBuilderButton<String>) getObjectBuilderButton("DecimalFormat");
         ObjectBuilderButton<Double> initialBalance = (ObjectBuilderButton<Double>) getObjectBuilderButton("InitialBalance");
 
-        if (keyButton.get().isEmpty() || displayButton.get().isEmpty() || pattern.get().isEmpty() || initialBalance.get().isEmpty())
+        if (keyButton.isValuePresentAndNotNull() || displayButton.isValuePresentAndNotNull()
+                || pattern.isValuePresentAndNotNull() || initialBalance.isValuePresentAndNotNull())
             return null;
 
         String key = keyButton.get().get();
