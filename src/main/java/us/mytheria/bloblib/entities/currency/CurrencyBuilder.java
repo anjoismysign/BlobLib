@@ -36,7 +36,7 @@ public class CurrencyBuilder extends ObjectBuilder<Currency> {
                 "DecimalFormat", 300, this);
         ObjectBuilderButton<Double> initialBalance = ObjectBuilderButtonBuilder.POSITIVE_DOUBLE(
                 "InitialBalance", 300, this);
-        addObjectBuilderButton(displayButton)
+        addObjectBuilderButton(keyButton)
                 .addObjectBuilderButton(displayButton)
                 .addObjectBuilderButton(pattern)
                 .addObjectBuilderButton(initialBalance)
