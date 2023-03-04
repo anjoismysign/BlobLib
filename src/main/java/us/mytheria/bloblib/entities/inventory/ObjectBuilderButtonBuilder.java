@@ -1413,10 +1413,10 @@ public class ObjectBuilderButtonBuilder {
         ObjectBuilderButton<T> objectBuilderButton = new ObjectBuilderButton<>(buttonKey,
                 Optional.of(navigator.current()),
                 (button, player) -> {
-                    navigator.next();
+                    button.set(navigator.next());
                 }, function) {
         };
-        function.apply(null);
+        function.apply(navigator.current());
         return objectBuilderButton;
     }
 
@@ -1435,9 +1435,10 @@ public class ObjectBuilderButtonBuilder {
                                                                             Class<T> enumClass,
                                                                             ObjectBuilder<?> objectBuilder) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
-        return NAVIGATOR(buttonKey, enumClass.getEnumConstants(), value -> {
+        T[] array = enumClass.getEnumConstants();
+        return NAVIGATOR(buttonKey, array, value -> {
             objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-                    value.name());
+                    value == null ? "N/A" : value.name());
             objectBuilder.openInventory();
             return true;
         });

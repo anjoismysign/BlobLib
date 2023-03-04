@@ -9,6 +9,7 @@ import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.entities.message.BlobMessage;
 import us.mytheria.bloblib.managers.ChatListenerManager;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -60,6 +61,10 @@ public class BlobChatListener extends ChatListener {
         Optional<BlobMessage> timeoutMessage = Optional.ofNullable(BlobLibAssetAPI.getMessage(timeoutMessageKey));
         Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibAssetAPI.getMessage(timerMessageKey));
         List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
+        List<BlobMessage> timerMessages = new ArrayList<>();
+        messages.forEach(message -> timerMessages.add(
+                message.modify(s -> s.replace("%world%", owner.getWorld().getName()))
+        ));
         return new BlobChatListener(owner.getName(), timeout,
                 inputListener -> {
                     String input = inputListener.getInput();
@@ -74,7 +79,7 @@ public class BlobChatListener extends ChatListener {
                 timeoutListener -> {
                     chatManager.removeChatListener(owner);
                     timeoutMessage.ifPresent(blobMessage -> blobMessage.sendAndPlay(owner));
-                }, messages);
+                }, timerMessages);
     }
 
     /**

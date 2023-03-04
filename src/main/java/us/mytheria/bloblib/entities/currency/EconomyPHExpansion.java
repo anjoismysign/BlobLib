@@ -23,11 +23,11 @@ public class EconomyPHExpansion<T extends WalletOwner> extends PlaceholderExpans
     }
 
     public @NotNull String getIdentifier() {
-        return ownerManager.getPlugin().getName().toLowerCase();
+        return ownerManager.getPlugin().getName().toLowerCase() + "_economy";
     }
 
     public @NotNull String getVersion() {
-        return "1.0.0";
+        return "1.0.1";
     }
 
     public String onRequest(OfflinePlayer player, String identifier) {
