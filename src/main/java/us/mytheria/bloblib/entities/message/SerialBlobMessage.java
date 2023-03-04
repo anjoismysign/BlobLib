@@ -30,7 +30,7 @@ public abstract class SerialBlobMessage implements BlobMessage {
     public void sendAndPlayInWorld(Player player) {
         send(player);
         if (sound != null)
-            sound.playInWorld(player);
+            sound.playInWorld(player.getLocation());
     }
 
     @Override

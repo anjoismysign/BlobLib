@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.entities.message;
 
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
@@ -14,10 +15,10 @@ public record BlobSound(Sound sound, float volume, float pitch, @Nullable SoundC
             player.playSound(player.getLocation(), sound, soundCategory, volume, pitch);
     }
 
-    public void playInWorld(Player player) {
+    public void playInWorld(Location location) {
         if (soundCategory == null)
-            player.getWorld().playSound(player.getLocation(), sound, volume, pitch);
+            location.getWorld().playSound(location, sound, volume, pitch);
         else
-            player.getWorld().playSound(player.getLocation(), sound, soundCategory, volume, pitch);
+            location.getWorld().playSound(location, sound, soundCategory, volume, pitch);
     }
 }
