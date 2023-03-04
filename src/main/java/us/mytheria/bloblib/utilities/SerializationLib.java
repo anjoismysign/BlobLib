@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.utilities;
 
+import me.anjoismysign.anjo.entities.Uber;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -11,6 +12,7 @@ import us.mytheria.bloblib.BlobLib;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class SerializationLib {
 
@@ -96,13 +98,25 @@ public class SerializationLib {
         return world.getName();
     }
 
-    public static World deserializeWorld(String string) {
-        World world = Bukkit.getWorld(string);
-        if (world == null) {
-            BlobLib.getAnjoLogger().error("World " + string + " not found!");
-            throw new IllegalArgumentException();
-        }
+    public static World deserializeWorld(String string, int keepAliveSeconds) {
+        CompletableFuture<World> future = new CompletableFuture<>();
+        Uber<Integer> keepAlive = Uber.drive(keepAliveSeconds * 2);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(BlobLib.getInstance(), () -> {
+            World world = Bukkit.getWorld(string);
+            if (world == null && keepAlive.thanks() > 0) {
+                keepAlive.talk(keepAlive.thanks() - 1);
+                return;
+            }
+            future.complete(world);
+        }, 0, 10);
+        World world = future.join();
+        if (world == null)
+            throw new IllegalArgumentException("World " + string + " not found!");
         return world;
+    }
+
+    public static World deserializeWorld(String string) {
+        return deserializeWorld(string, 15);
     }
 
     public static String serialize(Material material) {
