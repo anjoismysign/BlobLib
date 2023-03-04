@@ -954,7 +954,7 @@ public class ObjectBuilderButtonBuilder {
                         + "-Timeout", "Builder." + buttonKey,
                 block -> {
                     objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-                            BukkitUtil.printLocation(block.getLocation()));
+                            block == null ? "N/A" : BukkitUtil.printLocation(block.getLocation()));
                     objectBuilder.openInventory();
                     return true;
                 });
@@ -981,7 +981,7 @@ public class ObjectBuilderButtonBuilder {
                 block -> {
                     consumer.accept(block);
                     objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-                            BukkitUtil.printLocation(block.getLocation()));
+                            block == null ? "N/A" : BukkitUtil.printLocation(block.getLocation()));
                     objectBuilder.openInventory();
                     return true;
                 });
