@@ -27,6 +27,13 @@ public abstract class SerialBlobMessage implements BlobMessage {
     }
 
     @Override
+    public void sendAndPlayInWorld(Player player) {
+        send(player);
+        if (sound != null)
+            sound.playInWorld(player);
+    }
+
+    @Override
     public abstract void toCommandSender(CommandSender commandSender);
 
     @Override

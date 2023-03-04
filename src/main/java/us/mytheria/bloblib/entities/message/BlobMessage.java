@@ -34,6 +34,11 @@ public interface BlobMessage {
     void sendAndPlay(Player player);
 
     /**
+     * @param player The player to send the message to
+     */
+    void sendAndPlayInWorld(Player player);
+
+    /**
      * @param commandSender The command sender to send the message to
      */
     void toCommandSender(CommandSender commandSender);

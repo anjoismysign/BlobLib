@@ -5,6 +5,8 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import us.mytheria.bloblib.BlobLib;
@@ -101,17 +103,23 @@ public class SerializationLib {
     public static World deserializeWorld(String string, int keepAliveSeconds) {
         CompletableFuture<World> future = new CompletableFuture<>();
         Uber<Integer> keepAlive = Uber.drive(keepAliveSeconds * 2);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(BlobLib.getInstance(), () -> {
-            World world = Bukkit.getWorld(string);
-            if (world == null && keepAlive.thanks() > 0) {
-                keepAlive.talk(keepAlive.thanks() - 1);
-                return;
+        BukkitTask task = new BukkitRunnable() {
+            @Override
+            public void run() {
+                World world = Bukkit.getWorld(string);
+                if (world == null && keepAlive.thanks() > 0) {
+                    keepAlive.talk(keepAlive.thanks() - 1);
+                    return;
+                }
+                future.complete(world);
+                cancel();
             }
-            future.complete(world);
-        }, 0, 10);
+        }.runTaskTimerAsynchronously(BlobLib.getInstance(), 0, 10);
         World world = future.join();
-        if (world == null)
+        if (world == null) {
+            BlobLib.getAnjoLogger().singleError("World " + string + " not found!");
             throw new IllegalArgumentException("World " + string + " not found!");
+        }
         return world;
     }
 

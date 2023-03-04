@@ -13,4 +13,11 @@ public record BlobSound(Sound sound, float volume, float pitch, @Nullable SoundC
         else
             player.playSound(player.getLocation(), sound, soundCategory, volume, pitch);
     }
+
+    public void playInWorld(Player player) {
+        if (soundCategory == null)
+            player.getWorld().playSound(player.getLocation(), sound, volume, pitch);
+        else
+            player.getWorld().playSound(player.getLocation(), sound, soundCategory, volume, pitch);
+    }
 }

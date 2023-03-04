@@ -25,6 +25,11 @@ public class ReferenceBlobMessage implements BlobMessage {
     }
 
     @Override
+    public void sendAndPlayInWorld(Player player) {
+        message.sendAndPlayInWorld(player);
+    }
+
+    @Override
     public void toCommandSender(CommandSender commandSender) {
         message.toCommandSender(commandSender);
     }

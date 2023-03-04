@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.logging.Level;
 
 public class ObjectDirector<T extends BlobObject> extends Manager implements Listener {
     private final ObjectBuilderManager<T> objectBuilderManager;
@@ -61,35 +62,39 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
         this.objectManager = new ObjectManager<>(managerDirector, loadFilesDirectory.get(),
                 HashMap::new, HashMap::new) {
             public CompletableFuture<Void> loadFiles(File path) {
-                if (!path.exists())
-                    path.mkdir();
                 CompletableFuture<Void> future = new CompletableFuture<>();
-                Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () -> {
-                    try {
-                        File[] listOfFiles = path.listFiles();
-                        List<CompletableFuture<Void>> futures = new ArrayList<>();
-                        for (File file : listOfFiles) {
-                            if (!file.getName().endsWith(".yml"))
-                                continue;
-                            if (file.isFile()) {
-                                CompletableFuture<Void> fileFuture = CompletableFuture.runAsync(() -> {
-                                    T blobObject = readFunction.apply(file);
-                                    if (blobObject.edit() != null)
-                                        objectIsEditable = true;
-                                    addObject(blobObject.getKey(), blobObject, file);
-                                });
-                                futures.add(fileFuture);
+                try {
+                    if (!path.exists())
+                        path.mkdir();
+                    Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () -> {
+                        try {
+                            File[] listOfFiles = path.listFiles();
+                            List<CompletableFuture<Void>> futures = new ArrayList<>();
+                            for (File file : listOfFiles) {
+                                if (!file.getName().endsWith(".yml"))
+                                    continue;
+                                if (file.isFile()) {
+                                    CompletableFuture<Void> fileFuture = CompletableFuture.runAsync(() -> {
+                                        T blobObject = readFunction.apply(file);
+                                        if (blobObject.edit() != null)
+                                            objectIsEditable = true;
+                                        addObject(blobObject.getKey(), blobObject, file);
+                                    });
+                                    futures.add(fileFuture);
+                                }
+                                if (file.isDirectory()) {
+                                    futures.add(loadFiles(file));
+                                }
                             }
-                            if (file.isDirectory()) {
-                                futures.add(loadFiles(file));
-                            }
+                            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+                            future.complete(null);
+                        } catch (Exception e) {
+                            future.completeExceptionally(e);
                         }
-                        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-                        future.complete(null);
-                    } catch (Exception e) {
-                        future.completeExceptionally(e);
-                    }
-                });
+                    });
+                } catch (Exception exception) {
+                    Bukkit.getLogger().log(Level.SEVERE, exception.getMessage(), exception);
+                }
                 return future;
             }
         };
