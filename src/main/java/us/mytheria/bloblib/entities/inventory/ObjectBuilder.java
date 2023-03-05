@@ -323,6 +323,18 @@ public abstract class ObjectBuilder<T extends BlobObject> extends BlobInventory 
     }
 
     /**
+     * Add a quick block button.
+     * Will use the block above selection.
+     *
+     * @param buttonKey the button key
+     * @param timeout   the timeout
+     * @return this
+     */
+    public ObjectBuilder<T> addQuickAboveBlockButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.QUICK_ABOVE_BLOCK(buttonKey, timeout, this));
+    }
+
+    /**
      * Add a quick item button.
      *
      * @param buttonKey the button key

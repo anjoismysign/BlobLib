@@ -4,6 +4,7 @@ import me.anjoismysign.anjo.entities.NamingConventions;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 import us.mytheria.bloblib.BlobLibAPI;
 import us.mytheria.bloblib.BlobLibAssetAPI;
@@ -914,6 +915,31 @@ public class ObjectBuilderButtonBuilder {
     }
 
     /**
+     * An ObjectBuilderButton builder for Block's.
+     * Will select the block above the clicked block.
+     *
+     * @param buttonKey         The key of the button
+     * @param timeout           The timeout of the chat listener
+     * @param timeoutMessageKey The key of the timeout message
+     * @param timerMessageKey   The key of the timer message
+     * @param function          The function to be executed when the button is clicked
+     * @return The button
+     */
+    public static ObjectBuilderButton<Block> ABOVE_BLOCK(String buttonKey, long timeout,
+                                                         String timeoutMessageKey,
+                                                         String timerMessageKey,
+                                                         Function<Block, Boolean> function) {
+        ObjectBuilderButton<Block> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+                (button, player) -> BlobLibAPI.addPositionListener(player, timeout,
+                        block -> {
+                            button.set(block.getRelative(BlockFace.UP));
+                        }, timeoutMessageKey, timerMessageKey), function) {
+        };
+        function.apply(null);
+        return objectBuilderButton;
+    }
+
+    /**
      * A simple ObjectBuilderButton for Block's.
      *
      * @param buttonKey         The key of the button
@@ -959,6 +985,39 @@ public class ObjectBuilderButtonBuilder {
                     return true;
                 });
 
+    }
+
+    /**
+     * A quick ObjectBuilderButton for Block's.
+     * Will select block above the clicked block.
+     * An example of how to use it:
+     * <pre>
+     *     ObjectBuilder&lt;Person&gt; objectBuilder = someRandomObjectBuilderYouHave;
+     *
+     *     ObjectBuilderButton&lt;Block&gt; button =
+     *     ObjectBuilderButtonBuilder.QUICK_BLOCK("Spawn", 300, objectBuilder);
+     *     //if block is null, default button will display "N/A"
+     *     </pre>
+     *
+     * @param buttonKey     The key of the button
+     *                      The timeoutmessagekey is "Builder." + buttonKey + "-Timeout"
+     *                      The timermessagekey is "Builder." + buttonKey
+     * @param timeout       The timeout of the chat listener
+     * @param objectBuilder The object builder
+     * @return The button
+     */
+    public static ObjectBuilderButton<Block> QUICK_ABOVE_BLOCK(String buttonKey, long timeout,
+                                                               ObjectBuilder<?> objectBuilder) {
+
+        String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
+        return ABOVE_BLOCK(buttonKey, timeout, "Builder." + buttonKey
+                        + "-Timeout", "Builder." + buttonKey,
+                block -> {
+                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                            block == null ? "N/A" : BukkitUtil.printLocation(block.getLocation()));
+                    objectBuilder.openInventory();
+                    return true;
+                });
     }
 
     /**
@@ -1411,12 +1470,14 @@ public class ObjectBuilderButtonBuilder {
                                                        Function<T, Boolean> function) {
         ArrayNavigator<T> navigator = new ArrayNavigator<>(array);
         ObjectBuilderButton<T> objectBuilderButton = new ObjectBuilderButton<>(buttonKey,
-                Optional.of(navigator.current()),
+                Optional.empty(),
                 (button, player) -> {
                     button.set(navigator.next());
+                    Bukkit.getLogger().info("Next: " + navigator.current());
                 }, function) {
         };
         function.apply(navigator.current());
+        Bukkit.getLogger().info("Current: " + navigator.current());
         return objectBuilderButton;
     }
 

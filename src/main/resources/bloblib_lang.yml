@@ -49,6 +49,11 @@ Builder:
   Location:
     Type: ACTIONBAR
     Message: '&7Click a block. Block above it will be used'
+  Location-Timeout:
+    Type: TITLE
+    Title: '&c&lTIMEOUT'
+    Subtitle: '&7You took too long to select a location'
+    BlobSound: Builder.Timeout
   World-Not-Found:
     Type: CHAT
     Message: "&cWorld '%world%' not found"
