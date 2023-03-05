@@ -3,6 +3,7 @@ package us.mytheria.bloblib;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
+import us.mytheria.bloblib.entities.inventory.MetaBlobInventory;
 import us.mytheria.bloblib.entities.message.BlobSound;
 import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
 import us.mytheria.bloblib.managers.InventoryManager;
@@ -41,6 +42,14 @@ public class BlobLibAssetAPI {
      */
     public static BlobInventory getBlobInventory(String key) {
         return getInventoryManager().getInventory(key);
+    }
+
+    /**
+     * @param key Key that points to the inventory
+     * @return The inventory
+     */
+    public static MetaBlobInventory getMetaBlobInventory(String key) {
+        return getInventoryManager().getMetaInventory(key);
     }
 
     /**
