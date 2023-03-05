@@ -244,7 +244,7 @@ public abstract class ManagerDirector {
      * @param debug    Whether to print debug messages
      * @return The ManagerDirector instance for method chaining
      */
-    public ManagerDirector registerAndUpdateInventoryAsset(String fileName, boolean debug) {
+    public ManagerDirector registerAndUpdateBlobInventory(String fileName, boolean debug) {
         File path = getFileManager().inventoriesDirectory();
         File file = new File(path + "/" + fileName + ".yml");
         blobFileManager.updateYAML(file);
@@ -262,8 +262,38 @@ public abstract class ManagerDirector {
      * @param fileName The name of the file to detach
      * @return The ManagerDirector instance for method chaining
      */
-    public ManagerDirector registerAndUpdateInventoryAsset(String fileName) {
-        return registerAndUpdateInventoryAsset(fileName, false);
+    public ManagerDirector registerAndUpdateBlobInventory(String fileName) {
+        return registerAndUpdateBlobInventory(fileName, false);
+    }
+
+    /**
+     * Will detach an embedded Inventory file/asset from the plugin jar to
+     * the corresponding directory in the plugin data folder.
+     *
+     * @param fileName The name of the file to detach
+     * @param debug    Whether to print debug messages
+     * @return The ManagerDirector instance for method chaining
+     */
+    public ManagerDirector registerAndUpdateMetaBlobInventory(String fileName, boolean debug) {
+        File path = getFileManager().inventoriesDirectory();
+        File file = new File(path + "/" + fileName + ".yml");
+        blobFileManager.updateYAML(file);
+        InventoryManager.continueLoadingMetaInventories(plugin, file);
+        if (debug)
+            getPlugin().getAnjoLogger().debug(" inventory asset " + fileName + ".yml successfully registered");
+        return this;
+    }
+
+    /**
+     * Will detach an embedded Inventory file/asset from the plugin jar to
+     * the corresponding directory in the plugin data folder.
+     * Will not print debug messages.
+     *
+     * @param fileName The name of the file to detach
+     * @return The ManagerDirector instance for method chaining
+     */
+    public ManagerDirector registerAndUpdateMetaBlobInventory(String fileName) {
+        return registerAndUpdateMetaBlobInventory(fileName, false);
     }
 
     protected Set<Map.Entry<String, Manager>> getManagerEntry() {
