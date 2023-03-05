@@ -46,6 +46,9 @@ Builder:
     Type: CHAT
     Message: '&cPlease enter a valid number'
     BlobSound: System.Alert
+  Location:
+    Type: ACTIONBAR
+    Message: '&7Click a block. Block above it will be used'
   World-Not-Found:
     Type: CHAT
     Message: "&cWorld '%world%' not found"
