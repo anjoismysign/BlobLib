@@ -125,6 +125,8 @@ public class BlobEconomyCommand<T extends WalletOwner> {
         String[] args = data.args();
         BlobExecutor executor = data.executor();
         CommandSender sender = data.sender();
+        if (!executor.hasAdminPermission(sender))
+            return true;
         Result<BlobChildCommand> depositResult = executor
                 .isChildCommand(depositArgumentName, args);
         if (depositResult.isValid()) {
@@ -201,6 +203,8 @@ public class BlobEconomyCommand<T extends WalletOwner> {
         String[] args = data.args();
         BlobExecutor executor = data.executor();
         List<String> suggestions = new ArrayList<>();
+        if (!executor.hasAdminPermission(data.sender()))
+            return suggestions;
         switch (args.length) {
             case 1 -> {
                 suggestions.add(depositArgumentName);
