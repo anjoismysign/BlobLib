@@ -1472,12 +1472,12 @@ public class ObjectBuilderButtonBuilder {
         ObjectBuilderButton<T> objectBuilderButton = new ObjectBuilderButton<>(buttonKey,
                 Optional.empty(),
                 (button, player) -> {
-                    button.set(navigator.next());
-                    Bukkit.getLogger().info("Next: " + navigator.current());
+                    T next = navigator.next();
+                    button.set(next);
                 }, function) {
         };
-        function.apply(navigator.current());
-        Bukkit.getLogger().info("Current: " + navigator.current());
+        T current = navigator.current();
+        function.apply(current);
         return objectBuilderButton;
     }
 

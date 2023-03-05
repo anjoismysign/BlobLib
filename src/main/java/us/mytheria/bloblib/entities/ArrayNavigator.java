@@ -18,17 +18,13 @@ public class ArrayNavigator<T> {
     }
 
     public T next() {
-        if (index >= array.length) {
-            index = 0;
-        }
-        return array[index++];
+        index = (index + 1) % array.length;
+        return array[index];
     }
 
     public T previous() {
-        if (index <= 0) {
-            index = array.length - 1;
-        }
-        return array[index--];
+        index = (index - 1 + array.length) % array.length;
+        return array[index];
     }
 
     public T current() {
