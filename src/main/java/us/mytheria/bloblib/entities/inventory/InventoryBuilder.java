@@ -2,6 +2,7 @@ package us.mytheria.bloblib.entities.inventory;
 
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.BlobLib;
 
 import java.util.Collection;
 import java.util.Set;
@@ -54,7 +55,11 @@ public abstract class InventoryBuilder<T extends InventoryButton> {
 
     public boolean isInsideButton(String key, int slot) {
         T button = getButton(key);
-        if (button == null) throw new NullPointerException("Button with key '" + key + "' does not exist!");
+        if (button == null) {
+            BlobLib.getAnjoLogger().singleError("InventoryButton with key '" + key + "' inside " +
+                    "inventory '" + getTitle() + "' does not exist!");
+            return false;
+        }
         return button.containsSlot(slot);
     }
 }
