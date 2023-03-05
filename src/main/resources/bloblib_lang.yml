@@ -31,6 +31,13 @@ System:
     Title: '&f&lDONE'
     Subtitle: '&7Reload complete'
     BlobSound: System.Done
+Algorithm:
+  Adjacent-Null:
+    Type: ACTIONBAR_TITLE
+    Title: '&c&lERROR'
+    Subtitle: '&7Cannot proceed'
+    Actionbar: "&cCouldn't find adyacent block"
+    BlobSound: System.Alert
 Object:
   Not-Found:
     Type: CHAT
