@@ -4,8 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.itemstack.ItemStackReader;
-import us.mytheria.bloblib.objects.SerializableItem;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,32 +25,6 @@ import java.util.Set;
  */
 public class BlobMultiSlotable extends MultiSlotable {
     private final String key;
-
-    /**
-     * Parses/reads from a ConfigurationSection using SerializableItem.
-     *
-     * @param section The ConfigurationSection to read from.
-     * @param key     The key of the BlobMultiSlotable which was intended to read from.
-     * @return The BlobMultiSlotable which was read from the ConfigurationSection.
-     * @deprecated Use {@link #read(ConfigurationSection, String)} instead
-     * since SerializableItem is deprecated due to ItemStackReader being
-     * the new way to read ItemStacks from ConfigurationSections.
-     */
-    @Deprecated
-    public static BlobMultiSlotable fromConfigurationSection(ConfigurationSection section, String key) {
-        ItemStack itemStack = SerializableItem.fromConfigurationSection(section.getConfigurationSection("ItemStack"));
-        HashSet<Integer> list = new HashSet<>();
-        String read = section.getString("Slot", "-1");
-        String[] slots = read.split(",");
-        if (slots.length != 1) {
-            for (String slot : slots) {
-                add(list, slot, section.getName());
-            }
-        } else {
-            add(list, read, section.getName());
-        }
-        return new BlobMultiSlotable(list, itemStack, key);
-    }
 
     /**
      * Parses/reads from a ConfigurationSection using ItemStackReader.
@@ -76,7 +50,19 @@ public class BlobMultiSlotable extends MultiSlotable {
         } else {
             add(list, read, section.getName());
         }
-        return new BlobMultiSlotable(list, itemStack, key);
+        String permission = null;
+        if (section.isString("Permission")) {
+            permission = section.getString("Permission");
+        }
+        double price = 0;
+        if (section.isDouble("Price")) {
+            price = section.getDouble("Price");
+        }
+        String priceCurrency = null;
+        if (section.isString("Price-Currency")) {
+            priceCurrency = section.getString("Price-Currency");
+        }
+        return new BlobMultiSlotable(list, itemStack, key, permission, price, priceCurrency);
     }
 
     /**
@@ -86,8 +72,11 @@ public class BlobMultiSlotable extends MultiSlotable {
      * @param itemStack The item to add
      * @param key       The key to use for the item
      */
-    public BlobMultiSlotable(Set<Integer> slots, ItemStack itemStack, String key) {
-        super(slots, itemStack);
+    public BlobMultiSlotable(Set<Integer> slots, ItemStack itemStack, String key,
+                             @Nullable String permission,
+                             double price,
+                             @Nullable String priceCurrency) {
+        super(slots, itemStack, permission, price, priceCurrency);
         this.key = key;
     }
 
@@ -105,7 +94,7 @@ public class BlobMultiSlotable extends MultiSlotable {
     }
 
     public InventoryButton toInventoryButton() {
-        return new InventoryButton(key, getSlots());
+        return new InventoryButton(key, getSlots(), getPermission(), getPrice(), getPriceCurrency());
     }
 
     /**

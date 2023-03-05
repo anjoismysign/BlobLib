@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.entities.inventory;
 
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
@@ -61,5 +62,23 @@ public abstract class InventoryBuilder<T extends InventoryButton> {
             return false;
         }
         return button.containsSlot(slot);
+    }
+
+    /**
+     * Will handle both the permission and payment of the button.
+     * Should always be checked!
+     *
+     * @param key    The key of the button.
+     * @param player The player to handle the permission and payment for.
+     * @return Whether the permission and payment was handled successfully.
+     */
+    public boolean handleAll(String key, Player player) {
+        T button = getButton(key);
+        if (button == null) {
+            BlobLib.getAnjoLogger().singleError("InventoryButton with key '" + key + "' inside " +
+                    "inventory '" + getTitle() + "' does not exist!");
+            return false;
+        }
+        return button.handleAll(player);
     }
 }

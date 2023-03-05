@@ -57,7 +57,20 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
         if (section.isString("SubMeta")) {
             subMeta = section.getString("SubMeta");
         }
-        return new MetaBlobMultiSlotable(set, itemStack, key, meta, subMeta);
+        String permission = null;
+        if (section.isString("Permission")) {
+            permission = section.getString("Permission");
+        }
+        double price = 0;
+        if (section.isDouble("Price")) {
+            price = section.getDouble("Price");
+        }
+        String priceCurrency = null;
+        if (section.isString("Price-Currency")) {
+            priceCurrency = section.getString("Price-Currency");
+        }
+        return new MetaBlobMultiSlotable(set, itemStack, key, meta, subMeta,
+                permission, price, priceCurrency);
     }
 
     /**
@@ -68,8 +81,11 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
      * @param key       The key to use for the item
      */
     public MetaBlobMultiSlotable(Set<Integer> slots, ItemStack itemStack, String key,
-                                 String meta, @Nullable String subMeta) {
-        super(slots, itemStack);
+                                 String meta, @Nullable String subMeta,
+                                 @Nullable String permission,
+                                 double price,
+                                 @Nullable String priceCurrency) {
+        super(slots, itemStack, permission, price, priceCurrency);
         this.key = key;
         this.meta = meta;
         this.subMeta = subMeta;
@@ -89,7 +105,8 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
     }
 
     public MetaInventoryButton toMetaInventoryButton() {
-        return new MetaInventoryButton(key, getSlots(), meta, subMeta);
+        return new MetaInventoryButton(key, getSlots(), meta, subMeta,
+                getPermission(), getPrice(), getPriceCurrency());
     }
 
     /**

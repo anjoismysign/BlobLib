@@ -1,6 +1,7 @@
 package us.mytheria.bloblib.entities.inventory;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -170,5 +171,9 @@ public class SharableInventory<T extends InventoryButton> extends InventoryBuild
         for (Integer i : getSlots(key)) {
             setButton(i, getButton(i));
         }
+    }
+
+    public void open(Player player) {
+        player.openInventory(inventory);
     }
 }
