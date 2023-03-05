@@ -31,4 +31,8 @@ public class InventoryButton {
             inventory.setButton(slot, display);
         });
     }
+
+    public boolean containsSlot(int slot) {
+        return slots.contains(slot);
+    }
 }

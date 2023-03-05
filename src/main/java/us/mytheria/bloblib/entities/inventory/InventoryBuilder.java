@@ -51,4 +51,10 @@ public abstract class InventoryBuilder<T extends InventoryButton> {
     public Collection<String> getKeys() {
         return buttonManager.keys();
     }
+
+    public boolean isInsideButton(String key, int slot) {
+        T button = getButton(key);
+        if (button == null) throw new NullPointerException("Button with key '" + key + "' does not exist!");
+        return button.containsSlot(slot);
+    }
 }
