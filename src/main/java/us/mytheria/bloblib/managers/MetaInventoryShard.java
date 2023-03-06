@@ -19,8 +19,8 @@ public class MetaInventoryShard {
         inventories = new HashMap<>();
     }
 
-    protected void addInventory(MetaBlobInventory inventory) {
-        inventories.put(inventory.getType(), inventory);
+    protected void addInventory(MetaBlobInventory inventory, String key) {
+        inventories.put(key, inventory);
     }
 
     /**

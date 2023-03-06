@@ -3,6 +3,7 @@ package us.mytheria.bloblib.entities.inventory;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.utilities.TextColor;
 
 import java.io.File;
@@ -63,11 +64,13 @@ public class BlobInventory extends SharableInventory<InventoryButton> {
         return new BlobInventory(title, size, buttonManager);
     }
 
-    public BlobInventory(String title, int size, ButtonManager<InventoryButton> buttonManager) {
+    public BlobInventory(@NotNull String title, int size,
+                         @NotNull ButtonManager<InventoryButton> buttonManager) {
         super(title, size, buttonManager);
     }
 
     @Override
+    @NotNull
     public BlobInventory copy() {
         return new BlobInventory(getTitle(), getSize(), getButtonManager());
     }

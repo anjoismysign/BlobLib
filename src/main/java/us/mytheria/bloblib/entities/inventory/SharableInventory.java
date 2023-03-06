@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -26,7 +28,8 @@ public class SharableInventory<T extends InventoryButton> extends InventoryBuild
      * @param size          The size of the inventory.
      * @param buttonManager The ButtonManager that will be used to manage the buttons.
      */
-    protected SharableInventory(String title, int size, ButtonManager<T> buttonManager) {
+    protected SharableInventory(@NotNull String title, int size,
+                                @NotNull ButtonManager<T> buttonManager) {
         this.setTitle(Objects.requireNonNull(title,
                 "'title' cannot be null!"));
         this.setSize(size);
@@ -50,6 +53,7 @@ public class SharableInventory<T extends InventoryButton> extends InventoryBuild
      *
      * @return The cloned inventory
      */
+    @NotNull
     public SharableInventory<T> copy() {
         return new SharableInventory<>(getTitle(), getSize(), getButtonManager());
     }
@@ -93,6 +97,7 @@ public class SharableInventory<T extends InventoryButton> extends InventoryBuild
      * @param key The key of the button
      * @return The ItemStack
      */
+    @Nullable
     public ItemStack getDefaultButton(String key) {
         return defaultButtons.get(key);
     }
@@ -104,6 +109,7 @@ public class SharableInventory<T extends InventoryButton> extends InventoryBuild
      * @param key The key of the button
      * @return The cloned ItemStack
      */
+    @Nullable
     public ItemStack cloneDefaultButton(String key) {
         return defaultButtons.get(key).clone();
     }
@@ -113,6 +119,7 @@ public class SharableInventory<T extends InventoryButton> extends InventoryBuild
      *
      * @return The default buttons
      */
+    @NotNull
     public HashMap<String, ItemStack> getDefaultButtons() {
         return defaultButtons;
     }
@@ -139,6 +146,7 @@ public class SharableInventory<T extends InventoryButton> extends InventoryBuild
      *
      * @return The inventory
      */
+    @NotNull
     public Inventory getInventory() {
         return inventory;
     }

@@ -247,6 +247,8 @@ public abstract class ManagerDirector {
     public ManagerDirector registerAndUpdateBlobInventory(String fileName, boolean debug) {
         File path = getFileManager().inventoriesDirectory();
         File file = new File(path + "/" + fileName + ".yml");
+        if (file.exists())
+            return this;
         blobFileManager.updateYAML(file);
         InventoryManager.continueLoadingBlobInventories(plugin, file);
         if (debug)
@@ -275,8 +277,10 @@ public abstract class ManagerDirector {
      * @return The ManagerDirector instance for method chaining
      */
     public ManagerDirector registerAndUpdateMetaBlobInventory(String fileName, boolean debug) {
-        File path = getFileManager().inventoriesDirectory();
+        File path = getFileManager().metaInventoriesDirectory();
         File file = new File(path + "/" + fileName + ".yml");
+        if (file.exists())
+            return this;
         blobFileManager.updateYAML(file);
         InventoryManager.continueLoadingMetaInventories(plugin, file);
         if (debug)

@@ -70,13 +70,15 @@ public class MetaBlobInventory extends SharableInventory<MetaInventoryButton> {
         return new MetaBlobInventory(title, size, buttonManager, type);
     }
 
-    public MetaBlobInventory(String title, int size, ButtonManager<MetaInventoryButton> buttonManager,
+    public MetaBlobInventory(@NotNull String title, int size,
+                             @NotNull ButtonManager<MetaInventoryButton> buttonManager,
                              @NotNull String type) {
         super(title, size, buttonManager);
         this.type = Objects.requireNonNull(type, "'type' cannot be null!");
     }
 
     @Override
+    @NotNull
     public MetaBlobInventory copy() {
         return new MetaBlobInventory(getTitle(), getSize(), getButtonManager(), getType());
     }
@@ -89,6 +91,7 @@ public class MetaBlobInventory extends SharableInventory<MetaInventoryButton> {
      * @param slot The slot to check.
      * @return The button that has a valid Meta and contains provided slot.
      */
+    @NotNull
     public Result<MetaInventoryButton> belongsToAMetaButton(int slot) {
         MetaInventoryButton metaInventoryButton =
                 getKeys().stream().map(this::getButton).filter(MetaInventoryButton::hasMeta)
