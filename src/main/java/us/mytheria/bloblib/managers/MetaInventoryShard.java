@@ -4,9 +4,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.entities.inventory.MetaBlobInventory;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class MetaInventoryShard {
     private Map<String, MetaBlobInventory> inventories;
@@ -51,12 +51,10 @@ public class MetaInventoryShard {
     }
 
     /**
-     * Gets all inventories that this shard contains.
-     *
-     * @return All inventories
+     * @return Set view of the map's entries
      */
     @NotNull
-    public Collection<MetaBlobInventory> getAllInventories() {
-        return inventories.values();
+    public Set<Map.Entry<String, MetaBlobInventory>> entrySet() {
+        return inventories.entrySet();
     }
 }
