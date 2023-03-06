@@ -1,15 +1,15 @@
 package us.mytheria.bloblib.managers;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.entities.inventory.MetaBlobInventory;
+import us.mytheria.bloblib.entities.inventory.ReferenceMetaBlobInventory;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class MetaInventoryShard {
-    private Map<String, MetaBlobInventory> inventories;
+    private Map<String, ReferenceMetaBlobInventory> inventories;
 
     public MetaInventoryShard() {
         inventories = new HashMap<>();
@@ -20,7 +20,7 @@ public class MetaInventoryShard {
     }
 
     protected void addInventory(MetaBlobInventory inventory, String key) {
-        inventories.put(key, inventory);
+        inventories.put(key, ReferenceMetaBlobInventory.of(inventory, key));
     }
 
     /**
@@ -31,7 +31,7 @@ public class MetaInventoryShard {
      * @return The inventory or null if not found
      */
     @Nullable
-    public MetaBlobInventory getInventory(String key) {
+    public ReferenceMetaBlobInventory getInventory(String key) {
         return inventories.get(key);
     }
 
@@ -43,18 +43,17 @@ public class MetaInventoryShard {
      * @return The inventory or null if not found
      */
     @Nullable
-    public MetaBlobInventory copyInventory(String key) {
-        MetaBlobInventory inventory = getInventory(key);
+    public ReferenceMetaBlobInventory copyInventory(String key) {
+        ReferenceMetaBlobInventory inventory = getInventory(key);
         if (inventory == null)
             return null;
         return inventory.copy();
     }
 
     /**
-     * @return Set view of the map's entries
+     * @return All inventories held by this shard.
      */
-    @NotNull
-    public Set<Map.Entry<String, MetaBlobInventory>> entrySet() {
-        return inventories.entrySet();
+    public Collection<ReferenceMetaBlobInventory> allInventories() {
+        return inventories.values();
     }
 }

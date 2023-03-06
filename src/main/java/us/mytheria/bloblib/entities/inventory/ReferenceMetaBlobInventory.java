@@ -11,6 +11,11 @@ import java.util.Objects;
 public class ReferenceMetaBlobInventory extends MetaBlobInventory {
     private final String key;
 
+    public static ReferenceMetaBlobInventory of(MetaBlobInventory metaBlobInventory, String key) {
+        return new ReferenceMetaBlobInventory(metaBlobInventory.getTitle(), metaBlobInventory.getSize(),
+                metaBlobInventory.getButtonManager(), metaBlobInventory.getType(), key);
+    }
+
     public ReferenceMetaBlobInventory(@NotNull String title, int size,
                                       @NotNull ButtonManager<MetaInventoryButton> buttonManager,
                                       @NotNull String type,
@@ -22,5 +27,11 @@ public class ReferenceMetaBlobInventory extends MetaBlobInventory {
     @NotNull
     public String getKey() {
         return key;
+    }
+
+    @Override
+    @NotNull
+    public ReferenceMetaBlobInventory copy() {
+        return new ReferenceMetaBlobInventory(getTitle(), getSize(), getButtonManager(), getType(), getKey());
     }
 }

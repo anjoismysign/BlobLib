@@ -9,6 +9,12 @@ import org.jetbrains.annotations.NotNull;
 public class ReferenceBlobInventory extends BlobInventory {
     private final String key;
 
+    public static ReferenceBlobInventory of(@NotNull BlobInventory inventory,
+                                            @NotNull String key) {
+        return new ReferenceBlobInventory(inventory.getTitle(), inventory.getSize(),
+                inventory.getButtonManager(), key);
+    }
+
     public ReferenceBlobInventory(@NotNull String title, int size,
                                   @NotNull ButtonManager<InventoryButton> buttonManager,
                                   @NotNull String key) {
@@ -19,5 +25,11 @@ public class ReferenceBlobInventory extends BlobInventory {
     @NotNull
     public String getKey() {
         return key;
+    }
+
+    @Override
+    @NotNull
+    public ReferenceBlobInventory copy() {
+        return new ReferenceBlobInventory(getTitle(), getSize(), getButtonManager(), getKey());
     }
 }
