@@ -32,24 +32,7 @@ public class BlobInventory extends SharableInventory<InventoryButton> {
     public static BlobInventory fromFile(File file) {
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(
                 Objects.requireNonNull(file, "'file' cannot be null!"));
-        String title = TextColor.PARSE(configuration.getString("Title", configuration.getName() + ">NOT-SET"));
-        int size = configuration.getInt("Size", -1);
-        if (size < 0 || size % 9 != 0) {
-            if (size < 0) {
-                size = 54;
-                Bukkit.getLogger().info(configuration.getName() + "'s Size is smaller than 0.");
-                Bukkit.getLogger().info("This was probably due because you never set a Size.");
-                Bukkit.getLogger().info("This is not possible in an inventory so it was set");
-                Bukkit.getLogger().info("to '54' which is default.");
-            } else {
-                size = 54;
-                Bukkit.getLogger().info(configuration.getName() + "'s Size is not a factor of 9.");
-                Bukkit.getLogger().info("This is not possible in an inventory so it was set");
-                Bukkit.getLogger().info("to '54' which is default.");
-            }
-        }
-        BlobButtonManager buttonManager = BlobButtonManager.fromConfigurationSection(configuration.getConfigurationSection("Buttons"));
-        return new BlobInventory(title, size, buttonManager);
+        return fromConfigurationSection(configuration);
     }
 
     /**

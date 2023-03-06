@@ -8,9 +8,11 @@ import us.mytheria.bloblib.entities.message.BlobSound;
 import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
 import us.mytheria.bloblib.managers.InventoryManager;
 import us.mytheria.bloblib.managers.MessageManager;
+import us.mytheria.bloblib.managers.MetaInventoryShard;
 import us.mytheria.bloblib.managers.SoundManager;
 
 import java.io.File;
+import java.util.Optional;
 
 public class BlobLibAssetAPI {
     private static final BlobLib main = BlobLib.getInstance();
@@ -50,6 +52,18 @@ public class BlobLibAssetAPI {
      */
     public static MetaBlobInventory getMetaBlobInventory(String key) {
         return getInventoryManager().getMetaInventory(key);
+    }
+
+    /**
+     * Attempts to get a MetaInventoryShard from the given type.
+     * If not found, will return an empty optional.
+     *
+     * @param type The type of the shard
+     * @return The shard if found, otherwise an empty optional
+     */
+    @NotNull
+    public static Optional<MetaInventoryShard> hasMetaInventoryShard(String type) {
+        return Optional.ofNullable(getInventoryManager().getMetaInventoryShard(type));
     }
 
     /**

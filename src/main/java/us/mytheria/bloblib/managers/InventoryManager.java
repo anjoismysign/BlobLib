@@ -18,6 +18,7 @@ public class InventoryManager {
     private final BlobLib main;
     private HashMap<String, BlobInventory> blobInventories;
     private HashMap<String, MetaBlobInventory> metaInventories;
+    private HashMap<String, MetaInventoryShard> metaInventoriesShards;
     private HashMap<String, Set<String>> pluginBlobInventories;
     private HashMap<String, Set<String>> pluginMetaInventories;
     private HashMap<String, Integer> duplicates;
@@ -31,6 +32,7 @@ public class InventoryManager {
     }
 
     public void load() {
+        metaInventoriesShards = new HashMap<>();
         blobInventories = new HashMap<>();
         metaInventories = new HashMap<>();
         pluginBlobInventories = new HashMap<>();
@@ -292,11 +294,18 @@ public class InventoryManager {
         return inventory.copy();
     }
 
+    @Nullable
+    public MetaInventoryShard getMetaInventoryShard(String type) {
+        return metaInventoriesShards.get(type);
+    }
+
     private void addBlobInventory(String key, BlobInventory inventory) {
         blobInventories.put(key, inventory);
     }
 
     private void addMetaInventory(String key, MetaBlobInventory inventory) {
         metaInventories.put(key, inventory);
+        metaInventoriesShards.computeIfAbsent(inventory.getType(), type -> new MetaInventoryShard())
+                .addInventory(inventory);
     }
 }

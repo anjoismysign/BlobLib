@@ -4,12 +4,14 @@ import me.anjoismysign.anjo.entities.Result;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.utilities.TextColor;
 
 import java.io.File;
 import java.util.Objects;
 
 public class MetaBlobInventory extends SharableInventory<MetaInventoryButton> {
+    private final String type;
 
     /**
      * A way to create a BlobInventory from a file.
@@ -33,24 +35,7 @@ public class MetaBlobInventory extends SharableInventory<MetaInventoryButton> {
     public static MetaBlobInventory fromFile(File file) {
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(
                 Objects.requireNonNull(file, "'file' cannot be null!"));
-        String title = TextColor.PARSE(configuration.getString("Title", configuration.getName() + ">NOT-SET"));
-        int size = configuration.getInt("Size", -1);
-        if (size < 0 || size % 9 != 0) {
-            if (size < 0) {
-                size = 54;
-                Bukkit.getLogger().info(configuration.getName() + "'s Size is smaller than 0.");
-                Bukkit.getLogger().info("This was probably due because you never set a Size.");
-                Bukkit.getLogger().info("This is not possible in an inventory so it was set");
-                Bukkit.getLogger().info("to '54' which is default.");
-            } else {
-                size = 54;
-                Bukkit.getLogger().info(configuration.getName() + "'s Size is not a factor of 9.");
-                Bukkit.getLogger().info("This is not possible in an inventory so it was set");
-                Bukkit.getLogger().info("to '54' which is default.");
-            }
-        }
-        MetaBlobButtonManager buttonManager = MetaBlobButtonManager.fromConfigurationSection(configuration.getConfigurationSection("Buttons"));
-        return new MetaBlobInventory(title, size, buttonManager);
+        return fromConfigurationSection(configuration);
     }
 
     /**
@@ -77,17 +62,23 @@ public class MetaBlobInventory extends SharableInventory<MetaInventoryButton> {
                 Bukkit.getLogger().info("to '54' which is default.");
             }
         }
+        String type = "DEFAULT";
+        if (configurationSection.isString("Type")) {
+            type = configurationSection.getString("Type");
+        }
         MetaBlobButtonManager buttonManager = MetaBlobButtonManager.fromConfigurationSection(configurationSection.getConfigurationSection("Buttons"));
-        return new MetaBlobInventory(title, size, buttonManager);
+        return new MetaBlobInventory(title, size, buttonManager, type);
     }
 
-    public MetaBlobInventory(String title, int size, ButtonManager<MetaInventoryButton> buttonManager) {
+    public MetaBlobInventory(String title, int size, ButtonManager<MetaInventoryButton> buttonManager,
+                             @NotNull String type) {
         super(title, size, buttonManager);
+        this.type = Objects.requireNonNull(type, "'type' cannot be null!");
     }
 
     @Override
     public MetaBlobInventory copy() {
-        return new MetaBlobInventory(getTitle(), getSize(), getButtonManager());
+        return new MetaBlobInventory(getTitle(), getSize(), getButtonManager(), getType());
     }
 
     /**
@@ -104,5 +95,10 @@ public class MetaBlobInventory extends SharableInventory<MetaInventoryButton> {
                         .filter(button -> button.getSlots().contains(slot)).findFirst()
                         .orElse(null);
         return Result.ofNullable(metaInventoryButton);
+    }
+
+    @NotNull
+    public String getType() {
+        return type;
     }
 }
