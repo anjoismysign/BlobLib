@@ -57,6 +57,7 @@ public class BlobLibAssetAPI {
     /**
      * Attempts to get a MetaInventoryShard from the given type.
      * If not found, will return an empty optional.
+     * MUST CHECK IF OPTIONAL IS EMPTY BEFORE CALLING get() ON IT!
      *
      * @param type The type of the shard
      * @return The shard if found, otherwise an empty optional
