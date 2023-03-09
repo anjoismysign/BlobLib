@@ -9,10 +9,9 @@ import org.jetbrains.annotations.NotNull;
 public class ReferenceBlobInventory extends BlobInventory {
     private final String key;
 
-    public static ReferenceBlobInventory of(@NotNull BlobInventory inventory,
-                                            @NotNull String key) {
-        return new ReferenceBlobInventory(inventory.getTitle(), inventory.getSize(),
-                inventory.getButtonManager(), key);
+    public static ReferenceBlobInventory of(InventoryBuilderCarrier<InventoryButton> carrier) {
+        return new ReferenceBlobInventory(carrier.title(), carrier.size(),
+                carrier.buttonManager(), carrier.reference());
     }
 
     public ReferenceBlobInventory(@NotNull String title, int size,

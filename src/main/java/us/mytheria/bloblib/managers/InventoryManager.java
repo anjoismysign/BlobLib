@@ -5,8 +5,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.BlobFileManager;
-import us.mytheria.bloblib.entities.inventory.BlobInventory;
-import us.mytheria.bloblib.entities.inventory.MetaBlobInventory;
+import us.mytheria.bloblib.entities.inventory.*;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -16,8 +15,8 @@ import java.util.Set;
 
 public class InventoryManager {
     private final BlobLib main;
-    private HashMap<String, BlobInventory> blobInventories;
-    private HashMap<String, MetaBlobInventory> metaInventories;
+    private HashMap<String, InventoryBuilderCarrier<InventoryButton>> blobInventories;
+    private HashMap<String, InventoryBuilderCarrier<MetaInventoryButton>> metaInventories;
     private HashMap<String, MetaInventoryShard> metaInventoriesShards;
     private HashMap<String, Set<String>> pluginBlobInventories;
     private HashMap<String, Set<String>> pluginMetaInventories;
@@ -144,7 +143,8 @@ public class InventoryManager {
                 addDuplicate(fileName);
                 return;
             }
-            addBlobInventory(fileName, BlobInventory.fromConfigurationSection(yamlConfiguration));
+            addBlobInventory(fileName, InventoryBuilderCarrier.
+                    BLOB_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName));
             pluginBlobInventories.get(plugin.getName()).add(fileName);
             return;
         }
@@ -158,7 +158,8 @@ public class InventoryManager {
                 addDuplicate(reference);
                 return;
             }
-            addBlobInventory(reference, BlobInventory.fromConfigurationSection(section));
+            addBlobInventory(reference, InventoryBuilderCarrier.
+                    BLOB_FROM_CONFIGURATION_SECTION(section, reference));
             pluginBlobInventories.get(plugin.getName()).add(reference);
         });
     }
@@ -171,7 +172,8 @@ public class InventoryManager {
                 addDuplicate(fileName);
                 return;
             }
-            addMetaInventory(fileName, MetaBlobInventory.fromConfigurationSection(yamlConfiguration));
+            addMetaInventory(fileName, InventoryBuilderCarrier.
+                    META_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName));
             pluginMetaInventories.get(plugin.getName()).add(fileName);
             return;
         }
@@ -185,7 +187,8 @@ public class InventoryManager {
                 addDuplicate(reference);
                 return;
             }
-            addMetaInventory(reference, MetaBlobInventory.fromConfigurationSection(section));
+            addMetaInventory(reference, InventoryBuilderCarrier.
+                    META_FROM_CONFIGURATION_SECTION(section, reference));
             pluginMetaInventories.get(plugin.getName()).add(reference);
         });
     }
@@ -222,7 +225,8 @@ public class InventoryManager {
         String fileName = FilenameUtils.removeExtension(file.getName());
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
-            addBlobInventory(fileName, BlobInventory.fromConfigurationSection(yamlConfiguration));
+            addBlobInventory(fileName, InventoryBuilderCarrier.
+                    BLOB_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName));
             return;
         }
         yamlConfiguration.getKeys(true).forEach(reference -> {
@@ -235,7 +239,8 @@ public class InventoryManager {
                 addDuplicate(reference);
                 return;
             }
-            addBlobInventory(reference, BlobInventory.fromConfigurationSection(section));
+            addBlobInventory(reference, InventoryBuilderCarrier.
+                    BLOB_FROM_CONFIGURATION_SECTION(section, reference));
         });
     }
 
@@ -243,7 +248,8 @@ public class InventoryManager {
         String fileName = FilenameUtils.removeExtension(file.getName());
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
-            addMetaInventory(fileName, MetaBlobInventory.fromConfigurationSection(yamlConfiguration));
+            addMetaInventory(fileName, InventoryBuilderCarrier.
+                    META_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName));
             return;
         }
         yamlConfiguration.getKeys(true).forEach(reference -> {
@@ -256,7 +262,8 @@ public class InventoryManager {
                 addDuplicate(reference);
                 return;
             }
-            addMetaInventory(reference, MetaBlobInventory.fromConfigurationSection(section));
+            addMetaInventory(reference, InventoryBuilderCarrier.
+                    META_FROM_CONFIGURATION_SECTION(section, reference));
         });
     }
 
@@ -269,26 +276,42 @@ public class InventoryManager {
     }
 
     @Nullable
-    public BlobInventory getInventory(String key) {
+    public InventoryBuilderCarrier<InventoryButton> getInventoryBuilderCarrier(String key) {
         return blobInventories.get(key);
     }
 
     @Nullable
+    public BlobInventory getInventory(String key) {
+        InventoryBuilderCarrier<InventoryButton> carrier = getInventoryBuilderCarrier(key);
+        if (carrier == null)
+            return null;
+        return BlobInventory.fromInventoryBuilderCarrier(carrier);
+    }
+
+    @Nullable
     public BlobInventory cloneInventory(String key) {
-        BlobInventory inventory = blobInventories.get(key);
+        BlobInventory inventory = getInventory(key);
         if (inventory == null)
             return null;
         return inventory.copy();
     }
 
     @Nullable
-    public MetaBlobInventory getMetaInventory(String key) {
+    public InventoryBuilderCarrier<MetaInventoryButton> getMetaInventoryBuilderCarrier(String key) {
         return metaInventories.get(key);
     }
 
     @Nullable
+    public MetaBlobInventory getMetaInventory(String key) {
+        InventoryBuilderCarrier<MetaInventoryButton> carrier = getMetaInventoryBuilderCarrier(key);
+        if (carrier == null)
+            return null;
+        return MetaBlobInventory.fromInventoryBuilderCarrier(carrier);
+    }
+
+    @Nullable
     public MetaBlobInventory cloneMetaInventory(String key) {
-        MetaBlobInventory inventory = metaInventories.get(key);
+        MetaBlobInventory inventory = getMetaInventory(key);
         if (inventory == null)
             return null;
         return inventory.copy();
@@ -299,13 +322,13 @@ public class InventoryManager {
         return metaInventoriesShards.get(type);
     }
 
-    private void addBlobInventory(String key, BlobInventory inventory) {
+    private void addBlobInventory(String key, InventoryBuilderCarrier<InventoryButton> inventory) {
         blobInventories.put(key, inventory);
     }
 
-    private void addMetaInventory(String key, MetaBlobInventory inventory) {
+    private void addMetaInventory(String key, InventoryBuilderCarrier<MetaInventoryButton> inventory) {
         metaInventories.put(key, inventory);
-        metaInventoriesShards.computeIfAbsent(inventory.getType(), type -> new MetaInventoryShard())
-                .addInventory(inventory, key);
+        metaInventoriesShards.computeIfAbsent(inventory.type(), type -> new MetaInventoryShard())
+                .addInventory(MetaBlobInventory.fromInventoryBuilderCarrier(inventory), key);
     }
 }

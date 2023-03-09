@@ -1,28 +1,34 @@
 package us.mytheria.bloblib.entities.inventory;
 
+import org.apache.commons.io.FilenameUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.utilities.TextColor;
 
 import java.io.File;
 import java.util.Objects;
 
-public record InventoryBuilderCarrier<T extends InventoryButton>(String title, int size,
-                                                                 ButtonManager<T> buttonManager,
-                                                                 String type) {
+public record InventoryBuilderCarrier<T extends InventoryButton>(@NotNull String title,
+                                                                 @NotNull int size,
+                                                                 @NotNull ButtonManager<T> buttonManager,
+                                                                 @Nullable String type,
+                                                                 @NotNull String reference) {
     public boolean isMetaInventoryButton() {
         return type != null;
     }
 
-    public static InventoryBuilderCarrier<InventoryButton> BLOB_FROM_FILE(File file) {
+    public static InventoryBuilderCarrier<InventoryButton> BLOB_FROM_FILE(@NotNull File file) {
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(
                 Objects.requireNonNull(file, "'file' cannot be null!"));
-        return BLOB_FROM_CONFIGURATION_SECTION(configuration);
+        String fileName = FilenameUtils.removeExtension(file.getName());
+        return BLOB_FROM_CONFIGURATION_SECTION(configuration, fileName);
     }
 
     public static InventoryBuilderCarrier<InventoryButton> BLOB_FROM_CONFIGURATION_SECTION(
-            ConfigurationSection configurationSection) {
+            @NotNull ConfigurationSection configurationSection, @NotNull String reference) {
         String title = TextColor.PARSE(Objects.requireNonNull(configurationSection,
                 "'configurationSection' cannot be null!").getString("Title", configurationSection.getName() + ">NOT-SET"));
         int size = configurationSection.getInt("Size", -1);
@@ -41,17 +47,18 @@ public record InventoryBuilderCarrier<T extends InventoryButton>(String title, i
             }
         }
         BlobButtonManager buttonManager = BlobButtonManager.fromConfigurationSection(configurationSection.getConfigurationSection("Buttons"));
-        return new InventoryBuilderCarrier<>(title, size, buttonManager, null);
+        return new InventoryBuilderCarrier<>(title, size, buttonManager, null, reference);
     }
 
-    public static InventoryBuilderCarrier<MetaInventoryButton> META_FROM_FILE(File file) {
+    public static InventoryBuilderCarrier<MetaInventoryButton> META_FROM_FILE(@NotNull File file) {
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(
                 Objects.requireNonNull(file, "'file' cannot be null!"));
-        return META_FROM_CONFIGURATION_SECTION(configuration);
+        String fileName = FilenameUtils.removeExtension(file.getName());
+        return META_FROM_CONFIGURATION_SECTION(configuration, fileName);
     }
 
     public static InventoryBuilderCarrier<MetaInventoryButton> META_FROM_CONFIGURATION_SECTION(
-            ConfigurationSection configurationSection) {
+            @NotNull ConfigurationSection configurationSection, @NotNull String reference) {
         String title = TextColor.PARSE(Objects.requireNonNull(configurationSection,
                 "'configurationSection' cannot be null!").getString("Title", configurationSection.getName() + ">NOT-SET"));
         int size = configurationSection.getInt("Size", -1);
@@ -72,6 +79,6 @@ public record InventoryBuilderCarrier<T extends InventoryButton>(String title, i
         String type = configurationSection.isString("Type")
                 ? configurationSection.getString("Type") : "DEFAULT";
         MetaBlobButtonManager buttonManager = MetaBlobButtonManager.fromConfigurationSection(configurationSection.getConfigurationSection("Buttons"));
-        return new InventoryBuilderCarrier<>(title, size, buttonManager, type);
+        return new InventoryBuilderCarrier<>(title, size, buttonManager, type, reference);
     }
 }

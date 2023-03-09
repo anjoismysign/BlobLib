@@ -1,15 +1,16 @@
 package us.mytheria.bloblib.managers;
 
 import org.jetbrains.annotations.Nullable;
-import us.mytheria.bloblib.entities.inventory.MetaBlobInventory;
+import us.mytheria.bloblib.entities.inventory.InventoryBuilderCarrier;
+import us.mytheria.bloblib.entities.inventory.MetaInventoryButton;
 import us.mytheria.bloblib.entities.inventory.ReferenceMetaBlobInventory;
 
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MetaInventoryShard {
-    private Map<String, ReferenceMetaBlobInventory> inventories;
+    private Map<String, InventoryBuilderCarrier<MetaInventoryButton>> inventories;
 
     public MetaInventoryShard() {
         inventories = new HashMap<>();
@@ -19,8 +20,13 @@ public class MetaInventoryShard {
         inventories = new HashMap<>();
     }
 
-    protected void addInventory(MetaBlobInventory inventory, String key) {
-        inventories.put(key, ReferenceMetaBlobInventory.of(inventory, key));
+    protected void addInventory(InventoryBuilderCarrier<MetaInventoryButton> carrier, String key) {
+        inventories.put(key, carrier);
+    }
+
+    @Nullable
+    public InventoryBuilderCarrier<MetaInventoryButton> getMetaInventoryBuilderCarrier(String key) {
+        return inventories.get(key);
     }
 
     /**
@@ -32,7 +38,10 @@ public class MetaInventoryShard {
      */
     @Nullable
     public ReferenceMetaBlobInventory getInventory(String key) {
-        return inventories.get(key);
+        InventoryBuilderCarrier<MetaInventoryButton> carrier = getMetaInventoryBuilderCarrier(key);
+        if (carrier == null)
+            return null;
+        return ReferenceMetaBlobInventory.of(carrier);
     }
 
     /**
@@ -53,8 +62,8 @@ public class MetaInventoryShard {
     /**
      * @return All inventories held by this shard.
      */
-    public Collection<ReferenceMetaBlobInventory> allInventories() {
-        return inventories.values();
+    public List<ReferenceMetaBlobInventory> allInventories() {
+        return inventories.values().stream().map(ReferenceMetaBlobInventory::of).toList();
     }
 
     /**

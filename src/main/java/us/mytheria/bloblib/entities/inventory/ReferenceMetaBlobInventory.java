@@ -11,9 +11,9 @@ import java.util.Objects;
 public class ReferenceMetaBlobInventory extends MetaBlobInventory {
     private final String key;
 
-    public static ReferenceMetaBlobInventory of(MetaBlobInventory metaBlobInventory, String key) {
-        return new ReferenceMetaBlobInventory(metaBlobInventory.getTitle(), metaBlobInventory.getSize(),
-                metaBlobInventory.getButtonManager(), metaBlobInventory.getType(), key);
+    public static ReferenceMetaBlobInventory of(InventoryBuilderCarrier<MetaInventoryButton> carrier) {
+        return new ReferenceMetaBlobInventory(carrier.title(), carrier.size(),
+                carrier.buttonManager(), carrier.type(), carrier.reference());
     }
 
     public ReferenceMetaBlobInventory(@NotNull String title, int size,

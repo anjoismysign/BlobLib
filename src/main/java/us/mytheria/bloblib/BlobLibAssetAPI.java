@@ -2,8 +2,8 @@ package us.mytheria.bloblib;
 
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import us.mytheria.bloblib.entities.inventory.BlobInventory;
-import us.mytheria.bloblib.entities.inventory.MetaBlobInventory;
+import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.entities.inventory.*;
 import us.mytheria.bloblib.entities.message.BlobSound;
 import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
 import us.mytheria.bloblib.managers.InventoryManager;
@@ -39,17 +39,43 @@ public class BlobLibAssetAPI {
     }
 
     /**
+     * @param key Key that points to the carrier
+     * @return The carrier if found. null otherwise
+     */
+    @Nullable
+    public static InventoryBuilderCarrier<InventoryButton> getInventoryBuilderCarrier(String key) {
+        return getInventoryManager().getInventoryBuilderCarrier(key);
+    }
+
+    /**
+     * Will search for an InventoryBuilderCarrier with the given key.
+     * If found, will attempt to build the inventory.
+     *
      * @param key Key that points to the inventory
      * @return The inventory
      */
+    @Nullable
     public static BlobInventory getBlobInventory(String key) {
         return getInventoryManager().getInventory(key);
     }
 
     /**
+     * @param key Key that points to the carrier
+     * @return The carrier if found. null otherwise
+     */
+    @Nullable
+    public static InventoryBuilderCarrier<MetaInventoryButton> getMetaInventoryBuilderCarrier(String key) {
+        return getInventoryManager().getMetaInventoryBuilderCarrier(key);
+    }
+
+    /**
+     * Will search for an InventoryBuilderCarrier with the given key.
+     * If found, will attempt to build the inventory.
+     *
      * @param key Key that points to the inventory
      * @return The inventory
      */
+    @Nullable
     public static MetaBlobInventory getMetaBlobInventory(String key) {
         return getInventoryManager().getMetaInventory(key);
     }
