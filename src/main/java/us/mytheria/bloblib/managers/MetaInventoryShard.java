@@ -56,4 +56,11 @@ public class MetaInventoryShard {
     public Collection<ReferenceMetaBlobInventory> allInventories() {
         return inventories.values();
     }
+
+    /**
+     * @return The size of the shard. Each inventory counts as 1.
+     */
+    public int size() {
+        return inventories.size();
+    }
 }

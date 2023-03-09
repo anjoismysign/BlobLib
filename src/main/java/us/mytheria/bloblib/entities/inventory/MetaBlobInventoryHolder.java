@@ -1,28 +1,36 @@
 package us.mytheria.bloblib.entities.inventory;
 
 import me.anjoismysign.anjo.entities.Result;
+import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public class MetaBlobInventory extends SharableInventory<MetaInventoryButton> {
+public class MetaBlobInventoryHolder extends InventoryHolderBuilder<MetaInventoryButton> {
     private final String type;
 
-    public static MetaBlobInventory fromInventoryBuilderCarrier(InventoryBuilderCarrier<MetaInventoryButton> carrier) {
-        return new MetaBlobInventory(carrier.title(), carrier.size(), carrier.buttonManager(), carrier.type());
+    public static MetaBlobInventoryHolder fromInventoryBuilderCarrier(InventoryBuilderCarrier<MetaInventoryButton> carrier, @Nullable InventoryHolder holder) {
+        return new MetaBlobInventoryHolder(carrier.title(), carrier.size(), carrier.buttonManager(), carrier.type(), holder);
     }
 
-    public MetaBlobInventory(@NotNull String title, int size,
-                             @NotNull ButtonManager<MetaInventoryButton> buttonManager,
-                             @NotNull String type) {
-        super(title, size, buttonManager);
+    public MetaBlobInventoryHolder(@NotNull String title, int size,
+                                   @NotNull ButtonManager<MetaInventoryButton> buttonManager,
+                                   @NotNull String type, @Nullable InventoryHolder holder) {
+        super(title, size, buttonManager, null);
         this.type = Objects.requireNonNull(type, "'type' cannot be null!");
     }
 
     @Override
     @NotNull
-    public MetaBlobInventory copy() {
-        return new MetaBlobInventory(getTitle(), getSize(), getButtonManager(), getType());
+    public MetaBlobInventoryHolder copy() {
+        return new MetaBlobInventoryHolder(getTitle(), getSize(), getButtonManager(), getType(), getHolder());
+    }
+
+    @Override
+    @NotNull
+    public MetaBlobInventoryHolder setHolder(@NotNull InventoryHolder holder) {
+        return new MetaBlobInventoryHolder(getTitle(), getSize(), getButtonManager(), getType(), holder);
     }
 
     /**

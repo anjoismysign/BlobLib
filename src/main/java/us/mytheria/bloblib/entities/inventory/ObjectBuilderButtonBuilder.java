@@ -1470,7 +1470,7 @@ public class ObjectBuilderButtonBuilder {
                                                        Function<T, Boolean> function) {
         ArrayNavigator<T> navigator = new ArrayNavigator<>(array);
         ObjectBuilderButton<T> objectBuilderButton = new ObjectBuilderButton<>(buttonKey,
-                Optional.empty(),
+                Optional.of(navigator.current()),
                 (button, player) -> {
                     T next = navigator.next();
                     button.set(next);
