@@ -22,4 +22,10 @@ public class MetaBlobPlayerInventoryHolder extends PlayerInventoryBuilder<MetaIn
     public MetaBlobPlayerInventoryHolder copy() {
         return new MetaBlobPlayerInventoryHolder(getTitle(), getSize(), getButtonManager(), getHolderId());
     }
+
+    @Override
+    @NotNull
+    public MetaBlobPlayerInventoryHolder setHolderId(@NotNull UUID holderId) {
+        return new MetaBlobPlayerInventoryHolder(getTitle(), getSize(), getButtonManager(), holderId);
+    }
 }

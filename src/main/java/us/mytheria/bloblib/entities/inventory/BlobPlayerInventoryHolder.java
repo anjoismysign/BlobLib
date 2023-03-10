@@ -22,4 +22,10 @@ public class BlobPlayerInventoryHolder extends PlayerInventoryBuilder<InventoryB
     public BlobPlayerInventoryHolder copy() {
         return new BlobPlayerInventoryHolder(getTitle(), getSize(), getButtonManager(), getHolderId());
     }
+
+    @Override
+    @NotNull
+    public BlobPlayerInventoryHolder setHolderId(@NotNull UUID holderId) {
+        return new BlobPlayerInventoryHolder(getTitle(), getSize(), getButtonManager(), holderId);
+    }
 }
