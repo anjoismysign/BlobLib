@@ -11,7 +11,7 @@ import us.mytheria.bloblib.utilities.TextColor;
 import java.io.File;
 import java.util.Objects;
 
-public record InventoryBuilderCarrier<T extends InventoryButton>(@NotNull String title,
+public record InventoryBuilderCarrier<T extends InventoryButton>(@Nullable String title,
                                                                  @NotNull int size,
                                                                  @NotNull ButtonManager<T> buttonManager,
                                                                  @Nullable String type,
