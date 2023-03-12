@@ -329,6 +329,6 @@ public class InventoryManager {
     private void addMetaInventory(String key, InventoryBuilderCarrier<MetaInventoryButton> inventory) {
         metaInventories.put(key, inventory);
         metaInventoriesShards.computeIfAbsent(inventory.type(), type -> new MetaInventoryShard())
-                .addInventory(MetaBlobInventory.fromInventoryBuilderCarrier(inventory), key);
+                .addInventory(inventory, key);
     }
 }

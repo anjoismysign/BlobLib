@@ -47,7 +47,7 @@ public class BlobCrudManagerBuilder {
             return CrudManagerBuilder.MYSQL(hostname, port, database, user, password, tableNamingConvention(crudableName), primaryKeyName,
                     primaryKeyLength, crudableName.toUpperCase(), createFunction, plugin.getAnjoLogger());
         else
-            return CrudManagerBuilder.MYSQL(hostname, port, database, user, password, tableNamingConvention(crudableName), primaryKeyName,
+            return CrudManagerBuilder.MYSQL_NO_LOGGER(hostname, port, database, user, password, tableNamingConvention(crudableName), primaryKeyName,
                     primaryKeyLength, crudableName.toUpperCase(), createFunction);
     }
 
@@ -92,9 +92,9 @@ public class BlobCrudManagerBuilder {
      * @param <T>              The type of crudable.
      * @return A new SQLiteCrudManager.
      */
-    public static <T extends Crudable> MySQLCrudManager<T> MYSQL_UUID(BlobPlugin plugin,
-                                                                      String primaryKeyName, int primaryKeyLength,
-                                                                      String crudableName, Function<UUID, T> createFunction) {
+    public static <T extends Crudable> MySQLCrudManager<T> MYSQL_UUID_NO_LOGGER(BlobPlugin plugin,
+                                                                                String primaryKeyName, int primaryKeyLength,
+                                                                                String crudableName, Function<UUID, T> createFunction) {
         return MYSQL_UUID(plugin, primaryKeyName, primaryKeyLength,
                 crudableName, createFunction, false);
     }
@@ -126,7 +126,7 @@ public class BlobCrudManagerBuilder {
             return CrudManagerBuilder.SQLITE(database, plugin.getDataFolder(), tableNamingConvention(crudableName), primaryKeyName,
                     primaryKeyLength, crudableName.toUpperCase(), function, plugin.getAnjoLogger());
         else
-            return CrudManagerBuilder.SQLITE(database, plugin.getDataFolder(), tableNamingConvention(crudableName), primaryKeyName,
+            return CrudManagerBuilder.SQLITE_NO_LOGGER(database, plugin.getDataFolder(), tableNamingConvention(crudableName), primaryKeyName,
                     primaryKeyLength, crudableName.toUpperCase(), function);
     }
 
@@ -159,9 +159,9 @@ public class BlobCrudManagerBuilder {
      * @param <T>              The type of crudable.
      * @return A new SQLiteCrudManager.
      */
-    public static <T extends Crudable> SQLiteCrudManager<T> SQLITE_UUID(BlobPlugin plugin,
-                                                                        String primaryKeyName, int primaryKeyLength,
-                                                                        String crudableName, Function<UUID, T> function) {
+    public static <T extends Crudable> SQLiteCrudManager<T> SQLITE_UUID_NO_LOGGER(BlobPlugin plugin,
+                                                                                  String primaryKeyName, int primaryKeyLength,
+                                                                                  String crudableName, Function<UUID, T> function) {
         return SQLITE_UUID(plugin, primaryKeyName, primaryKeyLength, crudableName, function, false);
     }
 
