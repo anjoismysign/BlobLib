@@ -5,7 +5,7 @@
 
     <groupId>us.mytheria</groupId>
     <artifactId>bloblib</artifactId>
-    <version>1.630s</version>
+    <version>1.632s</version>
     <packaging>jar</packaging>
 
     <name>BlobLib</name>
@@ -220,7 +220,7 @@
         <dependency>
             <groupId>me.anjoismysign.anjo</groupId>
             <artifactId>anjo</artifactId>
-            <version>0.3.9h</version>
+            <version>0.3.9i</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
