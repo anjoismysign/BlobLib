@@ -4,9 +4,9 @@ import me.anjoismysign.anjo.entities.Result;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLibAssetAPI;
-import us.mytheria.bloblib.managers.BlobPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
     private Consumer<CommandSender> debug;
     private final List<String> callers;
 
-    public BlobExecutor(BlobPlugin plugin, String commandName) {
+    public BlobExecutor(JavaPlugin plugin, String commandName) {
         commandName = commandName.toLowerCase();
         PluginCommand command = plugin.getCommand(commandName);
         this.pluginCommand = command;
@@ -50,7 +50,7 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
         };
         this.callers = new ArrayList<>();
         if (command == null) {
-            plugin.getAnjoLogger().debug("Command " + commandName + " not found inside plugin.yml");
+            plugin.getLogger().log(Level.WARNING, "Command " + commandName + " not found inside plugin.yml");
             return;
         }
         command.getAliases().forEach(alias -> callers.add(alias.toLowerCase()));
