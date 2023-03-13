@@ -222,4 +222,18 @@ public class MongoDB {
             mongoCollection.find().forEach(consumer);
         }
     }
+
+    /**
+     * Inserts a document into a collection.
+     *
+     * @param database   The database to insert into.
+     * @param collection The collection to insert into.
+     * @param document   The document to insert.
+     */
+    public void insertOne(String database, String collection, Document document) {
+        try (MongoClient client = connect()) {
+            MongoCollection<Document> mongoCollection = client.getDatabase(database).getCollection(collection);
+            mongoCollection.insertOne(document);
+        }
+    }
 }
