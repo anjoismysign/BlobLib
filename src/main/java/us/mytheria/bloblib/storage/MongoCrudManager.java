@@ -11,15 +11,14 @@ import java.util.function.Function;
 
 public class MongoCrudManager<T extends BlobCrudable> implements CrudManager<T> {
     private final MongoDB mongoDB;
-    private final String database, collection;
+    private final String collection;
     private final Function<String, T> createFunction;
     private final Logger logger;
 
-    protected MongoCrudManager(MongoDB mongoDB, String database, String collection,
-                               Function<String, T> createFunction,
-                               Logger logger) {
+    public MongoCrudManager(MongoDB mongoDB, String collection,
+                            Function<String, T> createFunction,
+                            Logger logger) {
         this.mongoDB = mongoDB;
-        this.database = database;
         this.collection = collection;
         this.createFunction = createFunction;
         this.logger = logger;
@@ -27,7 +26,7 @@ public class MongoCrudManager<T extends BlobCrudable> implements CrudManager<T> 
     }
 
     public void load() {
-        boolean isNewCollection = !mongoDB.collectionExists(database, collection);
+        boolean isNewCollection = !mongoDB.collectionExists(collection);
         if (isNewCollection)
             log("Create collection '" + collection + "' was executed successfully.");
     }
@@ -37,7 +36,7 @@ public class MongoCrudManager<T extends BlobCrudable> implements CrudManager<T> 
      * @return Whether the record exists
      */
     public boolean exists(String id) {
-        Result<Document> result = mongoDB.getDocument(database, collection, new Document("_id", id));
+        Result<Document> result = mongoDB.getDocument(collection, new Document("_id", id));
         return result.isValid();
     }
 
@@ -53,7 +52,7 @@ public class MongoCrudManager<T extends BlobCrudable> implements CrudManager<T> 
         T crudable = createFunction.apply(identification);
         Document document = crudable.getDocument();
         document.put("_id", identification);
-        mongoDB.insertOne(database, collection, document);
+        mongoDB.insertOne(collection, document);
         return crudable;
     }
 
@@ -67,7 +66,7 @@ public class MongoCrudManager<T extends BlobCrudable> implements CrudManager<T> 
      */
     @Override
     public T read(String id) {
-        Result<Document> result = mongoDB.getDocument(database, collection, new Document("_id", id));
+        Result<Document> result = mongoDB.getDocument(collection, new Document("_id", id));
         if (result.isValid()) {
             Document document = result.value();
             T crudable = createFunction.apply(id);
@@ -84,7 +83,7 @@ public class MongoCrudManager<T extends BlobCrudable> implements CrudManager<T> 
     public void update(T crudable) {
         Document document = crudable.getDocument();
         document.put("_id", crudable.getIdentification());
-        mongoDB.insertOne(database, collection, document);
+        mongoDB.insertOne(collection, document);
     }
 
     /**
@@ -92,7 +91,7 @@ public class MongoCrudManager<T extends BlobCrudable> implements CrudManager<T> 
      */
     @Override
     public void delete(String id) {
-        mongoDB.deleteOne(database, collection, new Document("_id", id));
+        mongoDB.deleteOne(collection, new Document("_id", id));
     }
 
     /**
@@ -100,7 +99,7 @@ public class MongoCrudManager<T extends BlobCrudable> implements CrudManager<T> 
      *                   Second parameter is useless in MongoCrudManager.
      */
     public void forEachRecord(BiConsumer<T, Integer> biConsumer) {
-        mongoDB.selectAllFromCollection(database, collection, document -> {
+        mongoDB.selectAllFromCollection(collection, document -> {
             T crudable = createFunction.apply(document.getString("_id"));
             crudable.getDocument().putAll(document);
             biConsumer.accept(crudable, 0);

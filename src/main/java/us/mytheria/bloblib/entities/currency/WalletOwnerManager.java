@@ -94,11 +94,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         UUID uuid = player.getUniqueId();
         CompletableFuture<T> future = new CompletableFuture<>();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            if (sqlCrudManager.exists(uuid.toString())) {
-                owners.put(uuid, walletOwner.apply(sqlCrudManager.read(uuid.toString())));
-                return;
-            }
-            T walletOwner = this.walletOwner.apply(sqlCrudManager.createAndRegister(uuid.toString()));
+            T walletOwner = this.walletOwner.apply(sqlCrudManager.read(uuid.toString()));
             owners.put(uuid, walletOwner);
             future.complete(walletOwner);
         });

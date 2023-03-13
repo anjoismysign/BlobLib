@@ -5,8 +5,12 @@ import me.anjoismysign.anjo.crud.Crudable;
 import me.anjoismysign.anjo.crud.MySQLCrudManager;
 import me.anjoismysign.anjo.crud.SQLiteCrudManager;
 import me.anjoismysign.anjo.entities.NamingConventions;
+import me.anjoismysign.anjo.entities.Result;
 import org.bukkit.configuration.ConfigurationSection;
+import us.mytheria.bloblib.entities.BlobCrudable;
 import us.mytheria.bloblib.managers.BlobPlugin;
+import us.mytheria.bloblib.storage.MongoCrudManager;
+import us.mytheria.bloblib.storage.MongoDB;
 
 import java.util.UUID;
 import java.util.function.Function;
@@ -169,5 +173,40 @@ public class BlobCrudManagerBuilder {
         name = NamingConventions.toPascalCase(name);
         name = "tbl" + name + "s";
         return name;
+    }
+
+    public static <T extends BlobCrudable> MongoCrudManager<T> MONGO(BlobPlugin plugin,
+                                                                     String crudableName, Function<String, T> createFunction,
+                                                                     boolean logActivity) {
+        if (!plugin.getConfig().isConfigurationSection("Database"))
+            throw new IllegalArgumentException("Database section not found");
+        ConfigurationSection databaseSection = plugin.getConfig().getConfigurationSection("Database");
+        String databaseType = databaseSection.getString("Type", "SQLite");
+        if (!databaseType.equalsIgnoreCase("MongoDB"))
+            throw new IllegalArgumentException("Database type must be MongoDB");
+        Result<MongoDB> result = MongoDB.fromConfigurationSection(databaseSection);
+        if (!result.isValid())
+            throw new IllegalArgumentException("Invalid MongoDB configuration");
+        MongoDB mongoDB = result.value();
+        if (logActivity)
+            return new MongoCrudManager<>(mongoDB, NamingConventions.toSnakeCase(crudableName),
+                    createFunction, plugin.getAnjoLogger());
+        else
+            return new MongoCrudManager<>(mongoDB, NamingConventions.toSnakeCase(crudableName),
+                    createFunction, null);
+    }
+
+    public static <T extends BlobCrudable> MongoCrudManager<T> MONGO_UUID(BlobPlugin plugin,
+                                                                          String crudableName, Function<UUID, T> createFunction,
+                                                                          boolean logActivity) {
+        return MONGO(plugin, crudableName, string -> {
+            UUID uuid = UUID.fromString(string);
+            return createFunction.apply(uuid);
+        }, logActivity);
+    }
+
+    public static <T extends BlobCrudable> MongoCrudManager<T> MONGO_UUID_NO_LOGGER(BlobPlugin plugin,
+                                                                                    String crudableName, Function<UUID, T> createFunction) {
+        return MONGO_UUID(plugin, crudableName, createFunction, false);
     }
 }
