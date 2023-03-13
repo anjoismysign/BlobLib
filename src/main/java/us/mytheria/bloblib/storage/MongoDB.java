@@ -42,7 +42,6 @@ public class MongoDB {
      */
     public static Result<MongoDB> fromConfigurationSection(ConfigurationSection configurationSection) {
         if (configurationSection.isString("Host") &&
-                configurationSection.isInt("Port") &&
                 configurationSection.isString("Database") &&
                 configurationSection.isString("Username") &&
                 configurationSection.isString("Password"))
@@ -51,7 +50,6 @@ public class MongoDB {
             return Result.invalidBecauseNull();
         ConfigurationSection section = configurationSection.getConfigurationSection("Database");
         if (section.isString("Host") &&
-                section.isInt("Port") &&
                 section.isString("Database") &&
                 section.isString("Username") &&
                 section.isString("Password"))
@@ -61,11 +59,10 @@ public class MongoDB {
 
     private static MongoDB loadFromConfigurationSection(ConfigurationSection configurationSection) {
         String host = configurationSection.getString("host");
-        int port = configurationSection.getInt("port");
         String database = configurationSection.getString("database");
         String username = configurationSection.getString("username");
         String password = configurationSection.getString("password");
-        String connection = "mongodb://" + username + ":" + password + "@" + host + ":" + port + "/" + database;
+        String connection = "mongodb://" + username + ":" + password + "@" + host + "/" + database;
         return new MongoDB(connection, database);
     }
 

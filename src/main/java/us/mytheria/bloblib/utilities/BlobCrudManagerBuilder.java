@@ -11,6 +11,7 @@ import us.mytheria.bloblib.entities.BlobCrudable;
 import us.mytheria.bloblib.managers.BlobPlugin;
 import us.mytheria.bloblib.storage.MongoCrudManager;
 import us.mytheria.bloblib.storage.MongoDB;
+import us.mytheria.bloblib.storage.StorageType;
 
 import java.util.UUID;
 import java.util.function.Function;
@@ -42,6 +43,9 @@ public class BlobCrudManagerBuilder {
                                                                  String crudableName, Function<String, T> createFunction,
                                                                  boolean logActivity) {
         ConfigurationSection databaseSection = plugin.getConfig().getConfigurationSection("Database");
+        StorageType storageType = StorageType.valueOf(databaseSection.getString("StorageType", "SQLITE"));
+        if (storageType != StorageType.MYSQL)
+            throw new IllegalArgumentException("StorageType is not MYSQL (" + storageType + ")");
         String hostname = databaseSection.getString("Hostname");
         int port = databaseSection.getInt("Port");
         String database = databaseSection.getString("Database");
@@ -125,6 +129,9 @@ public class BlobCrudManagerBuilder {
                                                                    String crudableName, Function<String, T> function,
                                                                    boolean logActivity) {
         ConfigurationSection databaseSection = plugin.getConfig().getConfigurationSection("Database");
+        StorageType storageType = StorageType.valueOf(databaseSection.getString("StorageType", "SQLITE"));
+        if (storageType != StorageType.SQLITE)
+            throw new IllegalArgumentException("StorageType is not SQLITE (" + storageType + ")");
         String database = databaseSection.getString("Database");
         if (logActivity)
             return CrudManagerBuilder.SQLITE(database, plugin.getDataFolder(), tableNamingConvention(crudableName), primaryKeyName,
@@ -181,9 +188,9 @@ public class BlobCrudManagerBuilder {
         if (!plugin.getConfig().isConfigurationSection("Database"))
             throw new IllegalArgumentException("Database section not found");
         ConfigurationSection databaseSection = plugin.getConfig().getConfigurationSection("Database");
-        String databaseType = databaseSection.getString("Type", "SQLite");
-        if (!databaseType.equalsIgnoreCase("MongoDB"))
-            throw new IllegalArgumentException("Database type must be MongoDB");
+        StorageType storageType = StorageType.valueOf(databaseSection.getString("StorageType", "SQLITE"));
+        if (storageType != StorageType.MONGODB)
+            throw new IllegalArgumentException("StorageType is not MONGODB (" + storageType + ")");
         Result<MongoDB> result = MongoDB.fromConfigurationSection(databaseSection);
         if (!result.isValid())
             throw new IllegalArgumentException("Invalid MongoDB configuration");
