@@ -7,6 +7,11 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import me.anjoismysign.anjo.entities.Result;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.bson.Document;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -82,6 +87,10 @@ public class MongoDB {
     }
 
     private MongoClient connect() {
+        LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+        Configuration configuration = loggerContext.getConfiguration();
+        LoggerConfig loggerConfig = configuration.getLoggerConfig("org.mongodb.driver");
+        loggerConfig.setLevel(Level.WARN);
         return MongoClients.create(connection);
     }
 
