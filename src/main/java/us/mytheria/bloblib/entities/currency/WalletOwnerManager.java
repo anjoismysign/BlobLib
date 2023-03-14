@@ -1,6 +1,6 @@
 package us.mytheria.bloblib.entities.currency;
 
-import me.anjoismysign.anjo.crud.SQLCrudManager;
+import me.anjoismysign.anjo.crud.CrudManager;
 import me.anjoismysign.anjo.entities.NamingConventions;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -17,6 +17,7 @@ import us.mytheria.bloblib.entities.ObjectDirector;
 import us.mytheria.bloblib.managers.BlobPlugin;
 import us.mytheria.bloblib.managers.Manager;
 import us.mytheria.bloblib.managers.ManagerDirector;
+import us.mytheria.bloblib.storage.StorageType;
 import us.mytheria.bloblib.utilities.BlobCrudManagerBuilder;
 
 import java.util.HashMap;
@@ -29,7 +30,7 @@ import java.util.function.Function;
 public class WalletOwnerManager<T extends WalletOwner> extends Manager implements Listener {
     protected final HashMap<UUID, T> owners;
     private final HashSet<UUID> saving;
-    protected SQLCrudManager<BlobCrudable> sqlCrudManager;
+    protected CrudManager<BlobCrudable> crudManager;
     private final BlobPlugin plugin;
     private final Function<BlobCrudable, T> walletOwner;
     private final Function<UUID, BlobCrudable> newBorn;
@@ -60,12 +61,14 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         this.quitEvent = quitEvent;
         this.registeredEconomy = false;
         saving = new HashSet<>();
-        boolean useSQLite = getPlugin().getConfig().getBoolean("Database.UseSQLite");
-        if (useSQLite) {
-            sqlCrudManager = BlobCrudManagerBuilder.SQLITE_UUID(plugin, "UUID", 36,
+        StorageType storageType = StorageType.valueOf(getPlugin().getConfig()
+                .getString("Database.Type", "SQLITE"));
+        switch (storageType) {
+            case SQLITE -> crudManager = BlobCrudManagerBuilder.SQLITE_UUID(plugin, "UUID", 36,
                     crudableName, newBorn, logActivity);
-        } else {
-            sqlCrudManager = BlobCrudManagerBuilder.MYSQL_UUID(plugin, "UUID", 36,
+            case MYSQL -> crudManager = BlobCrudManagerBuilder.MYSQL_UUID(plugin, "UUID", 36,
+                    crudableName, newBorn, logActivity);
+            case MONGODB -> crudManager = BlobCrudManagerBuilder.MONGO_UUID(plugin,
                     crudableName, newBorn, logActivity);
         }
         reload();
@@ -94,7 +97,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         UUID uuid = player.getUniqueId();
         CompletableFuture<T> future = new CompletableFuture<>();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            T walletOwner = this.walletOwner.apply(sqlCrudManager.read(uuid.toString()));
+            T walletOwner = this.walletOwner.apply(crudManager.read(uuid.toString()));
             owners.put(uuid, walletOwner);
             future.complete(walletOwner);
         });
@@ -116,7 +119,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
             Bukkit.getPluginManager().callEvent(quitEvent.apply(walletOwner));
         saving.add(uuid);
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            sqlCrudManager.update(walletOwner.serializeAllAttributes());
+            crudManager.update(walletOwner.serializeAllAttributes());
             saving.remove(uuid);
         });
     }
@@ -138,13 +141,13 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
     }
 
     private void saveAll() {
-        owners.values().forEach(walletOwner -> sqlCrudManager.update(walletOwner.serializeAllAttributes()));
+        owners.values().forEach(walletOwner -> crudManager.update(walletOwner.serializeAllAttributes()));
     }
 
     protected CompletableFuture<T> read(UUID uuid) {
         CompletableFuture<T> future = new CompletableFuture<>();
         Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () ->
-                future.complete(walletOwner.apply(sqlCrudManager.read(uuid.toString()))));
+                future.complete(walletOwner.apply(crudManager.read(uuid.toString()))));
         return future;
     }
 

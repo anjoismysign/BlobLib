@@ -31,13 +31,13 @@ public class BlobEconomy<T extends WalletOwner> implements Economy {
 
     private void updateAsynchronously(T walletOwner) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () ->
-                manager.sqlCrudManager.update(walletOwner.serializeAllAttributes()));
+                manager.crudManager.update(walletOwner.serializeAllAttributes()));
     }
 
     public boolean hasRecord(UUID uuid) {
         if (manager.owners.containsKey(uuid))
             return true;
-        return manager.sqlCrudManager.exists(uuid.toString());
+        return manager.crudManager.exists(uuid.toString());
     }
 
     public double getBalance(UUID uuid) {

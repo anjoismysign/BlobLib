@@ -3,6 +3,7 @@ package us.mytheria.bloblib.storage;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import me.anjoismysign.anjo.entities.Result;
@@ -21,8 +22,11 @@ import java.util.function.Consumer;
  * @author anjoismysign
  */
 public class MongoDB {
+
     private final String connection;
     private final String database;
+
+    private final MongoClient mongoClient;
 
     /**
      * Will create a new MongoDB instance with the default localhost connection and the provided database.
@@ -31,7 +35,7 @@ public class MongoDB {
      * @return A new MongoDB instance with the default localhost connection and the provided database.
      */
     public static MongoDB LOCALHOST(String database) {
-        return new MongoDB("mongodb://localhost:27017/" + database, database);
+        return new MongoDB("mongodb://localhost:27017/", database);
     }
 
     /**
@@ -58,11 +62,11 @@ public class MongoDB {
     }
 
     private static MongoDB loadFromConfigurationSection(ConfigurationSection configurationSection) {
-        String host = configurationSection.getString("host");
-        String database = configurationSection.getString("database");
-        String username = configurationSection.getString("username");
-        String password = configurationSection.getString("password");
-        String connection = "mongodb://" + username + ":" + password + "@" + host + "/" + database;
+        String host = configurationSection.getString("Host");
+        String database = configurationSection.getString("Database");
+        String username = configurationSection.getString("Username");
+        String password = configurationSection.getString("Password");
+        String connection = "mongodb+srv://" + username + ":" + password + "@" + host + "/?retryWrites=true&w=majority";
         return new MongoDB(connection, database);
     }
 
@@ -74,10 +78,15 @@ public class MongoDB {
     public MongoDB(String connection, String database) {
         this.connection = connection;
         this.database = database;
+        this.mongoClient = connect();
     }
 
     private MongoClient connect() {
         return MongoClients.create(connection);
+    }
+
+    private MongoDatabase getDatabase() {
+        return mongoClient.getDatabase(this.database);
     }
 
     /**
@@ -89,7 +98,7 @@ public class MongoDB {
      */
     public Result<Document> getDocument(String collection, Document searchQuery) {
         try (MongoClient client = connect()) {
-            MongoCollection<Document> mongoCollection = client.getDatabase(database).getCollection(collection);
+            MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
             Document iterable = mongoCollection.find(searchQuery).first();
             return Result.ofNullable(iterable);
         }
@@ -101,15 +110,14 @@ public class MongoDB {
      *
      * @param collection  The collection name to select from.
      * @param searchQuery The document to filter by.
-     * @param newValues   The document to update with.
+     * @param replacement The document to replace with
      * @return True if the document was updated, false otherwise.
      */
-    public boolean updateOne(String collection, Document searchQuery,
-                             Document newValues) {
+    public boolean replaceOne(String collection, Document searchQuery,
+                              Document replacement) {
         try (MongoClient client = connect()) {
-            MongoCollection<Document> mongoCollection = client.getDatabase(database).getCollection(collection);
-            Document updateQuery = new Document("$set", newValues);
-            UpdateResult result = mongoCollection.updateOne(searchQuery, updateQuery);
+            MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
+            UpdateResult result = mongoCollection.replaceOne(searchQuery, replacement);
             return result.getModifiedCount() > 0;
         }
     }
@@ -126,7 +134,7 @@ public class MongoDB {
     public boolean updateMany(String collection, Document searchQuery,
                               Document newValues) {
         try (MongoClient client = connect()) {
-            MongoCollection<Document> mongoCollection = client.getDatabase(database).getCollection(collection);
+            MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
             Document updateQuery = new Document("$set", newValues);
             UpdateResult result = mongoCollection.updateMany(searchQuery, updateQuery);
             return result.getModifiedCount() > 0;
@@ -142,11 +150,10 @@ public class MongoDB {
      */
     public boolean deleteOne(String collection, Document searchQuery) {
         try (MongoClient client = connect()) {
-            MongoCollection<Document> mongoCollection = client.getDatabase(database).getCollection(collection);
+            MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
             DeleteResult result = mongoCollection.deleteOne(searchQuery);
             return result.getDeletedCount() > 0;
         }
-
     }
 
     /**
@@ -158,7 +165,7 @@ public class MongoDB {
      */
     public boolean deleteMany(String collection, Document searchQuery) {
         try (MongoClient client = connect()) {
-            MongoCollection<Document> mongoCollection = client.getDatabase(database).getCollection(collection);
+            MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
             DeleteResult result = mongoCollection.deleteMany(searchQuery);
             return result.getDeletedCount() > 0;
         }
@@ -172,7 +179,7 @@ public class MongoDB {
      */
     public void createCollection(String newCollection) {
         try (MongoClient client = connect()) {
-            client.getDatabase(database).createCollection(newCollection);
+            getDatabase().createCollection(newCollection);
         }
     }
 
@@ -184,7 +191,7 @@ public class MongoDB {
      */
     public boolean collectionExists(String collection) {
         try (MongoClient client = connect()) {
-            return client.getDatabase(database).listCollectionNames().into(new ArrayList<>()).contains(collection);
+            return getDatabase().listCollectionNames().into(new ArrayList<>()).contains(collection);
         }
     }
 
@@ -196,7 +203,7 @@ public class MongoDB {
      */
     public void selectAllFromCollection(String collection, Consumer<Document> consumer) {
         try (MongoClient client = connect()) {
-            MongoCollection<Document> mongoCollection = client.getDatabase(database).getCollection(collection);
+            MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
             mongoCollection.find().forEach(consumer);
         }
     }
@@ -209,8 +216,10 @@ public class MongoDB {
      */
     public void insertOne(String collection, Document document) {
         try (MongoClient client = connect()) {
-            MongoCollection<Document> mongoCollection = client.getDatabase(database).getCollection(collection);
+            MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
             mongoCollection.insertOne(document);
         }
     }
+
+
 }

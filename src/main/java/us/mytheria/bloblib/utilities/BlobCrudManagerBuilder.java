@@ -43,7 +43,7 @@ public class BlobCrudManagerBuilder {
                                                                  String crudableName, Function<String, T> createFunction,
                                                                  boolean logActivity) {
         ConfigurationSection databaseSection = plugin.getConfig().getConfigurationSection("Database");
-        StorageType storageType = StorageType.valueOf(databaseSection.getString("StorageType", "SQLITE"));
+        StorageType storageType = StorageType.valueOf(databaseSection.getString("Type", "SQLITE"));
         if (storageType != StorageType.MYSQL)
             throw new IllegalArgumentException("StorageType is not MYSQL (" + storageType + ")");
         String hostname = databaseSection.getString("Hostname");
@@ -129,7 +129,7 @@ public class BlobCrudManagerBuilder {
                                                                    String crudableName, Function<String, T> function,
                                                                    boolean logActivity) {
         ConfigurationSection databaseSection = plugin.getConfig().getConfigurationSection("Database");
-        StorageType storageType = StorageType.valueOf(databaseSection.getString("StorageType", "SQLITE"));
+        StorageType storageType = StorageType.valueOf(databaseSection.getString("Type", "SQLITE"));
         if (storageType != StorageType.SQLITE)
             throw new IllegalArgumentException("StorageType is not SQLITE (" + storageType + ")");
         String database = databaseSection.getString("Database");
@@ -188,7 +188,7 @@ public class BlobCrudManagerBuilder {
         if (!plugin.getConfig().isConfigurationSection("Database"))
             throw new IllegalArgumentException("Database section not found");
         ConfigurationSection databaseSection = plugin.getConfig().getConfigurationSection("Database");
-        StorageType storageType = StorageType.valueOf(databaseSection.getString("StorageType", "SQLITE"));
+        StorageType storageType = StorageType.valueOf(databaseSection.getString("Type", "SQLITE"));
         if (storageType != StorageType.MONGODB)
             throw new IllegalArgumentException("StorageType is not MONGODB (" + storageType + ")");
         Result<MongoDB> result = MongoDB.fromConfigurationSection(databaseSection);

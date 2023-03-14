@@ -4,10 +4,13 @@ import me.anjoismysign.anjo.crud.CrudManager;
 import me.anjoismysign.anjo.entities.Result;
 import me.anjoismysign.anjo.logger.Logger;
 import org.bson.Document;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.entities.BlobCrudable;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class MongoCrudManager<T extends BlobCrudable> implements CrudManager<T> {
     private final MongoDB mongoDB;
@@ -35,6 +38,7 @@ public class MongoCrudManager<T extends BlobCrudable> implements CrudManager<T> 
      * @param id The primary key id
      * @return Whether the record exists
      */
+    @Override
     public boolean exists(String id) {
         Result<Document> result = mongoDB.getDocument(collection, new Document("_id", id));
         return result.isValid();
@@ -53,6 +57,7 @@ public class MongoCrudManager<T extends BlobCrudable> implements CrudManager<T> 
         Document document = crudable.getDocument();
         document.put("_id", identification);
         mongoDB.insertOne(collection, document);
+        log("Created new with id " + identification + " in collection " + collection);
         return crudable;
     }
 
@@ -64,16 +69,36 @@ public class MongoCrudManager<T extends BlobCrudable> implements CrudManager<T> 
      * @param id The id of the Crudable to get
      * @return The Crudable with the given id
      */
+    @NotNull
     @Override
     public T read(String id) {
+        return readOrGenerate(id, () -> create(id));
+    }
+
+    /**
+     * Will attempt to read the Crudable with the given id from the database.
+     * If not found/exists, will return null.
+     *
+     * @param id The id of the Crudable to get
+     * @return The Crudable with the given id
+     */
+    @Nullable
+    @Override
+    public T readOrNull(String id) {
+        return readOrGenerate(id, () -> null);
+    }
+
+    private T readOrGenerate(String id, Supplier<T> replacement) {
         Result<Document> result = mongoDB.getDocument(collection, new Document("_id", id));
         if (result.isValid()) {
             Document document = result.value();
             T crudable = createFunction.apply(id);
             crudable.getDocument().putAll(document);
+            log("Read " + id + " from collection " + collection);
             return crudable;
         }
-        return create();
+        log("Record '" + id + "' not found from collection: " + collection);
+        return replacement.get();
     }
 
     /**
@@ -82,8 +107,13 @@ public class MongoCrudManager<T extends BlobCrudable> implements CrudManager<T> 
     @Override
     public void update(T crudable) {
         Document document = crudable.getDocument();
-        document.put("_id", crudable.getIdentification());
-        mongoDB.insertOne(collection, document);
+        String id = crudable.getIdentification();
+        document.put("_id", id);
+        boolean succesful = mongoDB.replaceOne(collection, new Document("_id", id), document);
+        if (succesful)
+            log("Updated '" + crudable.getIdentification() + "' in collection " + collection);
+        else
+            log("Failed to update '" + crudable.getIdentification() + "' in collection " + collection);
     }
 
     /**
@@ -91,7 +121,11 @@ public class MongoCrudManager<T extends BlobCrudable> implements CrudManager<T> 
      */
     @Override
     public void delete(String id) {
-        mongoDB.deleteOne(collection, new Document("_id", id));
+        boolean success = mongoDB.deleteOne(collection, new Document("_id", id));
+        if (success)
+            log("Deleted '" + id + "' from collection " + collection);
+        else
+            log("Failed to delete '" + id + "' from collection " + collection);
     }
 
     /**
