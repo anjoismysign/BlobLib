@@ -39,6 +39,17 @@ public interface BlobSerializable {
     BlobCrudable serializeAllAttributes();
 
     /**
+     * Will provide {@link BlobCrudable#getIdentification()}
+     * It may be either the player username, the UUID or
+     * whatever the implementation decides.
+     *
+     * @return the identification
+     */
+    default String getIdentification() {
+        return blobCrudable().getIdentification();
+    }
+
+    /**
      * Will return the player that is associated
      * Might be null if called after the player has left
      * the session or if identification is not player name or uuid.
