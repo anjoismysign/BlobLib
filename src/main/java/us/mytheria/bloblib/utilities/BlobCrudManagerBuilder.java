@@ -4,7 +4,6 @@ import me.anjoismysign.anjo.crud.*;
 import me.anjoismysign.anjo.entities.NamingConventions;
 import me.anjoismysign.anjo.entities.Result;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import us.mytheria.bloblib.entities.BlobCrudable;
 import us.mytheria.bloblib.managers.BlobPlugin;
 import us.mytheria.bloblib.storage.IdentifierType;
@@ -18,7 +17,7 @@ import java.util.function.Function;
 public class BlobCrudManagerBuilder {
     public static <T extends BlobCrudable> CrudManager<T> PLAYER(BlobPlugin plugin,
                                                                  String crudableName,
-                                                                 Function<Player, T> createFunction,
+                                                                 Function<BlobCrudable, T> createFunction,
                                                                  boolean logActivity) {
         IdentifierType identifierType;
         String type = plugin.getConfig().getString("IdentifierType", "UUID");
@@ -31,16 +30,14 @@ public class BlobCrudManagerBuilder {
         switch (identifierType) {
             case UUID -> {
                 return UUID(plugin, crudableName, uuid -> {
-                    Player player = plugin.getServer().getPlayer(uuid);
-                    if (player == null) return null;
-                    return createFunction.apply(player);
+                    BlobCrudable crudable = new BlobCrudable(uuid.toString());
+                    return createFunction.apply(crudable);
                 }, logActivity);
             }
             case PLAYERNAME -> {
                 return PLAYERNAME(plugin, crudableName, playerName -> {
-                    Player player = plugin.getServer().getPlayer(playerName);
-                    if (player == null) return null;
-                    return createFunction.apply(player);
+                    BlobCrudable crudable = new BlobCrudable(playerName);
+                    return createFunction.apply(crudable);
                 }, logActivity);
             }
             default -> throw new IllegalArgumentException("Invalid IdentifierType '" + identifierType + "'.");
@@ -108,15 +105,15 @@ public class BlobCrudManagerBuilder {
         String password = databaseSection.getString("Password");
         switch (storageType) {
             case MYSQL -> {
-                return MYSQL(plugin, "USERNAME", 36,
-                        crudableName, createFunction::apply, logActivity);
+                return MYSQL(plugin, "USERNAME", 16,
+                        crudableName, createFunction, logActivity);
             }
             case SQLITE -> {
-                return SQLITE(plugin, "USERNAME", 36,
-                        crudableName, createFunction::apply, logActivity);
+                return SQLITE(plugin, "USERNAME", 16,
+                        crudableName, createFunction, logActivity);
             }
             case MONGODB -> {
-                return MONGO(plugin, crudableName, createFunction::apply, logActivity);
+                return MONGO(plugin, crudableName, createFunction, logActivity);
             }
             default -> throw new IllegalArgumentException("Invalid StorageType '" + storageType + "'.");
         }

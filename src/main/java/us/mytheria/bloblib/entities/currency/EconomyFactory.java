@@ -6,7 +6,6 @@ import us.mytheria.bloblib.entities.ObjectDirector;
 import us.mytheria.bloblib.entities.ObjectDirectorData;
 import us.mytheria.bloblib.managers.ManagerDirector;
 
-import java.util.UUID;
 import java.util.function.Function;
 
 public class EconomyFactory {
@@ -42,7 +41,7 @@ public class EconomyFactory {
      * @return A new WalletOwnerManager.
      */
     public static <T extends WalletOwner> WalletOwnerManager<T> SIMPLE_WALLET_OWNER_MANAGER(ManagerDirector managerDirector,
-                                                                                            Function<UUID, BlobCrudable> newBorn,
+                                                                                            Function<BlobCrudable, BlobCrudable> newBorn,
                                                                                             Function<BlobCrudable, T> walletOwner,
                                                                                             String crudableName, boolean logActivity) {
         return new <T>WalletOwnerManager<T>(managerDirector, newBorn, walletOwner, crudableName, logActivity, null, null);
@@ -71,7 +70,7 @@ public class EconomyFactory {
      * @return A new WalletOwnerManager.
      */
     public static <T extends WalletOwner> WalletOwnerManager<T> WALLET_OWNER_MANAGER(ManagerDirector managerDirector,
-                                                                                     Function<UUID, BlobCrudable> newBorn,
+                                                                                     Function<BlobCrudable, BlobCrudable> newBorn,
                                                                                      Function<BlobCrudable, T> walletOwner,
                                                                                      String crudableName, boolean logActivity,
                                                                                      Function<T, Event> joinEvent,

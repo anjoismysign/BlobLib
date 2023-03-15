@@ -40,7 +40,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
     @Nullable
     private EconomyPHExpansion<T> economyPHExpansion;
 
-    protected WalletOwnerManager(ManagerDirector managerDirector, Function<Player, BlobCrudable> newBorn,
+    protected WalletOwnerManager(ManagerDirector managerDirector, Function<BlobCrudable, BlobCrudable> newBorn,
                                  Function<BlobCrudable, T> generator,
                                  String crudableName, boolean logActivity,
                                  @Nullable Function<T, Event> joinEvent,
