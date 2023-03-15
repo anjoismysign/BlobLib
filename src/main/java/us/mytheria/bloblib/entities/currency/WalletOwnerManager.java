@@ -31,7 +31,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
     private final HashSet<UUID> saving;
     protected CrudManager<BlobCrudable> crudManager;
     private final BlobPlugin plugin;
-    private final Function<BlobCrudable, T> walletOwner;
+    private final Function<BlobCrudable, T> generator;
     private final @Nullable Function<T, Event> joinEvent;
     private final @Nullable Function<T, Event> quitEvent;
     private boolean registeredEconomy, registeredPAPI;
@@ -41,7 +41,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
     private EconomyPHExpansion<T> economyPHExpansion;
 
     protected WalletOwnerManager(ManagerDirector managerDirector, Function<Player, BlobCrudable> newBorn,
-                                 Function<BlobCrudable, T> walletOwner,
+                                 Function<BlobCrudable, T> generator,
                                  String crudableName, boolean logActivity,
                                  @Nullable Function<T, Event> joinEvent,
                                  @Nullable Function<T, Event> quitEvent) {
@@ -49,7 +49,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         plugin = managerDirector.getPlugin();
         Bukkit.getPluginManager().registerEvents(this, plugin);
         owners = new HashMap<>();
-        this.walletOwner = walletOwner;
+        this.generator = generator;
         String pascalCase = NamingConventions.toPascalCase(crudableName);
         this.joinEvent = joinEvent;
         this.quitEvent = quitEvent;
@@ -82,7 +82,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         UUID uuid = player.getUniqueId();
         CompletableFuture<T> future = new CompletableFuture<>();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            T walletOwner = this.walletOwner.apply(crudManager.read(uuid.toString()));
+            T walletOwner = this.generator.apply(crudManager.read(uuid.toString()));
             owners.put(uuid, walletOwner);
             future.complete(walletOwner);
         });
@@ -141,7 +141,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
     protected CompletableFuture<T> read(String key) {
         CompletableFuture<T> future = new CompletableFuture<>();
         Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () ->
-                future.complete(walletOwner.apply(crudManager.read(key))));
+                future.complete(generator.apply(crudManager.read(key))));
         return future;
     }
 

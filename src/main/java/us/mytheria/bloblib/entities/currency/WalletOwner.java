@@ -2,11 +2,12 @@ package us.mytheria.bloblib.entities.currency;
 
 import org.bson.Document;
 import us.mytheria.bloblib.entities.BlobCrudable;
+import us.mytheria.bloblib.entities.BlobSerializable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public interface WalletOwner {
+public interface WalletOwner extends BlobSerializable {
     /**
      * Each WalletOwner should hold a BlobCrudable which
      * will be used to serialize and deserialize not only
@@ -18,6 +19,7 @@ public interface WalletOwner {
      *
      * @return the BlobCrudable
      */
+    @Override
     BlobCrudable blobCrudable();
 
     /**
@@ -32,6 +34,7 @@ public interface WalletOwner {
      *
      * @return the updated BlobCrudable
      */
+    @Override
     BlobCrudable serializeAllAttributes();
 
     /**
