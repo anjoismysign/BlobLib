@@ -5,27 +5,22 @@ import org.bson.Document;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 public final class BlobCrudable implements Crudable {
-    private final UUID id;
+    private final String id;
     private final Document document;
 
-    public BlobCrudable(UUID id, Document document) {
+    public BlobCrudable(String id, Document document) {
         this.id = id;
         this.document = document;
     }
 
-    public BlobCrudable(UUID uuid) {
+    public BlobCrudable(String uuid) {
         this(uuid, new Document());
     }
 
     @Override
     public String getIdentification() {
-        return id.toString();
-    }
-
-    public UUID getUUID() {
         return id;
     }
 

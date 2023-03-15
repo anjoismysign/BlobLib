@@ -17,7 +17,6 @@ import us.mytheria.bloblib.entities.ObjectDirector;
 import us.mytheria.bloblib.managers.BlobPlugin;
 import us.mytheria.bloblib.managers.Manager;
 import us.mytheria.bloblib.managers.ManagerDirector;
-import us.mytheria.bloblib.storage.StorageType;
 import us.mytheria.bloblib.utilities.BlobCrudManagerBuilder;
 
 import java.util.HashMap;
@@ -33,9 +32,6 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
     protected CrudManager<BlobCrudable> crudManager;
     private final BlobPlugin plugin;
     private final Function<BlobCrudable, T> walletOwner;
-    private final Function<UUID, BlobCrudable> newBorn;
-    private final boolean logActivity;
-    private final String crudableName;
     private final @Nullable Function<T, Event> joinEvent;
     private final @Nullable Function<T, Event> quitEvent;
     private boolean registeredEconomy, registeredPAPI;
@@ -44,7 +40,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
     @Nullable
     private EconomyPHExpansion<T> economyPHExpansion;
 
-    protected WalletOwnerManager(ManagerDirector managerDirector, Function<UUID, BlobCrudable> newBorn,
+    protected WalletOwnerManager(ManagerDirector managerDirector, Function<Player, BlobCrudable> newBorn,
                                  Function<BlobCrudable, T> walletOwner,
                                  String crudableName, boolean logActivity,
                                  @Nullable Function<T, Event> joinEvent,
@@ -53,24 +49,13 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         plugin = managerDirector.getPlugin();
         Bukkit.getPluginManager().registerEvents(this, plugin);
         owners = new HashMap<>();
-        this.newBorn = newBorn;
         this.walletOwner = walletOwner;
-        this.logActivity = logActivity;
-        this.crudableName = NamingConventions.toPascalCase(crudableName);
+        String pascalCase = NamingConventions.toPascalCase(crudableName);
         this.joinEvent = joinEvent;
         this.quitEvent = quitEvent;
         this.registeredEconomy = false;
         saving = new HashSet<>();
-        StorageType storageType = StorageType.valueOf(getPlugin().getConfig()
-                .getString("Database.Type", "SQLITE"));
-        switch (storageType) {
-            case SQLITE -> crudManager = BlobCrudManagerBuilder.SQLITE_UUID(plugin, "UUID", 36,
-                    crudableName, newBorn, logActivity);
-            case MYSQL -> crudManager = BlobCrudManagerBuilder.MYSQL_UUID(plugin, "UUID", 36,
-                    crudableName, newBorn, logActivity);
-            case MONGODB -> crudManager = BlobCrudManagerBuilder.MONGO_UUID(plugin,
-                    crudableName, newBorn, logActivity);
-        }
+        crudManager = BlobCrudManagerBuilder.PLAYER(plugin, crudableName, newBorn, logActivity);
         reload();
     }
 
@@ -120,16 +105,25 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         saving.add(uuid);
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             crudManager.update(walletOwner.serializeAllAttributes());
+            removeObject(uuid);
             saving.remove(uuid);
         });
     }
 
-    public void addObject(T walletOwner) {
-        owners.put(walletOwner.getUniqueId(), walletOwner);
+    public void addObject(UUID key, T walletOwner) {
+        owners.put(key, walletOwner);
     }
 
-    public void removeObject(T lumber) {
-        owners.remove(lumber.getUniqueId());
+    public void addObject(Player player, T walletOwner) {
+        addObject(player.getUniqueId(), walletOwner);
+    }
+
+    public void removeObject(UUID key) {
+        owners.remove(key);
+    }
+
+    public void removeObject(Player player) {
+        removeObject(player.getUniqueId());
     }
 
     public Optional<T> isWalletOwner(UUID uuid) {
@@ -144,10 +138,10 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         owners.values().forEach(walletOwner -> crudManager.update(walletOwner.serializeAllAttributes()));
     }
 
-    protected CompletableFuture<T> read(UUID uuid) {
+    protected CompletableFuture<T> read(String key) {
         CompletableFuture<T> future = new CompletableFuture<>();
         Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () ->
-                future.complete(walletOwner.apply(crudManager.read(uuid.toString()))));
+                future.complete(walletOwner.apply(crudManager.read(key))));
         return future;
     }
 

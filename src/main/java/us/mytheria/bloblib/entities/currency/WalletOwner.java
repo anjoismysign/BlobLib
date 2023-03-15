@@ -5,7 +5,6 @@ import us.mytheria.bloblib.entities.BlobCrudable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public interface WalletOwner {
     /**
@@ -220,7 +219,7 @@ public interface WalletOwner {
      *
      * @return the UUID
      */
-    default UUID getUniqueId() {
-        return blobCrudable().getUUID();
+    default String getIdentification() {
+        return blobCrudable().getIdentification();
     }
 }

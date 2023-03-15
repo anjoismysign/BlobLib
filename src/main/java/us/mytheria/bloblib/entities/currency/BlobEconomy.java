@@ -47,7 +47,7 @@ public class BlobEconomy<T extends WalletOwner> implements Economy {
         }
         if (!hasRecord(uuid))
             return 0.0;
-        T walletOwner = manager.read(uuid).join();
+        T walletOwner = manager.read(uuid.toString()).join();
         return walletOwner.getBalance(manager.getDefaultCurrency());
     }
 
@@ -63,7 +63,7 @@ public class BlobEconomy<T extends WalletOwner> implements Economy {
         }
         if (!hasRecord(uuid))
             return new EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.FAILURE, "No record found.");
-        T walletOwner = manager.read(uuid).join();
+        T walletOwner = manager.read(uuid.toString()).join();
         walletOwner.withdraw(manager.getDefaultCurrency(), amount);
         updateAsynchronously(walletOwner);
         return new EconomyResponse(amount, walletOwner.getBalance(manager.getDefaultCurrency()), EconomyResponse.ResponseType.SUCCESS, null);
@@ -77,7 +77,7 @@ public class BlobEconomy<T extends WalletOwner> implements Economy {
         }
         if (!hasRecord(uuid))
             return new EconomyResponse(0.0, 0.0, EconomyResponse.ResponseType.FAILURE, "No record found.");
-        T walletOwner = manager.read(uuid).join();
+        T walletOwner = manager.read(uuid.toString()).join();
         walletOwner.deposit(manager.getDefaultCurrency(), amount);
         updateAsynchronously(walletOwner);
         return new EconomyResponse(amount, walletOwner.getBalance(manager.getDefaultCurrency()), EconomyResponse.ResponseType.SUCCESS, null);
