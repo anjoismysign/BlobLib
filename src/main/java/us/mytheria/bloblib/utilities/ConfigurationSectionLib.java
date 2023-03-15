@@ -262,7 +262,6 @@ public class ConfigurationSectionLib {
         List<BlockVector> test = new ArrayList<>();
         List<Vector> vectorList = new ArrayList<>();
         section.getStringList(path).forEach(string -> {
-            String[] split = string.split(", ");
             vectorList.add(SerializationLib.deserializeVector(string));
         });
         return vectorList;
@@ -312,7 +311,6 @@ public class ConfigurationSectionLib {
     public static List<BlockVector> deserializeBlockVectorList(ConfigurationSection section, String path) {
         List<BlockVector> vectorList = new ArrayList<>();
         section.getStringList(path).forEach(string -> {
-            String[] split = string.split(", ");
             vectorList.add(SerializationLib.deserializeBlockVector(string));
         });
         return vectorList;
@@ -362,7 +360,6 @@ public class ConfigurationSectionLib {
     public static List<Location> deserializeLocationList(ConfigurationSection section, String path) {
         List<Location> locationList = new ArrayList<>();
         section.getStringList(path).forEach(string -> {
-            String[] split = string.split(", ");
             locationList.add(SerializationLib.deserializeLocation(string));
         });
         return locationList;
@@ -412,7 +409,6 @@ public class ConfigurationSectionLib {
     public static List<Block> deserializeBlockList(ConfigurationSection section, String path) {
         List<Block> blockList = new ArrayList<>();
         section.getStringList(path).forEach(string -> {
-            String[] split = string.split(", ");
             blockList.add(SerializationLib.deserializeBlock(string));
         });
         return blockList;
@@ -462,7 +458,6 @@ public class ConfigurationSectionLib {
     public static List<Color> deserializeColorList(ConfigurationSection section, String path) {
         List<Color> colorList = new ArrayList<>();
         section.getStringList(path).forEach(string -> {
-            String[] split = string.split(", ");
             colorList.add(SerializationLib.deserializeColor(string));
         });
         return colorList;

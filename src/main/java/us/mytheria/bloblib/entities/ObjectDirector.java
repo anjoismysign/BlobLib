@@ -57,8 +57,10 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
         else
             this.objectBuilderManager = null;
         Optional<File> loadFilesDirectory = managerDirector.getFileManager().searchFile(objectDirectorData.objectDirectory());
-        if (loadFilesDirectory.isEmpty())
+        if (loadFilesDirectory.isEmpty()) {
+            Bukkit.getLogger().info("The loadFilesPathKey is not valid");
             throw new IllegalArgumentException("The loadFilesPathKey is not valid");
+        }
         this.objectManager = new ObjectManager<>(managerDirector, loadFilesDirectory.get(),
                 HashMap::new, HashMap::new) {
             public CompletableFuture<Void> loadFiles(File path) {
@@ -164,6 +166,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                 return false;
             });
         }
+        Bukkit.getLogger().info("ObjectDirector done!");
     }
 
     @Override

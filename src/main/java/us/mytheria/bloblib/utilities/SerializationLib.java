@@ -68,7 +68,12 @@ public class SerializationLib {
 
     public static Location deserializeLocation(String string) {
         String[] split = string.split(",");
-        return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]), Float.parseFloat(split[4]), Float.parseFloat(split[5]));
+        if (split.length == 4)
+            return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]));
+        else if (split.length == 6)
+            return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]), Float.parseFloat(split[4]), Float.parseFloat(split[5]));
+        else
+            throw new IllegalArgumentException("Invalid location string: " + string);
     }
 
     public static String serialize(Block block) {

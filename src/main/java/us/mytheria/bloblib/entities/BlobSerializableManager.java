@@ -77,9 +77,9 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
             serializables.put(uuid, walletOwner);
             future.complete(walletOwner);
         });
-        future.thenAccept(walletOwner -> {
+        future.thenAccept(serializable -> {
             if (joinEvent != null)
-                Bukkit.getPluginManager().callEvent(joinEvent.apply(walletOwner));
+                Bukkit.getPluginManager().callEvent(joinEvent.apply(serializable));
         });
     }
 
@@ -101,12 +101,12 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
         });
     }
 
-    public void addObject(UUID key, T walletOwner) {
-        serializables.put(key, walletOwner);
+    public void addObject(UUID key, T serializable) {
+        serializables.put(key, serializable);
     }
 
-    public void addObject(Player player, T walletOwner) {
-        addObject(player.getUniqueId(), walletOwner);
+    public void addObject(Player player, T serializable) {
+        addObject(player.getUniqueId(), serializable);
     }
 
     public void removeObject(UUID key) {
@@ -126,7 +126,7 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
     }
 
     private void saveAll() {
-        serializables.values().forEach(walletOwner -> crudManager.update(walletOwner.serializeAllAttributes()));
+        serializables.values().forEach(serializable -> crudManager.update(serializable.serializeAllAttributes()));
     }
 
     protected CompletableFuture<T> read(String key) {
