@@ -38,6 +38,13 @@ public interface BlobSerializable {
      */
     BlobCrudable serializeAllAttributes();
 
+    /**
+     * Will return the player that is associated
+     * Might be null if called after the player has left
+     * the session or if identification is not player name or uuid.
+     *
+     * @return the player
+     */
     @Nullable
     default Player getPlayer() {
         int length = blobCrudable().getIdentification().length();
