@@ -1,5 +1,11 @@
 package us.mytheria.bloblib.entities;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.UUID;
+
 /**
  * This interface represents an object
  * that holds transient attributes that
@@ -31,4 +37,14 @@ public interface BlobSerializable {
      * @return the updated BlobCrudable
      */
     BlobCrudable serializeAllAttributes();
+
+    @Nullable
+    default Player getPlayer() {
+        int length = blobCrudable().getIdentification().length();
+        if (length == 36) {
+            return Bukkit.getPlayer(UUID.fromString(blobCrudable().getIdentification()));
+        } else {
+            return Bukkit.getPlayer(blobCrudable().getIdentification());
+        }
+    }
 }
