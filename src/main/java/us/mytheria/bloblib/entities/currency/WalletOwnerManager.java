@@ -19,15 +19,12 @@ import us.mytheria.bloblib.managers.Manager;
 import us.mytheria.bloblib.managers.ManagerDirector;
 import us.mytheria.bloblib.utilities.BlobCrudManagerBuilder;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 public class WalletOwnerManager<T extends WalletOwner> extends Manager implements Listener {
-    protected final HashMap<UUID, T> owners;
+    protected final HashMap<UUID, T> walletOwners;
     private final HashSet<UUID> saving;
     protected CrudManager<BlobCrudable> crudManager;
     private final BlobPlugin plugin;
@@ -48,7 +45,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         super(managerDirector);
         plugin = managerDirector.getPlugin();
         Bukkit.getPluginManager().registerEvents(this, plugin);
-        owners = new HashMap<>();
+        walletOwners = new HashMap<>();
         this.generator = generator;
         String pascalCase = NamingConventions.toPascalCase(crudableName);
         this.joinEvent = joinEvent;
@@ -83,7 +80,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         CompletableFuture<T> future = new CompletableFuture<>();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             T walletOwner = this.generator.apply(crudManager.read(uuid.toString()));
-            owners.put(uuid, walletOwner);
+            walletOwners.put(uuid, walletOwner);
             future.complete(walletOwner);
         });
         future.thenAccept(walletOwner -> {
@@ -111,7 +108,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
     }
 
     public void addObject(UUID key, T walletOwner) {
-        owners.put(key, walletOwner);
+        walletOwners.put(key, walletOwner);
     }
 
     public void addObject(Player player, T walletOwner) {
@@ -119,7 +116,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
     }
 
     public void removeObject(UUID key) {
-        owners.remove(key);
+        walletOwners.remove(key);
     }
 
     public void removeObject(Player player) {
@@ -127,7 +124,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
     }
 
     public Optional<T> isWalletOwner(UUID uuid) {
-        return Optional.ofNullable(owners.get(uuid));
+        return Optional.ofNullable(walletOwners.get(uuid));
     }
 
     public Optional<T> isWalletOwner(Player player) {
@@ -135,7 +132,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
     }
 
     private void saveAll() {
-        owners.values().forEach(walletOwner -> crudManager.update(walletOwner.serializeAllAttributes()));
+        walletOwners.values().forEach(walletOwner -> crudManager.update(walletOwner.serializeAllAttributes()));
     }
 
     protected CompletableFuture<T> read(String key) {
@@ -143,6 +140,10 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () ->
                 future.complete(generator.apply(crudManager.read(key))));
         return future;
+    }
+
+    public Collection<T> getAll() {
+        return walletOwners.values();
     }
 
     /**

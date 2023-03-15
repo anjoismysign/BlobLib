@@ -35,14 +35,14 @@ public class BlobEconomy<T extends WalletOwner> implements Economy {
     }
 
     public boolean hasRecord(UUID uuid) {
-        if (manager.owners.containsKey(uuid))
+        if (manager.walletOwners.containsKey(uuid))
             return true;
         return manager.crudManager.exists(uuid.toString());
     }
 
     public double getBalance(UUID uuid) {
-        if (manager.owners.containsKey(uuid)) {
-            T walletOwner = manager.owners.get(uuid);
+        if (manager.walletOwners.containsKey(uuid)) {
+            T walletOwner = manager.walletOwners.get(uuid);
             return walletOwner.getBalance(manager.getDefaultCurrency());
         }
         if (!hasRecord(uuid))
@@ -56,8 +56,8 @@ public class BlobEconomy<T extends WalletOwner> implements Economy {
     }
 
     public EconomyResponse withdraw(UUID uuid, double amount) {
-        if (manager.owners.containsKey(uuid)) {
-            T walletOwner = manager.owners.get(uuid);
+        if (manager.walletOwners.containsKey(uuid)) {
+            T walletOwner = manager.walletOwners.get(uuid);
             walletOwner.withdraw(manager.getDefaultCurrency(), amount);
             return new EconomyResponse(amount, walletOwner.getBalance(manager.getDefaultCurrency()), EconomyResponse.ResponseType.SUCCESS, null);
         }
@@ -70,8 +70,8 @@ public class BlobEconomy<T extends WalletOwner> implements Economy {
     }
 
     public EconomyResponse deposit(UUID uuid, double amount) {
-        if (manager.owners.containsKey(uuid)) {
-            T walletOwner = manager.owners.get(uuid);
+        if (manager.walletOwners.containsKey(uuid)) {
+            T walletOwner = manager.walletOwners.get(uuid);
             walletOwner.deposit(manager.getDefaultCurrency(), amount);
             return new EconomyResponse(amount, walletOwner.getBalance(manager.getDefaultCurrency()), EconomyResponse.ResponseType.SUCCESS, null);
         }

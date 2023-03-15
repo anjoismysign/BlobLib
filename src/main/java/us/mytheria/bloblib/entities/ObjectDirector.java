@@ -166,7 +166,6 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                 return false;
             });
         }
-        Bukkit.getLogger().info("ObjectDirector done!");
     }
 
     @Override

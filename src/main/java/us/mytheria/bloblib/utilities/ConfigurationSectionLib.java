@@ -310,8 +310,9 @@ public class ConfigurationSectionLib {
 
     public static List<BlockVector> deserializeBlockVectorList(ConfigurationSection section, String path) {
         List<BlockVector> vectorList = new ArrayList<>();
-        section.getStringList(path).forEach(string ->
-                vectorList.add(SerializationLib.deserializeBlockVector(string)));
+        section.getStringList(path).forEach(string -> {
+            vectorList.add(SerializationLib.deserializeBlockVector(string));
+        });
         return vectorList;
     }
 

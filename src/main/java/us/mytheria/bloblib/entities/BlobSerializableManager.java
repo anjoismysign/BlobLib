@@ -16,10 +16,7 @@ import us.mytheria.bloblib.managers.Manager;
 import us.mytheria.bloblib.managers.ManagerDirector;
 import us.mytheria.bloblib.utilities.BlobCrudManagerBuilder;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
@@ -134,5 +131,9 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
         Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () ->
                 future.complete(generator.apply(crudManager.read(key))));
         return future;
+    }
+
+    public Collection<T> getAll() {
+        return serializables.values();
     }
 }
