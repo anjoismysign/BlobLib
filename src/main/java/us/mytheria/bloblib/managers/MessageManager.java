@@ -157,7 +157,7 @@ public class MessageManager {
     }
 
     public void noPermission(Player player) {
-        messages.get("System.No-Permission").sendAndPlay(player);
+        messages.get("System.No-Permission").handle(player);
     }
 
     @Nullable
@@ -169,7 +169,7 @@ public class MessageManager {
         SerialBlobMessage message = messages.get(key);
         if (message == null)
             throw new NullPointerException("Message '" + key + "' does not exist!");
-        message.sendAndPlay(player);
+        message.handle(player);
     }
 
     public void send(Player player, String key) {

@@ -2,6 +2,7 @@ package us.mytheria.bloblib.entities.message;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
@@ -19,11 +20,13 @@ public class ReferenceBlobMessage implements BlobMessage {
         message.send(player);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void sendAndPlay(Player player) {
         message.sendAndPlay(player);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void sendAndPlayInWorld(Player player) {
         message.sendAndPlayInWorld(player);
@@ -40,7 +43,7 @@ public class ReferenceBlobMessage implements BlobMessage {
     }
 
     @Override
-    public ReferenceBlobMessage modify(Function<String, String> function) {
+    public @NotNull ReferenceBlobMessage modify(Function<String, String> function) {
         return new ReferenceBlobMessage(message.modify(function), reference);
     }
 

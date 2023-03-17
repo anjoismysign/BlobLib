@@ -4,6 +4,7 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
@@ -43,7 +44,7 @@ public class BlobActionbarMessage extends SerialBlobMessage {
     @Override
     public void toCommandSender(CommandSender commandSender) {
         if (commandSender instanceof Player player)
-            sendAndPlay(player);
+            handle(player);
         else
             commandSender.sendMessage(actionbar);
     }
@@ -53,7 +54,7 @@ public class BlobActionbarMessage extends SerialBlobMessage {
      * @return A new message with the modified message
      */
     @Override
-    public BlobActionbarMessage modify(Function<String, String> function) {
+    public @NotNull BlobActionbarMessage modify(Function<String, String> function) {
         return new BlobActionbarMessage(function.apply(actionbar), getSound());
     }
 }

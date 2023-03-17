@@ -2,6 +2,7 @@ package us.mytheria.bloblib.entities.message;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
@@ -20,20 +21,6 @@ public abstract class SerialBlobMessage implements BlobMessage {
     public abstract void send(Player player);
 
     @Override
-    public void sendAndPlay(Player player) {
-        send(player);
-        if (sound != null)
-            sound.play(player);
-    }
-
-    @Override
-    public void sendAndPlayInWorld(Player player) {
-        send(player);
-        if (sound != null)
-            sound.playInWorld(player.getLocation());
-    }
-
-    @Override
     public abstract void toCommandSender(CommandSender commandSender);
 
     @Override
@@ -42,5 +29,5 @@ public abstract class SerialBlobMessage implements BlobMessage {
     }
 
     @Override
-    public abstract SerialBlobMessage modify(Function<String, String> function);
+    public abstract @NotNull SerialBlobMessage modify(Function<String, String> function);
 }

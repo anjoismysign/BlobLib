@@ -4,6 +4,7 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
@@ -44,7 +45,7 @@ public class BlobActionbarTitleMessage extends BlobTitleMessage {
     @Override
     public void toCommandSender(CommandSender commandSender) {
         if (commandSender instanceof Player player)
-            sendAndPlay(player);
+            handle(player);
         else {
             commandSender.sendMessage(title);
             commandSender.sendMessage(subtitle);
@@ -57,7 +58,7 @@ public class BlobActionbarTitleMessage extends BlobTitleMessage {
      * @return A new message with the modified message
      */
     @Override
-    public BlobActionbarTitleMessage modify(Function<String, String> function) {
+    public @NotNull BlobActionbarTitleMessage modify(Function<String, String> function) {
         return new BlobActionbarTitleMessage(function.apply(actionbar), function.apply(title),
                 function.apply(subtitle), fadeIn, stay, fadeOut, getSound());
     }

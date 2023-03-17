@@ -396,7 +396,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
             getObjectManager().removeObject(key);
             BlobLibAssetAPI.getMessage("Editor.Removed")
                     .modify(s -> s.replace("%element%", key))
-                    .sendAndPlay(player);
+                    .handle(player);
         }, function);
     }
 
@@ -407,12 +407,12 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
     @SuppressWarnings("unchecked")
     public void editObject(Player player, String key) {
         if (!objectIsEditable) {
-            BlobLibAssetAPI.getMessage("Object.Not-Editable").sendAndPlay(player);
+            BlobLibAssetAPI.getMessage("Object.Not-Editable").handle(player);
             return;
         }
         T object = objectManager.getObject(key);
         if (object == null) {
-            BlobLibAssetAPI.getMessage("Object.Not-Found").sendAndPlay(player);
+            BlobLibAssetAPI.getMessage("Object.Not-Found").handle(player);
             return;
         }
         ObjectBuilder<T> builder = (ObjectBuilder<T>) object.edit();

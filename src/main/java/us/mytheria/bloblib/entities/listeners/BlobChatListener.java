@@ -78,7 +78,7 @@ public class BlobChatListener extends ChatListener {
                 },
                 timeoutListener -> {
                     chatManager.removeChatListener(owner);
-                    timeoutMessage.ifPresent(blobMessage -> blobMessage.sendAndPlay(owner));
+                    timeoutMessage.ifPresent(blobMessage -> blobMessage.handle(owner));
                 }, timerMessages);
     }
 
@@ -114,7 +114,7 @@ public class BlobChatListener extends ChatListener {
                     this.cancel();
                     return;
                 }
-                messages.forEach(message -> message.sendAndPlay(player));
+                messages.forEach(message -> message.handle(player));
             }
         };
         this.messageTask = bukkitRunnable.runTaskTimerAsynchronously(BlobLib.getInstance(), 0, 10);

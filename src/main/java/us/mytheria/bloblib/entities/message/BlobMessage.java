@@ -2,6 +2,8 @@ package us.mytheria.bloblib.entities.message;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
@@ -22,35 +24,77 @@ import java.util.function.Function;
  * plugins and even the same server administrator can use them.
  */
 public interface BlobMessage {
-
     /**
+     * Will send the message to the player.
+     *
      * @param player The player to send the message to
+     * @deprecated Use {@link #handle(Player)} instead
      */
+    @Deprecated
     void send(Player player);
 
     /**
+     * If sound is not null, it will play the sound to the player.
+     *
      * @param player The player to send the message to
+     * @deprecated Use {@link #handle(Player)} instead
      */
-    void sendAndPlay(Player player);
+    @Deprecated
+    default void sendAndPlay(Player player) {
+        send(player);
+        if (getSound() != null)
+            getSound().play(player);
+    }
 
     /**
+     * If the sound is not null, it will play the sound at player's location
+     * and nearby players will be able to hear it.
+     *
      * @param player The player to send the message to
+     * @deprecated Use {@link #handle(Player)} instead
      */
-    void sendAndPlayInWorld(Player player);
+    @Deprecated
+    default void sendAndPlayInWorld(Player player) {
+        send(player);
+        if (getSound() != null)
+            getSound().playInWorld(player.getLocation());
+    }
 
     /**
+     * Will handle the message with the required settings for the player
+     * such as not having a sound, if having sound playing just
+     * to the player, or playing to the whole world, etc.
+     *
+     * @param player The player to handle the message for
+     */
+    default void handle(Player player) {
+        if (getSound() == null)
+            send(player);
+        else if (getSound().audience() == MessageAudience.PLAYER)
+            sendAndPlay(player);
+        else
+            sendAndPlayInWorld(player);
+    }
+
+    /**
+     * Will send the message to the command sender.
+     *
      * @param commandSender The command sender to send the message to
      */
     void toCommandSender(CommandSender commandSender);
 
     /**
+     * Will retrieve the BlobSound object.
+     *
      * @return The sound to play
      */
+    @Nullable
     BlobSound getSound();
 
     /**
      * @param function The function to modify the message with
      * @return A new message with the modified message
      */
+    @NotNull
     BlobMessage modify(Function<String, String> function);
 }

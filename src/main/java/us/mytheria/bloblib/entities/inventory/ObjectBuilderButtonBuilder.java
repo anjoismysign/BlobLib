@@ -123,7 +123,7 @@ public class ObjectBuilderButtonBuilder {
                                 if (function.apply(input))
                                     button.set(input);
                             } catch (NumberFormatException e) {
-                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").handle(player);
                             }
                         }, timeoutMessageKey,
                         timerMessageKey), function) {
@@ -220,7 +220,7 @@ public class ObjectBuilderButtonBuilder {
                                     button.set(input);
                                 }
                             } catch (NumberFormatException e) {
-                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").handle(player);
                             }
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey), function) {
@@ -257,7 +257,7 @@ public class ObjectBuilderButtonBuilder {
                         if (function.apply(input))
                             button.set(input);
                     } catch (NumberFormatException e) {
-                        BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                        BlobLibAssetAPI.getMessage("Builder.Number-Exception").handle(player);
                     }
                 }, timeoutMessageKey, timerMessageKey), function) {
         };
@@ -352,7 +352,7 @@ public class ObjectBuilderButtonBuilder {
                                     button.set(input);
                                 }
                             } catch (NumberFormatException e) {
-                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").handle(player);
                             }
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey), function) {
@@ -389,7 +389,7 @@ public class ObjectBuilderButtonBuilder {
                         if (function.apply(input))
                             button.set(input);
                     } catch (NumberFormatException ignored) {
-                        BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                        BlobLibAssetAPI.getMessage("Builder.Number-Exception").handle(player);
                     }
                 }, timeoutMessageKey, timerMessageKey), function) {
         };
@@ -485,7 +485,7 @@ public class ObjectBuilderButtonBuilder {
                                     button.set(input);
                                 }
                             } catch (NumberFormatException e) {
-                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").handle(player);
                             }
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey), function) {
@@ -522,7 +522,7 @@ public class ObjectBuilderButtonBuilder {
                         if (function.apply(input))
                             button.set(input);
                     } catch (NumberFormatException ignored) {
-                        BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                        BlobLibAssetAPI.getMessage("Builder.Number-Exception").handle(player);
                     }
                 }, timeoutMessageKey, timerMessageKey), function) {
         };
@@ -618,7 +618,7 @@ public class ObjectBuilderButtonBuilder {
                                     button.set(input);
                                 }
                             } catch (NumberFormatException e) {
-                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").handle(player);
                             }
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey), function) {
@@ -655,7 +655,7 @@ public class ObjectBuilderButtonBuilder {
                         if (function.apply(input))
                             button.set(input);
                     } catch (NumberFormatException ignored) {
-                        BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                        BlobLibAssetAPI.getMessage("Builder.Number-Exception").handle(player);
                     }
                 }, timeoutMessageKey, timerMessageKey), function) {
         };
@@ -751,7 +751,7 @@ public class ObjectBuilderButtonBuilder {
                                     button.set(input);
                                 }
                             } catch (NumberFormatException e) {
-                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").handle(player);
                             }
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey), function) {
@@ -788,7 +788,7 @@ public class ObjectBuilderButtonBuilder {
                         if (function.apply(input))
                             button.set(input);
                     } catch (NumberFormatException ignored) {
-                        BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                        BlobLibAssetAPI.getMessage("Builder.Number-Exception").handle(player);
                     }
                 }, timeoutMessageKey, timerMessageKey), function) {
         };
@@ -883,7 +883,7 @@ public class ObjectBuilderButtonBuilder {
                                     button.set(input);
                                 }
                             } catch (NumberFormatException e) {
-                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").handle(player);
                             }
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey), function) {

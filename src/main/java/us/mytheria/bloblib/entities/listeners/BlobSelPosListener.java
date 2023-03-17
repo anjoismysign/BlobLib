@@ -89,7 +89,7 @@ public class BlobSelPosListener extends SelPosListener {
                     this.cancel();
                     return;
                 }
-                messages.forEach(message -> message.sendAndPlay(player));
+                messages.forEach(message -> message.handle(player));
             }
         };
         this.messageTask = bukkitRunnable.runTaskTimerAsynchronously(BlobLib.getInstance(), 0, 10);

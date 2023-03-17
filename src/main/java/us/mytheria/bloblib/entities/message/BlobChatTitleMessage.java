@@ -2,6 +2,7 @@ package us.mytheria.bloblib.entities.message;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
@@ -48,7 +49,7 @@ public class BlobChatTitleMessage extends BlobChatMessage {
     @Override
     public void toCommandSender(CommandSender commandSender) {
         if (commandSender instanceof Player player)
-            sendAndPlay(player);
+            handle(player);
         else {
             commandSender.sendMessage(chat);
             commandSender.sendMessage(title);
@@ -61,7 +62,7 @@ public class BlobChatTitleMessage extends BlobChatMessage {
      * @return a new BlobChatTitleMessage with the modified message
      */
     @Override
-    public BlobChatTitleMessage modify(Function<String, String> function) {
+    public @NotNull BlobChatTitleMessage modify(Function<String, String> function) {
         return new BlobChatTitleMessage(function.apply(chat), function.apply(title), function.apply(subtitle),
                 fadeIn, stay, fadeOut, getSound());
     }
