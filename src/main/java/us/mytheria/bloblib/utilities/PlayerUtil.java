@@ -12,6 +12,24 @@ import java.util.List;
 
 public class PlayerUtil {
 
+    public static BlockFace getPlayerFacing(Player player) {
+        double rotation = (player.getLocation().getYaw() - 90) % 360;
+        if (rotation < 0) {
+            rotation += 360.0;
+        }
+        if (0 <= rotation && rotation < 45) {
+            return BlockFace.NORTH;
+        } else if (45 <= rotation && rotation < 135) {
+            return BlockFace.EAST;
+        } else if (135 <= rotation && rotation < 225) {
+            return BlockFace.SOUTH;
+        } else if (225 <= rotation && rotation < 315) {
+            return BlockFace.WEST;
+        } else {
+            return BlockFace.NORTH;
+        }
+    }
+
     public static void giveItemToInventoryOrDrop(Player player, ItemStack item) {
         HashMap<Integer, ItemStack> left = player.getInventory().addItem(item);
         left.values().forEach(itemstack -> player.getWorld().dropItemNaturally(player.getLocation(), itemstack));
