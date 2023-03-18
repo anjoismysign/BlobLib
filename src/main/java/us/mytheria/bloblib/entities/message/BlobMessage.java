@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.entities.message;
 
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -36,28 +37,55 @@ public interface BlobMessage {
     /**
      * If sound is not null, it will play the sound to the player.
      *
+     * @param player   The player to send the message to
+     * @param location The location to play the sound at
+     * @deprecated Use {@link #handle(Player)} instead
+     */
+    @Deprecated
+    default void sendAndPlay(Player player, Location location) {
+        send(player);
+        if (getSound() != null)
+            getSound().play(player, location);
+    }
+
+    /**
+     * If sound is not null, it will play the sound to the player.
+     * Would be played at the player's location.
+     *
      * @param player The player to send the message to
      * @deprecated Use {@link #handle(Player)} instead
      */
     @Deprecated
     default void sendAndPlay(Player player) {
-        send(player);
-        if (getSound() != null)
-            getSound().play(player);
+        sendAndPlay(player, player.getLocation());
     }
 
     /**
      * If the sound is not null, it will play the sound at player's location
      * and nearby players will be able to hear it.
      *
+     * @param player   The player to send the message to
+     * @param location The location to play the sound at
+     * @deprecated Use {@link #handle(Player)} instead
+     */
+    @Deprecated
+    default void sendAndPlayInWorld(Player player, Location location) {
+        send(player);
+        if (getSound() != null)
+            getSound().playInWorld(location);
+    }
+
+    /**
+     * If the sound is not null, it will play the sound at player's location
+     * and nearby players will be able to hear it.
+     * Would be played at the player's location.
+     *
      * @param player The player to send the message to
      * @deprecated Use {@link #handle(Player)} instead
      */
     @Deprecated
     default void sendAndPlayInWorld(Player player) {
-        send(player);
-        if (getSound() != null)
-            getSound().playInWorld(player.getLocation());
+        sendAndPlayInWorld(player, player.getLocation());
     }
 
     /**
@@ -65,15 +93,28 @@ public interface BlobMessage {
      * such as not having a sound, if having sound playing just
      * to the player, or playing to the whole world, etc.
      *
-     * @param player The player to handle the message for
+     * @param player   The player to handle the message for
+     * @param location The location to play the sound at
      */
-    default void handle(Player player) {
+    default void handle(Player player, Location location) {
         if (getSound() == null)
             send(player);
         else if (getSound().audience() == MessageAudience.PLAYER)
-            sendAndPlay(player);
+            sendAndPlay(player, location);
         else
-            sendAndPlayInWorld(player);
+            sendAndPlayInWorld(player, location);
+    }
+
+    /**
+     * Will handle the message with the required settings for the player
+     * such as not having a sound, if having sound playing just
+     * to the player, or playing to the whole world, etc.
+     * Would be played at the player's location.
+     *
+     * @param player The player to handle the message for
+     */
+    default void handle(Player player) {
+        handle(player, player.getLocation());
     }
 
     /**
