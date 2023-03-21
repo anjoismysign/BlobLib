@@ -166,6 +166,7 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
     /**
      * Will check if CommandSender has the provided permission.
      * If not, will automatically send a ReferenceBlobMessage with the key of blobMessageKey.
+     * If blobMessageKey is null, will not send any BlobMessage.
      *
      * @param sender         The CommandSender to check.
      * @param permission     The permission to check.
@@ -177,7 +178,8 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
                                  String blobMessageKey) {
         boolean has = sender.hasPermission(permission);
         if (!has)
-            BlobLibAssetAPI.getMessage(blobMessageKey).toCommandSender(sender);
+            if (blobMessageKey != null)
+                BlobLibAssetAPI.getMessage(blobMessageKey).toCommandSender(sender);
         return has;
     }
 

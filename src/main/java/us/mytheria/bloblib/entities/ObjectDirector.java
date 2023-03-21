@@ -342,7 +342,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                 if (childTabCompletion != null && !childTabCompletion.isEmpty())
                     suggestions.addAll(childTabCompletion);
             }
-            if (!executor.hasAdminPermission(sender))
+            if (!executor.hasAdminPermission(sender, null))
                 return suggestions;
             for (Function<ExecutorData, List<String>> childTabCompleter : adminChildTabCompleter) {
                 List<String> childTabCompletion = childTabCompleter.apply(new ExecutorData(executor, args, sender));
