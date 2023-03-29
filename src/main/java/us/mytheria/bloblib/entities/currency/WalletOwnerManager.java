@@ -149,7 +149,9 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
     /**
      * Registers the BlobEconomy for this plugin.
      *
-     * @param defaultCurrency The default currency for this economy.
+     * @param defaultCurrency  The default currency for this economy.
+     * @param currencyDirector The director for the currencies.
+     * @param override         currently useless
      * @return The provider for the Economy class in case you
      * later want to use it.
      */
