@@ -1,24 +1,24 @@
 package us.mytheria.bloblib.utilities;
 
-import me.anjoismysign.anjo.crud.*;
+import me.anjoismysign.anjo.crud.CrudManagerBuilder;
+import me.anjoismysign.anjo.crud.Crudable;
+import me.anjoismysign.anjo.crud.MySQLCrudManager;
+import me.anjoismysign.anjo.crud.SQLiteCrudManager;
 import me.anjoismysign.anjo.entities.NamingConventions;
 import me.anjoismysign.anjo.entities.Result;
 import org.bukkit.configuration.ConfigurationSection;
 import us.mytheria.bloblib.entities.BlobCrudable;
 import us.mytheria.bloblib.managers.BlobPlugin;
-import us.mytheria.bloblib.storage.IdentifierType;
-import us.mytheria.bloblib.storage.MongoCrudManager;
-import us.mytheria.bloblib.storage.MongoDB;
-import us.mytheria.bloblib.storage.StorageType;
+import us.mytheria.bloblib.storage.*;
 
 import java.util.UUID;
 import java.util.function.Function;
 
 public class BlobCrudManagerBuilder {
-    public static <T extends BlobCrudable> CrudManager<T> PLAYER(BlobPlugin plugin,
-                                                                 String crudableName,
-                                                                 Function<BlobCrudable, T> createFunction,
-                                                                 boolean logActivity) {
+    public static <T extends BlobCrudable> BlobCrudManager<T> PLAYER(BlobPlugin plugin,
+                                                                     String crudableName,
+                                                                     Function<BlobCrudable, T> createFunction,
+                                                                     boolean logActivity) {
         IdentifierType identifierType;
         String type = plugin.getConfig().getString("IdentifierType", "UUID");
         try {
@@ -44,9 +44,9 @@ public class BlobCrudManagerBuilder {
         }
     }
 
-    public static <T extends BlobCrudable> CrudManager<T> UUID(BlobPlugin plugin,
-                                                               String crudableName, Function<UUID, T> createFunction,
-                                                               boolean logActivity) {
+    public static <T extends BlobCrudable> BlobCrudManager<T> UUID(BlobPlugin plugin,
+                                                                   String crudableName, Function<UUID, T> createFunction,
+                                                                   boolean logActivity) {
         ConfigurationSection databaseSection = plugin.getConfig().getConfigurationSection("Database");
         StorageType storageType;
         String type = databaseSection.getString("Type", "SQLITE");
@@ -63,32 +63,32 @@ public class BlobCrudManagerBuilder {
         String password = databaseSection.getString("Password");
         switch (storageType) {
             case MYSQL -> {
-                return MYSQL(plugin, "UUID", 36,
+                return new BlobCrudManager<>(MYSQL(plugin, "UUID", 36,
                         crudableName, string -> {
                             UUID uuid = UUID.fromString(string);
                             return createFunction.apply(uuid);
-                        }, logActivity);
+                        }, logActivity), StorageType.MYSQL, IdentifierType.UUID);
             }
             case SQLITE -> {
-                return SQLITE(plugin, "UUID", 36,
+                return new BlobCrudManager<>(SQLITE(plugin, "UUID", 36,
                         crudableName, string -> {
                             UUID uuid = UUID.fromString(string);
                             return createFunction.apply(uuid);
-                        }, logActivity);
+                        }, logActivity), StorageType.SQLITE, IdentifierType.UUID);
             }
             case MONGODB -> {
-                return MONGO(plugin, crudableName, string -> {
+                return new BlobCrudManager<>(MONGO(plugin, crudableName, string -> {
                     UUID uuid = UUID.fromString(string);
                     return createFunction.apply(uuid);
-                }, logActivity);
+                }, logActivity), StorageType.MONGODB, IdentifierType.UUID);
             }
             default -> throw new IllegalArgumentException("Invalid StorageType '" + storageType + "'.");
         }
     }
 
-    public static <T extends BlobCrudable> CrudManager<T> PLAYERNAME(BlobPlugin plugin,
-                                                                     String crudableName, Function<String, T> createFunction,
-                                                                     boolean logActivity) {
+    public static <T extends BlobCrudable> BlobCrudManager<T> PLAYERNAME(BlobPlugin plugin,
+                                                                         String crudableName, Function<String, T> createFunction,
+                                                                         boolean logActivity) {
         ConfigurationSection databaseSection = plugin.getConfig().getConfigurationSection("Database");
         StorageType storageType;
         String type = databaseSection.getString("Type", "SQLITE");
@@ -105,15 +105,16 @@ public class BlobCrudManagerBuilder {
         String password = databaseSection.getString("Password");
         switch (storageType) {
             case MYSQL -> {
-                return MYSQL(plugin, "USERNAME", 16,
-                        crudableName, createFunction, logActivity);
+                return new BlobCrudManager<>(MYSQL(plugin, "USERNAME", 16,
+                        crudableName, createFunction, logActivity), StorageType.MYSQL, IdentifierType.PLAYERNAME);
             }
             case SQLITE -> {
-                return SQLITE(plugin, "USERNAME", 16,
-                        crudableName, createFunction, logActivity);
+                return new BlobCrudManager<>(SQLITE(plugin, "USERNAME", 16,
+                        crudableName, createFunction, logActivity), StorageType.SQLITE, IdentifierType.PLAYERNAME);
             }
             case MONGODB -> {
-                return MONGO(plugin, crudableName, createFunction, logActivity);
+                return new BlobCrudManager<>(MONGO(plugin, crudableName, createFunction, logActivity),
+                        StorageType.MONGODB, IdentifierType.PLAYERNAME);
             }
             default -> throw new IllegalArgumentException("Invalid StorageType '" + storageType + "'.");
         }

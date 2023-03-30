@@ -1,7 +1,7 @@
 package us.mytheria.bloblib.entities.currency;
 
-import me.anjoismysign.anjo.crud.CrudManager;
 import me.anjoismysign.anjo.entities.NamingConventions;
+import net.milkbowl.vault.economy.IdentityEconomy;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -17,16 +17,19 @@ import us.mytheria.bloblib.entities.ObjectDirector;
 import us.mytheria.bloblib.managers.BlobPlugin;
 import us.mytheria.bloblib.managers.Manager;
 import us.mytheria.bloblib.managers.ManagerDirector;
+import us.mytheria.bloblib.storage.BlobCrudManager;
 import us.mytheria.bloblib.utilities.BlobCrudManagerBuilder;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class WalletOwnerManager<T extends WalletOwner> extends Manager implements Listener {
     protected final HashMap<UUID, T> walletOwners;
     private final HashSet<UUID> saving;
-    protected CrudManager<BlobCrudable> crudManager;
+    protected BlobCrudManager<BlobCrudable> crudManager;
     private final BlobPlugin plugin;
     private final Function<BlobCrudable, T> generator;
     private final @Nullable Function<T, Event> joinEvent;
@@ -79,7 +82,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         UUID uuid = player.getUniqueId();
         CompletableFuture<T> future = new CompletableFuture<>();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            T walletOwner = this.generator.apply(crudManager.read(uuid.toString()));
+            T walletOwner = this.generator.apply(crudManager.read(player));
             walletOwners.put(uuid, walletOwner);
             future.complete(walletOwner);
         });
@@ -131,11 +134,24 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         return isWalletOwner(player.getUniqueId());
     }
 
+    public void ifIsOnline(UUID uuid, Consumer<T> consumer) {
+        Optional<T> optional = isWalletOwner(uuid);
+        optional.ifPresent(consumer::accept);
+    }
+
+    public void ifIsOnlineThenUpdate(UUID uuid, Consumer<T> consumer) {
+        Optional<T> optional = isWalletOwner(uuid);
+        optional.ifPresent(walletOwner -> {
+            consumer.accept(walletOwner);
+            crudManager.update(walletOwner.serializeAllAttributes());
+        });
+    }
+
     private void saveAll() {
         walletOwners.values().forEach(walletOwner -> crudManager.update(walletOwner.serializeAllAttributes()));
     }
 
-    protected CompletableFuture<T> read(String key) {
+    protected CompletableFuture<T> readAsynchronously(String key) {
         CompletableFuture<T> future = new CompletableFuture<>();
         Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () ->
                 future.complete(generator.apply(crudManager.read(key))));
@@ -151,20 +167,20 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
      *
      * @param defaultCurrency  The default currency for this economy.
      * @param currencyDirector The director for the currencies.
-     * @param override         currently useless
+     * @param force            if true, will override vault economy providers
      * @return The provider for the Economy class in case you
      * later want to use it.
      */
     @NotNull
     public BlobEconomy<T> registerEconomy(Currency defaultCurrency,
                                           ObjectDirector<Currency> currencyDirector,
-                                          boolean override) {
+                                          boolean force) {
         if (registeredEconomy)
             throw new IllegalStateException("BlobPlugin already registered their BlobEconomy");
         registeredEconomy = true;
         this.defaultCurrency = defaultCurrency.getKey();
         this.currencyDirector = currencyDirector;
-        return new BlobEconomy<>(this);
+        return new BlobEconomy<>(this, force);
     }
 
     public BlobEconomy<T> registerEconomy(Currency defaultCurrency,
@@ -248,5 +264,19 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         economyPHExpansion = null;
         registeredPAPI = false;
         return this;
+    }
+
+    @Nullable
+    public CurrencyEconomy convertOrNull(String key) {
+        Currency currency = currencyDirector.getObjectManager().getObject(key);
+        if (currency == null)
+            return null;
+        return new CurrencyEconomy(currency, this);
+    }
+
+    public Collection<IdentityEconomy> listAllAsEconomies() {
+        return currencyDirector.getObjectManager().values().stream()
+                .map(currency -> new CurrencyEconomy(currency, this))
+                .collect(Collectors.toList());
     }
 }

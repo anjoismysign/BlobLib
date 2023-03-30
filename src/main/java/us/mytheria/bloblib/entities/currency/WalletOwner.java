@@ -8,6 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface WalletOwner extends BlobSerializable {
+    String getPlayerName();
+
+    String getPlayerUniqueId();
+
     /**
      * Each WalletOwner should hold a BlobCrudable which
      * will be used to serialize and deserialize not only
