@@ -75,9 +75,8 @@ public class CurrencyEconomy implements IdentityEconomy {
     @Override
     public String getAccountName(UUID uuid) {
         Uber<String> name = Uber.fly();
-        boolean isOnline = ifIsOnline(uuid, walletOwner -> {
-            name.talk(walletOwner.getPlayerName());
-        });
+        boolean isOnline = ifIsOnline(uuid, walletOwner ->
+                name.talk(walletOwner.getPlayerName()));
         if (!isOnline)
             throw new IllegalArgumentException("Not online " + uuid);
         return name.thanks();
