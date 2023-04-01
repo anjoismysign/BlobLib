@@ -26,7 +26,7 @@ public class Wallet extends HashMap<String, Double> {
     }
 
     protected boolean has(String key, double amount) {
-        return containsKey(key) && get(key) >= amount;
+        return containsKey(key) && get(key).compareTo(amount) >= 0;
     }
 
     protected double balance(String key) {
