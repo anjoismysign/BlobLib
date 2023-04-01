@@ -5,6 +5,7 @@ import net.milkbowl.vault.economy.IdentityEconomy;
 import net.milkbowl.vault.economy.MultiEconomy;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Allows both MultiEconomy and legacy Economy (in an instance of SingleEconomy)
@@ -114,5 +115,9 @@ public class ElasticEconomy implements MultiEconomy {
 
     public ElasticEconomyType getType() {
         return type;
+    }
+
+    public IdentityEconomy map(Optional<String> implementation) {
+        return implementation.map(this::getImplementation).orElseGet(this::getDefault);
     }
 }
