@@ -39,6 +39,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
     protected ObjectDirector<Currency> currencyDirector;
     @Nullable
     private EconomyPHExpansion<T> economyPHExpansion;
+    private HashMap<String, CurrencyEconomy> implementations;
 
     protected WalletOwnerManager(ManagerDirector managerDirector, Function<BlobCrudable, BlobCrudable> newBorn,
                                  Function<BlobCrudable, T> generator,
@@ -56,7 +57,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         this.registeredEconomy = false;
         saving = new HashSet<>();
         crudManager = BlobCrudManagerBuilder.PLAYER(plugin, crudableName, newBorn, logActivity);
-        reload();
+        saveAll();
     }
 
     @Override
@@ -67,6 +68,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
     @Override
     public void reload() {
         unload();
+        Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), this::updateImplementations);
     }
 
     @EventHandler
@@ -178,7 +180,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         if (registeredEconomy)
             throw new IllegalStateException("BlobPlugin already registered their BlobEconomy");
         registeredEconomy = true;
-        this.defaultCurrency = defaultCurrency.getKey();
+        this.defaultCurrency = Objects.requireNonNull(defaultCurrency).getKey();
         this.currencyDirector = currencyDirector;
         return new BlobEconomy<>(this, force);
     }
@@ -267,16 +269,38 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
     }
 
     @Nullable
-    public CurrencyEconomy convertOrNull(String key) {
-        Currency currency = currencyDirector.getObjectManager().getObject(key);
-        if (currency == null)
-            return null;
-        return new CurrencyEconomy(currency, this);
+    public CurrencyEconomy getImplementation(String key) {
+        if (!implementations.containsKey(key)) {
+            Bukkit.getLogger().severe("Implementation doesn't exist. Currently available " +
+                    "implementations: " + Arrays.toString(implementations.values().stream()
+                    .map(CurrencyEconomy::getName)
+                    .toArray()));
+        }
+        return implementations.get(key);
     }
 
-    public Collection<IdentityEconomy> listAllAsEconomies() {
-        return currencyDirector.getObjectManager().values().stream()
-                .map(currency -> new CurrencyEconomy(currency, this))
+    public Collection<IdentityEconomy> retrieveImplementations() {
+        return implementations.values()
+                .stream()
+                .map(currencyEconomy -> (IdentityEconomy) currencyEconomy)
                 .collect(Collectors.toList());
+    }
+
+    private HashMap<String, CurrencyEconomy> convertAll() {
+        HashMap<String, CurrencyEconomy> map = new HashMap<>();
+        currencyDirector.getObjectManager().values().stream()
+                .map(currency -> new CurrencyEconomy(currency, this))
+                .forEach(currencyEconomy -> map.put(currencyEconomy.getName(), currencyEconomy));
+        return map;
+    }
+
+    /**
+     * Updates the implementations of the BlobEconomy.
+     */
+    protected void updateImplementations() {
+        if (!registeredEconomy) {
+            throw new IllegalStateException("BlobPlugin has not registered their BlobEconomy");
+        }
+        this.implementations = convertAll();
     }
 }

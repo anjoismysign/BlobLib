@@ -3,11 +3,16 @@ package us.mytheria.bloblib.vault.economy;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.entity.Player;
 
-public class FoundEco implements VaultEconomyWorker {
+public class Found implements VaultEconomyWorker {
     private final Economy economy;
 
-    public FoundEco(Economy economy) {
+    public Found(Economy economy) {
         this.economy = economy;
+    }
+
+    @Override
+    public String getName() {
+        return economy.getName();
     }
 
     @Override

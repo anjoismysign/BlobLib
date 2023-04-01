@@ -6,7 +6,12 @@ import org.bukkit.entity.Player;
  * A class that does nothing since there is no
  * economy plugin compatible with Vault.
  */
-public class AbsentEco implements VaultEconomyWorker {
+public class Absent implements VaultEconomyWorker {
+
+    @Override
+    public String getName() {
+        return "";
+    }
 
     /**
      * Does nothing since there is no economy plugin.

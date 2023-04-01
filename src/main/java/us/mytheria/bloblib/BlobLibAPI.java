@@ -1,5 +1,6 @@
 package us.mytheria.bloblib;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -9,6 +10,7 @@ import us.mytheria.bloblib.entities.listeners.BlobChatListener;
 import us.mytheria.bloblib.entities.listeners.BlobDropListener;
 import us.mytheria.bloblib.entities.listeners.BlobSelPosListener;
 import us.mytheria.bloblib.entities.listeners.BlobSelectorListener;
+import us.mytheria.bloblib.vault.multieconomy.ElasticEconomy;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -81,11 +83,24 @@ public class BlobLibAPI {
     }
 
     /**
+     * @return The ElasticEconomy
+     */
+    public static ElasticEconomy getElasticEconomy() {
+        ElasticEconomy economy = main.getVaultManager().getElasticEconomy();
+        if (economy.isAbsent())
+            Bukkit.getLogger().severe("ElasticEconomy is not present. This is " +
+                    "because there is no legacy Economy provider nor a MultiEconomy provider...");
+        return economy;
+    }
+
+    /**
      * Formats the given amount of cash.
      *
      * @param amount Amount to format
      * @return Formatted amount
+     * @deprecated Use {@link #getElasticEconomy()} instead
      */
+    @Deprecated
     public static String format(double amount) {
         return main.getVaultManager().getVaultEconomyWorker().format(amount);
     }
@@ -95,7 +110,9 @@ public class BlobLibAPI {
      *
      * @param player to deposit to
      * @param amount amount to deposit
+     * @deprecated Use {@link #getElasticEconomy()} instead
      */
+    @Deprecated
     public static void addCash(Player player, double amount) {
         main.getVaultManager().getVaultEconomyWorker().addCash(player, amount);
     }
@@ -105,7 +122,9 @@ public class BlobLibAPI {
      *
      * @param player to deposit to
      * @param amount amount to deposit
+     * @deprecated Use {@link #getElasticEconomy()} instead
      */
+    @Deprecated
     public static void withdrawCash(Player player, double amount) {
         main.getVaultManager().getVaultEconomyWorker().withdrawCash(player, amount);
     }
@@ -116,7 +135,9 @@ public class BlobLibAPI {
      *
      * @param player to deposit to
      * @param amount amount to deposit
+     * @deprecated Use {@link #getElasticEconomy()} instead
      */
+    @Deprecated
     public static void setCash(Player player, double amount) {
         main.getVaultManager().getVaultEconomyWorker().setCash(player, amount);
     }
@@ -127,7 +148,9 @@ public class BlobLibAPI {
      * @param player to check
      * @param amount amount to check
      * @return true if player has amount
+     * @deprecated Use {@link #getElasticEconomy()} instead
      */
+    @Deprecated
     public static boolean hasCashAmount(Player player, double amount) {
         return main.getVaultManager().getVaultEconomyWorker().hasCashAmount(player, amount);
     }
@@ -137,14 +160,18 @@ public class BlobLibAPI {
      *
      * @param player to check
      * @return amount of money
+     * @deprecated Use {@link #getElasticEconomy()} instead
      */
+    @Deprecated
     public static double getCash(Player player) {
         return main.getVaultManager().getVaultEconomyWorker().getCash(player);
     }
 
     /**
      * @return true if a vault economy plugin is being used
+     * @deprecated Use {@link #getElasticEconomy()} instead
      */
+    @Deprecated
     public static boolean hasVaultEconomyDependency() {
         return main.getVaultManager().isVaultEcoInstalled();
     }

@@ -12,17 +12,18 @@ import java.util.Collection;
 public class BlobEconomy<T extends WalletOwner> implements MultiEconomy {
     private final WalletOwnerManager<T> manager;
     private final BlobPlugin plugin;
+    private final IdentityEconomy defaultEconomy;
 
     protected BlobEconomy(WalletOwnerManager<T> manager, boolean force) {
         this.manager = manager;
         this.plugin = manager.getPlugin();
-        Bukkit.getScheduler().runTask(plugin, () -> {
-            Plugin vault = Bukkit.getPluginManager().getPlugin("Vault");
-            if (vault != null) {
-                MultiEconomyWrapper wrapper = new MultiEconomyWrapper(this);
-                wrapper.registerProviders(force);
-            }
-        });
+        manager.updateImplementations();
+        this.defaultEconomy = manager.getImplementation(manager.getDefaultCurrency().getKey());
+        Plugin vault = Bukkit.getPluginManager().getPlugin("Vault");
+        if (vault != null) {
+            MultiEconomyWrapper wrapper = new MultiEconomyWrapper(this);
+            wrapper.registerProviders(force);
+        }
     }
 
     @Override
@@ -47,12 +48,12 @@ public class BlobEconomy<T extends WalletOwner> implements MultiEconomy {
 
     @Override
     public IdentityEconomy getImplementation(String name) {
-        return manager.convertOrNull(name);
+        return manager.getImplementation(name);
     }
 
     @Override
     public IdentityEconomy getDefault() {
-        return manager.convertOrNull(manager.getDefaultCurrency().getKey());
+        return defaultEconomy;
     }
 
     @Override
@@ -62,7 +63,7 @@ public class BlobEconomy<T extends WalletOwner> implements MultiEconomy {
 
     @Override
     public Collection<IdentityEconomy> getAllImplementations() {
-        return manager.listAllAsEconomies();
+        return manager.retrieveImplementations();
     }
 
     @Override

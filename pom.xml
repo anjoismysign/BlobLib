@@ -5,7 +5,7 @@
 
     <groupId>us.mytheria</groupId>
     <artifactId>bloblib</artifactId>
-    <version>1.645s</version>
+    <version>1.647s</version>
     <packaging>jar</packaging>
 
     <name>BlobLib</name>
@@ -226,7 +226,7 @@
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>vaultapi</artifactId>
-            <version>2.0-SNAPSHOT-PRE2</version>
+            <version>1.7.4</version>
         </dependency>
     </dependencies>
 </project>
