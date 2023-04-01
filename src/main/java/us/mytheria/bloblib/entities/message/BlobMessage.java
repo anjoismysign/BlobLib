@@ -5,6 +5,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.entities.BlobMessageModder;
 
 import java.util.function.Function;
 
@@ -138,4 +139,9 @@ public interface BlobMessage {
      */
     @NotNull
     BlobMessage modify(Function<String, String> function);
+
+    @NotNull
+    default BlobMessageModder<BlobMessage> modder() {
+        return BlobMessageModder.mod(this);
+    }
 }
