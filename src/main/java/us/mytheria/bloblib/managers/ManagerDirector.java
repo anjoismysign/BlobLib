@@ -213,6 +213,19 @@ public abstract class ManagerDirector {
     }
 
     /**
+     * Will retrieve a manager by providing a String 'key'.
+     *
+     * @param key   the key of the manager
+     * @param clazz The class of the object
+     * @param <T>   The type of the object
+     * @return The Manager that corresponds to the key
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends Manager> T getManager(String key, Class<T> clazz) {
+        return (T) getManager(key);
+    }
+
+    /**
      * Will retrieve an object director by providing a String 'key'.
      * The key must end with 'Director'
      *
