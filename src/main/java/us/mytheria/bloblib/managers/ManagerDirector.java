@@ -4,6 +4,7 @@ import me.anjoismysign.anjo.logger.Logger;
 import org.bukkit.event.Event;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.*;
+import us.mytheria.bloblib.entities.currency.Currency;
 import us.mytheria.bloblib.entities.currency.EconomyFactory;
 import us.mytheria.bloblib.entities.currency.WalletOwner;
 import us.mytheria.bloblib.entities.currency.WalletOwnerManager;
@@ -114,6 +115,15 @@ public abstract class ManagerDirector {
     }
 
     /**
+     * Adds a currency director to the director.
+     *
+     * @param objectName The name of the object
+     */
+    public void addCurrencyDirector(String objectName) {
+        EconomyFactory.CURRENCY_DIRECTOR(this);
+    }
+
+    /**
      * Adds a wallet owner manager to the director.
      *
      * @param key          The key of the manager
@@ -219,11 +229,31 @@ public abstract class ManagerDirector {
         return (ObjectDirector<T>) getManager(key);
     }
 
+    /**
+     * Will retrieve a wallet owner manager by providing a String 'key'.
+     * The key must end with 'Manager'
+     *
+     * @param key   the key of the manager
+     * @param clazz The class of the object
+     * @param <T>   The type of the object
+     * @return The WalletOwnerManager that corresponds to the key
+     */
+    @SuppressWarnings("unchecked")
     public <T extends WalletOwner> WalletOwnerManager<T> getWalletOwnerManager(String key,
                                                                                Class<T> clazz) {
         if (!key.endsWith("Manager"))
             throw new IllegalArgumentException("Key must end with 'Manager'!");
         return (WalletOwnerManager<T>) getManager(key);
+    }
+
+    /**
+     * Will retrieve a currency director by providing a String 'objectName'.
+     *
+     * @param objectName The name of the object
+     * @return The ObjectDirector that corresponds to the key
+     */
+    public ObjectDirector<Currency> getCurrencyDirector(String objectName) {
+        return getDirector(objectName + "Director", Currency.class);
     }
 
     /**
