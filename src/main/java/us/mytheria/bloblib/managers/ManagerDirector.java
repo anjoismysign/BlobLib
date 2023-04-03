@@ -145,13 +145,17 @@ public abstract class ManagerDirector {
      * Will retrieve an object director by providing a String 'key'.
      * The key must end with 'Director'
      *
-     * @param key the key of the manager
+     * @param key   the key of the manager
+     * @param clazz The class of the object
+     * @param <T>   The type of the object
      * @return The ObjectDirector that corresponds to the key
      */
-    public ObjectDirector<?> getDirector(String key) {
+    @SuppressWarnings("unchecked")
+    public <T extends BlobObject> ObjectDirector<T> getDirector(String key,
+                                                                Class<T> clazz) {
         if (!key.endsWith("Director"))
             throw new IllegalArgumentException("Key must end with 'Director'!");
-        return (ObjectDirector<?>) getManager(key);
+        return (ObjectDirector<T>) getManager(key);
     }
 
     /**
