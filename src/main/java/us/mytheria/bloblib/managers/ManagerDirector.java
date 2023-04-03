@@ -3,6 +3,9 @@ package us.mytheria.bloblib.managers;
 import me.anjoismysign.anjo.logger.Logger;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.BlobFileManager;
+import us.mytheria.bloblib.entities.BlobObject;
+import us.mytheria.bloblib.entities.ObjectDirector;
+import us.mytheria.bloblib.entities.ObjectDirectorData;
 import us.mytheria.bloblib.utilities.ResourceUtil;
 
 import java.io.File;
@@ -10,6 +13,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 public abstract class ManagerDirector {
     private final BlobPlugin plugin;
@@ -82,6 +86,13 @@ public abstract class ManagerDirector {
 
     public void addManager(String key, Manager manager) {
         managers.put(key, manager);
+    }
+
+    public <T extends BlobObject> void addDirector(String objectName, Function<File, T> readFunction) {
+        ObjectDirectorData quickWarpData = ObjectDirectorData.simple(getFileManager(), objectName);
+        addManager(objectName + "Director",
+                new ObjectDirector<>(this,
+                        quickWarpData, readFunction));
     }
 
     /**
