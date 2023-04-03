@@ -142,6 +142,19 @@ public abstract class ManagerDirector {
     }
 
     /**
+     * Will retrieve an object director by providing a String 'key'.
+     * The key must end with 'Director'
+     *
+     * @param key the key of the manager
+     * @return The ObjectDirector that corresponds to the key
+     */
+    public ObjectDirector<?> getDirector(String key) {
+        if (!key.endsWith("Director"))
+            throw new IllegalArgumentException("Key must end with 'Director'!");
+        return (ObjectDirector<?>) getManager(key);
+    }
+
+    /**
      * Logic that should run when plugin is unloading.
      */
     public void unload() {
