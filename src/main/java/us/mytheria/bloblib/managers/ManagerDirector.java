@@ -84,15 +84,45 @@ public abstract class ManagerDirector {
         plugin.registerToBlobLib(this);
     }
 
+    /**
+     * Adds a manager to the director.
+     *
+     * @param key     The key of the manager
+     * @param manager The manager
+     */
     public void addManager(String key, Manager manager) {
         managers.put(key, manager);
     }
 
-    public <T extends BlobObject> void addDirector(String objectName, Function<File, T> readFunction) {
-        ObjectDirectorData quickWarpData = ObjectDirectorData.simple(getFileManager(), objectName);
+    /**
+     * Adds an object director to the director.
+     *
+     * @param objectName              The name of the object
+     * @param readFunction            The function that reads the file
+     * @param hasObjectBuilderManager Whether the object director will implement object builder manager
+     * @param <T>                     The type of the object
+     */
+    public <T extends BlobObject> void addDirector(String objectName,
+                                                   Function<File, T> readFunction,
+                                                   boolean hasObjectBuilderManager) {
+        ObjectDirectorData quickWarpData =
+                ObjectDirectorData.simple(getFileManager(), objectName);
         addManager(objectName + "Director",
                 new ObjectDirector<>(this,
-                        quickWarpData, readFunction));
+                        quickWarpData, readFunction, hasObjectBuilderManager));
+    }
+
+    /**
+     * Adds an object director to the director.
+     * This method assumes that the object director will implement object builder manager.
+     *
+     * @param objectName   The name of the object
+     * @param readFunction The function that reads the file
+     * @param <T>          The type of the object
+     */
+    public <T extends BlobObject> void addDirector(String objectName,
+                                                   Function<File, T> readFunction) {
+        addDirector(objectName, readFunction, true);
     }
 
     /**
