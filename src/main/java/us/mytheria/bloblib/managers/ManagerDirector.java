@@ -1,11 +1,12 @@
 package us.mytheria.bloblib.managers;
 
 import me.anjoismysign.anjo.logger.Logger;
+import org.bukkit.event.Event;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.entities.BlobFileManager;
-import us.mytheria.bloblib.entities.BlobObject;
-import us.mytheria.bloblib.entities.ObjectDirector;
-import us.mytheria.bloblib.entities.ObjectDirectorData;
+import us.mytheria.bloblib.entities.*;
+import us.mytheria.bloblib.entities.currency.EconomyFactory;
+import us.mytheria.bloblib.entities.currency.WalletOwner;
+import us.mytheria.bloblib.entities.currency.WalletOwnerManager;
 import us.mytheria.bloblib.utilities.ResourceUtil;
 
 import java.io.File;
@@ -113,6 +114,66 @@ public abstract class ManagerDirector {
     }
 
     /**
+     * Adds a wallet owner manager to the director.
+     *
+     * @param key          The key of the manager
+     * @param newBorn      A function that by passing a UUID, it will fill a BlobCrudable
+     *                     with default key-value pairs.
+     *                     This is used to create new/fresh WalletOwners.
+     * @param walletOwner  A function that by passing a BlobCrudable, it will return a WalletOwner.
+     *                     WalletOwners use this to store their data inside databases.
+     * @param crudableName The name of the BlobCrudable. This will be used for
+     *                     as the column name in the database.
+     * @param logActivity  Whether to log activity in the console.
+     * @param joinEvent    A function that by passing a WalletOwner, it will return a join event.
+     *                     It's called SYNCHRONOUSLY.
+     *                     It's called when a player joins the server.
+     * @param quitEvent    A function that by passing a WalletOwner, it will return a quit event.
+     *                     It's called SYNCHRONOUSLY.
+     *                     It's called when a player quits/leaves the server.
+     * @param <T>          The type of WalletOwner.
+     */
+    public <T extends WalletOwner> void addWalletOwnerManager(String key,
+                                                              Function<BlobCrudable, BlobCrudable> newBorn,
+                                                              Function<BlobCrudable, T> walletOwner,
+                                                              String crudableName, boolean logActivity,
+                                                              Function<T, Event> joinEvent,
+                                                              Function<T, Event> quitEvent) {
+        if (!key.endsWith("Manager"))
+            throw new IllegalArgumentException("Key must end with 'Manager'");
+        addManager(key + "Director",
+                EconomyFactory.WALLET_OWNER_MANAGER(this,
+                        newBorn, walletOwner, crudableName, logActivity, joinEvent, quitEvent));
+    }
+
+    /**
+     * Adds a wallet owner manager to the director.
+     * This is a simplified version {@link EconomyFactory#SIMPLE_WALLET_OWNER_MANAGER(ManagerDirector, Function, Function, String, boolean)}
+     * No events are registered for join and quit actions.
+     *
+     * @param key          The key of the manager
+     * @param newBorn      A function that by passing a UUID, it will fill a BlobCrudable
+     *                     with default key-value pairs.
+     *                     This is used to create new/fresh WalletOwners.
+     * @param walletOwner  A function that by passing a BlobCrudable, it will return a WalletOwner.
+     *                     WalletOwners use this to store their data inside databases.
+     * @param crudableName The name of the BlobCrudable. This will be used for
+     *                     as the column name in the database.
+     * @param logActivity  Whether to log activity in the console.
+     * @param <T>          The type of WalletOwner.
+     */
+    public <T extends WalletOwner> void addSimpleWalletOwnerManager(String key,
+                                                                    Function<BlobCrudable, BlobCrudable> newBorn,
+                                                                    Function<BlobCrudable, T> walletOwner,
+                                                                    String crudableName, boolean logActivity) {
+        if (!key.endsWith("Manager"))
+            throw new IllegalArgumentException("Key must end with 'Manager'");
+        addManager(key + "Director",
+                EconomyFactory.SIMPLE_WALLET_OWNER_MANAGER(this,
+                        newBorn, walletOwner, crudableName, logActivity));
+    }
+
+    /**
      * Adds an object director to the director.
      * This method assumes that the object director will implement object builder manager.
      *
@@ -156,6 +217,13 @@ public abstract class ManagerDirector {
         if (!key.endsWith("Director"))
             throw new IllegalArgumentException("Key must end with 'Director'!");
         return (ObjectDirector<T>) getManager(key);
+    }
+
+    public <T extends WalletOwner> WalletOwnerManager<T> getWalletOwnerManager(String key,
+                                                                               Class<T> clazz) {
+        if (!key.endsWith("Manager"))
+            throw new IllegalArgumentException("Key must end with 'Manager'!");
+        return (WalletOwnerManager<T>) getManager(key);
     }
 
     /**
