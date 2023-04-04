@@ -3,6 +3,7 @@ package us.mytheria.bloblib.entities;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public record SimpleEventListener<T>(boolean register, T value) {
 
@@ -115,5 +116,13 @@ public record SimpleEventListener<T>(boolean register, T value) {
     public void write(ConfigurationSection section, String path) {
         section.set("Register", register);
         section.set(path, value);
+    }
+
+    public boolean ifRegister(Consumer<SimpleEventListener<T>> consumer) {
+        if (register) {
+            consumer.accept(this);
+            return true;
+        }
+        return false;
     }
 }
