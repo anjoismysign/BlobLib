@@ -3,6 +3,9 @@ package us.mytheria.bloblib.entities.message;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -68,5 +71,31 @@ public record BlobSound(Sound sound, float volume, float pitch,
             play(player);
         else
             playInWorld(player.getLocation());
+    }
+
+    /**
+     * Handles the sound at the entity's location
+     * If the entity is a player, it will play the sound to the player
+     * or to the world depending on the audience
+     *
+     * @param entity The entity that's linked to the sound
+     */
+    public void handle(Entity entity) {
+        EntityType entityType = entity.getType();
+        if (entityType == EntityType.PLAYER) {
+            Player player = (Player) entity;
+            handle(player);
+            return;
+        }
+        playInWorld(entity.getLocation());
+    }
+
+    /**
+     * Handles the sound at the block's location
+     *
+     * @param block The block that's linked to the sound
+     */
+    public void handle(Block block) {
+        playInWorld(block.getLocation());
     }
 }
