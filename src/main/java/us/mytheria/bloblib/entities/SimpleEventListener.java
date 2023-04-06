@@ -118,6 +118,12 @@ public record SimpleEventListener<T>(boolean register, T value) {
         section.set(path, value);
     }
 
+    /**
+     * If the SimpleEventListener is registered, the consumer will be called
+     *
+     * @param consumer The consumer to call
+     * @return true if the SimpleEventListener is registered, false otherwise
+     */
     public boolean ifRegister(Consumer<SimpleEventListener<T>> consumer) {
         if (register) {
             consumer.accept(this);
