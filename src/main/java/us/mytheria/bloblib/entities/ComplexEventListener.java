@@ -7,26 +7,19 @@ import java.io.File;
 import java.util.*;
 
 public class ComplexEventListener {
-    private final File file;
-    private Map<String, Object> configValues;
-    private boolean register;
+    private final Map<String, Object> configValues;
+    private final boolean register;
 
-    public ComplexEventListener(File file) {
-        this.file = file;
-        reload();
+    public static ComplexEventListener of(File file) {
+        return new ComplexEventListener(YamlConfiguration.loadConfiguration(file));
     }
 
-    public void reload() {
+    public ComplexEventListener(ConfigurationSection section) {
         configValues = new HashMap<>();
-        update();
-    }
-
-    private void update() {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-        if (!config.isBoolean("Register"))
+        if (!section.isBoolean("Register"))
             throw new IllegalArgumentException("'Register' must be a boolean");
-        boolean register = config.getBoolean("Register");
-        ConfigurationSection configSection = config.getConfigurationSection("Values");
+        register = section.getBoolean("Register");
+        ConfigurationSection configSection = section.getConfigurationSection("Values");
         Set<String> keys = configSection.getKeys(false);
         for (String key : keys) {
             Object value = configSection.get(key);
