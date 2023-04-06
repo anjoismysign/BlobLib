@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class ComplexEventListener {
     private final Map<String, Object> configValues;
@@ -29,6 +30,14 @@ public class ComplexEventListener {
 
     public boolean register() {
         return register;
+    }
+
+    public boolean ifRegister(Consumer<ComplexEventListener> consumer) {
+        if (register) {
+            consumer.accept(this);
+            return true;
+        }
+        return false;
     }
 
     private Object getValue(String key) {
