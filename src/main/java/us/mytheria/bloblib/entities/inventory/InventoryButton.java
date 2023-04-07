@@ -1,11 +1,14 @@
 package us.mytheria.bloblib.entities.inventory;
 
+import net.milkbowl.vault.economy.IdentityEconomy;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLibAPI;
+import us.mytheria.bloblib.vault.multieconomy.ElasticEconomy;
 
+import java.util.Optional;
 import java.util.Set;
 
 public class InventoryButton {
@@ -14,15 +17,18 @@ public class InventoryButton {
     private final String permission;
     private final double price;
     private final String priceCurrency;
+    private final String action;
 
     public InventoryButton(String key, Set<Integer> slots,
                            @Nullable String permission,
-                           double price, @Nullable String priceCurrency) {
+                           double price, @Nullable String priceCurrency,
+                           @Nullable String action) {
         this.key = key;
         this.slots = slots;
         this.permission = permission;
         this.price = price;
         this.priceCurrency = priceCurrency;
+        this.action = action;
     }
 
     public String getKey() {
@@ -99,10 +105,13 @@ public class InventoryButton {
         double price = getPrice();
         if (price < 0.000000000001)
             return true;
-        boolean hasAmount = BlobLibAPI.hasCashAmount(player, price);
+        ElasticEconomy elasticEconomy = BlobLibAPI.getElasticEconomy();
+        IdentityEconomy economy = elasticEconomy
+                .map(Optional.ofNullable(getPriceCurrency()));
+        boolean hasAmount = economy.has(player.getUniqueId(), price);
         if (!hasAmount)
             return false;
-        BlobLibAPI.withdrawCash(player, price);
+        economy.withdraw(player.getUniqueId(), price);
         return true;
     }
 
@@ -115,5 +124,10 @@ public class InventoryButton {
      */
     public boolean handleAll(Player player) {
         return handlePermission(player) && handlePayment(player);
+    }
+
+    @Nullable
+    public String getAction() {
+        return action;
     }
 }

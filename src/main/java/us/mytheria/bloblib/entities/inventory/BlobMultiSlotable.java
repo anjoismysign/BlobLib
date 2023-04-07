@@ -51,32 +51,40 @@ public class BlobMultiSlotable extends MultiSlotable {
             add(list, read, section.getName());
         }
         String permission = null;
-        if (section.isString("Permission")) {
+        if (section.isString("Permission"))
             permission = section.getString("Permission");
-        }
         double price = 0;
         if (section.isDouble("Price")) {
             price = section.getDouble("Price");
         }
         String priceCurrency = null;
-        if (section.isString("Price-Currency")) {
+        if (section.isString("Price-Currency"))
             priceCurrency = section.getString("Price-Currency");
-        }
-        return new BlobMultiSlotable(list, itemStack, key, permission, price, priceCurrency);
+        String action = null;
+        if (section.isString("Action"))
+            action = section.getString("Action");
+        return new BlobMultiSlotable(list, itemStack, key, permission, price,
+                priceCurrency, action);
     }
 
     /**
      * Constructor for BlobMultiSlotable
      *
-     * @param slots     The slots to add the item to
-     * @param itemStack The item to add
-     * @param key       The key to use for the item
+     * @param slots         The slots to add the item to
+     * @param itemStack     The item to add
+     * @param key           The key to use for the item
+     * @param permission    The permission to use for the item
+     * @param price         The price to use for the item
+     * @param priceCurrency The price currency to use for the item
+     * @param action        The action to use for the item
      */
-    public BlobMultiSlotable(Set<Integer> slots, ItemStack itemStack, String key,
+    public BlobMultiSlotable(Set<Integer> slots, ItemStack itemStack,
+                             String key,
                              @Nullable String permission,
                              double price,
-                             @Nullable String priceCurrency) {
-        super(slots, itemStack, permission, price, priceCurrency);
+                             @Nullable String priceCurrency,
+                             @Nullable String action) {
+        super(slots, itemStack, permission, price, priceCurrency, action);
         this.key = key;
     }
 
@@ -94,7 +102,8 @@ public class BlobMultiSlotable extends MultiSlotable {
     }
 
     public InventoryButton toInventoryButton() {
-        return new InventoryButton(key, getSlots(), getPermission(), getPrice(), getPriceCurrency());
+        return new InventoryButton(key, getSlots(), getPermission(), getPrice(),
+                getPriceCurrency(), getAction());
     }
 
     /**

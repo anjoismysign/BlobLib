@@ -18,21 +18,27 @@ public abstract class MultiSlotable {
     private final String permission;
     private final double price;
     private final String priceCurrency;
+    private final String action;
 
     /**
-     * @param slots     The slots to be used.
-     * @param slots     The slots to be used.
-     * @param itemStack The ItemStack to be used.
+     * @param slots         The slots to be used.
+     * @param itemStack     The ItemStack to be used.
+     * @param permission    The permission to be used.
+     * @param price         The price to be used.
+     * @param priceCurrency The price currency to be used.
+     * @param action        The action to be used.
      */
     public MultiSlotable(Collection<Integer> slots, ItemStack itemStack,
                          @Nullable String permission,
                          double price,
-                         @Nullable String priceCurrency) {
+                         @Nullable String priceCurrency,
+                         @Nullable String action) {
         this.slots = slots;
         this.itemStack = itemStack;
         this.permission = permission;
         this.price = price;
         this.priceCurrency = priceCurrency;
+        this.action = action;
     }
 
     /**
@@ -63,5 +69,10 @@ public abstract class MultiSlotable {
     @Nullable
     public String getPriceCurrency() {
         return priceCurrency;
+    }
+
+    @Nullable
+    public String getAction() {
+        return action;
     }
 }
