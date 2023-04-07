@@ -21,14 +21,13 @@ public abstract class Action<T extends Entity> {
     public static Action<Entity> fromConfigurationSection(ConfigurationSection section) {
         String type = Objects.requireNonNull(section.getString("Type"), "Action.Type is null");
         switch (type) {
-            case "ActorCommand", "ConsoleCommand" -> {
-                String command = Objects.requireNonNull(section.getString("Command"), "Action.Command is null");
-                if (type.equals("ConsoleCommand"))
-                    return ConsoleCommandAction.build(command);
+            case "ActorCommand" -> {
+                String command = Objects.requireNonNull(section.getString("ActorCommand"), "Action.Command is null");
                 return CommandAction.build(command);
             }
-            case "None" -> {
-                return new NoneAction<>();
+            case "ConsoleCommand" -> {
+                String command = Objects.requireNonNull(section.getString("ConsoleCommand"), "Action.Command is null");
+                return ConsoleCommandAction.build(command);
             }
             default -> throw new IllegalArgumentException("Unknown Action Type: " + type);
         }
