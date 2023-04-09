@@ -69,8 +69,11 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
         if (section.isString("Price-Currency")) {
             priceCurrency = section.getString("Price-Currency");
         }
+        String action = null;
+        if (section.isString("Action"))
+            action = section.getString("Action");
         return new MetaBlobMultiSlotable(set, itemStack, key, meta, subMeta,
-                permission, price, priceCurrency);
+                permission, price, priceCurrency, action);
     }
 
     /**
@@ -84,8 +87,9 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
                                  String meta, @Nullable String subMeta,
                                  @Nullable String permission,
                                  double price,
-                                 @Nullable String priceCurrency) {
-        super(slots, itemStack, permission, price, priceCurrency);
+                                 @Nullable String priceCurrency,
+                                 @Nullable String action) {
+        super(slots, itemStack, permission, price, priceCurrency, action);
         this.key = key;
         this.meta = meta;
         this.subMeta = subMeta;
@@ -106,7 +110,7 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
 
     public MetaInventoryButton toMetaInventoryButton() {
         return new MetaInventoryButton(key, getSlots(), meta, subMeta,
-                getPermission(), getPrice(), getPriceCurrency());
+                getPermission(), getPrice(), getPriceCurrency(), getAction());
     }
 
     /**

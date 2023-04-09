@@ -12,13 +12,15 @@ public class MetaInventoryButton extends InventoryButton {
     public static MetaInventoryButton fromInventoryButton(InventoryButton button, String meta,
                                                           String subMeta) {
         return new MetaInventoryButton(button.getKey(), button.getSlots(), meta,
-                subMeta, button.getPermission(), button.getPrice(), button.getPriceCurrency());
+                subMeta, button.getPermission(), button.getPrice(),
+                button.getPriceCurrency(), button.getAction());
     }
 
     public MetaInventoryButton(String key, Set<Integer> slots, String meta,
                                @Nullable String subMeta, @Nullable String permission,
-                               double price, @Nullable String priceCurrency) {
-        super(key, slots, permission, price, priceCurrency);
+                               double price, @Nullable String priceCurrency,
+                               @Nullable String action) {
+        super(key, slots, permission, price, priceCurrency, action);
         this.meta = meta;
         this.subMeta = subMeta;
     }
