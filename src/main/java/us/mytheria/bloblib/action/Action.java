@@ -3,8 +3,8 @@ package us.mytheria.bloblib.action;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 
-import javax.annotation.Nullable;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * An action that can be performed on an entity
@@ -50,27 +50,13 @@ public abstract class Action<T extends Entity> {
      *
      * @param actor The actor to update
      */
-    protected void updateActor(T actor) {
-        this.actor = actor;
-    }
-
-    /**
-     * Performs the action
-     *
-     * @param entity The entity to perform the action on
-     */
-    public void perform(@Nullable T entity) {
-        if (updatesActor()) {
-            updateActor(entity);
-        }
-        run();
-    }
+    protected abstract Action<T> updateActor(T actor);
 
     /**
      * Performs the action
      */
     public void perform() {
-        perform(null);
+        run();
     }
 
     /**
@@ -107,4 +93,6 @@ public abstract class Action<T extends Entity> {
     public ActionType getActionType() {
         return actionType;
     }
+
+    public abstract Action<T> modify(Function<String, String> modifier);
 }

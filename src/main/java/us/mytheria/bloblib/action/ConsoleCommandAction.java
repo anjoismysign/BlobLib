@@ -5,13 +5,14 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * @param <T> The type of entity this action is for
  * @author anjoismysign
  */
 public class ConsoleCommandAction<T extends Entity> extends Action<T> {
-    private String command;
+    private final String command;
 
     public static <T extends Entity> ConsoleCommandAction<T> build(String command) {
         Objects.requireNonNull(command);
@@ -28,15 +29,23 @@ public class ConsoleCommandAction<T extends Entity> extends Action<T> {
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
     }
 
-    public void updateActor(T actor) {
-        super.updateActor(actor);
-        if (actor != null)
-            command = command.replace("%actor%", actor.getName());
+    public ConsoleCommandAction<T> updateActor(T actor) {
+        if (actor != null) {
+            return modify(command -> command.replace("%actor%", actor.getName()));
+        } else {
+            return this;
+        }
     }
 
     @Override
     public void save(ConfigurationSection section) {
         section.set("Command", command);
         section.set("Type", "ConsoleCommand");
+    }
+
+    @Override
+    public ConsoleCommandAction<T> modify(Function<String, String> modifier) {
+        String newCommand = modifier.apply(command);
+        return new ConsoleCommandAction<>(newCommand);
     }
 }

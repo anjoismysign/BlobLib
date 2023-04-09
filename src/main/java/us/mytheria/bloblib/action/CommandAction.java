@@ -5,6 +5,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * @param <T> The type of entity this action is for
@@ -15,7 +16,7 @@ import java.util.Objects;
  * Entity.
  */
 public class CommandAction<T extends Entity> extends Action<T> {
-    private String command;
+    private final String command;
 
     /**
      * Creates a new CommandAction
@@ -47,10 +48,11 @@ public class CommandAction<T extends Entity> extends Action<T> {
      *
      * @param actor The actor to update to
      */
-    public void updateActor(T actor) {
-        super.updateActor(actor);
+    public CommandAction<T> updateActor(T actor) {
         if (actor != null)
-            command = command.replace("%actor%", actor.getName());
+            return modify(command -> command.replace("%actor%", actor.getName()));
+        else
+            return this;
     }
 
     /**
@@ -62,5 +64,11 @@ public class CommandAction<T extends Entity> extends Action<T> {
     public void save(ConfigurationSection section) {
         section.set("Command", command);
         section.set("Type", "ActorCommand");
+    }
+
+    @Override
+    public CommandAction<T> modify(Function<String, String> modifier) {
+        String newCommand = modifier.apply(command);
+        return new CommandAction<>(newCommand);
     }
 }
