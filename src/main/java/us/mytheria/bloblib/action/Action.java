@@ -43,7 +43,42 @@ public abstract class Action<T extends Entity> {
      * Runs the action.
      * Its implementation is left to the child class.
      */
-    protected abstract void run();
+    public abstract void run();
+
+    /**
+     * Updates the actor and runs the action.
+     * A quick way to perform an action on an actor.
+     *
+     * @param actor The actor to update
+     * @param <U>   The type of entity to perform the action on
+     */
+    public <U extends Entity> void perform(U actor) {
+        if (updatesActor()) {
+            Action<U> updatedAction = updateActor(actor);
+            updatedAction.run();
+        } else {
+            run();
+        }
+    }
+
+    /**
+     * Modifies the action, updates the actor and runs the action.
+     * Will modify the action before performing it.
+     * A quick way to perform an action on an actor.
+     *
+     * @param actor    The actor to update
+     * @param function The function to modify the action
+     * @param <U>      The type of entity to perform the action on
+     */
+    public <U extends Entity> void perform(U actor, Function<String, String> function) {
+        Action<T> modify = modify(function);
+        if (updatesActor()) {
+            Action<U> updatedAction = modify.updateActor(actor);
+            updatedAction.run();
+        } else {
+            modify.run();
+        }
+    }
 
     /**
      * Updates the actor
@@ -51,13 +86,6 @@ public abstract class Action<T extends Entity> {
      * @param actor The actor to update
      */
     public abstract <U extends Entity> Action<U> updateActor(U actor);
-
-    /**
-     * Performs the action
-     */
-    public void perform() {
-        run();
-    }
 
     /**
      * Saves the action to a configuration section
@@ -74,11 +102,9 @@ public abstract class Action<T extends Entity> {
     }
 
     /**
-     * @return If the action updates the actor
+     * @return If the action updates the actor whenever it is performed
      */
-    public boolean updatesActor() {
-        return true;
-    }
+    public abstract boolean updatesActor();
 
     /**
      * @return If the action is asynchronous

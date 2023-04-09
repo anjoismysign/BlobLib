@@ -25,7 +25,7 @@ public class ConsoleCommandAction<T extends Entity> extends Action<T> {
     }
 
     @Override
-    protected void run() {
+    public void run() {
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
     }
 
@@ -64,5 +64,11 @@ public class ConsoleCommandAction<T extends Entity> extends Action<T> {
     public ConsoleCommandAction<T> modify(Function<String, String> modifier) {
         String newCommand = modifier.apply(command);
         return new ConsoleCommandAction<>(newCommand);
+    }
+
+
+    @Override
+    public boolean updatesActor() {
+        return true;
     }
 }

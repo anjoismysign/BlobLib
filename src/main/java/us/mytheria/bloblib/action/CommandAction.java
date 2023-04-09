@@ -39,7 +39,7 @@ public class CommandAction<T extends Entity> extends Action<T> {
      * Runs the command as the actor
      */
     @Override
-    protected void run() {
+    public void run() {
         Bukkit.dispatchCommand(getActor(), command);
     }
 
@@ -83,5 +83,10 @@ public class CommandAction<T extends Entity> extends Action<T> {
     public CommandAction<T> modify(Function<String, String> modifier) {
         String newCommand = modifier.apply(command);
         return new CommandAction<>(newCommand);
+    }
+
+    @Override
+    public boolean updatesActor() {
+        return true;
     }
 }
