@@ -44,15 +44,21 @@ public class CommandAction<T extends Entity> extends Action<T> {
     }
 
     /**
-     * Updates the actor
+     * Updates the actor.
+     * This will return a new instance of the action.
      *
      * @param actor The actor to update to
      */
-    public CommandAction<T> updateActor(T actor) {
-        if (actor != null)
-            return modify(command -> command.replace("%actor%", actor.getName()));
-        else
-            return this;
+    @Override
+    public <U extends Entity> CommandAction<U> updateActor(U actor) {
+        if (actor != null) {
+            String updatedCommand = command.replace("%actor%", actor.getName());
+            CommandAction<U> updatedAction = new CommandAction<>(updatedCommand);
+            updatedAction.actor = actor;
+            return updatedAction;
+        } else {
+            throw new IllegalArgumentException("Actor cannot be null");
+        }
     }
 
     /**
@@ -66,6 +72,13 @@ public class CommandAction<T extends Entity> extends Action<T> {
         section.set("Type", "ActorCommand");
     }
 
+    /**
+     * Modifies the command.
+     * This will return a new instance of the action.
+     *
+     * @param modifier The modifier to use
+     * @return The new CommandAction
+     */
     @Override
     public CommandAction<T> modify(Function<String, String> modifier) {
         String newCommand = modifier.apply(command);

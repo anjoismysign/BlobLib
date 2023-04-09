@@ -5,10 +5,6 @@ package us.mytheria.bloblib.action;
  */
 public enum ActionType {
     /**
-     * No action.
-     */
-    NONE,
-    /**
      * A command that is run by the actor.
      */
     ACTOR_COMMAND,

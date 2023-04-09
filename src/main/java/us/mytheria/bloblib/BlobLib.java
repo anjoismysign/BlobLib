@@ -30,6 +30,7 @@ public final class BlobLib extends JavaPlugin {
     private DropListenerManager dropListenerManager;
     private ColorManager colorManager;
     private PluginManager pluginManager;
+    private ActionManager actionManager;
 
     private static BlobLib instance;
 
@@ -66,6 +67,7 @@ public final class BlobLib extends JavaPlugin {
 
         inventoryManager = new InventoryManager();
         messageManager = new MessageManager();
+        actionManager = new ActionManager();
         soundManager = new SoundManager();
         fillerManager = new FillerManager();
         vaultManager = new VaultManager();
@@ -88,6 +90,7 @@ public final class BlobLib extends JavaPlugin {
     public void reload() {
         soundManager.reload();
         messageManager.reload();
+        actionManager.reload();
         inventoryManager.reload();
         getPluginManager().reload();
     }
@@ -143,6 +146,15 @@ public final class BlobLib extends JavaPlugin {
      */
     public MessageManager getMessageManager() {
         return messageManager;
+    }
+
+    /**
+     * Will retrieve the ActionManager
+     *
+     * @return The ActionManager
+     */
+    public ActionManager getActionManager() {
+        return actionManager;
     }
 
     /**

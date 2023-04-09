@@ -33,7 +33,7 @@ public abstract class Action<T extends Entity> {
         }
     }
 
-    private T actor;
+    protected T actor;
     /**
      * The type of action
      */
@@ -50,7 +50,7 @@ public abstract class Action<T extends Entity> {
      *
      * @param actor The actor to update
      */
-    protected abstract Action<T> updateActor(T actor);
+    protected abstract <U extends Entity> Action<U> updateActor(U actor);
 
     /**
      * Performs the action

@@ -40,10 +40,12 @@ public class BlobFileManager extends Manager {
         addFile("sounds", new File(pluginDirectory.getPath() + "/BlobSound"));
         addFile("blobInventories", new File(pluginDirectory.getPath() + "/BlobInventory"));
         addFile("metaBlobInventories", new File(pluginDirectory.getPath() + "/MetaBlobInventory"));
+        addFile("actions", new File(pluginDirectory.getPath() + "/Action"));
         addFile("defaultSounds", new File(soundsDirectory().getPath() + "/" + lowercased + "_sounds.yml"));
         addFile("defaultMessages", new File(messagesDirectory().getPath() + "/" + lowercased + "_lang.yml"));
         addFile("defaultBlobInventories", new File(inventoriesDirectory().getPath() + "/" + lowercased + "_inventories.yml"));
         addFile("defaultMetaBlobInventories", new File(metaInventoriesDirectory().getPath() + "/" + lowercased + "_meta_inventories.yml"));
+        addFile("defaultActions", new File(actionsDirectory().getPath() + "/" + lowercased + "_actions.yml"));
         loadFiles();
     }
 
@@ -296,6 +298,11 @@ public class BlobFileManager extends Manager {
         return getFile("metaBlobInventories");
     }
 
+    @NotNull
+    public File actionsDirectory() {
+        return getFile("actions");
+    }
+
     /**
      * Returns the default messages file.
      *
@@ -329,5 +336,10 @@ public class BlobFileManager extends Manager {
     @NotNull
     public File getDefaultMetaInventories() {
         return getFile("defaultMetaInventories");
+    }
+
+    @NotNull
+    public File getDefaultActions() {
+        return getFile("defaultActions");
     }
 }

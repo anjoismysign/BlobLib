@@ -1,15 +1,14 @@
 package us.mytheria.bloblib;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.action.Action;
 import us.mytheria.bloblib.entities.inventory.*;
 import us.mytheria.bloblib.entities.message.BlobSound;
 import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
-import us.mytheria.bloblib.managers.InventoryManager;
-import us.mytheria.bloblib.managers.MessageManager;
-import us.mytheria.bloblib.managers.MetaInventoryShard;
-import us.mytheria.bloblib.managers.SoundManager;
+import us.mytheria.bloblib.managers.*;
 
 import java.io.File;
 import java.util.Optional;
@@ -29,6 +28,13 @@ public class BlobLibAssetAPI {
      */
     public static MessageManager getMessageManager() {
         return main.getMessageManager();
+    }
+
+    /**
+     * @return The action manager
+     */
+    public static ActionManager getActionManager() {
+        return main.getActionManager();
     }
 
     /**
@@ -99,6 +105,14 @@ public class BlobLibAssetAPI {
      */
     public static ReferenceBlobMessage getMessage(String key) {
         return getMessageManager().getMessage(key);
+    }
+
+    /**
+     * @param key The key of the action
+     * @return The action
+     */
+    public static Action<Entity> getAction(String key) {
+        return getActionManager().getAction(key);
     }
 
     /**

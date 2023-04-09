@@ -29,11 +29,21 @@ public class ConsoleCommandAction<T extends Entity> extends Action<T> {
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
     }
 
-    public ConsoleCommandAction<T> updateActor(T actor) {
+    /**
+     * Updates the actor.
+     * This will return a new instance of the action.
+     *
+     * @param actor The actor to update to
+     */
+    @Override
+    public <U extends Entity> ConsoleCommandAction<U> updateActor(U actor) {
         if (actor != null) {
-            return modify(command -> command.replace("%actor%", actor.getName()));
+            String updatedCommand = command.replace("%actor%", actor.getName());
+            ConsoleCommandAction<U> updatedAction = new ConsoleCommandAction<>(updatedCommand);
+            updatedAction.actor = actor;
+            return updatedAction;
         } else {
-            return this;
+            throw new IllegalArgumentException("Actor cannot be null");
         }
     }
 
@@ -43,6 +53,13 @@ public class ConsoleCommandAction<T extends Entity> extends Action<T> {
         section.set("Type", "ConsoleCommand");
     }
 
+    /**
+     * Modifies the command.
+     * This will return a new instance of the action.
+     *
+     * @param modifier The modifier to use
+     * @return The new CommandAction
+     */
     @Override
     public ConsoleCommandAction<T> modify(Function<String, String> modifier) {
         String newCommand = modifier.apply(command);
