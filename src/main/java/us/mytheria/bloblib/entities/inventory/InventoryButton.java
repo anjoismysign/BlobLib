@@ -133,11 +133,19 @@ public class InventoryButton {
         return true;
     }
 
+    /**
+     * @return The action of the button. Null if there is no action.
+     */
     @Nullable
     public String getAction() {
         return action;
     }
 
+    /**
+     * Will handle the action of the button.
+     *
+     * @param entity The entity to handle the action for.
+     */
     public void handleAction(Entity entity) {
         if (action == null)
             return;
