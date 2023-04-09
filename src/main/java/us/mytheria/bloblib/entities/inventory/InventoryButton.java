@@ -1,11 +1,14 @@
 package us.mytheria.bloblib.entities.inventory;
 
 import net.milkbowl.vault.economy.IdentityEconomy;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLibAPI;
+import us.mytheria.bloblib.BlobLibAssetAPI;
+import us.mytheria.bloblib.action.Action;
 import us.mytheria.bloblib.vault.multieconomy.ElasticEconomy;
 
 import java.util.Optional;
@@ -116,18 +119,29 @@ public class InventoryButton {
     }
 
     /**
-     * Will handle both the permission and payment of the button.
-     * Should always be checked!
+     * Will handle permission and payment of the button.
+     * If both permission and payment is handled successfully, it will handle the action.
      *
      * @param player The player to handle the permission and payment for.
      * @return Whether the permission and payment was handled successfully.
      */
     public boolean handleAll(Player player) {
-        return handlePermission(player) && handlePayment(player);
+        boolean proceed = handlePermission(player) && handlePayment(player);
+        if (!proceed)
+            return false;
+        handleAction(player);
+        return true;
     }
 
     @Nullable
     public String getAction() {
         return action;
+    }
+
+    public void handleAction(Entity entity) {
+        if (action == null)
+            return;
+        Action<Entity> fetch = BlobLibAssetAPI.getAction(action);
+        fetch.perform(entity);
     }
 }
