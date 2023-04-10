@@ -20,10 +20,12 @@ public class BlobLibFileManager {
     private final File sounds = new File(path.getPath() + "/BlobSound");
     private final File inventories = new File(path.getPath() + "/BlobInventory");
     private final File metaInventories = new File(path.getPath() + "/MetaBlobInventory");
+    private final File actions = new File(path.getPath() + "/Action");
     private final File defaultSounds = new File(sounds.getPath() + "/bloblib_sounds.yml");
     private final File defaultMessages = new File(messages.getPath() + "/bloblib_lang.yml");
     private final File defaultInventories = new File(inventories.getPath() + "/bloblib_inventories.yml");
     private final File defaultMetaInventories = new File(metaInventories.getPath() + "/bloblib_meta_inventories.yml");
+    private final File defaultActions = new File(actions.getPath() + "/bloblib_actions.yml");
 
     /**
      * Will create a new BlobLibFileManager instance
@@ -43,15 +45,18 @@ public class BlobLibFileManager {
             if (!sounds.exists()) sounds.mkdir();
             if (!inventories.exists()) inventories.mkdir();
             if (!metaInventories.exists()) metaInventories.mkdir();
+            if (!actions.exists()) actions.mkdir();
             ///////////////////////////////////////////
             if (!defaultSounds.exists()) defaultSounds.createNewFile();
             if (!defaultMessages.exists()) defaultMessages.createNewFile();
             if (!defaultInventories.exists()) defaultInventories.createNewFile();
             if (!defaultMetaInventories.exists()) defaultMetaInventories.createNewFile();
+            if (!defaultActions.exists()) defaultActions.createNewFile();
             ResourceUtil.updateYml(sounds, "/tempbloblib_sounds.yml", "bloblib_sounds.yml", defaultSounds, plugin);
             ResourceUtil.updateYml(messages, "/tempbloblib_lang.yml", "bloblib_lang.yml", defaultMessages, plugin);
             ResourceUtil.updateYml(inventories, "/tempInventories.yml", "bloblib_inventories.yml", defaultInventories, plugin);
             ResourceUtil.updateYml(metaInventories, "/tempMetaInventories.yml", "bloblib_meta_inventories.yml", defaultMetaInventories, plugin);
+            ResourceUtil.updateYml(actions, "/tempActions.yml", "bloblib_actions.yml", defaultActions, plugin);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -85,6 +90,15 @@ public class BlobLibFileManager {
      */
     public File messagesDirectory() {
         return messages;
+    }
+
+    /**
+     * Will return actions directory (INSIDE BlobLib PLUGIN DIRECTORY)
+     *
+     * @return The actions directory
+     */
+    public File actionsDirectory() {
+        return actions;
     }
 
     /**

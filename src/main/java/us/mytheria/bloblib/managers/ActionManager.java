@@ -29,9 +29,9 @@ public class ActionManager {
         actions = new HashMap<>();
         pluginActions = new HashMap<>();
         duplicates = new HashMap<>();
-        loadFiles(main.getFileManager().messagesDirectory());
+        loadFiles(main.getFileManager().actionsDirectory());
         duplicates.forEach((key, value) -> BlobLib.getAnjoLogger()
-                .log("Duplicate BlobMessage: '" + key + "' (found " + value + " instances)"));
+                .log("Duplicate Action: '" + key + "' (found " + value + " instances)"));
     }
 
     public void load(BlobPlugin plugin, ManagerDirector director) {
@@ -40,10 +40,10 @@ public class ActionManager {
             throw new IllegalArgumentException("Plugin '" + pluginName + "' has already been loaded");
         pluginActions.put(pluginName, new HashSet<>());
         duplicates.clear();
-        File directory = director.getFileManager().messagesDirectory();
+        File directory = director.getFileManager().actionsDirectory();
         loadFiles(plugin, directory);
         duplicates.forEach((key, value) -> plugin.getAnjoLogger()
-                .log("Duplicate BlobMessage: '" + key + "' (found " + value + " instances)"));
+                .log("Duplicate Action: '" + key + "' (found " + value + " instances)"));
     }
 
     public void unload(BlobPlugin plugin) {
@@ -133,7 +133,7 @@ public class ActionManager {
      * NOTE: Printing duplicates runs for each time you call this method!
      *
      * @param file   The file to load
-     * @param plugin The plugin to register the messages to
+     * @param plugin The plugin to register the actions to
      * @return Whether the plugin has been loaded
      */
     public static boolean loadAndRegisterYamlConfiguration(File file, BlobPlugin plugin) {
@@ -142,7 +142,7 @@ public class ActionManager {
             return false;
         manager.loadYamlConfiguration(file, plugin);
         manager.duplicates.forEach((key, value) -> BlobLib.getAnjoLogger()
-                .log("Duplicate BlobMessage: '" + key + "' (found " + value + " instances)"));
+                .log("Duplicate Action: '" + key + "' (found " + value + " instances)"));
         return true;
     }
 

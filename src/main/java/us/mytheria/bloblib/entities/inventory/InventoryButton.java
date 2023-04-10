@@ -106,7 +106,7 @@ public class InventoryButton {
      */
     public boolean handlePayment(Player player) {
         double price = getPrice();
-        if (Double.compare(price, 0) <= 0)
+        if (Double.compare(price, 0D) <= 0)
             return true;
         ElasticEconomy elasticEconomy = BlobLibAPI.getElasticEconomy();
         IdentityEconomy economy = elasticEconomy

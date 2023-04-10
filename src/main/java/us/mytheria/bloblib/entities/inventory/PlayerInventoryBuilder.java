@@ -163,6 +163,8 @@ public class PlayerInventoryBuilder<T extends InventoryButton> extends Inventory
      * Builds the inventory since by default its reference is null
      */
     public void buildInventory() {
+        if (getInventory() == null)
+            throw new IllegalStateException("PlayerInventory is null!");
         getButtonManager().getIntegerKeys().forEach(this::setButton);
     }
 
