@@ -8,8 +8,8 @@ import us.mytheria.bloblib.managers.Manager;
 import us.mytheria.bloblib.managers.ManagerDirector;
 
 import java.io.File;
-import java.util.AbstractMap;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -22,15 +22,15 @@ import java.util.function.Supplier;
  */
 public abstract class ObjectManager<T extends BlobObject> extends Manager {
     private final File loadFilesDirectory;
-    private final Supplier<AbstractMap<String, T>> objectsSupplier;
-    private final Supplier<AbstractMap<String, File>> fileSupplier;
+    private final Supplier<Map<String, T>> objectsSupplier;
+    private final Supplier<Map<String, File>> fileSupplier;
     private CompletableFuture<Void> loadFiles;
     /**
      * The objects that are loaded in random access memory.
      * Should be initialized in loadInConstructor() method.
      */
-    private AbstractMap<String, T> objects;
-    private AbstractMap<String, File> objectFiles;
+    private Map<String, T> objects;
+    private Map<String, File> objectFiles;
 
     /**
      * Constructor for ObjectManager
@@ -39,8 +39,8 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
      * @param loadFilesDirectory The directory to load files from
      */
     public ObjectManager(ManagerDirector managerDirector, File loadFilesDirectory,
-                         Supplier<AbstractMap<String, T>> supplier,
-                         Supplier<AbstractMap<String, File>> fileSupplier) {
+                         Supplier<Map<String, T>> supplier,
+                         Supplier<Map<String, File>> fileSupplier) {
         super(managerDirector);
         this.loadFilesDirectory = loadFilesDirectory;
         this.objectsSupplier = supplier;
@@ -70,11 +70,12 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
      *
      * @param path The directory to load files from
      */
-    public abstract CompletableFuture<Void> loadFiles(File path);
+    public abstract void loadFiles(File path, CompletableFuture<Void> mainFuture);
 
     /**
      * Adds an object to the manager and
      * tracks the file it was loaded from.
+     * If file is null, the object will not be tracked.
      *
      * @param key    The key of the object
      * @param file   The file of the object
@@ -84,7 +85,8 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
         if (objectFiles.containsKey(key))
             return;
         objects.put(key, object);
-        objectFiles.put(key, file);
+        if (file != null)
+            objectFiles.put(key, file);
     }
 
     /**
@@ -111,6 +113,8 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
             return;
         objects.remove(key);
         File file = objectFiles.get(key);
+        if (file == null)
+            return;
         if (!file.delete())
             getPlugin().getAnjoLogger().singleError("Failed to delete file " + file.getName());
         objectFiles.remove(key);
@@ -128,11 +132,11 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
         updateLoadFiles(getLoadFilesDirectory());
     }
 
-    @Nullable
     /**
      * @param key The key/fileName of the object
      * @return The object if found, null otherwise
      */
+    @Nullable
     public T getObject(String key) {
         return objects.get(key);
     }
@@ -187,7 +191,8 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
     }
 
     public void updateLoadFiles(File path) {
-        this.loadFiles = loadFiles(path);
+        this.loadFiles = new CompletableFuture<>();
+        loadFiles(path, loadFiles);
     }
 
     public void whenFilesLoad(Consumer<ObjectManager<T>> consumer) {

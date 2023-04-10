@@ -21,8 +21,10 @@ public class ComplexEventListener {
             throw new IllegalArgumentException("'Register' must be a boolean");
         register = section.getBoolean("Register");
         ConfigurationSection configSection = section.getConfigurationSection("Values");
-        Set<String> keys = configSection.getKeys(false);
+        Set<String> keys = configSection.getKeys(true);
         for (String key : keys) {
+            if (configSection.isConfigurationSection(key))
+                continue;
             Object value = configSection.get(key);
             configValues.put(key, value);
         }

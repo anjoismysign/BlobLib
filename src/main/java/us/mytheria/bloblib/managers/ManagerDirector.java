@@ -150,9 +150,7 @@ public abstract class ManagerDirector {
                                                               String crudableName, boolean logActivity,
                                                               Function<T, Event> joinEvent,
                                                               Function<T, Event> quitEvent) {
-        if (!key.endsWith("Manager"))
-            throw new IllegalArgumentException("Key must end with 'Manager'");
-        addManager(key + "Director",
+        addManager(key,
                 EconomyFactory.WALLET_OWNER_MANAGER(this,
                         newBorn, walletOwner, crudableName, logActivity, joinEvent, quitEvent));
     }
@@ -177,9 +175,7 @@ public abstract class ManagerDirector {
                                                                     Function<BlobCrudable, BlobCrudable> newBorn,
                                                                     Function<BlobCrudable, T> walletOwner,
                                                                     String crudableName, boolean logActivity) {
-        if (!key.endsWith("Manager"))
-            throw new IllegalArgumentException("Key must end with 'Manager'");
-        addManager(key + "Director",
+        addManager(key,
                 EconomyFactory.SIMPLE_WALLET_OWNER_MANAGER(this,
                         newBorn, walletOwner, crudableName, logActivity));
     }
@@ -238,8 +234,6 @@ public abstract class ManagerDirector {
     @SuppressWarnings("unchecked")
     public <T extends BlobObject> ObjectDirector<T> getDirector(String key,
                                                                 Class<T> clazz) {
-        if (!key.endsWith("Director"))
-            throw new IllegalArgumentException("Key must end with 'Director'!");
         return (ObjectDirector<T>) getManager(key);
     }
 
@@ -255,8 +249,6 @@ public abstract class ManagerDirector {
     @SuppressWarnings("unchecked")
     public <T extends WalletOwner> WalletOwnerManager<T> getWalletOwnerManager(String key,
                                                                                Class<T> clazz) {
-        if (!key.endsWith("Manager"))
-            throw new IllegalArgumentException("Key must end with 'Manager'!");
         return (WalletOwnerManager<T>) getManager(key);
     }
 

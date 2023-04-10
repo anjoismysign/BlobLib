@@ -17,10 +17,10 @@ import us.mytheria.bloblib.utilities.ItemStackUtil;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -62,9 +62,8 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
             throw new IllegalArgumentException("The loadFilesPathKey is not valid");
         }
         this.objectManager = new ObjectManager<>(managerDirector, loadFilesDirectory.get(),
-                HashMap::new, HashMap::new) {
-            public CompletableFuture<Void> loadFiles(File path) {
-                CompletableFuture<Void> future = new CompletableFuture<>();
+                ConcurrentHashMap::new, ConcurrentHashMap::new) {
+            public void loadFiles(File path, CompletableFuture<Void> mainFuture) {
                 try {
                     if (!path.exists())
                         path.mkdir();
@@ -85,19 +84,20 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                                     futures.add(fileFuture);
                                 }
                                 if (file.isDirectory()) {
-                                    futures.add(loadFiles(file));
+                                    CompletableFuture<Void> subDirFuture = new CompletableFuture<>();
+                                    loadFiles(file, subDirFuture);
+                                    futures.add(subDirFuture);
                                 }
                             }
-                            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-                            future.complete(null);
+                            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).thenAccept(v -> mainFuture.complete(null));
                         } catch (Exception e) {
-                            future.completeExceptionally(e);
+                            mainFuture.completeExceptionally(e);
                         }
                     });
                 } catch (Exception exception) {
                     Bukkit.getLogger().log(Level.SEVERE, exception.getMessage(), exception);
+                    mainFuture.completeExceptionally(exception);
                 }
-                return future;
             }
         };
         clickEventConsumer = e -> {
