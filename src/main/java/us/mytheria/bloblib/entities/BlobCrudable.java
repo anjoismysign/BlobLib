@@ -37,11 +37,10 @@ public final class BlobCrudable implements Crudable {
     }
 
     public Optional<Float> hasFloat(String key) {
-        Double value = document.getDouble(key);
+        Float value = document.get(key, Float.class);
         if (value == null)
             return Optional.empty();
-        Float floatValue = value.floatValue();
-        return Optional.ofNullable(floatValue);
+        return Optional.ofNullable(value);
     }
 
     public Optional<Double> hasDouble(String key) {
@@ -53,19 +52,17 @@ public final class BlobCrudable implements Crudable {
     }
 
     public Optional<Short> hasShort(String key) {
-        Integer value = document.getInteger(key);
+        Short value = document.get(key, Short.class);
         if (value == null)
             return Optional.empty();
-        Short shortValue = value.shortValue();
-        return Optional.ofNullable(shortValue);
+        return Optional.ofNullable(value);
     }
 
     public Optional<Byte> hasByte(String key) {
-        Integer value = document.getInteger(key);
+        Byte value = document.get(key, Byte.class);
         if (value == null)
             return Optional.empty();
-        Byte byteValue = value.byteValue();
-        return Optional.ofNullable(byteValue);
+        return Optional.ofNullable(value);
     }
 
     public Optional<String> hasString(String key) {
@@ -73,11 +70,10 @@ public final class BlobCrudable implements Crudable {
     }
 
     public Optional<Character> hasCharacter(String key) {
-        String value = document.getString(key);
+        Character value = document.get(key, Character.class);
         if (value == null)
             return Optional.empty();
-        Character character = value.charAt(0);
-        return Optional.ofNullable(character);
+        return Optional.ofNullable(value);
     }
 
     public Optional<Boolean> hasBoolean(String key) {

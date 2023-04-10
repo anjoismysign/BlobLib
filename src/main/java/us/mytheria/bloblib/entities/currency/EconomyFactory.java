@@ -16,9 +16,10 @@ public class EconomyFactory {
      *
      * @param managerDirector The ManagerDirector
      */
-    public static ObjectDirector<Currency> CURRENCY_DIRECTOR(ManagerDirector managerDirector) {
+    public static ObjectDirector<Currency> CURRENCY_DIRECTOR(ManagerDirector managerDirector,
+                                                             String objectName) {
         ObjectDirector<Currency> director = new ObjectDirector<>(managerDirector, ObjectDirectorData.simple(managerDirector.getFileManager(),
-                "Currency"), Currency::fromFile);
+                objectName), Currency::fromFile);
         director.getBuilderManager().setBuilderBiFunction(
                 CurrencyBuilder::build);
         return director;

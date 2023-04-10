@@ -120,7 +120,8 @@ public abstract class ManagerDirector {
      * @param objectName The name of the object
      */
     public void addCurrencyDirector(String objectName) {
-        EconomyFactory.CURRENCY_DIRECTOR(this);
+        addManager(objectName + "Director",
+                EconomyFactory.CURRENCY_DIRECTOR(this, objectName));
     }
 
     /**
