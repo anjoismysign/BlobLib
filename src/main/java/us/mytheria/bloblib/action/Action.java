@@ -20,13 +20,19 @@ public abstract class Action<T extends Entity> {
      */
     public static Action<Entity> fromConfigurationSection(ConfigurationSection section) {
         String type = Objects.requireNonNull(section.getString("Type"), "Action.Type is null");
-        switch (type) {
-            case "ActorCommand" -> {
-                String command = Objects.requireNonNull(section.getString("ActorCommand"), "Action.Command is null");
+        ActionType actionType;
+        try {
+            actionType = ActionType.valueOf(type);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Unknown Action Type: " + type);
+        }
+        switch (actionType) {
+            case ACTOR_COMMAND -> {
+                String command = Objects.requireNonNull(section.getString("Command"), "Action.Command is null");
                 return CommandAction.build(command);
             }
-            case "ConsoleCommand" -> {
-                String command = Objects.requireNonNull(section.getString("ConsoleCommand"), "Action.Command is null");
+            case CONSOLE_COMMAND -> {
+                String command = Objects.requireNonNull(section.getString("Command"), "Action.Command is null");
                 return ConsoleCommandAction.build(command);
             }
             default -> throw new IllegalArgumentException("Unknown Action Type: " + type);
