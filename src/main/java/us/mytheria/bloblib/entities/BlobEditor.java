@@ -199,66 +199,37 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
         return values;
     }
 
-    /**
-     * removes an element from the list
-     *
-     * @param t the element to remove
-     */
-    private void remove(T t) {
-        if (list == null)
-            return;
-        list.remove(t);
-    }
-
-    /**
-     * removes an element from the list
-     *
-     * @param t the element to remove
-     */
-    public void removeAndReload(T t) {
-        remove(t);
-        loadPage(getPage(), true);
-    }
-
-    /**
-     * Removes an element from the list. Will not close the
-     * inventory unless input is null.You have to manually
-     * call player.closeInventory() inside the consumer.
-     *
-     * @param player   the player
-     * @param consumer the consumer to accept the element
-     */
-    @Override
-    public void removeElement(Player player, Consumer<T> consumer) {
+    public void selectElement(Player player, Consumer<T> consumer, String timerMessageKey) {
         loadPage(getPage(), true);
         selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
                 input -> {
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
-                    remove(input);
                     consumer.accept(input);
-                }, "Editor.Remove",
+                }, timerMessageKey,
                 this));
     }
 
-    /**
-     * Removes an element from the list. Will not close the
-     * inventory unless input is null.You have to manually
-     * call player.closeInventory() inside the consumer.
-     *
-     * @param player   the player
-     * @param consumer the consumer to accept the element
-     * @param function the function to get the ItemStack to display
-     *                 the elements.
-     */
-    public void removeElement(Player player, Consumer<T> consumer, Function<T, ItemStack> function) {
+    public void selectElement(Player player, Consumer<T> consumer, String timerMessageKey, Function<T, ItemStack> function) {
         loadCustomPage(getPage(), true, function);
         selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
                 input -> {
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
-                    remove(input);
                     consumer.accept(input);
-                }, "Editor.Remove",
+                }, timerMessageKey,
                 this));
+    }
+
+    /**
+     * Removes an object from the editor.
+     * The change will be reflected in the collection immediately.
+     *
+     * @param t The object to remove.
+     */
+    @Override
+    public void remove(T t) {
+        if (list == null)
+            return;
+        list.remove(t);
     }
 
     /**
@@ -281,25 +252,16 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     }
 
     /**
-     * add an element to the list
+     * Adds a new object to the editor.
+     * The change will be reflected in the collection immediately.
      *
-     * @param t the element to add
+     * @param t The object to add.
      */
     @Override
     public void add(T t) {
         if (list == null)
             return;
         list.add(t);
-    }
-
-    /**
-     * add an element to the list and reload the page
-     *
-     * @param t the element to add
-     */
-    public void addAndReload(T t) {
-        add(t);
-        loadPage(getPage(), true);
     }
 
     /**
