@@ -158,6 +158,9 @@ Editor:
     Type: TITLE
     Title: '&f&lREMOVED'
     Subtitle: '&7%element%'
+  Select:
+    Type: ACTIONBAR
+    Message: '&7Click an element to select it'
 Player:
   Not-Found:
     Type: CHAT
