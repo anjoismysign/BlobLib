@@ -43,7 +43,11 @@ public class ConsoleCommandAction<T extends Entity> extends Action<T> {
             updatedAction.actor = actor;
             return updatedAction;
         } else {
-            throw new IllegalArgumentException("Actor cannot be null");
+            if (actionType != ActionType.NO_ACTOR) {
+                throw new IllegalArgumentException("Actor cannot be null");
+            } else {
+                return new ConsoleCommandAction<>(command);
+            }
         }
     }
 
