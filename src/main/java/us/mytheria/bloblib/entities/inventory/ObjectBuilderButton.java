@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.entities.inventory;
 
+import com.mongodb.lang.Nullable;
 import org.bukkit.entity.Player;
 import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.entities.message.BlobSound;
@@ -18,7 +19,7 @@ public abstract class ObjectBuilderButton<T> {
      * @param buttonKey          The key/reference of the button inside the Inventory
      * @param defaultValue       The default value of the button
      * @param listenerBiConsumer The listener that will be called when the button is clicked
-     * @param function           The function that will be called when the listener is fini
+     * @param function           The function that will be called when the listener is finished
      */
     protected ObjectBuilderButton(String buttonKey, Optional<T> defaultValue,
                                   BiConsumer<ObjectBuilderButton<T>, Player> listenerBiConsumer,
@@ -37,6 +38,7 @@ public abstract class ObjectBuilderButton<T> {
         return value;
     }
 
+    @Nullable
     public T orNull() {
         return value.orElse(null);
     }

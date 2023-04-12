@@ -10,6 +10,7 @@ import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
 import us.mytheria.bloblib.entities.listeners.BlobSelectorListener;
+import us.mytheria.bloblib.entities.listeners.EditorActionType;
 import us.mytheria.bloblib.managers.SelectorListenerManager;
 
 import java.util.*;
@@ -24,6 +25,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     private final List<T> list;
     private final Collection<T> collection;
     private final SelectorListenerManager selectorManager;
+    private final Consumer<Player> addConsumer;
 
     /**
      * Creates a new BlobEditor passing a BlobInventory for VariableSelector
@@ -35,9 +37,9 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      * @return the new BlobEditor
      */
     public static <T> BlobEditor<T> build(BlobInventory blobInventory, UUID builderId,
-                                          String dataType) {
+                                          String dataType, Consumer<Player> addConsumer) {
         return new BlobEditor<>(blobInventory, builderId,
-                dataType);
+                dataType, addConsumer);
     }
 
     /**
@@ -48,9 +50,10 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      * @param dataType  the data type of the editor
      * @return the new BlobEditor
      */
-    public static <T> BlobEditor<T> DEFAULT(UUID builderId, String dataType) {
+    public static <T> BlobEditor<T> DEFAULT(UUID builderId, String dataType,
+                                            Consumer<Player> addConsumer) {
         return new BlobEditor<>(VariableSelector.DEFAULT(), builderId,
-                dataType);
+                dataType, addConsumer);
     }
 
     /**
@@ -63,28 +66,33 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      * @return the new BlobEditor
      */
     public static <T> BlobEditor<T> COLLECTION_INJECTION(UUID builderId, String dataType,
-                                                         Collection<T> collection) {
+                                                         Collection<T> collection,
+                                                         Consumer<Player> addConsumer) {
         return new BlobEditor<>(VariableSelector.DEFAULT(), builderId,
-                dataType, collection);
+                dataType, collection, addConsumer);
     }
 
     protected BlobEditor(BlobInventory blobInventory, UUID builderId,
-                         String dataType) {
+                         String dataType,
+                         Consumer<Player> addConsumer) {
         super(blobInventory, builderId, dataType, null);
-        list = new ArrayList<>();
-        collection = null;
-        selectorManager = BlobLib.getInstance().getSelectorManager();
+        this.selectorManager = BlobLib.getInstance().getSelectorManager();
+        this.list = new ArrayList<>();
+        this.collection = null;
+        this.addConsumer = addConsumer;
     }
 
     protected BlobEditor(BlobInventory blobInventory, UUID builderId,
-                         String dataType, Collection<T> collection) {
+                         String dataType, Collection<T> collection,
+                         Consumer<Player> addConsumer) {
         super(Objects.requireNonNull(blobInventory, "'blobInventory' cannot be null"),
                 Objects.requireNonNull(builderId, "'builderId' cannot be null"),
                 Objects.requireNonNull(dataType, "'dataType' cannot be null"),
                 null);
+        this.selectorManager = BlobLib.getInstance().getSelectorManager();
         this.collection = collection;
-        list = null;
-        selectorManager = BlobLib.getInstance().getSelectorManager();
+        this.list = null;
+        this.addConsumer = addConsumer;
     }
 
     /**
@@ -203,6 +211,16 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     }
 
     /**
+     * removes an element from the list
+     *
+     * @param t the element to remove
+     */
+    public void removeAndReload(T t) {
+        remove(t);
+        loadPage(getPage(), true);
+    }
+
+    /**
      * Removes an element from the list. Will not close the
      * inventory unless input is null.You have to manually
      * call player.closeInventory() inside the consumer.
@@ -210,6 +228,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      * @param player   the player
      * @param consumer the consumer to accept the element
      */
+    @Override
     public void removeElement(Player player, Consumer<T> consumer) {
         loadPage(getPage(), true);
         selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
@@ -240,17 +259,6 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
                     consumer.accept(input);
                 }, "Editor.Remove",
                 this));
-    }
-
-    /**
-     * add an element to the list
-     *
-     * @param element the element to add
-     */
-    public void addElement(T element) {
-        if (list == null)
-            return;
-        list.add(element);
     }
 
     /**
@@ -285,6 +293,16 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     }
 
     /**
+     * add an element to the list and reload the page
+     *
+     * @param t the element to add
+     */
+    public void addAndReload(T t) {
+        add(t);
+        loadPage(getPage(), true);
+    }
+
+    /**
      * @return the list
      */
     public List<T> getList() {
@@ -292,5 +310,31 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
             return new ArrayList<>(collection);
         }
         return list;
+    }
+
+    public void process(EditorActionType input, Player player) {
+        switch (input) {
+            case NEXT_PAGE -> {
+                nextPage();
+            }
+            case PREVIOUS_PAGE -> {
+                previousPage();
+            }
+            case ADD -> {
+                addConsumer.accept(player);
+            }
+            case REMOVE -> {
+                removeElement(player, t -> {
+                    open(player);
+                });
+            }
+        }
+    }
+
+    public void process(EditorActionType input) {
+        Player player = getPlayer();
+        if (player == null)
+            return;
+        process(input, player);
     }
 }

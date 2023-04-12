@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import us.mytheria.bloblib.BlobLibAPI;
 import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.entities.ArrayNavigator;
+import us.mytheria.bloblib.entities.BlobEditor;
 import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
 import us.mytheria.bloblib.utilities.BukkitUtil;
 import us.mytheria.bloblib.utilities.ItemStackUtil;
@@ -1503,5 +1504,30 @@ public class ObjectBuilderButtonBuilder {
             objectBuilder.openInventory();
             return true;
         });
+    }
+
+    /**
+     * Manages a BlobEditor
+     *
+     * @param buttonKey     The key of the button
+     * @param blobEditor    The blob editor
+     * @param objectBuilder The object builder
+     * @param <T>           The type of the blob editor
+     * @return The button
+     */
+    public static <T> ObjectBuilderButton<T> BLOB_EDITOR(String buttonKey,
+                                                         BlobEditor<T> blobEditor,
+                                                         ObjectBuilder<?> objectBuilder) {
+
+
+        String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
+        return new ObjectBuilderButton<>(buttonKey,
+                Optional.empty(),
+                (button, player) -> {
+                    BlobLibAPI.addEditorListener(player, editorActionType -> {
+                        blobEditor.process(editorActionType, player);
+                    }, "Builder." + buttonKey, blobEditor);
+                }, t -> true) {
+        };
     }
 }

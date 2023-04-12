@@ -23,7 +23,7 @@ VariableSelector:
         DisplayName: "&6Previous page"
         Lore:
           - "&7Click to go to the previous page"
-      Slot: 48
+      Slot: 52
     Next-Page:
       ItemStack:
         Material: ARROW
@@ -31,4 +31,54 @@ VariableSelector:
         DisplayName: "&6Next page"
         Lore:
           - "&7Click to go to the next page"
+      Slot: 53
+BlobEditor:
+  Title: '&l%variable% > VIEW'
+  Size: 54
+  Buttons:
+    Background:
+      ItemStack:
+        Material: BLACK_STAINED_GLASS_PANE
+        CustomModelData: 0
+        DisplayName: " "
+        Lore: [ ]
+      Slot: 45-53
+    White-Background:
+      ItemStack:
+        Material: WHITE_STAINED_GLASS_PANE
+        CustomModelData: 0
+        DisplayName: " "
+        Lore: [ ]
+      Slot: 0-44
+    Add:
+      ItemStack:
+        Material: ANVIL
+        CustomModelData: 0
+        DisplayName: "&6Add"
+        Lore:
+          - "&7Click to &aadd &7a new element"
+      Slot: 49
+    Remove:
+      ItemStack:
+        Material: GRINDSTONE
+        CustomModelData: 0
+        DisplayName: "&6Remove"
+        Lore:
+          - "&7Click to &cremove &7an existing element"
       Slot: 50
+    Previous-Page:
+      ItemStack:
+        Material: ARROW
+        CustomModelData: 0
+        DisplayName: "&6Previous page"
+        Lore:
+          - "&7Click to go to the previous page"
+      Slot: 52
+    Next-Page:
+      ItemStack:
+        Material: ARROW
+        CustomModelData: 0
+        DisplayName: "&6Next page"
+        Lore:
+          - "&7Click to go to the next page"
+      Slot: 53

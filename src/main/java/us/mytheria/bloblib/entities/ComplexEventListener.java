@@ -23,8 +23,10 @@ public class ComplexEventListener {
         ConfigurationSection configSection = section.getConfigurationSection("Values");
         Set<String> keys = configSection.getKeys(true);
         for (String key : keys) {
-            if (configSection.isConfigurationSection(key))
+            if (configSection.isConfigurationSection(key)) {
+                configValues.put(key, configSection.getConfigurationSection(key));
                 continue;
+            }
             Object value = configSection.get(key);
             configValues.put(key, value);
         }
@@ -118,5 +120,9 @@ public class ComplexEventListener {
     @SuppressWarnings("unchecked")
     public List<String> getStringList(String key) {
         return (List<String>) getValue(key);
+    }
+
+    public ConfigurationSection getConfigurationSection(String key) {
+        return (ConfigurationSection) getValue(key);
     }
 }

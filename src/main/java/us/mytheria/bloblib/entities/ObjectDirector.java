@@ -38,6 +38,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
     private final boolean hasObjectBuilderManager;
     private boolean objectIsEditable;
     protected CompletableFuture<Void> loadFilesFuture;
+    private final Consumer<Player> addConsumer;
 
     public ObjectDirector(ManagerDirector managerDirector,
                           ObjectDirectorData objectDirectorData,
@@ -51,18 +52,22 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
         super(managerDirector);
         objectIsEditable = false;
         this.hasObjectBuilderManager = hasObjectBuilderManager;
-        if (hasObjectBuilderManager)
+        if (hasObjectBuilderManager) {
             this.objectBuilderManager = new ObjectBuilderManager<>(managerDirector,
                     objectDirectorData.objectBuilderKey(), this);
-        else
+            this.addConsumer = objectBuilderManager::getOrDefault;
+        } else {
             this.objectBuilderManager = null;
+            this.addConsumer = player -> {
+            };
+        }
         Optional<File> loadFilesDirectory = managerDirector.getFileManager().searchFile(objectDirectorData.objectDirectory());
         if (loadFilesDirectory.isEmpty()) {
             Bukkit.getLogger().info("The loadFilesPathKey is not valid");
             throw new IllegalArgumentException("The loadFilesPathKey is not valid");
         }
         this.objectManager = new ObjectManager<>(managerDirector, loadFilesDirectory.get(),
-                ConcurrentHashMap::new, ConcurrentHashMap::new) {
+                ConcurrentHashMap::new, ConcurrentHashMap::new, addConsumer) {
             public void loadFiles(File path, CompletableFuture<Void> mainFuture) {
                 try {
                     if (!path.exists())

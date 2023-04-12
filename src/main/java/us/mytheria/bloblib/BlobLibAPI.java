@@ -5,11 +5,9 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import us.mytheria.bloblib.entities.BlobEditor;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
-import us.mytheria.bloblib.entities.listeners.BlobChatListener;
-import us.mytheria.bloblib.entities.listeners.BlobDropListener;
-import us.mytheria.bloblib.entities.listeners.BlobSelPosListener;
-import us.mytheria.bloblib.entities.listeners.BlobSelectorListener;
+import us.mytheria.bloblib.entities.listeners.*;
 import us.mytheria.bloblib.vault.multieconomy.ElasticEconomy;
 
 import java.util.List;
@@ -80,6 +78,13 @@ public class BlobLibAPI {
                                                VariableSelector<T> selector) {
         BlobLib.getInstance().getSelectorManager().addSelectorListener(player,
                 BlobSelectorListener.wise(player, consumer, timerMessageKey, selector));
+    }
+
+    public static <T> void addEditorListener(Player player, Consumer<EditorActionType> consumer,
+                                             String timerMessageKey,
+                                             BlobEditor<T> editor) {
+        BlobLib.getInstance().getSelectorManager().addEditorListener(player,
+                BlobEditorListener.wise(player, consumer, timerMessageKey, editor));
     }
 
     /**
