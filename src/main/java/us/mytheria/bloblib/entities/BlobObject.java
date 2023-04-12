@@ -12,7 +12,7 @@ import java.io.File;
  * And example of this is link {@link us.mytheria.bloblib.entities.currency.Currency}.
  * and link {@link us.mytheria.bloblib.entities.currency.CurrencyBuilder}.
  */
-public interface BlobObject {
+public interface BlobObject extends Comparable<BlobObject> {
     /**
      * The key to identify the object by, inside the ObjectManager.
      *
@@ -40,5 +40,9 @@ public interface BlobObject {
      */
     default ObjectBuilder<BlobObject> edit() {
         return null;
+    }
+
+    default int compareTo(BlobObject o) {
+        return getKey().compareTo(o.getKey());
     }
 }
