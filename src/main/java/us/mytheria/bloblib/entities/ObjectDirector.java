@@ -69,7 +69,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
             throw new IllegalArgumentException("The loadFilesPathKey is not valid");
         }
         this.objectManager = new ObjectManager<>(managerDirector, loadFilesDirectory.get(),
-                ConcurrentHashMap::new, ConcurrentHashMap::new, addConsumer) {
+                ConcurrentHashMap::new, ConcurrentHashMap::new, this) {
             public void loadFiles(File path, CompletableFuture<Void> mainFuture) {
                 try {
                     if (!path.exists())
@@ -86,7 +86,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                                         T blobObject = readFunction.apply(file);
                                         if (blobObject.edit() != null)
                                             objectIsEditable = true;
-                                        addObject(blobObject.getKey(), blobObject, file);
+                                        this.addObject(blobObject.getKey(), blobObject, file);
                                     });
                                     futures.add(fileFuture);
                                 }
@@ -375,11 +375,11 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
      * @param player the player who is removing the object.
      */
     public void removeObject(Player player) {
-        removeObject(player, key -> {
+        removeObject(player, object -> {
+            String key = object.getKey();
             ItemStackBuilder builder = ItemStackBuilder.build(Material.COMMAND_BLOCK);
             builder.displayName(key);
             builder.lore();
-            Object object = getObjectManager().getObject(key);
             if (ItemStack.class.isInstance(object.getClass())) {
                 ItemStack itemStack = (ItemStack) object;
                 builder.displayName(ItemStackUtil.display(itemStack));
@@ -396,9 +396,10 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
      * @param function the function that is used to get the ItemStack to display
      *                 the object to be removed.
      */
-    public void removeObject(Player player, Function<String, ItemStack> function) {
-        BlobEditor<String> editor = objectManager.makeEditor(player, objectName);
-        editor.removeElement(player, key -> {
+    public void removeObject(Player player, Function<T, ItemStack> function) {
+        BlobEditor<T> editor = objectManager.makeEditor(player);
+        editor.removeElement(player, element -> {
+            String key = element.getKey();
             player.closeInventory();
             getObjectManager().removeObject(key);
             BlobLibAssetAPI.getMessage("Editor.Removed")

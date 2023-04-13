@@ -25,7 +25,7 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
     private final Supplier<Map<String, T>> objectsSupplier;
     private final Supplier<Map<String, File>> fileSupplier;
     private CompletableFuture<Void> loadFiles;
-    private ObjectDirector<T> parent;
+    private final ObjectDirector<T> parent;
     /**
      * The objects that are loaded in random access memory.
      * Should be initialized in loadInConstructor() method.
