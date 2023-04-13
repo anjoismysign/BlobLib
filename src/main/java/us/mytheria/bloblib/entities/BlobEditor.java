@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.entities;
 
+import me.anjoismysign.anjo.entities.Uber;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -8,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
+import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
 import us.mytheria.bloblib.entities.listeners.BlobSelectorListener;
 import us.mytheria.bloblib.entities.listeners.EditorActionType;
@@ -70,6 +72,56 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
                                                          Consumer<Player> addConsumer) {
         return new BlobEditor<>(VariableSelector.DEFAULT(), builderId,
                 dataType, collection, addConsumer);
+    }
+
+    /**
+     * Creates a new BlobEditor passing an ObjectDirector as a new elements' provider.
+     *
+     * @param builderId the id of the builder
+     * @param dataType  the data type of the editor
+     * @param director  the ObjectDirector
+     * @param <T>       the type of the collection
+     * @return the new BlobEditor
+     */
+    public static <T extends BlobObject> BlobEditor<T> DEFAULT_DIRECTOR(UUID builderId, String dataType,
+                                                                        ObjectDirector<T> director) {
+        Uber<BlobEditor<T>> uber = Uber.fly();
+        uber.talk(BlobEditor.DEFAULT(builderId, "DROPS", player -> {
+            ObjectManager<T> dropObjectManager = director.getObjectManager();
+            BlobEditor<String> editor = dropObjectManager.makeEditor(player, "Drop");
+            editor.selectElement(player, key -> {
+                T drop = dropObjectManager.getObject(key);
+                if (drop == null)
+                    return;
+                uber.thanks().add(drop);
+            });
+        }));
+        return uber.thanks();
+    }
+
+    /**
+     * Creates a new BlobEditor passing an ObjectDirector's ObjectBuilder as a new elements' provider.
+     *
+     * @param builderId  the id of the builder
+     * @param dataType   the data type of the editor
+     * @param collection the collection to edit
+     * @param director   the ObjectDirector
+     * @param <T>        the type of the collection
+     * @return the new BlobEditor
+     */
+    public static <T extends BlobObject> BlobEditor<T> COLLECTION_INJECTION_BUILDER(UUID builderId, String dataType,
+                                                                                    Collection<T> collection,
+                                                                                    ObjectDirector<T> director) {
+        Uber<BlobEditor<T>> uber = Uber.fly();
+        if (!director.hasObjectBuilderManager())
+            throw new IllegalArgumentException("The director does not have an ObjectBuilderManager. " +
+                    "Implement it in constructor.");
+        uber.talk(new BlobEditor<>(VariableSelector.DEFAULT(), builderId,
+                dataType, collection, player -> {
+            ObjectBuilder<T> builder = director.getOrDefaultBuilder(player.getUniqueId());
+            builder.open(player);
+        }));
+        return uber.thanks();
     }
 
     protected BlobEditor(BlobInventory blobInventory, UUID builderId,

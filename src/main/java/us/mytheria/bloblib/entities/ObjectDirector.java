@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
 import us.mytheria.bloblib.itemstack.ItemStackBuilder;
@@ -19,6 +20,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -426,5 +428,17 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
 
     public void whenObjectManagerFilesLoad(Consumer<ObjectManager<T>> consumer) {
         this.objectManager.whenFilesLoad(consumer);
+    }
+
+    public boolean hasObjectBuilderManager() {
+        return hasObjectBuilderManager;
+    }
+
+    @NotNull
+    public ObjectBuilder<T> getOrDefaultBuilder(UUID uuid) {
+        if (!hasObjectBuilderManager)
+            throw new IllegalStateException("ObjectBuilderManager is not enabled. " +
+                    "Implement it in constructor.");
+        return getObjectBuilderManager().getOrDefault(uuid);
     }
 }
