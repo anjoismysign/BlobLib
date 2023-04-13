@@ -78,22 +78,18 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      * Creates a new BlobEditor passing an ObjectDirector as a new elements' provider.
      *
      * @param builderId the id of the builder
-     * @param dataType  the data type of the editor
      * @param director  the ObjectDirector
      * @param <T>       the type of the collection
      * @return the new BlobEditor
      */
-    public static <T extends BlobObject> BlobEditor<T> DEFAULT_DIRECTOR(UUID builderId, String dataType,
+    public static <T extends BlobObject> BlobEditor<T> DEFAULT_DIRECTOR(UUID builderId,
                                                                         ObjectDirector<T> director) {
         Uber<BlobEditor<T>> uber = Uber.fly();
-        uber.talk(BlobEditor.DEFAULT(builderId, "DROPS", player -> {
+        uber.talk(BlobEditor.DEFAULT(builderId, director.objectName, player -> {
             ObjectManager<T> dropObjectManager = director.getObjectManager();
-            BlobEditor<String> editor = dropObjectManager.makeEditor(player, "Drop");
-            editor.selectElement(player, key -> {
-                T drop = dropObjectManager.getObject(key);
-                if (drop == null)
-                    return;
-                uber.thanks().add(drop);
+            BlobEditor<T> editor = dropObjectManager.makeEditor(player);
+            editor.selectElement(player, element -> {
+                uber.thanks().add(element);
             });
         }));
         return uber.thanks();
@@ -103,13 +99,12 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      * Creates a new BlobEditor passing an ObjectDirector's ObjectBuilder as a new elements' provider.
      *
      * @param builderId  the id of the builder
-     * @param dataType   the data type of the editor
      * @param collection the collection to edit
      * @param director   the ObjectDirector
      * @param <T>        the type of the collection
      * @return the new BlobEditor
      */
-    public static <T extends BlobObject> BlobEditor<T> COLLECTION_INJECTION_BUILDER(UUID builderId, String dataType,
+    public static <T extends BlobObject> BlobEditor<T> COLLECTION_INJECTION_BUILDER(UUID builderId,
                                                                                     Collection<T> collection,
                                                                                     ObjectDirector<T> director) {
         Uber<BlobEditor<T>> uber = Uber.fly();
@@ -117,7 +112,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
             throw new IllegalArgumentException("The director does not have an ObjectBuilderManager. " +
                     "Implement it in constructor.");
         uber.talk(new BlobEditor<>(VariableSelector.DEFAULT(), builderId,
-                dataType, collection, player -> {
+                director.objectName, collection, player -> {
             ObjectBuilder<T> builder = director.getOrDefaultBuilder(player.getUniqueId());
             builder.open(player);
         }));

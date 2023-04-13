@@ -25,7 +25,7 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
     private final Supplier<Map<String, T>> objectsSupplier;
     private final Supplier<Map<String, File>> fileSupplier;
     private CompletableFuture<Void> loadFiles;
-    private final Consumer<Player> addMethod;
+    private ObjectDirector<T> parent;
     /**
      * The objects that are loaded in random access memory.
      * Should be initialized in loadInConstructor() method.
@@ -42,12 +42,12 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
     public ObjectManager(ManagerDirector managerDirector, File loadFilesDirectory,
                          Supplier<Map<String, T>> supplier,
                          Supplier<Map<String, File>> fileSupplier,
-                         Consumer<Player> addMethod) {
+                         ObjectDirector<T> parent) {
         super(managerDirector);
         this.loadFilesDirectory = loadFilesDirectory;
         this.objectsSupplier = supplier;
         this.fileSupplier = fileSupplier;
-        this.addMethod = addMethod;
+        this.parent = parent;
         reload();
     }
 
@@ -185,9 +185,15 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
         return loadFilesDirectory;
     }
 
-    public BlobEditor<String> makeEditor(Player player, String dataType) {
-        return BlobEditor.COLLECTION_INJECTION(player.getUniqueId(), dataType, objects.keySet(),
-                addMethod);
+    /**
+     * Will make a BlobEditor for the given player
+     *
+     * @param player The player to make the editor for
+     * @return A BlobEditor for the given player
+     */
+    public BlobEditor<T> makeEditor(Player player) {
+        return BlobEditor.COLLECTION_INJECTION_BUILDER(player.getUniqueId(), values(),
+                parent);
     }
 
     public CompletableFuture<Void> getLoadFiles() {

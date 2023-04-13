@@ -55,7 +55,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
         this.filler = filler;
         this.builderId = builderId;
         this.values = new HashMap<>();
-        this.dataType = dataType;
+        this.dataType = dataType.toUpperCase();
         setTitle(blobInventory.getTitle().replace("%variable%", dataType));
         buildInventory();
         this.page = 1;

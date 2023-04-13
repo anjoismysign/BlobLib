@@ -36,7 +36,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
     private final List<Function<ExecutorData, Boolean>> adminChildCommands;
     private final List<Function<ExecutorData, List<String>>> nonAdminChildTabCompleter;
     private final List<Function<ExecutorData, List<String>>> adminChildTabCompleter;
-    private final String objectName;
+    protected final String objectName;
     private final boolean hasObjectBuilderManager;
     private boolean objectIsEditable;
     protected CompletableFuture<Void> loadFilesFuture;
