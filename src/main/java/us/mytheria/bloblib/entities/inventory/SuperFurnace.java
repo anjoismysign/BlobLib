@@ -3,12 +3,12 @@ package us.mytheria.bloblib.entities.inventory;
 import me.anjoismysign.anjo.entities.Result;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.FuelAPI;
 import us.mytheria.bloblib.entities.Fuel;
 import us.mytheria.bloblib.entities.FurnaceOperation;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -24,7 +24,7 @@ public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T
     private long operationSize = 200;
     private long storage = 0;
     private int outputSlot;
-    private Map<Integer, FurnaceOperation> operations;
+    private FurnaceOperation lastOperation;
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     public static <T extends InventoryButton> SuperFurnace<T>
@@ -65,7 +65,6 @@ public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T
                 "'buttonManager' cannot be null!"));
         this.buildInventory();
         this.loadDefaultButtons();
-        this.operations = new HashMap<>();
         this.operationSize = operationSize;
         this.outputSlot = outputSlot;
     }
@@ -159,9 +158,12 @@ public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T
      * @return True if the operation was successful. False otherwise.
      */
     public boolean handle() {
+        int outputSlot = getOutputSlot();
+        if (lastOperation != null)
+            return false;
+
         ItemStack fuel = getFuel();
         ItemStack input = getInput();
-        int outputSlot = getOutputSlot();
 
         int amount = input.getAmount();
         FurnaceOperation operation = smelt(fuel, input, amount);
@@ -170,7 +172,12 @@ public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T
         ItemStack output = operation.result().clone();
         output.setAmount(amount);
         setButton(outputSlot, output);
-        operations.put(outputSlot, operation);
+        lastOperation = operation;
         return true;
+    }
+
+    @Nullable
+    public FurnaceOperation getLastOperation() {
+        return this.lastOperation;
     }
 }
