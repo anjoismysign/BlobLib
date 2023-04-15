@@ -1,9 +1,14 @@
 package us.mytheria.bloblib.entities.inventory;
 
+import me.anjoismysign.anjo.entities.Result;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import us.mytheria.bloblib.FuelAPI;
+import us.mytheria.bloblib.entities.Fuel;
+import us.mytheria.bloblib.entities.FurnaceOperation;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -12,10 +17,35 @@ import java.util.Objects;
  * A SuperFurnace is an instance of a SharableInventory.
  * It's a custom Furnace inventory that automatically smelts items.
  * Each operation will have a fuel size.
+ * In order to make an operation, see {@link #handle()}.
  */
 public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T> {
     private HashMap<String, ItemStack> defaultButtons;
     private long operationSize = 200;
+    private long storage = 0;
+    private int outputSlot;
+    private Map<Integer, FurnaceOperation> operations;
+
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    public static <T extends InventoryButton> SuperFurnace<T>
+    fromInventoryBuilderCarrier(InventoryBuilderCarrier<T> carrier,
+                                long operationSize) {
+        ButtonManager<T> buttonManager = carrier.buttonManager();
+        T fuelButton = buttonManager.getButton("Fuel");
+        if (fuelButton.getSlots().size() != 1)
+            return null;
+
+        T inputButton = buttonManager.getButton("Input");
+        if (inputButton.getSlots().size() != 1)
+            return null;
+
+        T outputButton = buttonManager.getButton("Output");
+        if (outputButton.getSlots().size() != 1)
+            return null;
+        int outputSlot = outputButton.getSlots().stream().findFirst().get();
+        return new SuperFurnace<>(carrier.title(), carrier.size(),
+                buttonManager, operationSize, outputSlot);
+    }
 
     /**
      * Constructs a InventoryHolderBuilder with a title, size, and a ButtonManager.
@@ -26,7 +56,8 @@ public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T
      */
     protected SuperFurnace(@NotNull String title, int size,
                            @NotNull ButtonManager<T> buttonManager,
-                           long operationSize) {
+                           long operationSize,
+                           int outputSlot) {
         this.setTitle(Objects.requireNonNull(title,
                 "'title' cannot be null!"));
         this.setSize(size);
@@ -34,7 +65,9 @@ public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T
                 "'buttonManager' cannot be null!"));
         this.buildInventory();
         this.loadDefaultButtons();
+        this.operations = new HashMap<>();
         this.operationSize = operationSize;
+        this.outputSlot = outputSlot;
     }
 
     /**
@@ -54,14 +87,90 @@ public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T
      */
     @NotNull
     public SuperFurnace<T> copy() {
-        return new SuperFurnace<>(getTitle(), getSize(), getButtonManager(), getOperationSize());
+        return new SuperFurnace<>(getTitle(), getSize(), getButtonManager(), getOperationSize(),
+                getOutputSlot());
     }
 
+    /**
+     * Will return the size of fuel required for each operation.
+     *
+     * @return The size of fuel required for each operation.
+     */
     public long getOperationSize() {
         return operationSize;
     }
 
-    public boolean smelt(ItemStack itemStack) {
+    /**
+     * Will return the fuel stored in the current super furnace.
+     *
+     * @return The fuel stored in the current super furnace.
+     */
+    public long getStorage() {
+        return storage;
+    }
 
+    /**
+     * Will attempt to smelt the input item.
+     *
+     * @param fuel   The fuel to use.
+     * @param input  The input item to smelt.
+     * @param amount The amount of items to smelt.
+     * @return The result of the operation.
+     */
+    public FurnaceOperation smelt(ItemStack fuel, ItemStack input, int amount) {
+        long operationSize = this.operationSize * amount;
+        int compare = Long.compare(storage, operationSize);
+        if (compare == -1)
+            return FurnaceOperation.fail();
+        if (compare <= 0) {
+            Result<Fuel> isFuel = FuelAPI.isFuel(fuel.getType());
+            if (!isFuel.isValid())
+                return FurnaceOperation.fail();
+            Fuel value = isFuel.value();
+            long ticks = value.getBurnTime() * amount;
+            storage += ticks;
+        }
+        return FurnaceOperation.vanilla(input);
+    }
+
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    public ItemStack getFuel() {
+        T fuelButton = getButtonManager().getButton("Fuel");
+        if (fuelButton.getSlots().size() != 1)
+            return null;
+        return getButton(fuelButton.getSlots().stream().findFirst().get());
+    }
+
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    public ItemStack getInput() {
+        T inputButton = getButtonManager().getButton("Input");
+        if (inputButton.getSlots().size() != 1)
+            return null;
+        return getButton(inputButton.getSlots().stream().findFirst().get());
+    }
+
+    public int getOutputSlot() {
+        return this.outputSlot;
+    }
+
+    /**
+     * Will attempt to smelt the input item with the fuel.
+     *
+     * @return True if the operation was successful. False otherwise.
+     */
+    public boolean handle() {
+        ItemStack fuel = getFuel();
+        ItemStack input = getInput();
+        int outputSlot = getOutputSlot();
+
+        int amount = input.getAmount();
+        FurnaceOperation operation = smelt(fuel, input, amount);
+        if (!operation.success())
+            return false;
+        ItemStack output = operation.result().clone();
+        output.setAmount(amount);
+        setButton(outputSlot, output);
+        operations.put(outputSlot, operation);
+        return true;
     }
 }
