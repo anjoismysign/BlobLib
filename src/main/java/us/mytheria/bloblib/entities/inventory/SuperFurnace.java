@@ -1,13 +1,16 @@
 package us.mytheria.bloblib.entities.inventory;
 
 import me.anjoismysign.anjo.entities.Result;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.Experience;
 import us.mytheria.bloblib.FuelAPI;
 import us.mytheria.bloblib.entities.Fuel;
 import us.mytheria.bloblib.entities.FurnaceOperation;
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
@@ -26,7 +29,6 @@ public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T
     private int outputSlot;
     private FurnaceOperation lastOperation;
 
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public static <T extends InventoryButton> SuperFurnace<T>
     fromInventoryBuilderCarrier(InventoryBuilderCarrier<T> carrier,
                                 long operationSize) {
@@ -48,7 +50,10 @@ public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T
             return null;
         if (outputButton.getSlots().size() != 1)
             return null;
-        int outputSlot = outputButton.getSlots().stream().findFirst().get();
+        int outputSlot = outputButton.getSlots().stream().findFirst()
+                .orElseThrow(() -> new NoSuchElementException(
+                        "Inventory '" + carrier.title() + "' has an empty " +
+                                "Output button!"));
         return new SuperFurnace<>(carrier.title(), carrier.size(),
                 buttonManager, operationSize, outputSlot,
                 fuelButton, inputButton);
@@ -122,16 +127,14 @@ public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T
     /**
      * Will attempt to smelt the input item.
      *
-     * @param fuel   The fuel to use.
-     * @param input  The input item to smelt.
-     * @param amount The amount of items to smelt.
+     * @param fuel  The fuel to use.
+     * @param input The input item to smelt.
      * @return The result of the operation.
      */
-    public FurnaceOperation smelt(ItemStack fuel, ItemStack input, int amount) {
+    public FurnaceOperation smelt(ItemStack fuel, ItemStack input) {
+        int amount = input.getAmount();
         long operationSize = this.operationSize * amount;
         int compare = Long.compare(storage, operationSize);
-        if (compare == -1)
-            return FurnaceOperation.fail();
         if (compare <= 0) {
             Result<Fuel> isFuel = FuelAPI.isFuel(fuel.getType());
             if (!isFuel.isValid())
@@ -140,6 +143,9 @@ public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T
             long ticks = value.getBurnTime() * amount;
             storage += ticks;
         }
+        compare = Long.compare(storage, operationSize);
+        if (compare == -1)
+            return FurnaceOperation.fail();
         return FurnaceOperation.vanilla(input);
     }
 
@@ -173,15 +179,26 @@ public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T
         ItemStack fuel = getFuel();
         ItemStack input = getInput();
 
-        int amount = input.getAmount();
-        FurnaceOperation operation = smelt(fuel, input, amount);
+        FurnaceOperation operation = smelt(fuel, input);
         if (!operation.success())
             return false;
         ItemStack output = operation.result().clone();
-        output.setAmount(amount);
         setButton(outputSlot, output);
         lastOperation = operation;
         return true;
+    }
+
+    /**
+     * Will apply the experience to the player and remove the last operation.
+     *
+     * @param player The player to apply the experience to.
+     */
+    public void apply(Player player) {
+        if (lastOperation == null)
+            return;
+        float experience = lastOperation.experience();
+        Experience.changeExp(player, experience);
+        lastOperation = null;
     }
 
     @Nullable

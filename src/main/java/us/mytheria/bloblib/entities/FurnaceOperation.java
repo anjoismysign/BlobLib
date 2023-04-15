@@ -6,7 +6,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.jetbrains.annotations.Nullable;
 
-public record FurnaceOperation(boolean success, @Nullable ItemStack result, float experience) {
+public record FurnaceOperation(boolean success, @Nullable ItemStack result,
+                               float experience, int amount) {
 
     /**
      * Creates a new failed furnace operation.
@@ -14,7 +15,8 @@ public record FurnaceOperation(boolean success, @Nullable ItemStack result, floa
      * @return The failed furnace operation
      */
     public static FurnaceOperation fail() {
-        return new FurnaceOperation(false, null, 0F);
+        return new FurnaceOperation(false, null,
+                0F, 0);
     }
 
     /**
@@ -25,8 +27,11 @@ public record FurnaceOperation(boolean success, @Nullable ItemStack result, floa
      * @param result The result of the operation
      * @return The furnace operation
      */
-    public static FurnaceOperation of(ItemStack result, float experience) {
-        return new FurnaceOperation(true, result, experience);
+    public static FurnaceOperation of(ItemStack result,
+                                      float experience,
+                                      int amount) {
+        return new FurnaceOperation(true, result,
+                experience, amount);
     }
 
     /**
@@ -44,7 +49,9 @@ public record FurnaceOperation(boolean success, @Nullable ItemStack result, floa
         if (recipe == null) {
             return fail();
         }
-        return of(recipe.getResult(), recipe.getExperience());
+        return of(recipe.getResult(),
+                recipe.getExperience(),
+                input.getAmount());
     }
 
     private static FurnaceRecipe getFurnaceRecipe(ItemStack input) {
