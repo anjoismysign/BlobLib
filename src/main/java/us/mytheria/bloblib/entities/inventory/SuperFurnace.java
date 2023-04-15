@@ -8,7 +8,6 @@ import us.mytheria.bloblib.FuelAPI;
 import us.mytheria.bloblib.entities.Fuel;
 import us.mytheria.bloblib.entities.FurnaceOperation;
 
-import java.util.HashMap;
 import java.util.Objects;
 
 /**
@@ -20,7 +19,8 @@ import java.util.Objects;
  * In order to make an operation, see {@link #handle()}.
  */
 public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T> {
-    private HashMap<String, ItemStack> defaultButtons;
+    private T fuelButton;
+    private T inputButton;
     private long operationSize = 200;
     private long storage = 0;
     private int outputSlot;
@@ -32,19 +32,26 @@ public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T
                                 long operationSize) {
         ButtonManager<T> buttonManager = carrier.buttonManager();
         T fuelButton = buttonManager.getButton("Fuel");
+        if (fuelButton == null)
+            return null;
         if (fuelButton.getSlots().size() != 1)
             return null;
 
         T inputButton = buttonManager.getButton("Input");
+        if (inputButton == null)
+            return null;
         if (inputButton.getSlots().size() != 1)
             return null;
 
         T outputButton = buttonManager.getButton("Output");
+        if (outputButton == null)
+            return null;
         if (outputButton.getSlots().size() != 1)
             return null;
         int outputSlot = outputButton.getSlots().stream().findFirst().get();
         return new SuperFurnace<>(carrier.title(), carrier.size(),
-                buttonManager, operationSize, outputSlot);
+                buttonManager, operationSize, outputSlot,
+                fuelButton, inputButton);
     }
 
     /**
@@ -57,7 +64,9 @@ public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T
     protected SuperFurnace(@NotNull String title, int size,
                            @NotNull ButtonManager<T> buttonManager,
                            long operationSize,
-                           int outputSlot) {
+                           int outputSlot,
+                           @Nullable T fuelButton,
+                           @Nullable T inputButton) {
         this.setTitle(Objects.requireNonNull(title,
                 "'title' cannot be null!"));
         this.setSize(size);
@@ -67,6 +76,8 @@ public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T
         this.loadDefaultButtons();
         this.operationSize = operationSize;
         this.outputSlot = outputSlot;
+        this.fuelButton = fuelButton;
+        this.inputButton = inputButton;
     }
 
     /**
@@ -87,7 +98,7 @@ public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T
     @NotNull
     public SuperFurnace<T> copy() {
         return new SuperFurnace<>(getTitle(), getSize(), getButtonManager(), getOperationSize(),
-                getOutputSlot());
+                getOutputSlot(), getFuelButton(), getInputButton());
     }
 
     /**
@@ -132,20 +143,18 @@ public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T
         return FurnaceOperation.vanilla(input);
     }
 
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    /**
+     * @return The fuel ItemStack. Throws NoSuchElementException if the fuel button is empty.
+     */
     public ItemStack getFuel() {
-        T fuelButton = getButtonManager().getButton("Fuel");
-        if (fuelButton.getSlots().size() != 1)
-            return null;
-        return getButton(fuelButton.getSlots().stream().findFirst().get());
+        return getButton(fuelButton.getSlots().stream().findFirst().orElseThrow());
     }
 
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    /**
+     * @return The input ItemStack. Throws NoSuchElementException if the input button is empty.
+     */
     public ItemStack getInput() {
-        T inputButton = getButtonManager().getButton("Input");
-        if (inputButton.getSlots().size() != 1)
-            return null;
-        return getButton(inputButton.getSlots().stream().findFirst().get());
+        return getButton(inputButton.getSlots().stream().findFirst().orElseThrow());
     }
 
     public int getOutputSlot() {
@@ -161,7 +170,6 @@ public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T
         int outputSlot = getOutputSlot();
         if (lastOperation != null)
             return false;
-
         ItemStack fuel = getFuel();
         ItemStack input = getInput();
 
@@ -179,5 +187,15 @@ public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T
     @Nullable
     public FurnaceOperation getLastOperation() {
         return this.lastOperation;
+    }
+
+    @NotNull
+    public T getFuelButton() {
+        return this.fuelButton;
+    }
+
+    @NotNull
+    public T getInputButton() {
+        return this.inputButton;
     }
 }
