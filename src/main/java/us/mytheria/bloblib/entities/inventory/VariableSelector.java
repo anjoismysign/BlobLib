@@ -9,10 +9,7 @@ import us.mytheria.bloblib.entities.VariableFiller;
 import us.mytheria.bloblib.entities.VariableValue;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -30,7 +27,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
     private final UUID builderId;
     private final VariableFiller<T> filler;
     private int page;
-    private final int itemsPerPage;
+    private int itemsPerPage;
 
     /**
      * Creates a new VariableSelector
@@ -59,7 +56,10 @@ public abstract class VariableSelector<T> extends BlobInventory {
         setTitle(blobInventory.getTitle().replace("%variable%", dataType));
         buildInventory();
         this.page = 1;
-        this.itemsPerPage = getSlots("White-Background").size();
+        this.itemsPerPage = 1;
+        Set<Integer> slots = getSlots("White-Background");
+        if (slots != null)
+            setItemsPerPage(slots.size());
         loadInConstructor();
     }
 
@@ -311,5 +311,9 @@ public abstract class VariableSelector<T> extends BlobInventory {
      */
     public void addValues(Collection<T> collection) {
         addValues(collection, false);
+    }
+
+    public void setItemsPerPage(int itemsPerPage) {
+        this.itemsPerPage = itemsPerPage;
     }
 }

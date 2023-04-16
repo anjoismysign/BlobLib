@@ -28,38 +28,38 @@ public class ItemStackReader {
         } else
             builder = ItemStackBuilder.build(SkullCreator.itemFromUrl(inputMaterial.substring(5)));
 
-        if (section.contains("Amount")) {
+        if (section.isInt("Amount")) {
             builder = builder.amount(section.getInt("Amount"));
         }
-        if (section.contains("DisplayName")) {
+        if (section.isString("DisplayName")) {
             builder = builder.displayName(ChatColor
                     .translateAlternateColorCodes('&', section
                             .getString("DisplayName")));
         }
-        if (section.contains("Lore")) {
+        if (section.isList("Lore")) {
             List<String> input = section.getStringList("Lore");
             List<String> lore = new ArrayList<>();
             input.forEach(string -> lore.add(ChatColor
                     .translateAlternateColorCodes('&', string)));
             builder = builder.lore(lore);
         }
-        if (section.contains("Unbreakable")) {
+        if (section.isBoolean("Unbreakable")) {
             builder = builder.unbreakable(section.getBoolean("Unbreakable"));
         }
-        if (section.contains("Color")) {
+        if (section.isString("Color")) {
             builder = builder.color(parseColor(section.getString("Color")));
         }
-        if (section.contains("Enchantments")) {
+        if (section.isList("Enchantments")) {
             List<String> enchantNames = section.getStringList("Enchantments");
             builder = builder.deserializeAndEnchant(enchantNames);
         }
-        if (section.contains("CustomModelData")) {
+        if (section.isInt("CustomModelData")) {
             builder = builder.customModelData(section.getInt("CustomModelData"));
         }
         boolean showAll = section.getBoolean("ShowAllItemFlags", false);
         if (showAll)
             builder = builder.showAll();
-        if (section.contains("ItemFlags")) {
+        if (section.isList("ItemFlags")) {
             List<String> flagNames = section.getStringList("ItemFlags");
             builder = builder.deserializeAndFlag(flagNames);
         }
