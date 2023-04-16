@@ -38,6 +38,7 @@ public class VariableSelectorManager implements Listener {
             if (listener == null)
                 return;
             e.setCancelled(true);
+            player.sendMessage("Listening to BlobEditor");
             BlobEditor<?> blobEditor = blobEditors.get(player.getName());
             int slot = e.getRawSlot();
             BlobSound clickSound = BlobLibAssetAPI.getSound("Builder.Button-Click");

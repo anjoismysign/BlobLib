@@ -117,6 +117,20 @@ public interface VariableEditor<T> extends VariableFiller<T> {
     void manage(Player player);
 
     /**
+     * Will make the editor listen to the player
+     * for actions such as navigating through pages,
+     * adding and removing elements.
+     * If anything of the previous is done,
+     * the editor will adapt to the player for that
+     * specific action.
+     * If player selects an element, nothing will happen.
+     *
+     * @param player   The player to manage the editor.
+     * @param function the function that loads ItemStacks in inventory
+     */
+    void manage(Player player, Function<T, ItemStack> function);
+
+    /**
      * Will adjust/adapt to the player so player is able to add an element
      * to the current editor.
      *

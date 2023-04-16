@@ -382,8 +382,30 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      *
      * @param player The player to manage the editor.
      */
+    @Override
     public void manage(Player player) {
         loadPage(1, true);
+        selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
+                input -> {
+                }, null,
+                this));
+    }
+
+    /**
+     * Will make the editor listen to the player
+     * for actions such as navigating through pages,
+     * adding and removing elements.
+     * If anything of the previous is done,
+     * the editor will adapt to the player for that
+     * specific action.
+     * If player selects an element, nothing will happen.
+     *
+     * @param player   The player to manage the editor.
+     * @param function the function that loads ItemStacks in inventory
+     */
+    @Override
+    public void manage(Player player, Function<T, ItemStack> function) {
+        loadCustomPage(1, true, function);
         selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
                 input -> {
                 }, null,
