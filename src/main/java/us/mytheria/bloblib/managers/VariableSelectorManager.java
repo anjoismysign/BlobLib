@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.entities.BlobEditor;
@@ -29,19 +30,19 @@ public class VariableSelectorManager implements Listener {
     }
 
     @EventHandler
-    public void onClick(InventoryClickEvent e) {
-        Player player = (Player) e.getWhoClicked();
+    public void onEditorClick(InventoryClickEvent event) {
+        Player player = (Player) event.getWhoClicked();
         if (!variableSelectors.containsKey(player.getName())) {
             if (!blobEditors.containsKey(player.getName())) {
-                player.sendMessage("Doesn't contains BlobEditor");
                 return;
             }
             EditorListener<?> listener = main.getSelectorManager().getEditorListener(player);
-            if (listener == null)
+            if (listener == null) {
                 return;
-            e.setCancelled(true);
+            }
+            event.setCancelled(true);
             BlobEditor<?> blobEditor = blobEditors.get(player.getName());
-            int slot = e.getRawSlot();
+            int slot = event.getRawSlot();
             BlobSound clickSound = BlobLibAssetAPI.getSound("Builder.Button-Click");
             if (slot > blobEditor.valuesSize() - 1) {
                 if (blobEditor.isNextPageButton(slot)) {
@@ -64,10 +65,16 @@ public class VariableSelectorManager implements Listener {
                 }
                 return;
             }
-            listener.setInputFromSlot(blobEditor, e.getRawSlot());
+            listener.setInputFromSlot(blobEditor, event.getRawSlot());
             clickSound.handle(player);
-            return;
         }
+    }
+
+    @EventHandler
+    public void onSelectorClick(InventoryClickEvent e) {
+        Player player = (Player) e.getWhoClicked();
+        if (!variableSelectors.containsKey(player.getName()))
+            return;
         SelectorListener<?> listener = main.getSelectorManager().getSelectorListener(player);
         if (listener == null)
             return;
@@ -89,29 +96,57 @@ public class VariableSelectorManager implements Listener {
     }
 
     @EventHandler
-    public void onClose(InventoryCloseEvent e) {
+    public void onSelectorClose(InventoryCloseEvent e) {
         Player player = (Player) e.getPlayer();
-        if (!variableSelectors.containsKey(player.getName())) {
-            if (!blobEditors.containsKey(player.getName()))
-                return;
-            EditorListener<?> listener = main.getSelectorManager().getEditorListener(player);
-            if (listener == null)
-                return;
-            listener.setInput(null);
-            player.sendMessage("§cYou have closed the editor without selecting a value.");
+        if (!variableSelectors.containsKey(player.getName()))
             return;
-        }
         SelectorListener<?> listener = main.getSelectorManager().getSelectorListener(player);
         if (listener == null)
             return;
         listener.setInput(null);
     }
 
+    @EventHandler
+    public void onEditorClose(InventoryCloseEvent e) {
+        Player player = (Player) e.getPlayer();
+        if (!blobEditors.containsKey(player.getName()))
+            return;
+        EditorListener<?> listener = main.getSelectorManager().getEditorListener(player);
+        if (listener == null)
+            return;
+        listener.setInput(null);
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        removeMapping(event.getPlayer());
+    }
+
+    /**
+     * Adds a new VariableSelector to the mapping
+     *
+     * @param variableSelector The VariableSelector
+     */
     public void addVariableSelector(VariableSelector<?> variableSelector) {
         variableSelectors.put(variableSelector.getPlayer().getName(), variableSelector);
     }
 
+    /**
+     * Adds a new BlobEditor to the mapping
+     *
+     * @param blobEditor The BlobEditor
+     */
     public void addEditorSelector(BlobEditor<?> blobEditor) {
         blobEditors.put(blobEditor.getPlayer().getName(), blobEditor);
+    }
+
+    /**
+     * Removes the mapping of the player
+     *
+     * @param player The player
+     */
+    public void removeMapping(Player player) {
+        variableSelectors.remove(player.getName());
+        blobEditors.remove(player.getName());
     }
 }
