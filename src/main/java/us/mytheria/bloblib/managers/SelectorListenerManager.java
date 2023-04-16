@@ -19,24 +19,26 @@ public class SelectorListenerManager {
         this.editorListener = new HashMap<>();
     }
 
-    public void addSelectorListener(Player player, SelectorListener<?> listener) {
+    public boolean addSelectorListener(Player player, SelectorListener<?> listener) {
         String name = player.getName();
         if (selectorListener.containsKey(name)) {
             main.getMessageManager().playAndSend(player, "System.Already-Selector-Listening");
-            return;
+            return false;
         }
         listener.runTasks();
         selectorListener.put(player.getName(), listener);
+        return true;
     }
 
-    public void addEditorListener(Player player, EditorListener<?> listener) {
+    public boolean addEditorListener(Player player, EditorListener<?> listener) {
         String name = player.getName();
         if (editorListener.containsKey(name)) {
             main.getMessageManager().playAndSend(player, "System.Already-Editor-Listening");
-            return;
+            return false;
         }
         listener.runTasks();
         editorListener.put(player.getName(), listener);
+        return true;
     }
 
     public void removeSelectorListener(Player player) {

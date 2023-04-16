@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
@@ -28,6 +29,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     private final Collection<T> collection;
     private final SelectorListenerManager selectorManager;
     private final Consumer<Player> addConsumer;
+    private Consumer<T> removeConsumer;
 
     /**
      * Creates a new BlobEditor passing a BlobInventory for VariableSelector
@@ -163,6 +165,16 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     }
 
     /**
+     * Gets the remove consumer
+     *
+     * @return the remove consumer
+     */
+    @Nullable
+    public Consumer<T> getRemoveConsumer() {
+        return removeConsumer;
+    }
+
+    /**
      * any actions that should be executed inside the constructor on super call
      */
     @Override
@@ -266,6 +278,13 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
         return values;
     }
 
+    /**
+     * Selects an object from the editor.
+     *
+     * @param player          The player that selected the object.
+     * @param consumer        The consumer that will be called when the object is selected.
+     * @param timerMessageKey The key of the message that will be sent to the player when the timer starts.
+     */
     public void selectElement(Player player, Consumer<T> consumer, String timerMessageKey) {
         loadPage(getPage(), true);
         selectorManager.addEditorListener(player, BlobEditorListener.wise(player,
@@ -276,6 +295,14 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
                 this));
     }
 
+    /**
+     * Selects an object from the editor.
+     *
+     * @param player          The player that selected the object.
+     * @param consumer        The consumer that will be called when the object is selected.
+     * @param timerMessageKey The key of the message that will be sent to the player when the timer starts.
+     * @param function        The function that will be called to customize the ItemStack.
+     */
     public void selectElement(Player player, Consumer<T> consumer, String timerMessageKey, Function<T, ItemStack> function) {
         loadCustomPage(getPage(), true, function);
         selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
@@ -284,6 +311,18 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
                     consumer.accept(input);
                 }, timerMessageKey,
                 this));
+    }
+
+    /**
+     * Will attempt to remove the element from the collection
+     * based on the loaded remove consumer.
+     *
+     * @param player The player to remove the element from.
+     */
+    public void removeElement(Player player) {
+        if (removeConsumer == null)
+            return;
+        removeElement(player, removeConsumer);
     }
 
     /**
@@ -383,12 +422,15 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      * @param player The player to manage the editor.
      */
     @Override
-    public void manage(Player player) {
+    public void manage(Player player, Consumer<T> removeConsumer) {
         loadPage(1, true);
-        selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
-                input -> {
-                }, null,
-                this));
+        if (!selectorManager.addEditorListener(player,
+                BlobEditorListener.wise(player,
+                        input -> {
+                        }, null,
+                        this)))
+            return;
+        this.removeConsumer = removeConsumer;
     }
 
     /**
@@ -404,11 +446,15 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      * @param function the function that loads ItemStacks in inventory
      */
     @Override
-    public void manage(Player player, Function<T, ItemStack> function) {
+    public void manage(Player player, Function<T, ItemStack> function,
+                       Consumer<T> removeConsumer) {
         loadCustomPage(1, true, function);
-        selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
-                input -> {
-                }, null,
-                this));
+        if (!selectorManager.addEditorListener(player,
+                BlobEditorListener.wise(player,
+                        input -> {
+                        }, null,
+                        this)))
+            return;
+        this.removeConsumer = removeConsumer;
     }
 }

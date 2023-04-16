@@ -112,9 +112,10 @@ public interface VariableEditor<T> extends VariableFiller<T> {
      * specific action.
      * If player selects an element, nothing will happen.
      *
-     * @param player The player to manage the editor.
+     * @param player         The player to manage the editor.
+     * @param removeConsumer what should happen when an element is removed
      */
-    void manage(Player player);
+    void manage(Player player, Consumer<T> removeConsumer);
 
     /**
      * Will make the editor listen to the player
@@ -125,10 +126,12 @@ public interface VariableEditor<T> extends VariableFiller<T> {
      * specific action.
      * If player selects an element, nothing will happen.
      *
-     * @param player   The player to manage the editor.
-     * @param function the function that loads ItemStacks in inventory
+     * @param player         The player to manage the editor.
+     * @param function       the function that loads ItemStacks in inventory
+     * @param removeConsumer what should happen when an element is removed
      */
-    void manage(Player player, Function<T, ItemStack> function);
+    void manage(Player player, Function<T, ItemStack> function,
+                Consumer<T> removeConsumer);
 
     /**
      * Will adjust/adapt to the player so player is able to add an element
