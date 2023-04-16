@@ -22,6 +22,10 @@ System:
     Type: CHAT
     Message: '&cCannot proceed. We are expecting you to select something else.'
     BlobSound: System.Alert
+  Already-Editor-Listening:
+    Type: CHAT
+    Message: '&cCannot proceed. We are expecting you to select something else.'
+    BlobSound: System.Alert
   Already-Drop-Listening:
     Type: CHAT
     Message: '&cCannot proceed. We are expecting you to drop something else.'
