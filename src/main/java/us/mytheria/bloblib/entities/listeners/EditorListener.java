@@ -20,10 +20,10 @@ public class EditorListener<T> extends InputListener {
     }
 
     @SuppressWarnings("unchecked")
-    public EditorListener(String owner, Consumer<T> inputConsumer,
+    public EditorListener(String owner, Consumer<EditorListener<T>> inputConsumer,
                           BlobEditor<T> editor) {
         super(owner, inputListener -> {
-            inputConsumer.accept(((EditorListener<T>) inputListener).getInput());
+            inputConsumer.accept((EditorListener<T>) inputListener);
         });
         this.editor = editor;
         register();

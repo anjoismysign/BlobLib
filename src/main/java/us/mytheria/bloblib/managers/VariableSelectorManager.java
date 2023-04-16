@@ -32,8 +32,10 @@ public class VariableSelectorManager implements Listener {
     public void onClick(InventoryClickEvent e) {
         Player player = (Player) e.getWhoClicked();
         if (!variableSelectors.containsKey(player.getName())) {
-            if (!blobEditors.containsKey(player.getName()))
+            if (!blobEditors.containsKey(player.getName())) {
+                player.sendMessage("Doesn't contains BlobEditor");
                 return;
+            }
             EditorListener<?> listener = main.getSelectorManager().getEditorListener(player);
             if (listener == null)
                 return;
@@ -96,6 +98,7 @@ public class VariableSelectorManager implements Listener {
             if (listener == null)
                 return;
             listener.setInput(null);
+            player.sendMessage("§cYou have closed the editor without selecting a value.");
             return;
         }
         SelectorListener<?> listener = main.getSelectorManager().getSelectorListener(player);

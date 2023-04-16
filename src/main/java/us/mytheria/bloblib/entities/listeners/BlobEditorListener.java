@@ -43,8 +43,13 @@ public class BlobEditorListener<T> extends EditorListener<T> {
         if (timerMessageKey != null)
             timerMessage = Optional.ofNullable(BlobLibAssetAPI.getMessage(timerMessageKey));
         List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(new ArrayList<>());
-        return new BlobEditorListener<>(player.getName(), input -> {
+        return new BlobEditorListener<>(player.getName(), listener -> {
+            T input = listener.getInput();
             selectorManager.removeEditorListener(player);
+            if (input == null) {
+                player.closeInventory();
+                return;
+            }
             Bukkit.getScheduler().runTask(main, () -> {
                 if (player == null || !player.isOnline()) {
                     return;
@@ -68,7 +73,7 @@ public class BlobEditorListener<T> extends EditorListener<T> {
         this.messages = messages;
     }
 
-    private BlobEditorListener(String owner, Consumer<T> inputConsumer,
+    private BlobEditorListener(String owner, Consumer<EditorListener<T>> inputConsumer,
                                List<BlobMessage> messages, BlobEditor<T> selector) {
         super(owner, inputConsumer, selector);
         this.messages = messages;

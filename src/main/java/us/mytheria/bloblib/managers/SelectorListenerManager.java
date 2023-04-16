@@ -38,6 +38,7 @@ public class SelectorListenerManager {
         }
         listener.runTasks();
         editorListener.put(player.getName(), listener);
+        player.sendMessage("Listening to a BlobEditor");
         return true;
     }
 
@@ -46,6 +47,7 @@ public class SelectorListenerManager {
     }
 
     public void removeEditorListener(Player player) {
+        player.sendMessage("Stopped listening to a BlobEditor");
         removeEditorListener(player.getName());
     }
 
