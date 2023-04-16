@@ -1,6 +1,5 @@
 package us.mytheria.bloblib.entities;
 
-import me.anjoismysign.anjo.entities.Uber;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -9,7 +8,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
-import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
 import us.mytheria.bloblib.entities.listeners.BlobSelectorListener;
 import us.mytheria.bloblib.entities.listeners.EditorActionType;
@@ -23,11 +21,10 @@ import java.util.function.Function;
  * @author anjoismysign
  * A BlobEditor is a VariableEditor that can be used to edit a collection.
  */
-public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor<T> {
+public class BlobSelector<T> extends VariableSelector<T> implements VariableFiller<T> {
     private final List<T> list;
     private final Collection<T> collection;
     private final SelectorListenerManager selectorManager;
-    private final Consumer<Player> addConsumer;
 
     /**
      * Creates a new BlobEditor passing a BlobInventory for VariableSelector
@@ -37,16 +34,15 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      * @param blobInventory the BlobInventory
      * @param builderId     the id of the builder
      * @param dataType      the data type of the editor
-     * @param addConsumer   the consumer to add a new element
      * @param collection    the collection to inject
      * @return the new BlobEditor
      */
-    public static <T> BlobEditor<T> build(BlobInventory blobInventory, UUID builderId,
-                                          String dataType, Consumer<Player> addConsumer,
-                                          Collection<T> collection) {
-        return new BlobEditor<>(blobInventory, builderId,
-                dataType, collection, addConsumer);
+    public static <T> BlobSelector<T> build(BlobInventory blobInventory, UUID builderId,
+                                            String dataType, Collection<T> collection) {
+        return new BlobSelector<>(blobInventory, builderId,
+                dataType, collection);
     }
+
 
     /**
      * Creates a new BlobEditor passing a BlobInventory for VariableSelector
@@ -55,105 +51,52 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      * @param blobInventory the BlobInventory
      * @param builderId     the id of the builder
      * @param dataType      the data type of the editor
-     * @param addConsumer   the consumer to add a new element
      * @return the new BlobEditor
      */
-    public static <T> BlobEditor<T> build(BlobInventory blobInventory, UUID builderId,
-                                          String dataType, Consumer<Player> addConsumer) {
-        return new BlobEditor<>(blobInventory, builderId,
-                dataType, addConsumer);
+    public static <T> BlobSelector<T> build(BlobInventory blobInventory, UUID builderId,
+                                            String dataType) {
+        return new BlobSelector<>(blobInventory, builderId,
+                dataType);
     }
 
     /**
      * Creates a new BlobEditor
      *
-     * @param <T>         the type of the collection
-     * @param builderId   the id of the builder
-     * @param dataType    the data type of the editor
-     * @param addConsumer the consumer to add a new element
+     * @param <T>       the type of the collection
+     * @param builderId the id of the builder
+     * @param dataType  the data type of the editor
      * @return the new BlobEditor
      */
-    public static <T> BlobEditor<T> DEFAULT(UUID builderId, String dataType,
-                                            Consumer<Player> addConsumer) {
-        return new BlobEditor<>(VariableSelector.DEFAULT(), builderId,
-                dataType, addConsumer);
+    public static <T> BlobSelector<T> DEFAULT(UUID builderId, String dataType) {
+        return new BlobSelector<>(VariableSelector.DEFAULT(), builderId,
+                dataType);
     }
 
     /**
      * Creates a new BlobEditor passing specific collection.
      *
-     * @param <T>         the type of the collection
-     * @param builderId   the id of the builder
-     * @param dataType    the data type of the editor
-     * @param collection  the collection to edit
-     * @param addConsumer the consumer to add new elements
-     * @return the new BlobEditor
-     */
-    public static <T> BlobEditor<T> COLLECTION_INJECTION(UUID builderId, String dataType,
-                                                         Collection<T> collection,
-                                                         Consumer<Player> addConsumer) {
-        return new BlobEditor<>(VariableSelector.DEFAULT(), builderId,
-                dataType, collection, addConsumer);
-    }
-
-    /**
-     * Creates a new BlobEditor passing an ObjectDirector as a new elements' provider.
-     *
-     * @param builderId the id of the builder
-     * @param director  the ObjectDirector
-     * @param <T>       the type of the collection
-     * @return the new BlobEditor
-     */
-    public static <T extends BlobObject> BlobEditor<T> DEFAULT_DIRECTOR(UUID builderId,
-                                                                        ObjectDirector<T> director) {
-        Uber<BlobEditor<T>> uber = Uber.fly();
-        uber.talk(BlobEditor.DEFAULT(builderId, director.objectName, player -> {
-            ObjectManager<T> dropObjectManager = director.getObjectManager();
-            BlobEditor<T> editor = dropObjectManager.makeEditor(player);
-            editor.selectElement(player, element -> {
-                uber.thanks().add(element);
-            });
-        }));
-        return uber.thanks();
-    }
-
-    /**
-     * Creates a new BlobEditor passing an ObjectDirector's ObjectBuilder as a new elements' provider.
-     *
-     * @param builderId  the id of the builder
-     * @param collection the collection to edit
-     * @param director   the ObjectDirector
      * @param <T>        the type of the collection
+     * @param builderId  the id of the builder
+     * @param dataType   the data type of the editor
+     * @param collection the collection to edit
      * @return the new BlobEditor
      */
-    public static <T extends BlobObject> BlobEditor<T> COLLECTION_INJECTION_BUILDER(UUID builderId,
-                                                                                    Collection<T> collection,
-                                                                                    ObjectDirector<T> director) {
-        Uber<BlobEditor<T>> uber = Uber.fly();
-        if (!director.hasObjectBuilderManager())
-            throw new IllegalArgumentException("The director does not have an ObjectBuilderManager. " +
-                    "Implement it in constructor.");
-        uber.talk(new BlobEditor<>(VariableSelector.DEFAULT(), builderId,
-                director.objectName, collection, player -> {
-            ObjectBuilder<T> builder = director.getOrDefaultBuilder(player.getUniqueId());
-            builder.open(player);
-        }));
-        return uber.thanks();
+    public static <T> BlobSelector<T> COLLECTION_INJECTION(UUID builderId, String dataType,
+                                                           Collection<T> collection) {
+        return new BlobSelector<>(VariableSelector.DEFAULT(), builderId,
+                dataType, collection);
     }
 
-    protected BlobEditor(BlobInventory blobInventory, UUID builderId,
-                         String dataType,
-                         Consumer<Player> addConsumer) {
+    protected BlobSelector(BlobInventory blobInventory, UUID builderId,
+                           String dataType) {
         super(blobInventory, builderId, dataType, null);
         this.selectorManager = BlobLib.getInstance().getSelectorManager();
         this.list = new ArrayList<>();
         this.collection = null;
-        this.addConsumer = addConsumer;
     }
 
-    protected BlobEditor(BlobInventory blobInventory, UUID builderId,
-                         String dataType, Collection<T> collection,
-                         Consumer<Player> addConsumer) {
+    protected BlobSelector(BlobInventory blobInventory, UUID builderId,
+                           String dataType, Collection<T> collection) {
         super(Objects.requireNonNull(blobInventory, "'blobInventory' cannot be null"),
                 Objects.requireNonNull(builderId, "'builderId' cannot be null"),
                 Objects.requireNonNull(dataType, "'dataType' cannot be null"),
@@ -161,7 +104,6 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
         this.selectorManager = BlobLib.getInstance().getSelectorManager();
         this.collection = collection;
         this.list = null;
-        this.addConsumer = addConsumer;
     }
 
     /**
@@ -289,19 +231,6 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     }
 
     /**
-     * Removes an object from the editor.
-     * The change will be reflected in the collection immediately.
-     *
-     * @param t The object to remove.
-     */
-    @Override
-    public void remove(T t) {
-        if (list == null)
-            return;
-        list.remove(t);
-    }
-
-    /**
      * @return the total pages
      */
     @Override
@@ -318,19 +247,6 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
         if (totalPages == 0)
             totalPages = 1;
         return totalPages;
-    }
-
-    /**
-     * Adds a new object to the editor.
-     * The change will be reflected in the collection immediately.
-     *
-     * @param t The object to add.
-     */
-    @Override
-    public void add(T t) {
-        if (list == null)
-            return;
-        list.add(t);
     }
 
     /**
@@ -351,13 +267,9 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
             case PREVIOUS_PAGE -> {
                 previousPage();
             }
-            case ADD -> {
-                addConsumer.accept(player);
-            }
-            case REMOVE -> {
-                removeElement(player, t -> {
-                    open(player);
-                });
+            default -> {
+                throw new IllegalStateException("Unexpected value: " + input + "\n" +
+                        "Contact BlobLib developer.");
             }
         }
     }

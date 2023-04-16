@@ -12,6 +12,8 @@ import java.util.function.Function;
  * <p>
  * A VariableEditor can add and remove
  * objects from a collection inside a GUI.
+ * It extends VariableFiller in order to manage
+ * the inventory.
  */
 public interface VariableEditor<T> extends VariableFiller<T> {
     /**
