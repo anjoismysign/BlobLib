@@ -2,11 +2,12 @@ package us.mytheria.bloblib.entities.listeners;
 
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.BlobEditor;
+import us.mytheria.bloblib.entities.inventory.VariableSelector;
 
 import java.util.function.Consumer;
 
 public class EditorListener<T> extends InputListener {
-    private EditorActionType input;
+    private T input;
     private final BlobEditor<T> editor;
 
     public EditorListener(String owner, Runnable inputRunnable, BlobEditor<T> editor) {
@@ -19,7 +20,7 @@ public class EditorListener<T> extends InputListener {
     }
 
     @SuppressWarnings("unchecked")
-    public EditorListener(String owner, Consumer<EditorActionType> inputConsumer,
+    public EditorListener(String owner, Consumer<T> inputConsumer,
                           BlobEditor<T> editor) {
         super(owner, inputListener -> {
             inputConsumer.accept(((EditorListener<T>) inputListener).getInput());
@@ -30,34 +31,25 @@ public class EditorListener<T> extends InputListener {
     }
 
     private void register() {
-        BlobLib.getInstance().getVariableSelectorManager().addVariableSelector(editor);
+        BlobLib.getInstance().getVariableSelectorManager().addEditorSelector(editor);
     }
 
     @Override
-    public EditorActionType getInput() {
+    public T getInput() {
         return input;
     }
 
-    public void setInput(EditorActionType input) {
+    public void setInput(T input) {
         this.input = input;
         cancel();
         inputConsumer.accept(this);
     }
 
     @SuppressWarnings("unchecked")
-    public void setInputFromSlot(BlobEditor<?> editor, int slot) {
+    public void setInputFromSlot(VariableSelector<?> selector, int slot) {
         if (!getEditor().equals(this.editor))
             return;
-        if (editor.isNextPageButton(slot))
-            setInput(EditorActionType.NEXT_PAGE);
-        else if (editor.isPreviousPageButton(slot))
-            setInput(EditorActionType.PREVIOUS_PAGE);
-        else if (editor.getButton("Add").containsSlot(slot))
-            setInput(EditorActionType.ADD);
-        else if (editor.getButton("Remove").containsSlot(slot))
-            setInput(EditorActionType.REMOVE);
-        else
-            setInput(EditorActionType.NONE);
+        setInput((T) selector.getValue(slot));
     }
 
     public BlobEditor<T> getEditor() {

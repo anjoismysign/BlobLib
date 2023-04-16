@@ -10,6 +10,7 @@ import us.mytheria.bloblib.entities.BlobEditor;
 import us.mytheria.bloblib.entities.message.BlobMessage;
 import us.mytheria.bloblib.managers.SelectorListenerManager;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +24,7 @@ public class BlobEditorListener<T> extends EditorListener<T> {
      * Will run a SelectorListener which will send messages to player every 10 ticks asynchronously.
      * Will check if input is null. If so, will close player's inventory preventing
      * dupe exploits and will also return, not running the consumer.
-     * Note that if not null, player's inventory won't be closed so you need to make sure
+     * Note that if not null, player's inventory won't be closed, so you need to make sure
      * to close it if you need to, preferably in the consumer.
      *
      * @param player          The player to send messages to
@@ -33,13 +34,15 @@ public class BlobEditorListener<T> extends EditorListener<T> {
      * @param <T>             The type of the input
      * @return The SelectorListener
      */
-    public static <T> BlobEditorListener<T> wise(Player player, Consumer<EditorActionType> consumer,
+    public static <T> BlobEditorListener<T> wise(Player player, Consumer<T> consumer,
                                                  String timerMessageKey,
                                                  BlobEditor<T> selector) {
         BlobLib main = BlobLib.getInstance();
         SelectorListenerManager selectorManager = main.getSelectorManager();
-        Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibAssetAPI.getMessage(timerMessageKey));
-        List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
+        Optional<BlobMessage> timerMessage = Optional.empty();
+        if (timerMessageKey != null)
+            timerMessage = Optional.ofNullable(BlobLibAssetAPI.getMessage(timerMessageKey));
+        List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(new ArrayList<>());
         return new BlobEditorListener<>(player.getName(), input -> {
             selectorManager.removeEditorListener(player);
             Bukkit.getScheduler().runTask(main, () -> {
@@ -65,7 +68,7 @@ public class BlobEditorListener<T> extends EditorListener<T> {
         this.messages = messages;
     }
 
-    private BlobEditorListener(String owner, Consumer<EditorActionType> inputConsumer,
+    private BlobEditorListener(String owner, Consumer<T> inputConsumer,
                                List<BlobMessage> messages, BlobEditor<T> selector) {
         super(owner, inputConsumer, selector);
         this.messages = messages;
@@ -81,7 +84,12 @@ public class BlobEditorListener<T> extends EditorListener<T> {
                     this.cancel();
                     return;
                 }
-                messages.forEach(message -> message.handle(player));
+                if (messages.isEmpty())
+                    return;
+                for (BlobMessage message : messages) {
+                    if (message != null)
+                        message.handle(player);
+                }
             }
         };
         this.messageTask = bukkitRunnable.runTaskTimerAsynchronously(BlobLib.getInstance(), 0, 10);

@@ -1524,9 +1524,7 @@ public class ObjectBuilderButtonBuilder {
         return new ObjectBuilderButton<>(buttonKey,
                 Optional.empty(),
                 (button, player) -> {
-                    BlobLibAPI.addEditorListener(player, editorActionType -> {
-                        blobEditor.process(editorActionType, player);
-                    }, "Builder." + buttonKey, blobEditor);
+                    BlobLibAPI.addEditorListener(player, button::set, "Builder." + buttonKey, blobEditor);
                 }, t -> true) {
         };
     }

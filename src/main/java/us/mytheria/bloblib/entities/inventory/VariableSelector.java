@@ -1,7 +1,6 @@
 package us.mytheria.bloblib.entities.inventory;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import us.mytheria.bloblib.BlobLibAssetAPI;
@@ -53,7 +52,8 @@ public abstract class VariableSelector<T> extends BlobInventory {
         this.builderId = builderId;
         this.values = new HashMap<>();
         this.dataType = dataType.toUpperCase();
-        setTitle(blobInventory.getTitle().replace("%variable%", dataType));
+        if (dataType != null)
+            setTitle(blobInventory.getTitle().replace("%variable%", dataType));
         buildInventory();
         this.page = 1;
         this.itemsPerPage = 1;
@@ -271,7 +271,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
     public void nextPage() {
         setPage(page + 1);
         Player player = getPlayer();
-        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
+        BlobLibAssetAPI.getSound("Builder.Button-Click");
     }
 
     /**
@@ -280,7 +280,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
     public void previousPage() {
         setPage(page - 1);
         Player player = getPlayer();
-        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
+        BlobLibAssetAPI.getSound("Builder.Button-Click");
     }
 
     /**

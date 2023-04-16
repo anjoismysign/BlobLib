@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.entities.BlobEditor;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
 import us.mytheria.bloblib.entities.listeners.*;
@@ -74,13 +75,13 @@ public class BlobLibAPI {
      * @param <T>             The type of the selector
      */
     public static <T> void addSelectorListener(Player player, Consumer<T> consumer,
-                                               String timerMessageKey,
+                                               @Nullable String timerMessageKey,
                                                VariableSelector<T> selector) {
         BlobLib.getInstance().getSelectorManager().addSelectorListener(player,
                 BlobSelectorListener.wise(player, consumer, timerMessageKey, selector));
     }
 
-    public static <T> void addEditorListener(Player player, Consumer<EditorActionType> consumer,
+    public static <T> void addEditorListener(Player player, Consumer<T> consumer,
                                              String timerMessageKey,
                                              BlobEditor<T> editor) {
         BlobLib.getInstance().getSelectorManager().addEditorListener(player,

@@ -2,11 +2,11 @@ package us.mytheria.bloblib.entities;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
 import us.mytheria.bloblib.entities.listeners.BlobSelectorListener;
@@ -214,7 +214,7 @@ public class BlobSelector<T> extends VariableSelector<T> implements VariableFill
         loadPage(getPage(), true);
         selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
                 input -> {
-                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
+                    BlobLibAssetAPI.getSound("Builder.Button-Click");
                     consumer.accept(input);
                 }, timerMessageKey,
                 this));
@@ -224,7 +224,7 @@ public class BlobSelector<T> extends VariableSelector<T> implements VariableFill
         loadCustomPage(getPage(), true, function);
         selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
                 input -> {
-                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
+                    BlobLibAssetAPI.getSound("Builder.Button-Click");
                     consumer.accept(input);
                 }, timerMessageKey,
                 this));

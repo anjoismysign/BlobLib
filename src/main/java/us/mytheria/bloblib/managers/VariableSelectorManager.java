@@ -1,17 +1,18 @@
 package us.mytheria.bloblib.managers;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.entities.BlobEditor;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
 import us.mytheria.bloblib.entities.listeners.EditorListener;
 import us.mytheria.bloblib.entities.listeners.SelectorListener;
+import us.mytheria.bloblib.entities.message.BlobSound;
 
 import java.util.HashMap;
 
@@ -38,7 +39,33 @@ public class VariableSelectorManager implements Listener {
                 return;
             e.setCancelled(true);
             BlobEditor<?> blobEditor = blobEditors.get(player.getName());
+            int slot = e.getRawSlot();
+            BlobSound clickSound = BlobLibAssetAPI.getSound("Builder.Button-Click");
+            if (slot > blobEditor.valuesSize() - 1) {
+                if (blobEditor.isNextPageButton(slot)) {
+                    blobEditor.nextPage();
+                    return;
+                }
+                if (blobEditor.isPreviousPageButton(slot)) {
+                    blobEditor.previousPage();
+                    return;
+                }
+                if (blobEditor.isAddElementButton(slot)) {
+                    clickSound.handle(player);
+                    blobEditor.addElement(player);
+                    return;
+                }
+                if (blobEditor.isRemoveElementButton(slot)) {
+                    clickSound.handle(player);
+                    blobEditor.removeElement(player, input -> {
+                        clickSound.handle(player);
+                    });
+                    return;
+                }
+                return;
+            }
             listener.setInputFromSlot(blobEditor, e.getRawSlot());
+            clickSound.handle(player);
             return;
         }
         SelectorListener<?> listener = main.getSelectorManager().getSelectorListener(player);
@@ -58,14 +85,21 @@ public class VariableSelectorManager implements Listener {
             return;
         }
         listener.setInputFromSlot(variableSelector, slot);
-        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
+        BlobLibAssetAPI.getSound("Builder.Button-Click").handle(player);
     }
 
     @EventHandler
     public void onClose(InventoryCloseEvent e) {
         Player player = (Player) e.getPlayer();
-        if (!variableSelectors.containsKey(player.getName()))
+        if (!variableSelectors.containsKey(player.getName())) {
+            if (!blobEditors.containsKey(player.getName()))
+                return;
+            EditorListener<?> listener = main.getSelectorManager().getEditorListener(player);
+            if (listener == null)
+                return;
+            listener.setInput(null);
             return;
+        }
         SelectorListener<?> listener = main.getSelectorManager().getSelectorListener(player);
         if (listener == null)
             return;

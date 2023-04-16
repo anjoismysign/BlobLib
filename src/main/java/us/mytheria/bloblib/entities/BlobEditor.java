@@ -3,16 +3,16 @@ package us.mytheria.bloblib.entities;
 import me.anjoismysign.anjo.entities.Uber;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
 import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
+import us.mytheria.bloblib.entities.listeners.BlobEditorListener;
 import us.mytheria.bloblib.entities.listeners.BlobSelectorListener;
-import us.mytheria.bloblib.entities.listeners.EditorActionType;
 import us.mytheria.bloblib.managers.SelectorListenerManager;
 
 import java.util.*;
@@ -270,9 +270,9 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
 
     public void selectElement(Player player, Consumer<T> consumer, String timerMessageKey) {
         loadPage(getPage(), true);
-        selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
+        selectorManager.addEditorListener(player, BlobEditorListener.wise(player,
                 input -> {
-                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
+                    BlobLibAssetAPI.getSound("Builder.Button-Click");
                     consumer.accept(input);
                 }, timerMessageKey,
                 this));
@@ -282,7 +282,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
         loadCustomPage(getPage(), true, function);
         selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
                 input -> {
-                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
+                    BlobLibAssetAPI.getSound("Builder.Button-Click");
                     consumer.accept(input);
                 }, timerMessageKey,
                 this));
@@ -343,29 +343,33 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
         return list;
     }
 
-    public void process(EditorActionType input, Player player) {
-        switch (input) {
-            case NEXT_PAGE -> {
-                nextPage();
-            }
-            case PREVIOUS_PAGE -> {
-                previousPage();
-            }
-            case ADD -> {
-                addConsumer.accept(player);
-            }
-            case REMOVE -> {
-                removeElement(player, t -> {
-                    open(player);
-                });
-            }
-        }
+    /**
+     * @param slot the slot to check
+     * @return true if the slot is an add element button, false otherwise
+     */
+    public boolean isAddElementButton(int slot) {
+        return Objects.requireNonNull(getSlots("Add-Element"),
+                "Add-Element button not found").contains(slot);
     }
 
-    public void process(EditorActionType input) {
-        Player player = getPlayer();
-        if (player == null)
+    /**
+     * @param slot the slot to check
+     * @return true if the slot is a remove element button, false otherwise
+     */
+    public boolean isRemoveElementButton(int slot) {
+        return Objects.requireNonNull(getSlots("Remove-Element"),
+                "Remove-Element button not found").contains(slot);
+    }
+
+    /**
+     * Will attempt to add an element to the collection
+     * through the following player.
+     *
+     * @param player The player to manage the action.
+     */
+    public void addElement(Player player) {
+        if (addConsumer == null)
             return;
-        process(input, player);
+        addConsumer.accept(player);
     }
 }
