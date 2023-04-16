@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author anjoismysign
@@ -176,7 +177,10 @@ public class SharableInventory<T extends InventoryButton> extends InventoryBuild
      * @param key The key of the button
      */
     public void refillButton(String key) {
-        for (Integer i : getSlots(key)) {
+        Set<Integer> set = getSlots(key);
+        if (set == null)
+            return;
+        for (Integer i : set) {
             setButton(i, getButton(i));
         }
     }
