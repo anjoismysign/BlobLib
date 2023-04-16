@@ -375,6 +375,9 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      * Will make the editor listen to the player
      * for actions such as navigating through pages,
      * adding and removing elements.
+     * If anything of the previous is done,
+     * the editor will adapt to the player for that
+     * specific action.
      * If player selects an element, nothing will happen.
      *
      * @param player The player to manage the editor.
