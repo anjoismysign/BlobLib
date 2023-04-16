@@ -214,7 +214,7 @@ public class BlobSelector<T> extends VariableSelector<T> implements VariableFill
         loadPage(getPage(), true);
         selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
                 input -> {
-                    BlobLibAssetAPI.getSound("Builder.Button-Click");
+                    BlobLibAssetAPI.getSound("Builder.Button-Click").handle(player);
                     consumer.accept(input);
                 }, timerMessageKey,
                 this));
@@ -224,7 +224,7 @@ public class BlobSelector<T> extends VariableSelector<T> implements VariableFill
         loadCustomPage(getPage(), true, function);
         selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
                 input -> {
-                    BlobLibAssetAPI.getSound("Builder.Button-Click");
+                    BlobLibAssetAPI.getSound("Builder.Button-Click").handle(player);
                     consumer.accept(input);
                 }, timerMessageKey,
                 this));

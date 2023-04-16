@@ -270,7 +270,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
         loadPage(getPage(), true);
         selectorManager.addEditorListener(player, BlobEditorListener.wise(player,
                 input -> {
-                    BlobLibAssetAPI.getSound("Builder.Button-Click");
+                    BlobLibAssetAPI.getSound("Builder.Button-Click").handle(player);
                     consumer.accept(input);
                 }, timerMessageKey,
                 this));
@@ -280,7 +280,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
         loadCustomPage(getPage(), true, function);
         selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
                 input -> {
-                    BlobLibAssetAPI.getSound("Builder.Button-Click");
+                    BlobLibAssetAPI.getSound("Builder.Button-Click").handle(player);
                     consumer.accept(input);
                 }, timerMessageKey,
                 this));

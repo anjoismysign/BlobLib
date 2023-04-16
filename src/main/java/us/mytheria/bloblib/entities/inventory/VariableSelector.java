@@ -271,7 +271,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
     public void nextPage() {
         setPage(page + 1);
         Player player = getPlayer();
-        BlobLibAssetAPI.getSound("Builder.Button-Click");
+        BlobLibAssetAPI.getSound("Builder.Button-Click").handle(player);
     }
 
     /**
@@ -280,7 +280,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
     public void previousPage() {
         setPage(page - 1);
         Player player = getPlayer();
-        BlobLibAssetAPI.getSound("Builder.Button-Click");
+        BlobLibAssetAPI.getSound("Builder.Button-Click").handle(player);
     }
 
     /**
