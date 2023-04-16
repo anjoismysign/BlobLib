@@ -110,9 +110,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
         uber.talk(BlobEditor.DEFAULT(builderId, director.objectName, player -> {
             ObjectManager<T> dropObjectManager = director.getObjectManager();
             BlobEditor<T> editor = dropObjectManager.makeEditor(player);
-            editor.selectElement(player, element -> {
-                uber.thanks().add(element);
-            });
+            editor.selectElement(player, element -> uber.thanks().add(element));
         }));
         return uber.thanks();
     }
@@ -371,5 +369,21 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
         if (addConsumer == null)
             return;
         addConsumer.accept(player);
+    }
+
+    /**
+     * Will make the editor listen to the player
+     * for actions such as navigating through pages,
+     * adding and removing elements.
+     * If player selects an element, nothing will happen.
+     *
+     * @param player The player to manage the editor.
+     */
+    public void manage(Player player) {
+        loadPage(1, true);
+        selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
+                input -> {
+                }, null,
+                this));
     }
 }
