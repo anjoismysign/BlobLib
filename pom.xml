@@ -5,7 +5,7 @@
 
     <groupId>us.mytheria</groupId>
     <artifactId>bloblib</artifactId>
-    <version>1.682s</version>
+    <version>1.683s</version>
     <packaging>jar</packaging>
 
     <name>BlobLib</name>

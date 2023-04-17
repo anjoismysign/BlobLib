@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -242,6 +244,15 @@ public final class ItemStackBuilder {
                 meta.setColor(color);
                 itemStack.setItemMeta(meta);
             }
+        });
+    }
+
+    public ItemStackBuilder attribute(Attribute attribute, double amount, AttributeModifier.Operation operation) {
+        return itemMeta(itemMeta -> {
+            Collection<AttributeModifier> modifiers = itemMeta.getAttributeModifiers(attribute);
+            UUID uuid = UUID.randomUUID();
+            AttributeModifier modifier = new AttributeModifier(uuid, uuid.toString(), amount, operation);
+            itemMeta.addAttributeModifier(attribute, modifier);
         });
     }
 
