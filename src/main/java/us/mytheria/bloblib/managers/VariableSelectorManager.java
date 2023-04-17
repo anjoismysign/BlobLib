@@ -32,42 +32,40 @@ public class VariableSelectorManager implements Listener {
     @EventHandler
     public void onEditorClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
-        if (!variableSelectors.containsKey(player.getName())) {
-            if (!blobEditors.containsKey(player.getName())) {
-                return;
-            }
-            EditorListener<?> listener = main.getSelectorManager().getEditorListener(player);
-            if (listener == null) {
-                return;
-            }
-            event.setCancelled(true);
-            BlobEditor<?> blobEditor = blobEditors.get(player.getName());
-            int slot = event.getRawSlot();
-            BlobSound clickSound = BlobLibAssetAPI.getSound("Builder.Button-Click");
-            if (slot > blobEditor.valuesSize() - 1) {
-                if (blobEditor.isNextPageButton(slot)) {
-                    blobEditor.nextPage();
-                    return;
-                }
-                if (blobEditor.isPreviousPageButton(slot)) {
-                    blobEditor.previousPage();
-                    return;
-                }
-                if (blobEditor.isAddElementButton(slot)) {
-                    clickSound.handle(player);
-                    blobEditor.addElement(player);
-                    return;
-                }
-                if (blobEditor.isRemoveElementButton(slot)) {
-                    clickSound.handle(player);
-                    blobEditor.removeElement(player);
-                    return;
-                }
-                return;
-            }
-            listener.setInputFromSlot(blobEditor, event.getRawSlot());
-            clickSound.handle(player);
+        if (!blobEditors.containsKey(player.getName())) {
+            return;
         }
+        EditorListener<?> listener = main.getSelectorManager().getEditorListener(player);
+        if (listener == null) {
+            return;
+        }
+        event.setCancelled(true);
+        BlobEditor<?> blobEditor = blobEditors.get(player.getName());
+        int slot = event.getRawSlot();
+        BlobSound clickSound = BlobLibAssetAPI.getSound("Builder.Button-Click");
+        if (slot > blobEditor.valuesSize() - 1) {
+            if (blobEditor.isNextPageButton(slot)) {
+                blobEditor.nextPage();
+                return;
+            }
+            if (blobEditor.isPreviousPageButton(slot)) {
+                blobEditor.previousPage();
+                return;
+            }
+            if (blobEditor.isAddElementButton(slot)) {
+                clickSound.handle(player);
+                blobEditor.addElement(player);
+                return;
+            }
+            if (blobEditor.isRemoveElementButton(slot)) {
+                clickSound.handle(player);
+                blobEditor.removeElement(player);
+                return;
+            }
+            return;
+        }
+        listener.setInputFromSlot(blobEditor, event.getRawSlot());
+        clickSound.handle(player);
     }
 
     @EventHandler

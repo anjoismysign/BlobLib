@@ -30,6 +30,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     private final SelectorListenerManager selectorManager;
     private final Consumer<Player> addConsumer;
     private Consumer<T> removeConsumer;
+    private Function<T, ItemStack> buildFunction;
 
     /**
      * Creates a new BlobEditor passing a BlobInventory for VariableSelector
@@ -149,6 +150,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
         this.list = new ArrayList<>();
         this.collection = null;
         this.addConsumer = addConsumer;
+        this.buildFunction = null;
     }
 
     protected BlobEditor(BlobInventory blobInventory, UUID builderId,
@@ -162,6 +164,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
         this.collection = collection;
         this.list = null;
         this.addConsumer = addConsumer;
+        this.buildFunction = null;
     }
 
     /**
@@ -285,7 +288,12 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      * @param consumer        The consumer that will be called when the object is selected.
      * @param timerMessageKey The key of the message that will be sent to the player when the timer starts.
      */
+    @Override
     public void selectElement(Player player, Consumer<T> consumer, String timerMessageKey) {
+        if (buildFunction != null) {
+            selectElement(player, consumer, timerMessageKey, buildFunction);
+            return;
+        }
         loadPage(getPage(), true);
         selectorManager.addEditorListener(player, BlobEditorListener.wise(player,
                 input -> {
@@ -303,6 +311,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      * @param timerMessageKey The key of the message that will be sent to the player when the timer starts.
      * @param function        The function that will be called to customize the ItemStack.
      */
+    @Override
     public void selectElement(Player player, Consumer<T> consumer, String timerMessageKey, Function<T, ItemStack> function) {
         loadCustomPage(getPage(), true, function);
         selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
@@ -455,6 +464,33 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
                         }, null,
                         this)))
             return;
+        setBuildFunction(function);
         this.removeConsumer = removeConsumer;
+    }
+
+    /**
+     * Will make the editor listen to the player
+     * using the cache for actions such as navigating through pages,
+     * adding and removing elements.
+     *
+     * @param player The player to manage the editor.
+     */
+    public void manageWithCache(Player player) {
+        if (removeConsumer == null)
+            throw new IllegalStateException("removeConsumer is null");
+        manage(player, removeConsumer);
+    }
+
+    /**
+     * Will update the build function.
+     * If null, selectElement will use the default build function.
+     * If not null, selectElement will use the new build function.
+     * It is automaitcally called when {@link #manage(Player, Function, Consumer)}
+     * is called.
+     *
+     * @param buildFunction the new build function
+     */
+    public void setBuildFunction(Function<T, ItemStack> buildFunction) {
+        this.buildFunction = buildFunction;
     }
 }
