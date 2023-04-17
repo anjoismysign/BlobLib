@@ -432,10 +432,15 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      */
     @Override
     public void manage(Player player, Consumer<T> removeConsumer) {
+        if (buildFunction != null) {
+            manage(player, buildFunction, removeConsumer);
+            return;
+        }
         loadPage(1, true);
         if (!selectorManager.addEditorListener(player,
                 BlobEditorListener.wise(player,
                         input -> {
+                            manageWithCache(player);
                         }, null,
                         this)))
             return;
@@ -461,6 +466,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
         if (!selectorManager.addEditorListener(player,
                 BlobEditorListener.wise(player,
                         input -> {
+                            manageWithCache(player);
                         }, null,
                         this)))
             return;
