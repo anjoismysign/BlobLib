@@ -8,7 +8,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
 import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
@@ -296,10 +295,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
         }
         loadPage(getPage(), true);
         selectorManager.addEditorListener(player, BlobEditorListener.wise(player,
-                input -> {
-                    BlobLibAssetAPI.getSound("Builder.Button-Click").handle(player);
-                    consumer.accept(input);
-                }, timerMessageKey,
+                consumer, timerMessageKey,
                 this));
     }
 
@@ -315,10 +311,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     public void selectElement(Player player, Consumer<T> consumer, String timerMessageKey, Function<T, ItemStack> function) {
         loadCustomPage(getPage(), true, function);
         selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
-                input -> {
-                    BlobLibAssetAPI.getSound("Builder.Button-Click").handle(player);
-                    consumer.accept(input);
-                }, timerMessageKey,
+                consumer, timerMessageKey,
                 this));
     }
 
