@@ -201,7 +201,10 @@ public class BlobSelector<T> extends VariableSelector<T> implements VariableFill
             T get;
             try {
                 get = getList().get(i);
-                values.add(new VariableValue<>(function.apply(get), get));
+                ItemStack itemStack = function.apply(get);
+                if (itemStack == null)
+                    continue;
+                values.add(new VariableValue<>(itemStack, get));
             } catch (IndexOutOfBoundsException e) {
                 break;
             }
