@@ -5,6 +5,7 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.BlockVector;
@@ -17,6 +18,14 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public class SerializationLib {
+
+    public static String serialize(PotionEffect effect) {
+        return PotionEffectLib.stringSerialize(effect);
+    }
+
+    public static PotionEffect deserializePotionEffect(String string) {
+        return PotionEffectLib.deserializeString(string);
+    }
 
     public static String serialize(Color color) {
         return color.getRed() + "," + color.getGreen() + "," + color.getBlue();
