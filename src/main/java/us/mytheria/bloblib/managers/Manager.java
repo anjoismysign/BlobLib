@@ -7,10 +7,6 @@ public abstract class Manager {
     public Manager(ManagerDirector managerDirector) {
         this.managerDirector = managerDirector;
         this.plugin = managerDirector.getPlugin();
-        loadInConstructor();
-    }
-
-    public void loadInConstructor() {
     }
 
     public void loadManually() {

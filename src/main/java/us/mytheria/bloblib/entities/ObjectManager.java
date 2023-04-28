@@ -61,14 +61,6 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
     }
 
     /**
-     * Logic that should run in super() method in constructor.
-     */
-    @Override
-    public void loadInConstructor() {
-
-    }
-
-    /**
      * Will load all files in the given directory
      *
      * @param path The directory to load files from
