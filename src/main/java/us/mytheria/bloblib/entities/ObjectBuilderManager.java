@@ -27,17 +27,13 @@ public class ObjectBuilderManager<T extends BlobObject> extends Manager {
     public ObjectBuilderManager(ManagerDirector managerDirector,
                                 String fileKey, ObjectDirector<T> objectDirector) {
         super(managerDirector);
-        this.objectDirector = Objects.requireNonNull(objectDirector, "Object director cannot be null.");
-        this.fileKey = Objects.requireNonNull(fileKey, "File key cannot be null.");
-        update();
-    }
-
-    @Override
-    public void loadInConstructor() {
         selPosListenerManager = getManagerDirector().getPositionListenerManager();
         chatManager = getManagerDirector().getChatListenerManager();
         dropListenerManager = getManagerDirector().getDropListenerManager();
         selectorListenerManager = getManagerDirector().getSelectorManager();
+        this.objectDirector = Objects.requireNonNull(objectDirector, "Object director cannot be null.");
+        this.fileKey = Objects.requireNonNull(fileKey, "File key cannot be null.");
+        update();
     }
 
     @NotNull

@@ -3,6 +3,7 @@ package us.mytheria.bloblib.entities.message;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
@@ -49,5 +50,16 @@ public class ReferenceBlobMessage implements BlobMessage {
 
     public String getReference() {
         return reference;
+    }
+
+    /**
+     * Will retrieve the locale of the message.
+     *
+     * @return The locale of the message
+     */
+    @Override
+    @Nullable
+    public String getLocale() {
+        return message.getLocale();
     }
 }
