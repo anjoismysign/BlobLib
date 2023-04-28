@@ -234,7 +234,7 @@ public abstract class ManagerDirector {
     @SuppressWarnings("unchecked")
     public <T extends BlobObject> ObjectDirector<T> getDirector(String key,
                                                                 Class<T> clazz) {
-        return (ObjectDirector<T>) getManager(key);
+        return (ObjectDirector<T>) getManager(key + "Director");
     }
 
     /**
@@ -259,7 +259,7 @@ public abstract class ManagerDirector {
      * @return The ObjectDirector that corresponds to the key
      */
     public ObjectDirector<Currency> getCurrencyDirector(String objectName) {
-        return getDirector(objectName + "Director", Currency.class);
+        return getDirector(objectName, Currency.class);
     }
 
     /**
