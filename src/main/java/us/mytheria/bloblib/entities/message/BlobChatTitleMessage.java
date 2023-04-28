@@ -25,8 +25,8 @@ public class BlobChatTitleMessage extends BlobChatMessage {
      * @param sound    the sound to play
      */
     public BlobChatTitleMessage(String chat, String title, String subtitle, int fadeIn, int stay, int fadeOut,
-                                BlobSound sound) {
-        super(chat, sound);
+                                BlobSound sound, String locale) {
+        super(chat, sound, locale);
         this.title = title;
         this.subtitle = subtitle;
         this.fadeIn = fadeIn;
@@ -64,6 +64,6 @@ public class BlobChatTitleMessage extends BlobChatMessage {
     @Override
     public @NotNull BlobChatTitleMessage modify(Function<String, String> function) {
         return new BlobChatTitleMessage(function.apply(chat), function.apply(title), function.apply(subtitle),
-                fadeIn, stay, fadeOut, getSound());
+                fadeIn, stay, fadeOut, getSound(), getLocale());
     }
 }

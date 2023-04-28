@@ -18,8 +18,9 @@ public class BlobActionbarMessage extends SerialBlobMessage {
      * @param message The message to send
      * @param sound   The sound to play
      */
-    public BlobActionbarMessage(String message, BlobSound sound) {
-        super(sound);
+    public BlobActionbarMessage(String message, BlobSound sound,
+                                String locale) {
+        super(sound, locale);
         this.actionbar = message;
     }
 
@@ -27,7 +28,7 @@ public class BlobActionbarMessage extends SerialBlobMessage {
      * @param message The message to send
      */
     public BlobActionbarMessage(String message) {
-        this(message, null);
+        this(message, null, null);
     }
 
     /**
@@ -55,6 +56,6 @@ public class BlobActionbarMessage extends SerialBlobMessage {
      */
     @Override
     public @NotNull BlobActionbarMessage modify(Function<String, String> function) {
-        return new BlobActionbarMessage(function.apply(actionbar), getSound());
+        return new BlobActionbarMessage(function.apply(actionbar), getSound(), getLocale());
     }
 }

@@ -154,6 +154,24 @@ Builder:
     Title: '&c&lTIMEOUT'
     Subtitle: '&7You took too long to type in Message'
     BlobSound: Builder.Timeout
+  BuyingCurrency:
+    Type: TITLE
+    Title: '&f&lBUYING CURRENCY'
+    Subtitle: '&7Type in a currency name'
+  BuyingCurrency-Timeout:
+    Type: TITLE
+    Title: '&c&lTIMEOUT'
+    Subtitle: '&7You took too long to type in BuyingCurrency'
+    BlobSound: Builder.Timeout
+  SellingCurrency:
+    Type: TITLE
+    Title: '&f&lSELLING CURRENCY'
+    Subtitle: '&7Type in a currency name'
+  SellingCurrency-Timeout:
+    Type: TITLE
+    Title: '&c&lTIMEOUT'
+    Subtitle: '&7You took too long to type in SellingCurrency'
+    BlobSound: Builder.Timeout
 Editor:
   Remove:
     Type: ACTIONBAR

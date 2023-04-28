@@ -22,8 +22,9 @@ public class BlobChatActionbarMessage extends BlobChatMessage {
      * @param actionbar The actionbar message
      * @param sound     The sound to play
      */
-    public BlobChatActionbarMessage(String chat, String actionbar, BlobSound sound) {
-        super(chat, sound);
+    public BlobChatActionbarMessage(String chat, String actionbar, BlobSound sound,
+                                    String locale) {
+        super(chat, sound, locale);
         this.actionbar = actionbar;
     }
 
@@ -58,6 +59,7 @@ public class BlobChatActionbarMessage extends BlobChatMessage {
      */
     @Override
     public @NotNull BlobChatActionbarMessage modify(Function<String, String> function) {
-        return new BlobChatActionbarMessage(function.apply(chat), function.apply(actionbar), getSound());
+        return new BlobChatActionbarMessage(function.apply(chat),
+                function.apply(actionbar), getSound(), getLocale());
     }
 }

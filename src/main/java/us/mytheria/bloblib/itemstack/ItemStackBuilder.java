@@ -16,6 +16,7 @@ import us.mytheria.bloblib.entities.Rep;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.logging.Level;
 
 public final class ItemStackBuilder {
     private final ItemStack itemStack;
@@ -249,10 +250,13 @@ public final class ItemStackBuilder {
 
     public ItemStackBuilder attribute(Attribute attribute, double amount, AttributeModifier.Operation operation) {
         return itemMeta(itemMeta -> {
-            Collection<AttributeModifier> modifiers = itemMeta.getAttributeModifiers(attribute);
-            UUID uuid = UUID.randomUUID();
-            AttributeModifier modifier = new AttributeModifier(uuid, uuid.toString(), amount, operation);
-            itemMeta.addAttributeModifier(attribute, modifier);
+            try {
+                UUID uuid = UUID.randomUUID();
+                AttributeModifier modifier = new AttributeModifier(uuid, uuid.toString(), amount, operation);
+                itemMeta.addAttributeModifier(attribute, modifier);
+            } catch (Exception exception) {
+                Bukkit.getLogger().log(Level.SEVERE, exception, () -> "Failed to add attribute modifier");
+            }
         });
     }
 

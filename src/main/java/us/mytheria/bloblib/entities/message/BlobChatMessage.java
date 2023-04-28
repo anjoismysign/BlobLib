@@ -22,8 +22,8 @@ public class BlobChatMessage extends SerialBlobMessage {
      * @param message The chat message
      * @param sound   The sound to play
      */
-    public BlobChatMessage(String message, BlobSound sound) {
-        super(sound);
+    public BlobChatMessage(String message, BlobSound sound, String locale) {
+        super(sound, locale);
         this.chat = message;
     }
 
@@ -65,6 +65,7 @@ public class BlobChatMessage extends SerialBlobMessage {
      */
     @Override
     public @NotNull BlobChatMessage modify(Function<String, String> function) {
-        return new BlobChatMessage(function.apply(chat), getSound());
+        return new BlobChatMessage(function.apply(chat), getSound(),
+                getLocale());
     }
 }

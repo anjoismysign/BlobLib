@@ -11,8 +11,8 @@ public class BlobTitleMessage extends SerialBlobMessage {
     protected final int fadeIn, stay, fadeOut;
 
     public BlobTitleMessage(String title, String subtitle, int fadeIn, int stay, int fadeOut,
-                            BlobSound sound) {
-        super(sound);
+                            BlobSound sound, String locale) {
+        super(sound, locale);
         this.title = title;
         this.subtitle = subtitle;
         this.fadeIn = fadeIn;
@@ -38,6 +38,6 @@ public class BlobTitleMessage extends SerialBlobMessage {
     @Override
     public @NotNull BlobTitleMessage modify(Function<String, String> function) {
         return new BlobTitleMessage(function.apply(title), function.apply(subtitle), fadeIn, stay,
-                fadeOut, getSound());
+                fadeOut, getSound(), getLocale());
     }
 }

@@ -144,4 +144,12 @@ public interface BlobMessage {
     default BlobMessageModder<BlobMessage> modder() {
         return BlobMessageModder.mod(this);
     }
+
+    /**
+     * Will retrieve the locale of the message.
+     *
+     * @return The locale of the message
+     */
+    @Nullable
+    String getLocale();
 }

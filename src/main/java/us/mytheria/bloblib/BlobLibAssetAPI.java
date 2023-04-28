@@ -103,7 +103,31 @@ public class BlobLibAssetAPI {
      * @param key The key of the message
      * @return The message
      */
+    @Nullable
     public static ReferenceBlobMessage getMessage(String key) {
+        return getMessageManager().getMessage(key);
+    }
+
+    /**
+     * @param key    The key of the message
+     * @param locale The locale of the message
+     * @return The message
+     */
+    @Nullable
+    public static ReferenceBlobMessage getMessage(String key, String locale) {
+        return getMessageManager().getMessage(key, locale);
+    }
+
+    /**
+     * @param key    The key of the message
+     * @param locale The locale of the message
+     * @return The message, or the default message if not found
+     */
+    @Nullable
+    public static ReferenceBlobMessage getLocaleMessageOrDefault(String key, String locale) {
+        ReferenceBlobMessage localeMessage = getMessageManager().getMessage(key, locale);
+        if (localeMessage != null)
+            return localeMessage;
         return getMessageManager().getMessage(key);
     }
 
@@ -111,6 +135,7 @@ public class BlobLibAssetAPI {
      * @param key The key of the action
      * @return The action
      */
+    @Nullable
     public static Action<Entity> getAction(String key) {
         return getActionManager().getAction(key);
     }

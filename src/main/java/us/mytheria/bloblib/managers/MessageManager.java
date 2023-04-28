@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class MessageManager {
@@ -19,6 +20,7 @@ public class MessageManager {
     private HashMap<String, SerialBlobMessage> messages;
     private HashMap<String, Set<String>> pluginMessages;
     private HashMap<String, Integer> duplicates;
+    private HashMap<String, Map<String, SerialBlobMessage>> locales;
 
     public MessageManager() {
         this.main = BlobLib.getInstance();
@@ -30,6 +32,7 @@ public class MessageManager {
 
     public void load() {
         messages = new HashMap<>();
+        locales = new HashMap<>();
         pluginMessages = new HashMap<>();
         duplicates = new HashMap<>();
         loadFiles(main.getFileManager().messagesDirectory());
@@ -108,7 +111,9 @@ public class MessageManager {
                 addDuplicate(reference);
                 return;
             }
-            messages.put(reference, BlobMessageReader.read(section));
+            SerialBlobMessage message = BlobMessageReader.read(section);
+            messages.put(reference, message);
+            addOrCreateLocale(message, reference);
         });
     }
 
@@ -127,6 +132,11 @@ public class MessageManager {
             messages.put(reference, BlobMessageReader.read(section));
             pluginMessages.get(plugin.getName()).add(reference);
         });
+    }
+
+    private void addOrCreateLocale(SerialBlobMessage message, String reference) {
+        String locale = message.getLocale();
+        locales.computeIfAbsent(locale, k -> new HashMap<>()).put(reference, message);
     }
 
     /**
@@ -163,6 +173,13 @@ public class MessageManager {
     @Nullable
     public ReferenceBlobMessage getMessage(String key) {
         return new ReferenceBlobMessage(messages.get(key), key);
+    }
+
+    @Nullable
+    public ReferenceBlobMessage getMessage(String key, String locale) {
+        if (!locales.containsKey(locale))
+            return null;
+        return new ReferenceBlobMessage(locales.get(locale).get(key), key);
     }
 
     public void playAndSend(Player player, String key) {

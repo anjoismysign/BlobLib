@@ -48,7 +48,6 @@ public class CurrencyBuilder extends ObjectBuilder<Currency> {
                     BlobSound sound = BlobLibAssetAPI.getSound("Builder.Build-Complete");
                     sound.play(player);
                     player.closeInventory();
-                    build.saveToFile(objectDirector.getObjectManager().getLoadFilesDirectory());
                     objectDirector.getObjectManager().addObject(build.getKey(), build);
                     objectDirector.getBuilderManager().removeBuilder(player);
                     return build;

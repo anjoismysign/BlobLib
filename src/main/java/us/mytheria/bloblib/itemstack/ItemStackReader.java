@@ -30,7 +30,6 @@ public class ItemStackReader {
             builder = ItemStackBuilder.build(material);
         } else
             builder = ItemStackBuilder.build(SkullCreator.itemFromUrl(inputMaterial.substring(5)));
-
         if (section.isInt("Amount")) {
             builder = builder.amount(section.getInt("Amount"));
         }
@@ -70,6 +69,10 @@ public class ItemStackReader {
             ConfigurationSection attributes = section.getConfigurationSection("Attributes");
             Uber<ItemStackBuilder> uber = Uber.drive(builder);
             attributes.getKeys(false).forEach(key -> {
+                if (!attributes.isConfigurationSection(key)) {
+                    Bukkit.getLogger().severe("Attribute " + key + " is not a valid attribute.");
+                    return;
+                }
                 ConfigurationSection attributeSection = attributes.getConfigurationSection(key);
                 try {
                     Attribute attribute = Attribute.valueOf(key);

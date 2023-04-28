@@ -30,8 +30,8 @@ public class BlobChatActionbarTitleMessage extends BlobChatMessage {
      * @param sound     The sound to play
      */
     public BlobChatActionbarTitleMessage(String chat, String actionbar, String title, String subtitle, int fadeIn, int stay, int fadeOut,
-                                         BlobSound sound) {
-        super(chat, sound);
+                                         BlobSound sound, String locale) {
+        super(chat, sound, locale);
         this.actionbar = actionbar;
         this.title = title;
         this.subtitle = subtitle;
@@ -76,6 +76,7 @@ public class BlobChatActionbarTitleMessage extends BlobChatMessage {
     @Override
     public @NotNull BlobChatActionbarTitleMessage modify(Function<String, String> function) {
         return new BlobChatActionbarTitleMessage(function.apply(chat), function.apply(actionbar), function.apply(title),
-                function.apply(subtitle), fadeIn, stay, fadeOut, getSound());
+                function.apply(subtitle), fadeIn, stay, fadeOut, getSound(),
+                getLocale());
     }
 }

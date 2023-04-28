@@ -25,8 +25,9 @@ public class BlobActionbarTitleMessage extends BlobTitleMessage {
      * @param sound     The sound to play
      */
     public BlobActionbarTitleMessage(String actionbar, String title, String subtitle,
-                                     int fadeIn, int stay, int fadeOut, BlobSound sound) {
-        super(title, subtitle, fadeIn, stay, fadeOut, sound);
+                                     int fadeIn, int stay, int fadeOut, BlobSound sound,
+                                     String locale) {
+        super(title, subtitle, fadeIn, stay, fadeOut, sound, locale);
         this.actionbar = actionbar;
     }
 
@@ -60,6 +61,7 @@ public class BlobActionbarTitleMessage extends BlobTitleMessage {
     @Override
     public @NotNull BlobActionbarTitleMessage modify(Function<String, String> function) {
         return new BlobActionbarTitleMessage(function.apply(actionbar), function.apply(title),
-                function.apply(subtitle), fadeIn, stay, fadeOut, getSound());
+                function.apply(subtitle), fadeIn, stay, fadeOut, getSound(),
+                getLocale());
     }
 }
