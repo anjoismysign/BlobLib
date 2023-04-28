@@ -132,6 +132,19 @@ public class BlobLibAssetAPI {
     }
 
     /**
+     * Gets the locale of the player and returns the message.
+     *
+     * @param key    The key of the message
+     * @param player The player to get the locale from
+     * @return The message, or the default message if not found
+     */
+    @Nullable
+    public static ReferenceBlobMessage getLocaleMessageOrDefault(String key, Player player) {
+        String locale = player.getLocale();
+        return getLocaleMessageOrDefault(key, locale);
+    }
+
+    /**
      * @param key The key of the action
      * @return The action
      */
