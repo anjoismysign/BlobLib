@@ -48,9 +48,10 @@ public class ActionManager {
 
     public void unload(BlobPlugin plugin) {
         String pluginName = plugin.getName();
-        if (!pluginActions.containsKey(pluginName))
+        Set<String> actions = pluginActions.get(pluginName);
+        if (actions == null)
             return;
-        pluginActions.get(pluginName).forEach(actions::remove);
+        actions.forEach(actions::remove);
         pluginActions.remove(pluginName);
     }
 

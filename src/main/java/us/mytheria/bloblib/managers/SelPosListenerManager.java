@@ -31,9 +31,9 @@ public class SelPosListenerManager implements Listener {
         if (e.getHand() != EquipmentSlot.HAND)
             return;
         Player player = e.getPlayer();
-        if (!positionListeners.containsKey(player.getName()))
-            return;
         SelPosListener listener = positionListeners.get(player.getName());
+        if (listener == null)
+            return;
         listener.setInput(e.getClickedBlock());
         e.setCancelled(true);
     }
@@ -45,9 +45,9 @@ public class SelPosListenerManager implements Listener {
         if (e.getHand() != EquipmentSlot.HAND)
             return;
         Player player = e.getPlayer();
-        if (!positionListeners.containsKey(player.getName()))
-            return;
         SelPosListener listener = positionListeners.get(player.getName());
+        if (listener == null)
+            return;
         listener.setInput(e.getClickedBlock());
         e.setCancelled(true);
     }

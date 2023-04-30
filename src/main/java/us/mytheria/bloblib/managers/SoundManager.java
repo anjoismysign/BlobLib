@@ -55,9 +55,10 @@ public class SoundManager {
 
     public void unload(BlobPlugin plugin) {
         String pluginName = plugin.getName();
-        if (!pluginSounds.containsKey(pluginName))
+        Set<String> sounds = this.pluginSounds.get(pluginName);
+        if (sounds == null)
             return;
-        pluginSounds.get(pluginName).forEach(sounds::remove);
+        sounds.forEach(sounds::remove);
         pluginSounds.remove(pluginName);
     }
 

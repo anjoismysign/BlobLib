@@ -268,15 +268,24 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         return this;
     }
 
+    /**
+     * Will get an implementation of the CurrencyEconomy class.
+     * If the implementation doesn't exist, it will
+     * warn through console and return null.
+     *
+     * @param key The key of the implementation.
+     * @return The implementation.
+     */
     @Nullable
     public CurrencyEconomy getImplementation(String key) {
-        if (!implementations.containsKey(key)) {
-            Bukkit.getLogger().severe("Implementation doesn't exist. Currently available " +
+        CurrencyEconomy economy = implementations.get(key);
+        if (economy == null) {
+            getPlugin().getAnjoLogger().singleError("Implementation doesn't exist. Currently available " +
                     "implementations: " + Arrays.toString(implementations.values().stream()
                     .map(CurrencyEconomy::getName)
                     .toArray()));
         }
-        return implementations.get(key);
+        return economy;
     }
 
     public Collection<IdentityEconomy> retrieveImplementations() {

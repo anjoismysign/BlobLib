@@ -70,9 +70,10 @@ public class InventoryManager {
 
     public void unload(BlobPlugin plugin) {
         String pluginName = plugin.getName();
-        if (!pluginBlobInventories.containsKey(pluginName))
+        Set<String> blobInventories = pluginBlobInventories.get(pluginName);
+        if (blobInventories == null)
             return;
-        pluginBlobInventories.get(pluginName).forEach(blobInventories::remove);
+        blobInventories.forEach(blobInventories::remove);
         pluginMetaInventories.get(pluginName).forEach(metaInventories::remove);
         pluginBlobInventories.remove(pluginName);
         pluginMetaInventories.remove(pluginName);

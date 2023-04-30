@@ -26,10 +26,12 @@ public class Wallet extends HashMap<String, Double> {
     }
 
     protected boolean has(String key, double amount) {
-        return containsKey(key) && get(key).compareTo(amount) >= 0;
+        Double result = get(key);
+        return result != null && result.compareTo(amount) >= 0;
     }
 
     protected double balance(String key) {
-        return containsKey(key) ? get(key) : 0;
+        Double result = get(key);
+        return result == null ? 0 : result;
     }
 }

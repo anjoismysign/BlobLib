@@ -54,9 +54,10 @@ public class MessageManager {
 
     public void unload(BlobPlugin plugin) {
         String pluginName = plugin.getName();
-        if (!pluginMessages.containsKey(pluginName))
+        Set<String> messages = this.pluginMessages.get(pluginName);
+        if (messages == null)
             return;
-        pluginMessages.get(pluginName).forEach(messages::remove);
+        messages.forEach(this.messages::remove);
         pluginMessages.remove(pluginName);
     }
 
@@ -177,9 +178,10 @@ public class MessageManager {
 
     @Nullable
     public ReferenceBlobMessage getMessage(String key, String locale) {
-        if (!locales.containsKey(locale))
+        Map<String, SerialBlobMessage> localeMap = locales.get(locale);
+        if (localeMap == null)
             return null;
-        return new ReferenceBlobMessage(locales.get(locale).get(key), key);
+        return new ReferenceBlobMessage(localeMap.get(key), key);
     }
 
     public void playAndSend(Player player, String key) {

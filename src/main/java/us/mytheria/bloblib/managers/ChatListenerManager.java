@@ -24,9 +24,9 @@ public class ChatListenerManager implements Listener {
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent e) {
-        if (!chatListeners.containsKey(e.getPlayer().getName()))
-            return;
         ChatListener listener = chatListeners.get(e.getPlayer().getName());
+        if (listener == null)
+            return;
         listener.setInput(e.getMessage());
         e.setCancelled(true);
     }

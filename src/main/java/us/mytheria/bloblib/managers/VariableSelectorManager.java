@@ -32,7 +32,8 @@ public class VariableSelectorManager implements Listener {
     @EventHandler
     public void onEditorClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
-        if (!blobEditors.containsKey(player.getName())) {
+        BlobEditor<?> blobEditor = blobEditors.get(player.getName());
+        if (blobEditor == null) {
             return;
         }
         EditorListener<?> listener = main.getSelectorManager().getEditorListener(player);
@@ -40,7 +41,6 @@ public class VariableSelectorManager implements Listener {
             return;
         }
         event.setCancelled(true);
-        BlobEditor<?> blobEditor = blobEditors.get(player.getName());
         int slot = event.getRawSlot();
         BlobSound clickSound = BlobLibAssetAPI.getSound("Builder.Button-Click");
         if (slot > blobEditor.valuesSize() - 1) {
@@ -71,13 +71,13 @@ public class VariableSelectorManager implements Listener {
     @EventHandler
     public void onSelectorClick(InventoryClickEvent e) {
         Player player = (Player) e.getWhoClicked();
-        if (!variableSelectors.containsKey(player.getName()))
+        VariableSelector<?> variableSelector = variableSelectors.get(player.getName());
+        if (variableSelector == null)
             return;
         SelectorListener<?> listener = main.getSelectorManager().getSelectorListener(player);
         if (listener == null)
             return;
         e.setCancelled(true);
-        VariableSelector<?> variableSelector = variableSelectors.get(player.getName());
         int slot = e.getRawSlot();
         if (slot > variableSelector.valuesSize() - 1) {
             if (variableSelector.isNextPageButton(slot)) {
