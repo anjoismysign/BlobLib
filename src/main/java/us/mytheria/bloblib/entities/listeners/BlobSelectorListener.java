@@ -128,10 +128,10 @@ public class BlobSelectorListener<T> extends SelectorListener<T> {
 
     @Override
     public void runTasks() {
+        Player player = Bukkit.getPlayer(getOwner());
         BukkitRunnable bukkitRunnable = new BukkitRunnable() {
             @Override
             public void run() {
-                Player player = Bukkit.getPlayer(getOwner());
                 if (player == null || !player.isOnline()) {
                     this.cancel();
                     return;
