@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.entities.message;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -97,5 +98,12 @@ public record BlobSound(Sound sound, float volume, float pitch,
      */
     public void handle(Block block) {
         playInWorld(block.getLocation());
+    }
+
+    /**
+     * Will handle the sound to all online players.
+     */
+    public void broadcast() {
+        Bukkit.getOnlinePlayers().forEach(this::handle);
     }
 }

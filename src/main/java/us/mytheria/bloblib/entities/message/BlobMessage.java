@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.entities.message;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -116,6 +117,13 @@ public interface BlobMessage {
      */
     default void handle(Player player) {
         handle(player, player.getLocation());
+    }
+
+    /**
+     * Will handle the message to all online players.
+     */
+    default void broadcast() {
+        Bukkit.getOnlinePlayers().forEach(this::handle);
     }
 
     /**
