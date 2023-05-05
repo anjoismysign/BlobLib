@@ -409,9 +409,8 @@ public abstract class ManagerDirector {
     public ManagerDirector registerAndUpdateBlobInventory(String fileName, boolean debug) {
         File path = getFileManager().inventoriesDirectory();
         File file = new File(path + "/" + fileName + ".yml");
-        if (file.exists())
+        if (!blobFileManager.updateYAML(file))
             return this;
-        blobFileManager.updateYAML(file);
         InventoryManager.continueLoadingBlobInventories(plugin, file);
         if (debug)
             getPlugin().getAnjoLogger().debug(" inventory asset " + fileName + ".yml successfully registered");
@@ -441,9 +440,8 @@ public abstract class ManagerDirector {
     public ManagerDirector registerAndUpdateMetaBlobInventory(String fileName, boolean debug) {
         File path = getFileManager().metaInventoriesDirectory();
         File file = new File(path + "/" + fileName + ".yml");
-        if (file.exists())
+        if (!blobFileManager.updateYAML(file))
             return this;
-        blobFileManager.updateYAML(file);
         InventoryManager.continueLoadingMetaInventories(plugin, file);
         if (debug)
             getPlugin().getAnjoLogger().debug(" inventory asset " + fileName + ".yml successfully registered");

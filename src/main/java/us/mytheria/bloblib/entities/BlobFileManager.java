@@ -100,10 +100,9 @@ public class BlobFileManager extends Manager {
         String fileName = FilenameUtils.removeExtension(file.getName());
         try {
             boolean isFresh = file.createNewFile();
-            if (isFresh)
-                ResourceUtil.updateYml(file.getParentFile(),
-                        "/temp" + fileName + ".yml",
-                        fileName + ".yml", file, getPlugin());
+            ResourceUtil.updateYml(file.getParentFile(),
+                    "/temp" + fileName + ".yml",
+                    fileName + ".yml", file, getPlugin());
             return isFresh;
         } catch (IOException e) {
             e.printStackTrace();
