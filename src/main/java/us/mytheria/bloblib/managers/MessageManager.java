@@ -10,10 +10,7 @@ import us.mytheria.bloblib.entities.message.SerialBlobMessage;
 
 import javax.annotation.Nullable;
 import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class MessageManager {
     private final BlobLib main;
@@ -57,7 +54,12 @@ public class MessageManager {
         Set<String> messages = this.pluginMessages.get(pluginName);
         if (messages == null)
             return;
-        messages.forEach(this.messages::remove);
+        Iterator<String> iterator = messages.iterator();
+        while (iterator.hasNext()) {
+            String inventoryName = iterator.next();
+            this.messages.remove(inventoryName);
+            iterator.remove();
+        }
         pluginMessages.remove(pluginName);
     }
 

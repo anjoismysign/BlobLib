@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public class InventoryManager {
@@ -73,8 +74,19 @@ public class InventoryManager {
         Set<String> blobInventories = pluginBlobInventories.get(pluginName);
         if (blobInventories == null)
             return;
-        blobInventories.forEach(blobInventories::remove);
-        pluginMetaInventories.get(pluginName).forEach(metaInventories::remove);
+        Iterator<String> iterator = blobInventories.iterator();
+        while (iterator.hasNext()) {
+            String inventoryName = iterator.next();
+            this.blobInventories.remove(inventoryName);
+            iterator.remove();
+        }
+        Set<String> metaInventoryKeys = pluginMetaInventories.get(pluginName);
+        iterator = metaInventoryKeys.iterator();
+        while (iterator.hasNext()) {
+            String inventoryName = iterator.next();
+            this.metaInventories.remove(inventoryName);
+            iterator.remove();
+        }
         pluginBlobInventories.remove(pluginName);
         pluginMetaInventories.remove(pluginName);
     }

@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public class SoundManager {
@@ -58,7 +59,12 @@ public class SoundManager {
         Set<String> sounds = this.pluginSounds.get(pluginName);
         if (sounds == null)
             return;
-        sounds.forEach(sounds::remove);
+        Iterator<String> iterator = sounds.iterator();
+        while (iterator.hasNext()) {
+            String inventoryName = iterator.next();
+            this.sounds.remove(inventoryName);
+            iterator.remove();
+        }
         pluginSounds.remove(pluginName);
     }
 
