@@ -6,6 +6,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.disguises.Disguiser;
 import us.mytheria.bloblib.entities.BlobEditor;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
 import us.mytheria.bloblib.entities.listeners.*;
@@ -318,5 +319,24 @@ public class BlobLibAPI {
      */
     public static boolean removeGlobalPermission(Player player, String permission) {
         return main.getVaultManager().getVaultPermissionsWorker().removeGlobalPermission(player, permission);
+    }
+
+    /**
+     * Will return the Disguiser implementation
+     * WARNING! This method will throw an IllegalStateException if called before the world loads!
+     * <p>
+     * Disguiser interface was made in order to support/cover
+     * a wide range of disguise plugins while at the same time
+     * allowing disguising methods to be called without failing
+     * fast!
+     * <p>
+     * For future reference, if you want to use the Disguiser,
+     * be sure to not cache it in a variable, as we might see
+     * Plugman being updated :D
+     *
+     * @return Disguiser
+     */
+    public static Disguiser getDisguiser() {
+        return main.getDisguiseManager().getDisguiser();
     }
 }

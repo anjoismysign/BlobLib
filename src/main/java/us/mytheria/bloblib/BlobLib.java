@@ -1,7 +1,9 @@
 package us.mytheria.bloblib;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.mytheria.bloblib.command.BlobLibCmd;
+import us.mytheria.bloblib.disguises.DisguiseManager;
 import us.mytheria.bloblib.enginehub.EngineHubManager;
 import us.mytheria.bloblib.entities.logger.BlobPluginLogger;
 import us.mytheria.bloblib.hologram.HologramManager;
@@ -12,11 +14,12 @@ import us.mytheria.bloblib.vault.VaultManager;
 /**
  * The main class of the plugin
  */
-public final class BlobLib extends JavaPlugin {
+public class BlobLib extends JavaPlugin {
     private static BlobPluginLogger anjoLogger;
     private ScriptManager scriptManager;
     private VaultManager vaultManager;
     private EngineHubManager engineHubManager;
+    private DisguiseManager disguiseManager;
     private HologramManager hologramManager;
     private BlobLibFileManager fileManager;
     private InventoryManager inventoryManager;
@@ -72,6 +75,7 @@ public final class BlobLib extends JavaPlugin {
         fillerManager = new FillerManager();
         vaultManager = new VaultManager();
         engineHubManager = new EngineHubManager();
+        disguiseManager = new DisguiseManager();
         hologramManager = new HologramManager();
         chatManager = new ChatListenerManager();
         positionManager = new SelPosListenerManager();
@@ -82,6 +86,9 @@ public final class BlobLib extends JavaPlugin {
         //Load reloadable managers
         reload();
         new BlobLibCmd();
+
+        Bukkit.getScheduler().runTask(this,
+                () -> disguiseManager.load());
     }
 
     /**
@@ -254,5 +261,9 @@ public final class BlobLib extends JavaPlugin {
      */
     public EngineHubManager getEngineHubManager() {
         return engineHubManager;
+    }
+
+    protected DisguiseManager getDisguiseManager() {
+        return disguiseManager;
     }
 }
