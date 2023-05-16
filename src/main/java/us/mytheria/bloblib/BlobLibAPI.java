@@ -334,7 +334,7 @@ public class BlobLibAPI {
      * be sure to not cache it in a variable, as we might see
      * Plugman being updated :D
      *
-     * @return Disguiser
+     * @return the implementation
      */
     public static Disguiser getDisguiser() {
         return main.getDisguiseManager().getDisguiser();
