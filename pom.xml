@@ -5,7 +5,7 @@
 
     <groupId>us.mytheria</groupId>
     <artifactId>bloblib</artifactId>
-    <version>1.689s</version>
+    <version>1.689.1s</version>
     <packaging>jar</packaging>
 
     <name>BlobLib</name>
@@ -144,6 +144,10 @@
             <id>placeholderapi</id>
             <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
+        <repository>
+            <id>md_5-public</id>
+            <url>https://repo.md-5.net/content/groups/public/</url>
+        </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -231,7 +235,7 @@
         <dependency>
             <groupId>LibsDisguises</groupId>
             <artifactId>LibsDisguises</artifactId>
-            <version>10.0.26</version>
+            <version>10.0.29</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

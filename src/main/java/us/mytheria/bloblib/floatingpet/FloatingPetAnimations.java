@@ -11,9 +11,9 @@ public class FloatingPetAnimations {
 
     private final double followSpeed, walkAwaySpeed, hoverSpeed, hoverMaxHeightCap, hoverMinHeightCap;
     private double hoverVelocity, hoverHeight;
-    private final FloatingPet pet;
+    private final ArmorStandFloatingPet pet;
 
-    public FloatingPetAnimations(FloatingPet pet, double followSpeed, double walkAwaySpeed, double hoverSpeed,
+    public FloatingPetAnimations(ArmorStandFloatingPet pet, double followSpeed, double walkAwaySpeed, double hoverSpeed,
                                  double hoverMaxHeightCap, double hoverMinHeightCap) {
         this.pet = pet;
         this.followSpeed = followSpeed;

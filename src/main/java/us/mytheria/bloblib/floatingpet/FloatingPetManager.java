@@ -19,7 +19,7 @@ import us.mytheria.bloblib.managers.ManagerDirector;
 import java.util.*;
 import java.util.function.Function;
 
-public class FloatingPetManager<T extends FloatingPet> extends Manager implements Listener {
+public class FloatingPetManager<T extends FloatingPet<?>> extends Manager implements Listener {
     private Map<UUID, List<T>> ownerMap;
     private Map<UUID, T> petMap;
     @Nullable
@@ -74,7 +74,7 @@ public class FloatingPetManager<T extends FloatingPet> extends Manager implement
      * @param floatingPet - the pet to add
      */
     public void addPet(T floatingPet) {
-        petMap.put(floatingPet.getArmorStand().getUniqueId(), floatingPet);
+        petMap.put(floatingPet.getEntity().getUniqueId(), floatingPet);
         ownerMap.computeIfAbsent(floatingPet.getOwner().getUniqueId(), k -> new ArrayList<>()).add(floatingPet);
     }
 
@@ -160,7 +160,7 @@ public class FloatingPetManager<T extends FloatingPet> extends Manager implement
     public void onQuit(PlayerQuitEvent e) {
         Player player = e.getPlayer();
         hasPets(player).ifPresent(pets -> pets.forEach(pet -> {
-            petMap.remove(pet.getArmorStand().getUniqueId());
+            petMap.remove(pet.getEntity().getUniqueId());
             if (destroyEvent != null) {
                 Event event = destroyEvent.apply(pet);
                 Bukkit.getPluginManager().callEvent(event);

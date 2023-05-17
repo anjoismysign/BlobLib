@@ -29,7 +29,7 @@ Buttons:
       CustomModelData: 0
       DisplayName: "&6Display"
       Lore:
-        - "&7Selected: &f%display%"
+        - "&7Selected: &f%itemStack%"
     Slot: 3
   InitialBalance:
     ItemStack:

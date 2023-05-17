@@ -28,13 +28,13 @@ public class FloatingPetData {
         this.customName = record.customName();
     }
 
-    public FloatingPet toPlayer(Player owner) {
-        return new FloatingPet(owner, itemStack, particle, customName);
+    public ArmorStandFloatingPet toPlayer(Player owner) {
+        return new ArmorStandFloatingPet(owner, itemStack, particle, customName);
     }
 
-    public FloatingPet toPlayerAndParsePlaceholder(Player owner, String ownerPlaceholder) {
-        FloatingPet floatingPet = toPlayer(owner);
-        floatingPet.setCustomName(floatingPet.getCustomName().replace(ownerPlaceholder, owner.getName()));
+    public ArmorStandFloatingPet toPlayerAndParsePlaceholder(Player owner, String ownerPlaceholder) {
+        ArmorStandFloatingPet floatingPet = toPlayer(owner);
+        floatingPet.rename(floatingPet.getCustomName().replace(ownerPlaceholder, owner.getName()));
         return floatingPet;
     }
 
