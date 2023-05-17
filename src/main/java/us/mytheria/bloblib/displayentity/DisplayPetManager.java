@@ -75,7 +75,7 @@ public class DisplayPetManager<T extends DisplayPet<?>> extends Manager implemen
      */
     public void addPet(T floatingPet) {
         petMap.put(floatingPet.getEntity().getUniqueId(), floatingPet);
-        ownerMap.computeIfAbsent(floatingPet.getOwner().getUniqueId(), k -> new ArrayList<>()).add(floatingPet);
+        ownerMap.computeIfAbsent(floatingPet.getOwner(), k -> new ArrayList<>()).add(floatingPet);
     }
 
     /**

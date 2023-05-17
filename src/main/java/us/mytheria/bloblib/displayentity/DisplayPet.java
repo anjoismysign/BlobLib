@@ -5,10 +5,11 @@ import org.bukkit.Nameable;
 import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.entities.Ownable;
 import us.mytheria.bloblib.entities.ParticleContainer;
 
 public interface DisplayPet<T extends Entity> extends DisplayEntity<T>,
-        Nameable, ParticleContainer {
+        Nameable, ParticleContainer, Ownable {
 
     /**
      * Retrieves the current particle that FloatingPet emits.
