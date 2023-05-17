@@ -7,6 +7,8 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 
+import java.util.function.Function;
+
 public class DisplayDecorator<T extends Display> {
     private final T decorated;
     private BukkitTask perpetualTask;
@@ -36,12 +38,12 @@ public class DisplayDecorator<T extends Display> {
      * @param x                     the x-axis of the rotation.
      * @param y                     the y-axis of the rotation.
      * @param z                     the z-axis of the rotation.
-     * @param degree                the degree of the rotation (in degrees, not radians).
+     * @param degrees               the degrees of the rotation (in degrees, not radians).
      * @param interpolationDuration the duration of the interpolation.
      */
-    public void transformLeft(float x, float y, float z, float degree,
+    public void transformLeft(float x, float y, float z, float degrees,
                               int interpolationDuration) {
-        transformLeft(x, y, z, degree, interpolationDuration, -1);
+        transformLeft(x, y, z, degrees, interpolationDuration, -1);
 
     }
 
@@ -51,19 +53,19 @@ public class DisplayDecorator<T extends Display> {
      * @param x                     the x-axis of the rotation.
      * @param y                     the y-axis of the rotation.
      * @param z                     the z-axis of the rotation.
-     * @param degree                the degree of the rotation (in degrees, not radians).
+     * @param degrees               the degrees of the rotation (in degrees, not radians).
      * @param interpolationDuration the duration of the interpolation.
      * @param interpolationDelay    the delay of the interpolation.
      */
-    public void transformLeft(float x, float y, float z, float degree,
+    public void transformLeft(float x, float y, float z, float degrees,
                               int interpolationDuration,
                               int interpolationDelay) {
-        degree = (float) Math.toRadians(degree);
+        degrees = (float) Math.toRadians(degrees);
         decorated.setInterpolationDuration(interpolationDuration);
         decorated.setInterpolationDelay(interpolationDelay);
         Transformation transformation = decorated.getTransformation();
         transformation.getLeftRotation()
-                .set(new AxisAngle4f(degree, x, y, z));
+                .set(new AxisAngle4f(degrees, x, y, z));
         decorated.setTransformation(transformation);
     }
 
@@ -74,12 +76,12 @@ public class DisplayDecorator<T extends Display> {
      * @param x                     the x-axis of the rotation.
      * @param y                     the y-axis of the rotation.
      * @param z                     the z-axis of the rotation.
-     * @param degree                the degree of the rotation (in degrees, not radians).
+     * @param degrees               the degrees of the rotation (in degrees, not radians).
      * @param interpolationDuration the duration of the interpolation.
      */
-    public void transformRight(float x, float y, float z, float degree,
+    public void transformRight(float x, float y, float z, float degrees,
                                int interpolationDuration) {
-        transformRight(x, y, z, degree, interpolationDuration, -1);
+        transformRight(x, y, z, degrees, interpolationDuration, -1);
     }
 
     /**
@@ -88,19 +90,19 @@ public class DisplayDecorator<T extends Display> {
      * @param x                     the x-axis of the rotation.
      * @param y                     the y-axis of the rotation.
      * @param z                     the z-axis of the rotation.
-     * @param degree                the degree of the rotation (in degrees, not radians).
+     * @param degrees               the degrees of the rotation (in degrees, not radians).
      * @param interpolationDuration the duration of the interpolation.
      * @param interpolationDelay    the delay of the interpolation.
      */
-    public void transformRight(float x, float y, float z, float degree,
+    public void transformRight(float x, float y, float z, float degrees,
                                int interpolationDuration,
                                int interpolationDelay) {
-        degree = (float) Math.toRadians(degree);
+        degrees = (float) Math.toRadians(degrees);
         decorated.setInterpolationDuration(interpolationDuration);
         decorated.setInterpolationDelay(interpolationDelay);
         Transformation transformation = decorated.getTransformation();
         transformation.getRightRotation()
-                .set(new AxisAngle4f(degree, x, y, z));
+                .set(new AxisAngle4f(degrees, x, y, z));
         decorated.setTransformation(transformation);
     }
 
@@ -157,15 +159,15 @@ public class DisplayDecorator<T extends Display> {
      * @param x                     the x-axis of the rotation.
      * @param y                     the y-axis of the rotation.
      * @param z                     the z-axis of the rotation.
-     * @param degree                the degree of the rotation (in degrees, not radians).
+     * @param degrees               the degrees of the rotation (in degrees, not radians).
      * @param interpolationDuration the duration of the interpolation.
      * @param plugin                the plugin used to schedule the task
      */
-    public void transformLeftPerpetual(float x, float y, float z, float degree,
+    public void transformLeftPerpetual(float x, float y, float z, float degrees,
                                        int interpolationDuration,
                                        JavaPlugin plugin) {
         setPerpetualAsync(plugin, 0, interpolationDuration, () -> {
-            transformRight(x, y, z, degree, interpolationDuration);
+            transformRight(x, y, z, degrees, interpolationDuration);
         });
     }
 
@@ -176,17 +178,17 @@ public class DisplayDecorator<T extends Display> {
      * @param x                     the x-axis of the rotation.
      * @param y                     the y-axis of the rotation.
      * @param z                     the z-axis of the rotation.
-     * @param degree                the degree of the rotation (in degrees, not radians).
+     * @param degrees               the degrees of the rotation (in degrees, not radians).
      * @param interpolationDuration the duration of the interpolation.
      * @param interpolationDelay    the delay of the interpolation.
      * @param plugin                the plugin used to schedule the task
      */
-    public void transformLeftPerpetual(float x, float y, float z, float degree,
+    public void transformLeftPerpetual(float x, float y, float z, float degrees,
                                        int interpolationDuration,
                                        int interpolationDelay,
                                        JavaPlugin plugin) {
         setPerpetualAsync(plugin, 0, interpolationDuration, () -> {
-            transformLeft(x, y, z, degree, interpolationDuration,
+            transformLeft(x, y, z, degrees, interpolationDuration,
                     interpolationDelay);
         });
     }
@@ -198,15 +200,15 @@ public class DisplayDecorator<T extends Display> {
      * @param x                     the x-axis of the rotation.
      * @param y                     the y-axis of the rotation.
      * @param z                     the z-axis of the rotation.
-     * @param degree                the degree of the rotation (in degrees, not radians).
+     * @param degrees               the degrees of the rotation (in degrees, not radians).
      * @param interpolationDuration the duration of the interpolation.
      * @param plugin                the plugin used to schedule the task
      */
-    public void transformRightPerpetual(float x, float y, float z, float degree,
+    public void transformRightPerpetual(float x, float y, float z, float degrees,
                                         int interpolationDuration,
                                         JavaPlugin plugin) {
         setPerpetualAsync(plugin, 0, interpolationDuration, () -> {
-            transformRight(x, y, z, degree, interpolationDuration);
+            transformRight(x, y, z, degrees, interpolationDuration);
         });
     }
 
@@ -217,18 +219,54 @@ public class DisplayDecorator<T extends Display> {
      * @param x                     the x-axis of the rotation.
      * @param y                     the y-axis of the rotation.
      * @param z                     the z-axis of the rotation.
-     * @param degree                the degree of the rotation (in degrees, not radians).
+     * @param degrees               the degrees of the rotation (in degrees, not radians).
      * @param interpolationDuration the duration of the interpolation.
      * @param interpolationDelay    the delay of the interpolation.
      * @param plugin                the plugin used to schedule the task
      */
-    public void transformRightPerpetual(float x, float y, float z, float degree,
+    public void transformRightPerpetual(float x, float y, float z, float degrees,
                                         int interpolationDuration,
                                         int interpolationDelay,
                                         JavaPlugin plugin) {
         setPerpetualAsync(plugin, 0, interpolationDuration, () -> {
-            transformRight(x, y, z, degree, interpolationDuration,
+            transformRight(x, y, z, degrees, interpolationDuration,
                     interpolationDelay);
         });
+    }
+
+    /**
+     * Will open the TransformationBuilder passing the current transformation
+     *
+     * @return the TransformationBuilder
+     */
+    public TransformationBuilder transform() {
+        return new TransformationBuilder(call().getTransformation());
+    }
+
+    /**
+     * Will set a perpetual transformation that was
+     * provided using asynchronous tasks.
+     *
+     * @param transformation the transformation.
+     * @param plugin         the plugin used to schedule the task.
+     */
+    public void setPerpetualTransformation(Transformation transformation, JavaPlugin plugin) {
+        setPerpetualAsync(plugin, 0, call().getInterpolationDuration(), () -> {
+            decorated.setTransformation(transformation);
+        });
+    }
+
+    /**
+     * Will set a perpetual transformation,
+     * passing DisplayDecorator#transform
+     * and it needs to return TransformationBuilder#build
+     *
+     * @param javaPlugin the plugin used to schedule the task.
+     * @param function   the function that will return the transformation.
+     */
+    public void transformPerpetually(JavaPlugin javaPlugin,
+                                     Function<TransformationBuilder, Transformation> function) {
+        Transformation transformation = function.apply(transform());
+        setPerpetualTransformation(transformation, javaPlugin);
     }
 }
