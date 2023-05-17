@@ -30,4 +30,17 @@ public interface Ownable {
     default Player findOwner() {
         return Bukkit.getPlayer(getOwner());
     }
+
+    /**
+     * Will attempt to retrieve the owner as a Bukkit Player.
+     * If the owner is not online, an IllegalStateException will be thrown.
+     *
+     * @return The owner as a Bukkit Player.
+     */
+    default Player findOwnerOrFail() {
+        Player owner = findOwner();
+        if (owner == null)
+            throw new IllegalStateException("Owner is not online!");
+        return owner;
+    }
 }

@@ -42,7 +42,7 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand> {
         if (!type.isItem() && type.isBlock())
             throw new IllegalArgumentException("ItemStack must be an item or a block");
         this.pauseLogic = false;
-        setOwner(owner);
+        setOwner(owner.getUniqueId());
         setDisplay(itemStack);
         setCustomName(customName);
         setParticle(particle);
@@ -54,7 +54,7 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand> {
      */
     public void spawn() {
         setActive(true);
-        Location loc = getOwner().getLocation().clone();
+        Location loc = findOwnerOrFail().getLocation().clone();
         loc.setX(loc.getX() - 1);
         loc.setY(loc.getY() + 0.85);
         setLocation(loc);
@@ -97,7 +97,7 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand> {
 
     private void initLogic(JavaPlugin plugin) {
         logicTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
-            Player owner = getOwner();
+            Player owner = findOwner();
             if (owner == null || !owner.isOnline()) {
                 destroy();
                 return;
@@ -117,15 +117,15 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand> {
     }
 
     private void moveAway() {
-        this.location = animations.moveAway(getOwner(), location);
+        this.location = animations.moveAway(findOwnerOrFail(), location);
     }
 
     private void move() {
-        this.location = animations.move(getOwner(), location);
+        this.location = animations.move(findOwnerOrFail(), location);
     }
 
     private void idle() {
-        this.location = animations.idle(getOwner(), location);
+        this.location = animations.idle(findOwnerOrFail(), location);
     }
 
     /**
@@ -155,8 +155,8 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand> {
      *
      * @return the owner
      */
-    public Player getOwner() {
-        return Bukkit.getPlayer(owner);
+    public UUID getOwner() {
+        return owner;
     }
 
     /**
@@ -164,8 +164,8 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand> {
      *
      * @param owner - the new owner
      */
-    public void setOwner(Player owner) {
-        this.owner = owner.getUniqueId();
+    public void setOwner(UUID owner) {
+        this.owner = owner;
     }
 
     /**
@@ -183,7 +183,7 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand> {
      * @return if customName is null, returns 'owner's Pet', else returns customName
      */
     public String getCustomName() {
-        String name = getOwner().getName() + "'s Pet";
+        String name = findOwnerOrFail().getName() + "'s Pet";
         if (this.customName != null)
             name = this.customName;
         return name;
