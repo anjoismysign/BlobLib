@@ -1,4 +1,4 @@
-package us.mytheria.bloblib.floatingpet;
+package us.mytheria.bloblib.displayentity;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -6,15 +6,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import us.mytheria.bloblib.BlobLib;
 
-public class FloatingPetAnimations {
+public class DisplayEntityAnimations {
     private static final BlobLib plugin = BlobLib.getInstance();
 
     private final double followSpeed, walkAwaySpeed, hoverSpeed, hoverMaxHeightCap, hoverMinHeightCap;
     private double hoverVelocity, hoverHeight;
-    private final ArmorStandFloatingPet pet;
+    private final DisplayEntity<?> pet;
 
-    public FloatingPetAnimations(ArmorStandFloatingPet pet, double followSpeed, double walkAwaySpeed, double hoverSpeed,
-                                 double hoverMaxHeightCap, double hoverMinHeightCap) {
+    public DisplayEntityAnimations(DisplayEntity<?> pet, double followSpeed, double walkAwaySpeed, double hoverSpeed,
+                                   double hoverMaxHeightCap, double hoverMinHeightCap) {
         this.pet = pet;
         this.followSpeed = followSpeed;
         this.walkAwaySpeed = walkAwaySpeed;

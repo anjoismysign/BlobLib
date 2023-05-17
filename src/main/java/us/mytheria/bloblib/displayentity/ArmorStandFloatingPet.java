@@ -1,4 +1,4 @@
-package us.mytheria.bloblib.floatingpet;
+package us.mytheria.bloblib.displayentity;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -15,15 +15,15 @@ import us.mytheria.bloblib.BlobLib;
 
 import java.util.UUID;
 
-public class ArmorStandFloatingPet implements FloatingPet<ArmorStand> {
+public class ArmorStandFloatingPet implements DisplayPet<ArmorStand> {
     private Particle particle;
     private ArmorStand armorStand;
     private Location location;
     private UUID owner;
-    private boolean activated, hasParticle, pauseLogic;
+    private boolean activated, pauseLogic;
     private ItemStack display;
     private String customName;
-    private FloatingPetAnimations animations;
+    private DisplayEntityAnimations animations;
     private BukkitTask logicTask;
 
     /**
@@ -44,7 +44,7 @@ public class ArmorStandFloatingPet implements FloatingPet<ArmorStand> {
         this.pauseLogic = false;
         setOwner(owner);
         setDisplay(itemStack);
-        rename(customName);
+        setCustomName(customName);
         setParticle(particle);
     }
 
@@ -64,7 +64,7 @@ public class ArmorStandFloatingPet implements FloatingPet<ArmorStand> {
     private void spawnArmorStand(Location loc) {
         BlobLib plugin = BlobLib.getInstance();
         armorStand = createArmorStand(loc);
-        rename(getCustomName());
+        setCustomName(getCustomName());
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> armorStand.setCustomNameVisible(true), 1);
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> armorStand.setGravity(false), 3);
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> armorStand.setSmall(true), 4);
@@ -81,7 +81,7 @@ public class ArmorStandFloatingPet implements FloatingPet<ArmorStand> {
      *
      * @param customName - the custom name
      */
-    public void rename(String customName) {
+    public void setCustomName(String customName) {
         this.customName = customName;
         if (armorStand == null)
             return;
@@ -90,7 +90,7 @@ public class ArmorStandFloatingPet implements FloatingPet<ArmorStand> {
     }
 
     private void initAnimations(JavaPlugin plugin) {
-        animations = new FloatingPetAnimations(this, 0.5, 0.55,
+        animations = new DisplayEntityAnimations(this, 0.5, 0.55,
                 0.025, 0.2, -0.5);
         initLogic(plugin);
     }
@@ -187,15 +187,6 @@ public class ArmorStandFloatingPet implements FloatingPet<ArmorStand> {
         if (this.customName != null)
             name = this.customName;
         return name;
-    }
-
-    private void spawnParticles() {
-        if (!hasParticle)
-            return;
-        Location particleLoc = location.clone();
-        particleLoc.setY(particleLoc.getY() + 0.7);
-        particleLoc.getWorld().spawnParticle(getParticle(), particleLoc, 0);
-
     }
 
     /**
@@ -313,7 +304,6 @@ public class ArmorStandFloatingPet implements FloatingPet<ArmorStand> {
      */
     public void setParticle(Particle particle) {
         this.particle = particle;
-        this.hasParticle = particle != null;
     }
 
     /**

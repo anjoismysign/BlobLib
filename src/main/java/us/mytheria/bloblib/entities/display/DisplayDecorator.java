@@ -258,7 +258,7 @@ public class DisplayDecorator<T extends Display> {
 
     /**
      * Will set a perpetual transformation,
-     * passing DisplayDecorator#transform
+     * passing DisplayDecorator#transform,
      * and it needs to return TransformationBuilder#build
      *
      * @param javaPlugin the plugin used to schedule the task.

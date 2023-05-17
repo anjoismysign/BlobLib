@@ -1,4 +1,4 @@
-package us.mytheria.bloblib.floatingpet;
+package us.mytheria.bloblib.displayentity;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -19,7 +19,7 @@ import us.mytheria.bloblib.managers.ManagerDirector;
 import java.util.*;
 import java.util.function.Function;
 
-public class FloatingPetManager<T extends FloatingPet<?>> extends Manager implements Listener {
+public class DisplayPetManager<T extends DisplayPet<?>> extends Manager implements Listener {
     private Map<UUID, List<T>> ownerMap;
     private Map<UUID, T> petMap;
     @Nullable
@@ -38,7 +38,7 @@ public class FloatingPetManager<T extends FloatingPet<?>> extends Manager implem
      *                        If null, no event will be called.
      *                        Event CANNOT implement Cancelable!
      */
-    public FloatingPetManager(ManagerDirector managerDirector, @Nullable Function<T, Event> destroyEvent) {
+    public DisplayPetManager(ManagerDirector managerDirector, @Nullable Function<T, Event> destroyEvent) {
         super(managerDirector);
         reload();
         this.destroyEvent = destroyEvent;

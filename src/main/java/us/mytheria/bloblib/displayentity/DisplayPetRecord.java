@@ -1,4 +1,4 @@
-package us.mytheria.bloblib.floatingpet;
+package us.mytheria.bloblib.displayentity;
 
 import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
@@ -19,8 +19,8 @@ import us.mytheria.bloblib.utilities.TextColor;
  * @param particle   the particle to display
  * @param customName the custom name to display
  */
-public record FloatingPetRecord(ItemStack itemStack, Particle particle, String customName) {
-    public static FloatingPetRecord read(ConfigurationSection section) {
+public record DisplayPetRecord(ItemStack itemStack, Particle particle, String customName) {
+    public static DisplayPetRecord read(ConfigurationSection section) {
         ItemStackBuilder builder = ItemStackReader.read(section.getConfigurationSection("ItemStack"));
         ItemStack itemStack = builder.build();
         Particle particle = null;
@@ -30,7 +30,7 @@ public record FloatingPetRecord(ItemStack itemStack, Particle particle, String c
         if (section.contains("CustomName"))
             customName = TextColor.PARSE(section.getString("CustomName"));
 
-        return new FloatingPetRecord(itemStack, particle, customName);
+        return new DisplayPetRecord(itemStack, particle, customName);
     }
 
     public void serialize(ConfigurationSection configurationSection, String path) {
