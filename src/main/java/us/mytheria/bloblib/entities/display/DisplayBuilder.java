@@ -239,7 +239,7 @@ public record DisplayBuilder(@Nullable ItemStack itemStack,
             throw new IllegalArgumentException("ItemStack cannot be null!");
         if (itemStack.getType() == Material.AIR)
             throw new IllegalArgumentException("ItemStack cannot be AIR!");
-        
+
         Entity entity = location.getWorld().spawnEntity(location,
                 EntityType.ITEM_DISPLAY);
         ItemDisplay itemDisplay = (ItemDisplay) entity;
@@ -258,6 +258,45 @@ public record DisplayBuilder(@Nullable ItemStack itemStack,
      */
     public DisplayDecorator<ItemDisplay> toItemDisplayDecorator(Location location) {
         return new DisplayDecorator<>(toItemDisplay(location));
+    }
+
+    /**
+     * Will spawn an ItemDisplay at the given location.
+     * The ItemDisplay will be transformed according to the
+     * given ItemDisplayTransform.
+     *
+     * @param location the spawn location
+     * @return the ItemDisplay
+     */
+    public ItemDisplay toItemDisplay(Location location,
+                                     ItemDisplay.ItemDisplayTransform transform) {
+        if (itemStack == null)
+            throw new IllegalArgumentException("ItemStack cannot be null!");
+        if (itemStack.getType() == Material.AIR)
+            throw new IllegalArgumentException("ItemStack cannot be AIR!");
+
+        Entity entity = location.getWorld().spawnEntity(location,
+                EntityType.ITEM_DISPLAY);
+        ItemDisplay itemDisplay = (ItemDisplay) entity;
+        itemDisplay.setItemStack(itemStack);
+        itemDisplay.setTransformation(transformation());
+        itemDisplay.setItemDisplayTransform(transform);
+        return itemDisplay;
+    }
+
+    /**
+     * Will spawn an ItemDisplay at the given location
+     * and return a DisplayDecorator for it instead
+     * of the ItemDisplay itself.
+     * The ItemDisplay will be transformed according to the
+     * given ItemDisplayTransform.
+     *
+     * @param location the spawn location
+     * @return the DisplayDecorator
+     */
+    public DisplayDecorator<ItemDisplay> toItemDisplayDecorator(Location location,
+                                                                ItemDisplay.ItemDisplayTransform transform) {
+        return new DisplayDecorator<>(toItemDisplay(location, transform));
     }
 
     /**
