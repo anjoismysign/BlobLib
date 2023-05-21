@@ -82,7 +82,7 @@ public interface DisplayEntity<T extends Entity> {
     /**
      * Sets the entity display/ItemStack
      *
-     * @param display - the new head
+     * @param blockData - the new head
      */
-    void setDisplay(ItemStack display);
+    void setDisplay(ItemStack blockData);
 }

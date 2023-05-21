@@ -1,13 +1,17 @@
 package us.mytheria.bloblib.displayentity;
 
 import org.bukkit.Particle;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 public class DisplayPetData {
+    @Nullable
     private final ItemStack itemStack;
+    @Nullable
+    private final BlockData blockData;
     @Nullable
     private final Particle particle;
     @Nullable
@@ -27,6 +31,7 @@ public class DisplayPetData {
      */
     public DisplayPetData(DisplayPetRecord record) {
         this.itemStack = record.itemStack();
+        this.blockData = record.blockData();
         this.particle = record.particle();
         this.customName = record.customName();
     }
@@ -38,6 +43,8 @@ public class DisplayPetData {
      * @return a new instance of ArmorStandFloatingPet
      */
     public ArmorStandFloatingPet asArmorStand(Player owner) {
+        if (itemStack == null || itemStack.getType().isAir())
+            throw new IllegalArgumentException("ItemStack cannot be null nor be air");
         return new ArmorStandFloatingPet(owner, itemStack, particle, customName);
     }
 
@@ -64,11 +71,26 @@ public class DisplayPetData {
 
     /**
      * Will get the ItemStack of the FloatingPetData
+     * if available. Null otherwise.
      *
-     * @return the ItemStack of the FloatingPetData
+     * @return the ItemStack of the FloatingPetData,
+     * null otherwise
      */
+    @Nullable
     public ItemStack getItemStack() {
         return itemStack;
+    }
+
+    /**
+     * Will get the BlockData of the FloatingPetData
+     * if available. Null otherwise.
+     *
+     * @return the BlockData of the FloatingPetData,
+     * null otherwise
+     */
+    @Nullable
+    public BlockData getBlockData() {
+        return blockData;
     }
 
     /**
@@ -110,7 +132,7 @@ public class DisplayPetData {
      * @param path                 the path to serialize in
      */
     public void serialize(ConfigurationSection configurationSection, String path) {
-        DisplayPetRecord record = new DisplayPetRecord(itemStack, particle, customName);
+        DisplayPetRecord record = new DisplayPetRecord(itemStack, blockData, particle, customName);
         record.serialize(configurationSection, path);
     }
 }

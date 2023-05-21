@@ -4,7 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
-import org.bukkit.entity.ArmorStand;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -15,13 +16,16 @@ import us.mytheria.bloblib.BlobLib;
 
 import java.util.UUID;
 
-public class ArmorStandFloatingPet implements DisplayPet<ArmorStand> {
+/**
+ * TODO: CLASS IS NOT FINISHED
+ */
+public class BlockDisplayFloatingPet implements DisplayPet<BlockDisplay> {
     private Particle particle;
-    private ArmorStand entity;
+    private BlockDisplay entity;
     private Location location;
     private UUID owner;
     private boolean activated, pauseLogic;
-    private ItemStack display;
+    private BlockData display;
     private String customName;
     private DisplayEntityAnimations animations;
     private BukkitTask logicTask;
@@ -30,20 +34,39 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand> {
      * Creates a pet
      *
      * @param owner      - the FloatingPet owner
-     * @param itemStack  - the ItemStack to itemStack
+     * @param itemStack  - the ItemStack to display
      *                   (must be an item or a block)
      * @param particle   - the Particle to itemStack
      * @param customName - the CustomName of the pet
      *                   (if null will be used 'owner's Pet')
      */
-    public ArmorStandFloatingPet(Player owner, ItemStack itemStack, @Nullable Particle particle,
-                                 @Nullable String customName) {
+    public BlockDisplayFloatingPet(Player owner, ItemStack itemStack, @Nullable Particle particle,
+                                   @Nullable String customName) {
         Material type = itemStack.getType();
         if (!type.isItem() && type.isBlock())
             throw new IllegalArgumentException("ItemStack must be an item or a block");
         this.pauseLogic = false;
         setOwner(owner.getUniqueId());
         setDisplay(itemStack);
+        setCustomName(customName);
+        setParticle(particle);
+    }
+
+    /**
+     * Creates a pet
+     *
+     * @param owner      - the FloatingPet owner
+     * @param blockData  - the blockData to display
+     *                   (must be an item or a block)
+     * @param particle   - the Particle to itemStack
+     * @param customName - the CustomName of the pet
+     *                   (if null will be used 'owner's Pet')
+     */
+    public BlockDisplayFloatingPet(Player owner, BlockData blockData, @Nullable Particle particle,
+                                   @Nullable String customName) {
+        this.pauseLogic = false;
+        setOwner(owner.getUniqueId());
+        setBlockData(blockData);
         setCustomName(customName);
         setParticle(particle);
     }
@@ -58,19 +81,17 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand> {
         loc.setX(loc.getX() - 1);
         loc.setY(loc.getY() + 0.85);
         setLocation(loc);
-        spawnArmorStand(loc);
+        spawnEntity(loc);
     }
 
-    private void spawnArmorStand(Location loc) {
+    private void spawnEntity(Location loc) {
         BlobLib plugin = BlobLib.getInstance();
-        entity = createArmorStand(loc);
+        entity = createEntity(loc);
         setCustomName(getCustomName());
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> entity.setCustomNameVisible(true), 1);
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> entity.setGravity(false), 3);
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> entity.setSmall(true), 4);
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> entity.setInvulnerable(true), 5);
-        entity.getEquipment().setHelmet(getDisplay());
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> entity.setVisible(false), 6);
+        entity.setBlock(getDisplay());
         initAnimations(plugin);
 
     }
@@ -130,7 +151,7 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand> {
 
     /**
      * Similar to Entity#remove.
-     * Will mark the pet as deactivated and will remove the armorstand.
+     * Will mark the pet as deactivated and will remove the block display.
      */
     public void destroy() {
         setActive(false);
@@ -146,7 +167,7 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand> {
      *
      * @return the head
      */
-    public ItemStack getDisplay() {
+    public BlockData getDisplay() {
         return display;
     }
 
@@ -169,11 +190,11 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand> {
     }
 
     /**
-     * Returns the armorstand of the pet
+     * Returns the block display of the pet
      *
-     * @return the armorstand
+     * @return the block display
      */
-    public ArmorStand getEntity() {
+    public BlockDisplay getEntity() {
         return entity;
     }
 
@@ -233,8 +254,9 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand> {
 
     }
 
-    private ArmorStand createArmorStand(Location loc) {
-        return (ArmorStand) loc.getWorld().spawnEntity(loc, EntityType.ARMOR_STAND);
+    private BlockDisplay createEntity(Location loc) {
+        return (BlockDisplay) loc.getWorld().spawnEntity(loc,
+                EntityType.BLOCK_DISPLAY);
 
     }
 
@@ -307,11 +329,31 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand> {
     }
 
     /**
-     * Sets the pet head
+     * Sets the pet display
      *
-     * @param blockData - the new head
+     * @param itemStack - the new display
      */
-    public void setDisplay(ItemStack blockData) {
+    public void setDisplay(ItemStack itemStack) {
+        if (itemStack == null)
+            throw new IllegalArgumentException("ItemStack cannot be null");
+        Material material = itemStack.getType();
+        if (material == Material.AIR)
+            throw new IllegalArgumentException("ItemStack cannot be air");
+        if (!material.isBlock())
+            throw new IllegalArgumentException("ItemStack must be a block");
+        this.display = material.createBlockData();
+    }
+
+    /**
+     * Sets the pet display
+     *
+     * @param blockData - the new display
+     */
+    public void setBlockData(BlockData blockData) {
+        if (blockData == null)
+            throw new IllegalArgumentException("BlockData cannot be null");
+        if (blockData.getMaterial() == Material.AIR)
+            throw new IllegalArgumentException("BlockData cannot be air");
         this.display = blockData;
     }
 }
