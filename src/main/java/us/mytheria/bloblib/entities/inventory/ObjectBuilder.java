@@ -117,7 +117,11 @@ public abstract class ObjectBuilder<T extends BlobObject> extends BlobInventory 
      */
     public void modifyDefaultButton(String key,
                                     Function<ItemStackModder, ItemStackModder> function) {
-        this.getSlots(key).forEach(i -> {
+        Set<Integer> slots = getSlots(key);
+        if (slots == null)
+            throw new NullPointerException("'" + key + "' is not a valid button key" +
+                    "inside '" + getTitle() + "' inventory");
+        slots.forEach(i -> {
             ItemStack itemStack = cloneDefaultButton(key);
             ItemStackModder modder = ItemStackModder.mod(itemStack);
             function.apply(modder);

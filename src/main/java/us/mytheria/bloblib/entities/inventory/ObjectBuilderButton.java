@@ -1,6 +1,7 @@
 package us.mytheria.bloblib.entities.inventory;
 
 import com.mongodb.lang.Nullable;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.entities.message.BlobSound;
@@ -63,7 +64,13 @@ public abstract class ObjectBuilderButton<T> {
         return value.isPresent();
     }
 
-    public boolean isValuePresentAndNotNull() {
+    public boolean isValuePresentAndNotNull(boolean debug) {
+        if (debug)
+            Bukkit.getLogger().info(buttonKey + ": value is present: " + value.isPresent() + " and value is not null: " + (value.get() != null));
         return value.isPresent() && value.get() != null;
+    }
+
+    public boolean isValuePresentAndNotNull() {
+        return isValuePresentAndNotNull(false);
     }
 }

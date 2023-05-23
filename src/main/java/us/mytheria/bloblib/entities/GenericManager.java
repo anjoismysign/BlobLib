@@ -16,7 +16,13 @@ public abstract class GenericManager<T extends BlobPlugin, D extends GenericMana
         this.managerDirector = managerDirector;
     }
 
+    @Override
     public D getManagerDirector() {
         return managerDirector;
+    }
+
+    @Override
+    public T getPlugin() {
+        return managerDirector.getPlugin();
     }
 }

@@ -1,12 +1,10 @@
 package us.mytheria.bloblib.managers;
 
 public abstract class Manager {
-    private final BlobPlugin plugin;
     private final ManagerDirector managerDirector;
 
     public Manager(ManagerDirector managerDirector) {
         this.managerDirector = managerDirector;
-        this.plugin = managerDirector.getPlugin();
     }
 
     public void loadManually() {
@@ -26,6 +24,6 @@ public abstract class Manager {
     }
 
     public BlobPlugin getPlugin() {
-        return plugin;
+        return managerDirector.getPlugin();
     }
 }

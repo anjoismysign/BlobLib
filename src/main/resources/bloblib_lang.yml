@@ -57,6 +57,14 @@ Builder:
     Type: CHAT
     Message: '&cPlease enter a valid number'
     BlobSound: System.Alert
+  Location-Target:
+    Type: ACTIONBAR
+    Message: '&7Click a block. Selected block will be used'
+  Location-Target-Timeout:
+    Type: TITLE
+    Title: '&c&lTIMEOUT'
+    Subtitle: '&7You took too long to select a location'
+    BlobSound: Builder.Timeout
   Location:
     Type: ACTIONBAR
     Message: '&7Click a block. Block above it will be used'
@@ -81,11 +89,6 @@ Builder:
     Type: TITLE
     Title: '&c&lTIMEOUT'
     Subtitle: '&7You took too long to type in a world'
-    BlobSound: Builder.Timeout
-  Position-Timeout:
-    Type: TITLE
-    Title: '&c&lTIMEOUT'
-    Subtitle: '&7You took too long to select a position'
     BlobSound: Builder.Timeout
   Material:
     Type: TITLE

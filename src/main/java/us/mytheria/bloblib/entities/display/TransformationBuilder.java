@@ -125,6 +125,31 @@ public record TransformationBuilder(Transformation build) {
         return rotateRightLeft(RotationAxis.HORIZONTAL, degrees, ticks);
     }
 
+    public TransformationBuilder verticalRotationLeft(float degrees,
+                                                      int ticks) {
+        return rotateAxisLeft(RotationAxis.X, degrees, ticks);
+    }
+
+    public TransformationBuilder verticalRotationLeft2(float degrees,
+                                                       int ticks) {
+        return rotateAxisLeft(RotationAxis.Y, degrees, ticks);
+    }
+
+    public TransformationBuilder verticalRotationLeft3(float degrees,
+                                                       int ticks) {
+        return rotateAxisLeft(RotationAxis.Z, degrees, ticks);
+    }
+
+    public TransformationBuilder verticalRotationLeft4(float degrees,
+                                                       int ticks) {
+        return rotateAxisLeft(RotationAxis.YZ, degrees, ticks);
+    }
+
+    public TransformationBuilder verticalRotationLeft5(float degrees,
+                                                       int ticks) {
+        return rotateAxisLeft(RotationAxis.XY, degrees, ticks);
+    }
+
     /**
      * Will uniformly scale the display entity.
      * Expect/assert the same behavior as {@link #scale(float, float, float)}

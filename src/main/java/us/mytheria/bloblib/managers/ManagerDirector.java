@@ -33,7 +33,9 @@ public abstract class ManagerDirector {
      */
     public ManagerDirector(BlobPlugin plugin) {
         this.plugin = plugin;
-        this.blobFileManager = new BlobFileManager(this, "plugins/" + plugin.getName());
+        this.blobFileManager = new BlobFileManager(this,
+                "plugins/" + plugin.getName(),
+                plugin);
         chatListenerManager = BlobLib.getInstance().getChatManager();
         selectorListenerManager = BlobLib.getInstance().getSelectorManager();
         positionListenerManager = BlobLib.getInstance().getPositionManager();
@@ -60,7 +62,8 @@ public abstract class ManagerDirector {
     @Deprecated
     public ManagerDirector(BlobPlugin plugin, String fileManagerPathname) {
         this.plugin = plugin;
-        this.blobFileManager = new BlobFileManager(this, fileManagerPathname);
+        this.blobFileManager = new BlobFileManager(this,
+                fileManagerPathname, plugin);
         chatListenerManager = BlobLib.getInstance().getChatManager();
         selectorListenerManager = BlobLib.getInstance().getSelectorManager();
         positionListenerManager = BlobLib.getInstance().getPositionManager();

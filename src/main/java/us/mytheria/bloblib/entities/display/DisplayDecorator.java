@@ -121,9 +121,13 @@ public class DisplayDecorator<T extends Display> {
         if (perpetualTask != null) {
             perpetualTask.cancel();
         }
-        BukkitTask perpetualTask = new BukkitRunnable() {
+        perpetualTask = new BukkitRunnable() {
             @Override
             public void run() {
+                if (!decorated.isValid()) {
+                    cancel();
+                    return;
+                }
                 runnable.run();
             }
         }.runTaskTimerAsynchronously(plugin, delay, period);
@@ -144,9 +148,13 @@ public class DisplayDecorator<T extends Display> {
         if (perpetualTask != null) {
             perpetualTask.cancel();
         }
-        BukkitTask perpetualTask = new BukkitRunnable() {
+        perpetualTask = new BukkitRunnable() {
             @Override
             public void run() {
+                if (!decorated.isValid()) {
+                    cancel();
+                    return;
+                }
                 runnable.run();
             }
         }.runTaskTimer(plugin, delay, period);
