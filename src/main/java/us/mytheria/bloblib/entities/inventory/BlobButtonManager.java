@@ -6,6 +6,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -37,7 +38,17 @@ public class BlobButtonManager extends ButtonManager<InventoryButton> {
      * Builds a non abstract ButtonManager without any buttons stored yet.
      */
     public BlobButtonManager() {
-        super(new HashMap<>(), new HashMap<>());
+        this(new HashMap<>(), new HashMap<>());
+    }
+
+    private BlobButtonManager(Map<String, InventoryButton> stringKeys,
+                              Map<Integer, ItemStack> integerKeys) {
+        super(stringKeys, integerKeys);
+    }
+
+    @Override
+    public BlobButtonManager copy() {
+        return new BlobButtonManager(copyStringKeys(), copyIntegerKeys());
     }
 
     /**

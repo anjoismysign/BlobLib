@@ -98,7 +98,8 @@ public class MultiSuperFurnace<T extends InventoryButton> extends SharableInvent
      */
     @NotNull
     public MultiSuperFurnace<T> copy() {
-        return new MultiSuperFurnace<>(getTitle(), getSize(), getButtonManager(), getOperationSize(),
+        return new MultiSuperFurnace<>(getTitle(), getSize(),
+                getButtonManager().copy(), getOperationSize(),
                 getFuelButton(), getInputButton(), getOutputButton());
     }
 

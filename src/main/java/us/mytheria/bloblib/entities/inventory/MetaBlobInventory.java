@@ -9,7 +9,8 @@ public class MetaBlobInventory extends SharableInventory<MetaInventoryButton> {
     private final String type;
 
     public static MetaBlobInventory fromInventoryBuilderCarrier(InventoryBuilderCarrier<MetaInventoryButton> carrier) {
-        return new MetaBlobInventory(carrier.title(), carrier.size(), carrier.buttonManager(), carrier.type());
+        return new MetaBlobInventory(carrier.title(), carrier.size(),
+                carrier.buttonManager().copy(), carrier.type());
     }
 
     public MetaBlobInventory(@NotNull String title, int size,
@@ -22,7 +23,8 @@ public class MetaBlobInventory extends SharableInventory<MetaInventoryButton> {
     @Override
     @NotNull
     public MetaBlobInventory copy() {
-        return new MetaBlobInventory(getTitle(), getSize(), getButtonManager(), getType());
+        return new MetaBlobInventory(getTitle(), getSize(),
+                getButtonManager().copy(), getType());
     }
 
     /**

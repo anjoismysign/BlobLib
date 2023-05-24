@@ -56,7 +56,7 @@ public class SharableInventory<T extends InventoryButton> extends InventoryBuild
      */
     @NotNull
     public SharableInventory<T> copy() {
-        return new SharableInventory<>(getTitle(), getSize(), getButtonManager());
+        return new SharableInventory<>(getTitle(), getSize(), getButtonManager().copy());
     }
 
     /**

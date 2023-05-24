@@ -10,9 +10,17 @@ import org.bukkit.util.io.BukkitObjectOutputStream;
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 public class ItemStackUtil {
+    /**
+     * Will display an ItemStack by either their ItemMeta's displayname or their Material's name
+     *
+     * @param itemStack The ItemStack to display
+     * @return The displayname of the ItemStack
+     */
     public static String display(ItemStack itemStack) {
         if (itemStack == null)
             return "null";
@@ -21,6 +29,42 @@ public class ItemStackUtil {
         return itemStack.getType().name();
     }
 
+    /**
+     * Will replace all instances of a string in an ItemStack's ItemMeta
+     *
+     * @param itemStack   The ItemStack to replace in
+     * @param target      The string to replace
+     * @param replacement The string to replace with
+     */
+    public static void replace(ItemStack itemStack, String target, String replacement) {
+        if (itemStack == null)
+            return;
+        if (!itemStack.hasItemMeta())
+            return;
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (itemMeta.hasDisplayName()) {
+            String displayname = itemMeta.getDisplayName().replace(target, replacement);
+            itemMeta.setDisplayName(displayname);
+        }
+        if (itemMeta.hasLore()) {
+            List<String> lore = new ArrayList<>();
+            List<String> current = itemMeta.getLore();
+            for (String s : current) {
+                lore.add(s.replace(target, replacement));
+            }
+            itemMeta.setLore(lore);
+        }
+        itemStack.setItemMeta(itemMeta);
+    }
+
+    /**
+     * Will serialize an ItemStack into a string
+     *
+     * @param itemStack The ItemStack to serialize
+     * @return The serialized ItemStack
+     * @deprecated Wastes a lot of space
+     */
+    @Deprecated
     @Nullable
     public static String serialize(ItemStack itemStack) {
         if (itemStack == null)
@@ -35,6 +79,14 @@ public class ItemStackUtil {
         return toReturn;
     }
 
+    /**
+     * Will deserialize a string into an ItemStack
+     *
+     * @param serialized The serialized ItemStack
+     * @return The deserialized ItemStack
+     * @deprecated Wastes a lot of space
+     */
+    @Deprecated
     public static ItemStack deserialize(String serialized) {
         if (serialized.equals("null"))
             return null;

@@ -6,6 +6,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -37,7 +38,17 @@ public class MetaBlobButtonManager extends ButtonManager<MetaInventoryButton> {
      * Builds a non abstract ButtonManager without any buttons stored yet.
      */
     public MetaBlobButtonManager() {
-        super(new HashMap<>(), new HashMap<>());
+        this(new HashMap<>(), new HashMap<>());
+    }
+
+    @Override
+    public MetaBlobButtonManager copy() {
+        return new MetaBlobButtonManager(copyStringKeys(), copyIntegerKeys());
+    }
+
+    private MetaBlobButtonManager(Map<String, MetaInventoryButton> stringKeys,
+                                  Map<Integer, ItemStack> integerKeys) {
+        super(stringKeys, integerKeys);
     }
 
     /**

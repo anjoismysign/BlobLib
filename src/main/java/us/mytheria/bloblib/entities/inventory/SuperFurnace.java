@@ -102,7 +102,8 @@ public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T
      */
     @NotNull
     public SuperFurnace<T> copy() {
-        return new SuperFurnace<>(getTitle(), getSize(), getButtonManager(), getOperationSize(),
+        return new SuperFurnace<>(getTitle(), getSize(),
+                getButtonManager().copy(), getOperationSize(),
                 getOutputSlot(), getFuelButton(), getInputButton());
     }
 
