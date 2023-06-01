@@ -11,6 +11,7 @@ import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.action.Action;
 import us.mytheria.bloblib.vault.multieconomy.ElasticEconomy;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -151,5 +152,15 @@ public class InventoryButton {
             return;
         Action<Entity> fetch = BlobLibAssetAPI.getAction(action);
         fetch.perform(entity);
+    }
+
+    /**
+     * Will clone/copy the button to a new instance
+     *
+     * @return The new instance of the button.
+     */
+    public InventoryButton copy() {
+        return new InventoryButton(key, new HashSet<>(slots),
+                permission, price, priceCurrency, action);
     }
 }

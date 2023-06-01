@@ -13,10 +13,9 @@ public abstract class ButtonManager<T extends InventoryButton> implements Button
     private Map<String, T> stringKeys;
     private Map<Integer, ItemStack> integerKeys;
 
-    public ButtonManager(Map<String, T> stringKeys,
-                         Map<Integer, ItemStack> integerKeys) {
-        this.stringKeys = stringKeys;
-        this.integerKeys = integerKeys;
+    public ButtonManager(ButtonManagerData<T> buttonManagerData) {
+        this.stringKeys = new HashMap<>(buttonManagerData.inventoryButtons());
+        this.integerKeys = new HashMap<>(buttonManagerData.itemStackMap());
     }
 
     public ButtonManager() {
@@ -75,8 +74,13 @@ public abstract class ButtonManager<T extends InventoryButton> implements Button
      *
      * @return a copy of the stringKeys map
      */
+    @SuppressWarnings("unchecked")
     public Map<String, T> copyStringKeys() {
-        return new HashMap<>(stringKeys);
+        Map<String, T> stringKeys = new HashMap<>();
+        this.stringKeys.forEach((key, value) -> {
+            stringKeys.put(key, (T) value.copy());
+        });
+        return stringKeys;
     }
 
     /**
@@ -85,6 +89,8 @@ public abstract class ButtonManager<T extends InventoryButton> implements Button
      * @return a copy of the integerKeys map
      */
     public Map<Integer, ItemStack> copyIntegerKeys() {
-        return new HashMap<>(integerKeys);
+        Map<Integer, ItemStack> map = new HashMap<>();
+        this.integerKeys.forEach((key, value) -> map.put(key, new ItemStack(value)));
+        return map;
     }
 }

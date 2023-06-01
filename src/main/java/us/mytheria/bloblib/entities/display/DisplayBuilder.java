@@ -8,6 +8,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Transformation;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
@@ -256,8 +257,9 @@ public record DisplayBuilder(@Nullable ItemStack itemStack,
      * @param location the spawn location
      * @return the DisplayDecorator
      */
-    public DisplayDecorator<ItemDisplay> toItemDisplayDecorator(Location location) {
-        return new DisplayDecorator<>(toItemDisplay(location));
+    public DisplayDecorator<ItemDisplay> toItemDisplayDecorator(Location location,
+                                                                JavaPlugin plugin) {
+        return new DisplayDecorator<>(toItemDisplay(location), plugin);
     }
 
     /**
@@ -295,8 +297,9 @@ public record DisplayBuilder(@Nullable ItemStack itemStack,
      * @return the DisplayDecorator
      */
     public DisplayDecorator<ItemDisplay> toItemDisplayDecorator(Location location,
-                                                                ItemDisplay.ItemDisplayTransform transform) {
-        return new DisplayDecorator<>(toItemDisplay(location, transform));
+                                                                ItemDisplay.ItemDisplayTransform transform,
+                                                                JavaPlugin plugin) {
+        return new DisplayDecorator<>(toItemDisplay(location, transform), plugin);
     }
 
     /**
@@ -339,8 +342,9 @@ public record DisplayBuilder(@Nullable ItemStack itemStack,
      * @param location the spawn location
      * @return the DisplayDecorator
      */
-    public DisplayDecorator<BlockDisplay> toBlockDisplayDecorator(Location location) {
-        return toBlockDisplayDecorator(location, null);
+    public DisplayDecorator<BlockDisplay> toBlockDisplayDecorator(Location location,
+                                                                  JavaPlugin plugin) {
+        return toBlockDisplayDecorator(location, null, plugin);
     }
 
     /**
@@ -354,7 +358,8 @@ public record DisplayBuilder(@Nullable ItemStack itemStack,
      * @return the DisplayDecorator
      */
     public DisplayDecorator<BlockDisplay> toBlockDisplayDecorator(Location location,
-                                                                  BlockData display) {
-        return new DisplayDecorator<>(toBlockDisplay(location, display));
+                                                                  BlockData display,
+                                                                  JavaPlugin plugin) {
+        return new DisplayDecorator<>(toBlockDisplay(location, display), plugin);
     }
 }

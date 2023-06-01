@@ -7,10 +7,13 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 
+import java.util.List;
 import java.util.function.Function;
 
 public class DisplayDecorator<T extends Display> {
     private final T decorated;
+    private final JavaPlugin plugin;
+    private TransformationStepMemory<T> stepMemory;
     private BukkitTask perpetualTask;
 
     /**
@@ -18,8 +21,10 @@ public class DisplayDecorator<T extends Display> {
      *
      * @param display the itemStack to wrap.
      */
-    public DisplayDecorator(T display) {
+    public DisplayDecorator(T display, JavaPlugin plugin) {
         this.decorated = display;
+        this.plugin = plugin;
+        this.stepMemory = new TransformationStepMemory<>(plugin);
     }
 
     /**
@@ -29,6 +34,54 @@ public class DisplayDecorator<T extends Display> {
      */
     public T call() {
         return decorated;
+    }
+
+    /**
+     * Will return the last step in the memory.
+     */
+    public TransformationStep peekLastStep() {
+        return stepMemory.deque.peekLast();
+    }
+
+    /**
+     * Will add provided step as last step in the memory.
+     * If clock had not started, it will start it.
+     *
+     * @param step the step to add.
+     */
+    public void learnStep(TransformationStep step) {
+        stepMemory.addLast(step);
+        stepMemory.startClock(call());
+    }
+
+    /**
+     * Will add provided steps as last steps in the memory.
+     * If clock had not started, it will start it.
+     *
+     * @param steps the steps to add.
+     */
+    public void learnSteps(List<TransformationStep> steps) {
+        stepMemory.addLast(steps);
+        stepMemory.startClock(call());
+    }
+
+    /**
+     * Will stop the transformation/animation clock
+     * using the next transformation step in the memory.
+     * Will loc
+     */
+    public void stopClock() {
+        stepMemory.stopClock(call());
+        stepMemory = new TransformationStepMemory<>(plugin);
+    }
+
+    /**
+     * Will stop the transformation/animation clock
+     *
+     * @param step the step to stop at
+     */
+    public void stopClock(TransformationStep step) {
+        stepMemory.stopClock(step, call());
     }
 
     /**
@@ -44,7 +97,6 @@ public class DisplayDecorator<T extends Display> {
     public void transformLeft(float x, float y, float z, float degrees,
                               int interpolationDuration) {
         transformLeft(x, y, z, degrees, interpolationDuration, -1);
-
     }
 
     /**
@@ -174,9 +226,7 @@ public class DisplayDecorator<T extends Display> {
     public void transformLeftPerpetual(float x, float y, float z, float degrees,
                                        int interpolationDuration,
                                        JavaPlugin plugin) {
-        setPerpetualAsync(plugin, 0, interpolationDuration, () -> {
-            transformRight(x, y, z, degrees, interpolationDuration);
-        });
+        setPerpetualAsync(plugin, -1, interpolationDuration, () -> transformRight(x, y, z, degrees, interpolationDuration));
     }
 
     /**
@@ -195,10 +245,8 @@ public class DisplayDecorator<T extends Display> {
                                        int interpolationDuration,
                                        int interpolationDelay,
                                        JavaPlugin plugin) {
-        setPerpetualAsync(plugin, 0, interpolationDuration, () -> {
-            transformLeft(x, y, z, degrees, interpolationDuration,
-                    interpolationDelay);
-        });
+        setPerpetualAsync(plugin, -1, interpolationDuration, () -> transformLeft(x, y, z, degrees, interpolationDuration,
+                interpolationDelay));
     }
 
     /**
@@ -215,9 +263,7 @@ public class DisplayDecorator<T extends Display> {
     public void transformRightPerpetual(float x, float y, float z, float degrees,
                                         int interpolationDuration,
                                         JavaPlugin plugin) {
-        setPerpetualAsync(plugin, 0, interpolationDuration, () -> {
-            transformRight(x, y, z, degrees, interpolationDuration);
-        });
+        setPerpetualAsync(plugin, -1, interpolationDuration, () -> transformRight(x, y, z, degrees, interpolationDuration));
     }
 
     /**
@@ -236,45 +282,45 @@ public class DisplayDecorator<T extends Display> {
                                         int interpolationDuration,
                                         int interpolationDelay,
                                         JavaPlugin plugin) {
-        setPerpetualAsync(plugin, 0, interpolationDuration, () -> {
-            transformRight(x, y, z, degrees, interpolationDuration,
-                    interpolationDelay);
-        });
+        setPerpetualAsync(plugin, -1, interpolationDuration, () -> transformRight(x, y, z, degrees, interpolationDuration,
+                interpolationDelay));
     }
 
     /**
-     * Will open the TransformationBuilder passing the current transformation
+     * Will open the TransformationStepFactory passing the current transformation
+     *
+     * @param interpolationDuration the duration of the interpolation (in ticks).
+     * @return the TransformationBuilder
+     */
+    public TransformationStepFactory manufacture(int interpolationDuration) {
+        return new TransformationStepFactory(
+                new TransformationStep(call().getTransformation(),
+                        interpolationDuration));
+    }
+
+    /**
+     * Will open the TransformationStepFactory passing the current transformation
+     * Will use the default interpolation duration of 20 ticks (1 second).
      *
      * @return the TransformationBuilder
      */
-    public TransformationBuilder transform() {
-        return new TransformationBuilder(call().getTransformation());
+    public TransformationStepFactory manufacture() {
+        return manufacture(20);
     }
 
     /**
+     * public TransformationStepFactory manufacture() {
+     * return manufacture(20);
+     * }
+     * <p>
+     * /**
      * Will set a perpetual transformation that was
      * provided using asynchronous tasks.
      *
-     * @param transformation the transformation.
-     * @param plugin         the plugin used to schedule the task.
+     * @param function the function that will provide the transformation.
+     * @param plugin   the plugin used to schedule the task.
      */
-    public void setPerpetualTransformation(Transformation transformation, JavaPlugin plugin) {
-        setPerpetualAsync(plugin, 0, call().getInterpolationDuration(), () -> {
-            decorated.setTransformation(transformation);
-        });
-    }
-
-    /**
-     * Will set a perpetual transformation,
-     * passing DisplayDecorator#transform,
-     * and it needs to return TransformationBuilder#build
-     *
-     * @param javaPlugin the plugin used to schedule the task.
-     * @param function   the function that will return the transformation.
-     */
-    public void transformPerpetually(JavaPlugin javaPlugin,
-                                     Function<TransformationBuilder, Transformation> function) {
-        Transformation transformation = function.apply(transform());
-        setPerpetualTransformation(transformation, javaPlugin);
+    public void setPerpetualTransformation(Function<TransformationStepFactory, Transformation> function, JavaPlugin plugin) {
+        setPerpetualAsync(plugin, -1, call().getInterpolationDuration(), () -> decorated.setTransformation(function.apply(manufacture())));
     }
 }

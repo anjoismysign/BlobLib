@@ -3,6 +3,7 @@ package us.mytheria.bloblib.entities.inventory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class MetaInventoryButton extends InventoryButton {
@@ -47,5 +48,16 @@ public class MetaInventoryButton extends InventoryButton {
     @Nullable
     public String getSubMeta() {
         return subMeta;
+    }
+
+    /**
+     * Will clone/copy the button to a new instance
+     *
+     * @return The new instance of the button.
+     */
+    @Override
+    public MetaInventoryButton copy() {
+        return new MetaInventoryButton(getKey(), new HashSet<>(getSlots()), getMeta(), getSubMeta(),
+                getPermission(), getPrice(), getPriceCurrency(), getAction());
     }
 }
