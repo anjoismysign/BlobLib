@@ -5,7 +5,7 @@
 
     <groupId>us.mytheria</groupId>
     <artifactId>bloblib</artifactId>
-    <version>1.689.4ps</version>
+    <version>1.689.4qs</version>
     <packaging>jar</packaging>
 
     <name>BlobLib</name>
@@ -50,7 +50,6 @@
                             <skip>false</skip>
                             <show>public</show>
                             <quiet>true</quiet>
-                            <additionalparam>-Xdoclint:none</additionalparam>
                         </configuration>
                     </execution>
                 </executions>

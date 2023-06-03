@@ -17,6 +17,7 @@ import us.mytheria.bloblib.utilities.BlobCrudManagerFactory;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class BlobSerializableManager<T extends BlobSerializable> extends Manager implements Listener {
@@ -118,6 +119,19 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
 
     public Optional<T> isBlobSerializable(Player player) {
         return isBlobSerializable(player.getUniqueId());
+    }
+
+    public void ifIsOnline(UUID uuid, Consumer<T> consumer) {
+        Optional<T> optional = isBlobSerializable(uuid);
+        optional.ifPresent(consumer);
+    }
+
+    public void ifIsOnlineThenUpdate(UUID uuid, Consumer<T> consumer) {
+        Optional<T> optional = isBlobSerializable(uuid);
+        optional.ifPresent(blobSerializable -> {
+            consumer.accept(blobSerializable);
+            crudManager.update(blobSerializable.serializeAllAttributes());
+        });
     }
 
     private void saveAll() {

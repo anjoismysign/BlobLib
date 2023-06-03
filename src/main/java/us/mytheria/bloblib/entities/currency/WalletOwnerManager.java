@@ -136,7 +136,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
 
     public void ifIsOnline(UUID uuid, Consumer<T> consumer) {
         Optional<T> optional = isWalletOwner(uuid);
-        optional.ifPresent(consumer::accept);
+        optional.ifPresent(consumer);
     }
 
     public void ifIsOnlineThenUpdate(UUID uuid, Consumer<T> consumer) {
