@@ -2,6 +2,7 @@ package us.mytheria.bloblib.managers;
 
 import me.anjoismysign.anjo.logger.Logger;
 import org.bukkit.event.Event;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.*;
 import us.mytheria.bloblib.entities.currency.Currency;
@@ -128,6 +129,52 @@ public abstract class ManagerDirector {
     }
 
     /**
+     * Adds a BlobSerializableManager to the director
+     * that does not listen to events.
+     *
+     * @param key          The key of the manager
+     * @param generator    The generator function
+     * @param crudableName The name of the crudable
+     * @param logActivity  Whether to log activity
+     * @param <T>          The type of the BlobSerializable
+     */
+    public <T extends BlobSerializable> void addSimpleBlobSerializableManager(String key,
+                                                                              Function<BlobCrudable, T> generator,
+                                                                              String crudableName,
+                                                                              boolean logActivity) {
+        addManager(key, BlobSerializableManagerFactory.SIMPLE(this,
+                generator, crudableName, logActivity));
+    }
+
+    /**
+     * Adds a BlobSerializableManager to the director
+     * that listens to events.
+     *
+     * @param key          The key of the manager
+     * @param generator    The generator function
+     * @param crudableName The name of the crudable
+     * @param logActivity  Whether to log activity
+     * @param joinEvent    The join event.
+     *                     Function consumes the BlobSerializable
+     *                     related in the event and needs to return
+     *                     the event to be called.
+     * @param quitEvent    The quit event.
+     *                     Function consumes the BlobSerializable
+     *                     related in the event and needs to return
+     *                     the event to be called.
+     * @param <T>          The type of the blob serializable
+     */
+    public <T extends BlobSerializable> void addListenerBlobSerializableManager(String key,
+                                                                                Function<BlobCrudable, T> generator,
+                                                                                String crudableName,
+                                                                                boolean logActivity,
+                                                                                @Nullable Function<T, Event> joinEvent,
+                                                                                @Nullable Function<T, Event> quitEvent) {
+        addManager(key, BlobSerializableManagerFactory.LISTENER(this,
+                generator, crudableName, logActivity, joinEvent, quitEvent));
+    }
+
+    /**
      * Adds a wallet owner manager to the director.
      *
      * @param key          The key of the manager
@@ -242,17 +289,29 @@ public abstract class ManagerDirector {
 
     /**
      * Will retrieve a wallet owner manager by providing a String 'key'.
-     * The key must end with 'Manager'
      *
      * @param key   the key of the manager
      * @param clazz The class of the object
-     * @param <T>   The type of the object
+     * @param <T>   The type of the object (needs to implement WalletOwner)
      * @return The WalletOwnerManager that corresponds to the key
      */
     @SuppressWarnings("unchecked")
     public <T extends WalletOwner> WalletOwnerManager<T> getWalletOwnerManager(String key,
                                                                                Class<T> clazz) {
         return (WalletOwnerManager<T>) getManager(key);
+    }
+
+    /**
+     * Will retrieve a blob serializable manager by providing a String 'key'.
+     *
+     * @param key   the key of the manager
+     * @param clazz The class of the object
+     * @param <T>   The type of the object (needs to implement BlobSerializable)
+     * @return The BlobSerializableManager that corresponds to the key
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends BlobSerializable> BlobSerializableManager<T> getBlobSerializableManager(String key, Class<T> clazz) {
+        return (BlobSerializableManager<T>) getManager(key);
     }
 
     /**
