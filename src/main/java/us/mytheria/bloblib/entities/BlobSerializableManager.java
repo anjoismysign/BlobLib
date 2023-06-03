@@ -1,6 +1,5 @@
 package us.mytheria.bloblib.entities;
 
-import me.anjoismysign.anjo.crud.CrudManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -13,6 +12,9 @@ import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.managers.BlobPlugin;
 import us.mytheria.bloblib.managers.Manager;
 import us.mytheria.bloblib.managers.ManagerDirector;
+import us.mytheria.bloblib.storage.BlobCrudManager;
+import us.mytheria.bloblib.storage.IdentifierType;
+import us.mytheria.bloblib.storage.StorageType;
 import us.mytheria.bloblib.utilities.BlobCrudManagerFactory;
 
 import java.util.*;
@@ -23,7 +25,7 @@ import java.util.function.Function;
 public class BlobSerializableManager<T extends BlobSerializable> extends Manager implements Listener {
     protected final HashMap<UUID, T> serializables;
     private final HashSet<UUID> saving;
-    protected CrudManager<BlobCrudable> crudManager;
+    protected BlobCrudManager<BlobCrudable> crudManager;
     private final BlobPlugin plugin;
     private final Function<BlobCrudable, T> generator;
     private final @Nullable Function<T, Event> joinEvent;
@@ -150,7 +152,7 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
                 future.complete(generator.apply(crudManager.read(key))));
         return future;
     }
-    
+
     public void readThenUpdate(String key, Consumer<T> consumer) {
         T serializable = generator.apply(crudManager.read(key));
         consumer.accept(serializable);
@@ -163,5 +165,13 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
 
     public Collection<T> getAll() {
         return serializables.values();
+    }
+    
+    public StorageType getStorageType() {
+        return crudManager.getStorageType();
+    }
+
+    public IdentifierType getIdentifierType() {
+        return crudManager.getIdentifierType();
     }
 }

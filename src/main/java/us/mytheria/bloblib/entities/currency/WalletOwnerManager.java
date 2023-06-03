@@ -17,6 +17,8 @@ import us.mytheria.bloblib.managers.BlobPlugin;
 import us.mytheria.bloblib.managers.Manager;
 import us.mytheria.bloblib.managers.ManagerDirector;
 import us.mytheria.bloblib.storage.BlobCrudManager;
+import us.mytheria.bloblib.storage.IdentifierType;
+import us.mytheria.bloblib.storage.StorageType;
 import us.mytheria.bloblib.utilities.BlobCrudManagerFactory;
 
 import java.util.*;
@@ -325,5 +327,13 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
             throw new IllegalStateException("BlobPlugin has not registered their BlobEconomy");
         }
         this.implementations = convertAll();
+    }
+    
+    public StorageType getStorageType() {
+        return crudManager.getStorageType();
+    }
+
+    public IdentifierType getIdentifierType() {
+        return crudManager.getIdentifierType();
     }
 }
