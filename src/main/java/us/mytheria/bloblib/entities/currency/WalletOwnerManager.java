@@ -175,6 +175,10 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         consumer.accept(walletOwner);
         crudManager.update(walletOwner.serializeAllAttributes());
     }
+    
+    public boolean exists(String key) {
+        return crudManager.exists(key);
+    }
 
     public Collection<T> getAll() {
         return walletOwners.values();
@@ -328,7 +332,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         }
         this.implementations = convertAll();
     }
-    
+
     public StorageType getStorageType() {
         return crudManager.getStorageType();
     }

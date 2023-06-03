@@ -159,6 +159,10 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
         crudManager.update(serializable.serializeAllAttributes());
     }
 
+    public boolean exists(String key) {
+        return crudManager.exists(key);
+    }
+
     private void saveAll() {
         serializables.values().forEach(serializable -> crudManager.update(serializable.serializeAllAttributes()));
     }
@@ -166,7 +170,7 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
     public Collection<T> getAll() {
         return serializables.values();
     }
-    
+
     public StorageType getStorageType() {
         return crudManager.getStorageType();
     }
