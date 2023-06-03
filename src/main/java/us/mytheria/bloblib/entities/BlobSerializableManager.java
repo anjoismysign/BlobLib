@@ -1,7 +1,6 @@
 package us.mytheria.bloblib.entities;
 
 import me.anjoismysign.anjo.crud.CrudManager;
-import me.anjoismysign.anjo.entities.NamingConventions;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -14,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.managers.BlobPlugin;
 import us.mytheria.bloblib.managers.Manager;
 import us.mytheria.bloblib.managers.ManagerDirector;
-import us.mytheria.bloblib.utilities.BlobCrudManagerBuilder;
+import us.mytheria.bloblib.utilities.BlobCrudManagerFactory;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -39,11 +38,10 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
         Bukkit.getPluginManager().registerEvents(this, plugin);
         serializables = new HashMap<>();
         this.generator = generator;
-        String pascalCase = NamingConventions.toPascalCase(crudableName);
         this.joinEvent = joinEvent;
         this.quitEvent = quitEvent;
         saving = new HashSet<>();
-        crudManager = BlobCrudManagerBuilder.PLAYER(plugin, crudableName, newBorn, logActivity);
+        crudManager = BlobCrudManagerFactory.PLAYER(plugin, crudableName, newBorn, logActivity);
         reload();
     }
 
@@ -70,9 +68,9 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
         UUID uuid = player.getUniqueId();
         CompletableFuture<T> future = new CompletableFuture<>();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            T walletOwner = this.generator.apply(crudManager.read(uuid.toString()));
-            serializables.put(uuid, walletOwner);
-            future.complete(walletOwner);
+            T applied = this.generator.apply(crudManager.read(uuid.toString()));
+            serializables.put(uuid, applied);
+            future.complete(applied);
         });
         future.thenAccept(serializable -> {
             if (joinEvent != null)

@@ -7,6 +7,7 @@ import me.anjoismysign.anjo.crud.SQLiteCrudManager;
 import me.anjoismysign.anjo.entities.NamingConventions;
 import me.anjoismysign.anjo.entities.Result;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import us.mytheria.bloblib.entities.BlobCrudable;
 import us.mytheria.bloblib.managers.BlobPlugin;
 import us.mytheria.bloblib.storage.*;
@@ -14,9 +15,7 @@ import us.mytheria.bloblib.storage.*;
 import java.util.UUID;
 import java.util.function.Function;
 
-public class BlobCrudManagerBuilder {
-    //Misleading class name, use BlobCrudManagerFactory instead
-    @Deprecated
+public class BlobCrudManagerFactory {
     public static <T extends BlobCrudable> BlobCrudManager<T> PLAYER(BlobPlugin plugin,
                                                                      String crudableName,
                                                                      Function<BlobCrudable, T> createFunction,
@@ -29,6 +28,21 @@ public class BlobCrudManagerBuilder {
             plugin.getLogger().warning("Invalid IdentifierType '" + type + "'. Defaulting to UUID.");
             identifierType = IdentifierType.UUID;
         }
+        FileConfiguration config = plugin.getConfig();
+        if (!config.isConfigurationSection("Database")) {
+            throw new IllegalArgumentException("Invalid database configuration. Missing 'Database'.");
+        }
+        ConfigurationSection databaseSection = config.getConfigurationSection("Database");
+        if (!databaseSection.isString("Hostname"))
+            throw new IllegalArgumentException("Invalid database configuration. Missing 'Database.Hostname'.");
+        if (!databaseSection.isInt("Port"))
+            throw new IllegalArgumentException("Invalid database configuration. Missing 'Database.Port'.");
+        if (!databaseSection.isString("Database"))
+            throw new IllegalArgumentException("Invalid database configuration. Missing 'Database.Database'.");
+        if (!databaseSection.isString("Username"))
+            throw new IllegalArgumentException("Invalid database configuration. Missing 'Database.Username'.");
+        if (!databaseSection.isString("Password"))
+            throw new IllegalArgumentException("Invalid database configuration. Missing 'Database.Password'.");
         switch (identifierType) {
             case UUID -> {
                 return UUID(plugin, crudableName, uuid -> {
@@ -46,8 +60,6 @@ public class BlobCrudManagerBuilder {
         }
     }
 
-    //Misleading class name, use BlobCrudManagerFactory instead
-    @Deprecated
     public static <T extends BlobCrudable> BlobCrudManager<T> UUID(BlobPlugin plugin,
                                                                    String crudableName, Function<UUID, T> createFunction,
                                                                    boolean logActivity) {
@@ -85,8 +97,6 @@ public class BlobCrudManagerBuilder {
         }
     }
 
-    //Misleading class name, use BlobCrudManagerFactory instead
-    @Deprecated
     public static <T extends BlobCrudable> BlobCrudManager<T> PLAYERNAME(BlobPlugin plugin,
                                                                          String crudableName, Function<String, T> createFunction,
                                                                          boolean logActivity) {
@@ -135,9 +145,7 @@ public class BlobCrudManagerBuilder {
      * @param logActivity      Whether to log activity.
      * @param <T>              The type of crudable.
      * @return A new SQLiteCrudManager.
-     * @Deprecated Misleading class name, use BlobCrudManagerFactory instead
      */
-    @Deprecated
     private static <T extends Crudable> MySQLCrudManager<T> MYSQL(BlobPlugin plugin,
                                                                   String primaryKeyName, int primaryKeyLength,
                                                                   String crudableName, Function<String, T> createFunction,
@@ -175,9 +183,7 @@ public class BlobCrudManagerBuilder {
      * @param logActivity      Whether to log activity.
      * @param <T>              The type of crudable.
      * @return A new SQLiteCrudManager.
-     * @Deprecated Misleading class name, use BlobCrudManagerFactory instead
      */
-    @Deprecated
     private static <T extends Crudable> SQLiteCrudManager<T> SQLITE(BlobPlugin plugin,
                                                                     String primaryKeyName, int primaryKeyLength,
                                                                     String crudableName, Function<String, T> function,

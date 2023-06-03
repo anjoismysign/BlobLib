@@ -12,7 +12,9 @@ public class BlobCrudManager<T extends BlobCrudable> implements CrudManager<T> {
     private final StorageType storageType;
     private final IdentifierType identifierType;
 
-    public BlobCrudManager(CrudManager<T> crudManager, StorageType storageType, IdentifierType identifierType) {
+    public BlobCrudManager(CrudManager<T> crudManager,
+                           StorageType storageType,
+                           IdentifierType identifierType) {
         this.crudManager = crudManager;
         this.storageType = storageType;
         this.identifierType = identifierType;

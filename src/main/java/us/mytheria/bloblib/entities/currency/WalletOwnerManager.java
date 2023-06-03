@@ -1,6 +1,5 @@
 package us.mytheria.bloblib.entities.currency;
 
-import me.anjoismysign.anjo.entities.NamingConventions;
 import net.milkbowl.vault.economy.IdentityEconomy;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -18,7 +17,7 @@ import us.mytheria.bloblib.managers.BlobPlugin;
 import us.mytheria.bloblib.managers.Manager;
 import us.mytheria.bloblib.managers.ManagerDirector;
 import us.mytheria.bloblib.storage.BlobCrudManager;
-import us.mytheria.bloblib.utilities.BlobCrudManagerBuilder;
+import us.mytheria.bloblib.utilities.BlobCrudManagerFactory;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -51,12 +50,11 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         Bukkit.getPluginManager().registerEvents(this, plugin);
         walletOwners = new HashMap<>();
         this.generator = generator;
-        String pascalCase = NamingConventions.toPascalCase(crudableName);
         this.joinEvent = joinEvent;
         this.quitEvent = quitEvent;
         this.registeredEconomy = false;
         saving = new HashSet<>();
-        crudManager = BlobCrudManagerBuilder.PLAYER(plugin, crudableName, newBorn, logActivity);
+        crudManager = BlobCrudManagerFactory.PLAYER(plugin, crudableName, newBorn, logActivity);
         saveAll();
     }
 
