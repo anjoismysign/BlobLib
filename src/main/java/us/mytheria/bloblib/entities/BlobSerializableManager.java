@@ -143,23 +143,22 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
         ifIsOnlineThenUpdateElse(uuid, consumer, () -> {
         });
     }
-    
+
     public CompletableFuture<T> readAsynchronously(String key) {
         CompletableFuture<T> future = new CompletableFuture<>();
         Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () ->
                 future.complete(generator.apply(crudManager.read(key))));
         return future;
     }
+    
+    public void readThenUpdate(String key, Consumer<T> consumer) {
+        T serializable = generator.apply(crudManager.read(key));
+        consumer.accept(serializable);
+        crudManager.update(serializable.serializeAllAttributes());
+    }
 
     private void saveAll() {
         serializables.values().forEach(serializable -> crudManager.update(serializable.serializeAllAttributes()));
-    }
-
-    protected CompletableFuture<T> read(String key) {
-        CompletableFuture<T> future = new CompletableFuture<>();
-        Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () ->
-                future.complete(generator.apply(crudManager.read(key))));
-        return future;
     }
 
     public Collection<T> getAll() {

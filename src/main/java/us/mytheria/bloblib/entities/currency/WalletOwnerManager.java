@@ -168,6 +168,12 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         return future;
     }
 
+    public void readThenUpdate(String key, Consumer<T> consumer) {
+        T walletOwner = generator.apply(crudManager.read(key));
+        consumer.accept(walletOwner);
+        crudManager.update(walletOwner.serializeAllAttributes());
+    }
+
     public Collection<T> getAll() {
         return walletOwners.values();
     }
