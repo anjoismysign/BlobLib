@@ -161,7 +161,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         walletOwners.values().forEach(walletOwner -> crudManager.update(walletOwner.serializeAllAttributes()));
     }
 
-    protected CompletableFuture<T> readAsynchronously(String key) {
+    public CompletableFuture<T> readAsynchronously(String key) {
         CompletableFuture<T> future = new CompletableFuture<>();
         Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () ->
                 future.complete(generator.apply(crudManager.read(key))));
