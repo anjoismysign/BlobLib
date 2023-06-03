@@ -139,11 +139,21 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         optional.ifPresent(consumer);
     }
 
-    public void ifIsOnlineThenUpdate(UUID uuid, Consumer<T> consumer) {
+    public void ifIsOnlineThenUpdateElse(UUID uuid, Consumer<T> consumer,
+                                         Runnable runnable) {
         Optional<T> optional = isWalletOwner(uuid);
-        optional.ifPresent(walletOwner -> {
+        boolean isPresent = optional.isPresent();
+        if (isPresent) {
+            T walletOwner = optional.get();
             consumer.accept(walletOwner);
             crudManager.update(walletOwner.serializeAllAttributes());
+        } else {
+            runnable.run();
+        }
+    }
+
+    public void ifIsOnlineThenUpdate(UUID uuid, Consumer<T> consumer) {
+        ifIsOnlineThenUpdateElse(uuid, consumer, () -> {
         });
     }
 

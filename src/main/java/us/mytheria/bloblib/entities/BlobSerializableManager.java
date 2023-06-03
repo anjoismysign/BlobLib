@@ -126,11 +126,21 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
         optional.ifPresent(consumer);
     }
 
-    public void ifIsOnlineThenUpdate(UUID uuid, Consumer<T> consumer) {
+    public void ifIsOnlineThenUpdateElse(UUID uuid, Consumer<T> consumer,
+                                         Runnable runnable) {
         Optional<T> optional = isBlobSerializable(uuid);
-        optional.ifPresent(blobSerializable -> {
-            consumer.accept(blobSerializable);
-            crudManager.update(blobSerializable.serializeAllAttributes());
+        boolean isPresent = optional.isPresent();
+        if (isPresent) {
+            T serializable = optional.get();
+            consumer.accept(serializable);
+            crudManager.update(serializable.serializeAllAttributes());
+        } else {
+            runnable.run();
+        }
+    }
+
+    public void ifIsOnlineThenUpdate(UUID uuid, Consumer<T> consumer) {
+        ifIsOnlineThenUpdateElse(uuid, consumer, () -> {
         });
     }
 
