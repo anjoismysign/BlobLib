@@ -1,6 +1,7 @@
 package us.mytheria.bloblib.entities;
 
 import me.anjoismysign.anjo.entities.Result;
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -17,10 +18,7 @@ import us.mytheria.bloblib.managers.ManagerDirector;
 import us.mytheria.bloblib.utilities.ItemStackUtil;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -76,30 +74,23 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                         path.mkdir();
                     Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () -> {
                         try {
-                            File[] listOfFiles = path.listFiles();
+                            String[] extensions = {"yml"};
+                            Collection<File> files = FileUtils.listFiles(path, extensions, true);
                             List<CompletableFuture<Void>> futures = new ArrayList<>();
-                            for (File file : listOfFiles) {
-                                if (!file.getName().endsWith(".yml"))
-                                    continue;
-                                if (file.isFile()) {
-                                    CompletableFuture<Void> fileFuture = CompletableFuture.runAsync(() -> {
-                                        T blobObject = readFunction.apply(file);
-                                        if (blobObject != null) {
-                                            if (blobObject.edit() != null)
-                                                objectIsEditable = true;
-                                            this.addObject(blobObject.getKey(), blobObject, file);
-                                        }
-                                    });
-                                    futures.add(fileFuture);
-                                }
-                                if (file.isDirectory()) {
-                                    CompletableFuture<Void> subDirFuture = new CompletableFuture<>();
-                                    loadFiles(file, subDirFuture);
-                                    futures.add(subDirFuture);
-                                }
-                            }
+                            files.forEach(file -> {
+                                CompletableFuture<Void> fileFuture = CompletableFuture.runAsync(() -> {
+                                    T blobObject = readFunction.apply(file);
+                                    if (blobObject != null) {
+                                        if (blobObject.edit() != null)
+                                            objectIsEditable = true;
+                                        this.addObject(blobObject.getKey(), blobObject, file);
+                                    }
+                                });
+                                futures.add(fileFuture);
+                            });
                             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).thenAccept(v -> mainFuture.complete(null));
                         } catch (Exception e) {
+                            Bukkit.getLogger().log(Level.SEVERE, e.getMessage(), e);
                             mainFuture.completeExceptionally(e);
                         }
                     });
