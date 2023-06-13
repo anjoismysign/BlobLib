@@ -1,4 +1,4 @@
-package us.mytheria.bloblib.entities;
+package us.mytheria.bloblib.entities.display;
 
 import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;
