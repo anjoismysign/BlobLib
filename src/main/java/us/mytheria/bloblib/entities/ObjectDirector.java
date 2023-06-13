@@ -84,9 +84,11 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                                 if (file.isFile()) {
                                     CompletableFuture<Void> fileFuture = CompletableFuture.runAsync(() -> {
                                         T blobObject = readFunction.apply(file);
-                                        if (blobObject.edit() != null)
-                                            objectIsEditable = true;
-                                        this.addObject(blobObject.getKey(), blobObject, file);
+                                        if (blobObject != null) {
+                                            if (blobObject.edit() != null)
+                                                objectIsEditable = true;
+                                            this.addObject(blobObject.getKey(), blobObject, file);
+                                        }
                                     });
                                     futures.add(fileFuture);
                                 }

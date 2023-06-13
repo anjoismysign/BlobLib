@@ -50,7 +50,7 @@ public class MongoDB {
      * @return A valid result if found MongoDB settings, otherwise an invalid result.
      */
     public static Result<MongoDB> fromConfigurationSection(ConfigurationSection configurationSection) {
-        if (configurationSection.isString("Host") &&
+        if (configurationSection.isString("Hostname") &&
                 configurationSection.isString("Database") &&
                 configurationSection.isString("Username") &&
                 configurationSection.isString("Password"))
@@ -58,7 +58,7 @@ public class MongoDB {
         if (!configurationSection.isConfigurationSection("Database"))
             return Result.invalidBecauseNull();
         ConfigurationSection section = configurationSection.getConfigurationSection("Database");
-        if (section.isString("Host") &&
+        if (section.isString("Hostname") &&
                 section.isString("Database") &&
                 section.isString("Username") &&
                 section.isString("Password"))
@@ -67,7 +67,7 @@ public class MongoDB {
     }
 
     private static MongoDB loadFromConfigurationSection(ConfigurationSection configurationSection) {
-        String host = configurationSection.getString("Host");
+        String host = configurationSection.getString("Hostname");
         String database = configurationSection.getString("Database");
         String username = configurationSection.getString("Username");
         String password = configurationSection.getString("Password");

@@ -111,11 +111,11 @@ public abstract class ManagerDirector {
     public <T extends BlobObject> void addDirector(String objectName,
                                                    Function<File, T> readFunction,
                                                    boolean hasObjectBuilderManager) {
-        ObjectDirectorData quickWarpData =
+        ObjectDirectorData directorData =
                 ObjectDirectorData.simple(getFileManager(), objectName);
         addManager(objectName + "Director",
                 new ObjectDirector<>(this,
-                        quickWarpData, readFunction, hasObjectBuilderManager));
+                        directorData, readFunction, hasObjectBuilderManager));
     }
 
     /**
