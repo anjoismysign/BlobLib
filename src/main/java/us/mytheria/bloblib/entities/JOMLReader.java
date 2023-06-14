@@ -24,7 +24,7 @@ public class JOMLReader {
     }
 
     public static Quaternionf READ_QUATERNIONF(ConfigurationSection section, String name) {
-        if (!section.isConfigurationSection(name))
+        if (!section.isConfigurationSection(name) && !section.isConfigurationSection(name + "-Quaternion"))
             throw new IllegalArgumentException(name + " is not valid");
         Quaternionf quaternionf;
         if (section.isConfigurationSection(name)) {
