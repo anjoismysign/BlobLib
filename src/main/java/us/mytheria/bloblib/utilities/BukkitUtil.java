@@ -65,6 +65,8 @@ public class BukkitUtil {
 
     @Nullable
     public static Location deserializeLocationOrNull(ConfigurationSection section) {
+        if (!section.isDouble("X") || !section.isDouble("Y") || !section.isDouble("Z") || !section.isString("World"))
+            return null;
         double x = section.getDouble("X");
         double y = section.getDouble("Y");
         double z = section.getDouble("Z");

@@ -6,6 +6,7 @@ import org.bukkit.util.Transformation;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import us.mytheria.bloblib.entities.JOMLReader;
 
 public class DisplayReader {
     public static Display.Brightness BRIGHTNESS_FAIL_FAST(ConfigurationSection section) {
@@ -49,50 +50,10 @@ public class DisplayReader {
     }
 
     public static Transformation TRANSFORMATION_FAIL_FAST(ConfigurationSection section) {
-        if (!section.isConfigurationSection("Scale"))
-            throw new IllegalArgumentException("Scale is not valid");
-        if (!section.isConfigurationSection("Translation"))
-            throw new IllegalArgumentException("Translation is not valid");
-        if (!section.isConfigurationSection("Left-Rotation"))
-            throw new IllegalArgumentException("Left-Rotation is not valid");
-        if (!section.isConfigurationSection("Right-Rotation"))
-            throw new IllegalArgumentException("Right-Rotation is not valid");
-        ConfigurationSection scaleSection = section.getConfigurationSection("Scale");
-        if (!scaleSection.isDouble("X"))
-            throw new IllegalArgumentException("Scale.X is not valid");
-        if (!scaleSection.isDouble("Y"))
-            throw new IllegalArgumentException("Scale.Y is not valid");
-        if (!scaleSection.isDouble("Z"))
-            throw new IllegalArgumentException("Scale.Z is not valid");
-        ConfigurationSection translationSection = section.getConfigurationSection("Translation");
-        if (!translationSection.isDouble("X"))
-            throw new IllegalArgumentException("Translation.X is not valid");
-        if (!translationSection.isDouble("Y"))
-            throw new IllegalArgumentException("Translation.Y is not valid");
-        if (!translationSection.isDouble("Z"))
-            throw new IllegalArgumentException("Translation.Z is not valid");
-        ConfigurationSection leftRotationSection = section.getConfigurationSection("Left-Rotation");
-        if (!leftRotationSection.isDouble("X"))
-            throw new IllegalArgumentException("Left-Rotation.X is not valid");
-        if (!leftRotationSection.isDouble("Y"))
-            throw new IllegalArgumentException("Left-Rotation.Y is not valid");
-        if (!leftRotationSection.isDouble("Z"))
-            throw new IllegalArgumentException("Left-Rotation.Z is not valid");
-        if (!leftRotationSection.isDouble("W"))
-            throw new IllegalArgumentException("Left-Rotation.W is not valid");
-        ConfigurationSection rightRotationSection = section.getConfigurationSection("Right-Rotation");
-        if (!rightRotationSection.isDouble("X"))
-            throw new IllegalArgumentException("Right-Rotation.X is not valid");
-        if (!rightRotationSection.isDouble("Y"))
-            throw new IllegalArgumentException("Right-Rotation.Y is not valid");
-        if (!rightRotationSection.isDouble("Z"))
-            throw new IllegalArgumentException("Right-Rotation.Z is not valid");
-        if (!rightRotationSection.isDouble("W"))
-            throw new IllegalArgumentException("Right-Rotation.W is not valid");
-        Vector3f scale = new Vector3f((float) scaleSection.getDouble("X"), (float) scaleSection.getDouble("Y"), (float) scaleSection.getDouble("Z"));
-        Vector3f translation = new Vector3f((float) translationSection.getDouble("X"), (float) translationSection.getDouble("Y"), (float) translationSection.getDouble("Z"));
-        Quaternionf leftRotation = new Quaternionf(leftRotationSection.getDouble("X"), leftRotationSection.getDouble("Y"), leftRotationSection.getDouble("Z"), leftRotationSection.getDouble("W"));
-        Quaternionf rightRotation = new Quaternionf(rightRotationSection.getDouble("X"), rightRotationSection.getDouble("Y"), rightRotationSection.getDouble("Z"), rightRotationSection.getDouble("W"));
+        Vector3f scale = JOMLReader.READ_VECTOR3F(section, "Scale");
+        Vector3f translation = JOMLReader.READ_VECTOR3F(section, "Translation");
+        Quaternionf leftRotation = JOMLReader.READ_QUATERNIONF(section, "Left-Rotation");
+        Quaternionf rightRotation = JOMLReader.READ_QUATERNIONF(section, "Right-Rotation");
         return new Transformation(translation, leftRotation, scale, rightRotation);
     }
 
@@ -105,51 +66,13 @@ public class DisplayReader {
     }
 
     @Nullable
-    public static Transformation TRANSFORMATION_NULL(ConfigurationSection section) {
-        if (!section.isConfigurationSection("Scale"))
+    public static Transformation TRANSFORMATION_NULL(ConfigurationSection configuration) {
+        Transformation transformation;
+        try {
+            transformation = TRANSFORMATION_FAIL_FAST(configuration);
+        } catch (Exception e) {
             return null;
-        if (!section.isConfigurationSection("Translation"))
-            return null;
-        if (!section.isConfigurationSection("Left-Rotation"))
-            return null;
-        if (!section.isConfigurationSection("Right-Rotation"))
-            return null;
-        ConfigurationSection scaleSection = section.getConfigurationSection("Scale");
-        if (!scaleSection.isDouble("X"))
-            return null;
-        if (!scaleSection.isDouble("Y"))
-            return null;
-        if (!scaleSection.isDouble("Z"))
-            return null;
-        ConfigurationSection translationSection = section.getConfigurationSection("Translation");
-        if (!translationSection.isDouble("X"))
-            return null;
-        if (!translationSection.isDouble("Y"))
-            return null;
-        if (!translationSection.isDouble("Z"))
-            return null;
-        ConfigurationSection leftRotationSection = section.getConfigurationSection("Left-Rotation");
-        if (!leftRotationSection.isDouble("X"))
-            return null;
-        if (!leftRotationSection.isDouble("Y"))
-            return null;
-        if (!leftRotationSection.isDouble("Z"))
-            return null;
-        if (!leftRotationSection.isDouble("W"))
-            return null;
-        ConfigurationSection rightRotationSection = section.getConfigurationSection("Right-Rotation");
-        if (!rightRotationSection.isDouble("X"))
-            return null;
-        if (!rightRotationSection.isDouble("Y"))
-            return null;
-        if (!rightRotationSection.isDouble("Z"))
-            return null;
-        if (!rightRotationSection.isDouble("W"))
-            return null;
-        Vector3f scale = new Vector3f((float) scaleSection.getDouble("X"), (float) scaleSection.getDouble("Y"), (float) scaleSection.getDouble("Z"));
-        Vector3f translation = new Vector3f((float) translationSection.getDouble("X"), (float) translationSection.getDouble("Y"), (float) translationSection.getDouble("Z"));
-        Quaternionf leftRotation = new Quaternionf(leftRotationSection.getDouble("X"), leftRotationSection.getDouble("Y"), leftRotationSection.getDouble("Z"), leftRotationSection.getDouble("W"));
-        Quaternionf rightRotation = new Quaternionf(rightRotationSection.getDouble("X"), rightRotationSection.getDouble("Y"), rightRotationSection.getDouble("Z"), rightRotationSection.getDouble("W"));
-        return new Transformation(translation, leftRotation, scale, rightRotation);
+        }
+        return transformation;
     }
 }
