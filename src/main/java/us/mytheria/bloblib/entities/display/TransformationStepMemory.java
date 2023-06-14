@@ -85,8 +85,8 @@ public class TransformationStepMemory<T extends Display> {
             TransformationStep current = deque.removeFirst();
             deque.addLast(current.copy());
             display.setInterpolationDelay(-1);
-            display.setInterpolationDuration(current.duration());
-            display.setTransformation(current.transformation());
+            display.setInterpolationDuration(current.getDuration());
+            display.setTransformation(current.getTransformation());
             return current;
         } else
             throw new IllegalStateException("Memory is empty");
@@ -139,8 +139,8 @@ public class TransformationStepMemory<T extends Display> {
         isRunning = false;
         isLocked = true;
         display.setInterpolationDelay(-1);
-        display.setInterpolationDuration(step.duration());
-        display.setTransformation(step.transformation());
+        display.setInterpolationDuration(step.getDuration());
+        display.setTransformation(step.getTransformation());
     }
 
     /**
@@ -161,7 +161,7 @@ public class TransformationStepMemory<T extends Display> {
             return;
         if (!display.isValid())
             return;
-        int duration = playNext(display).duration();
+        int duration = playNext(display).getDuration();
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () ->
                 clock(display), duration);
     }

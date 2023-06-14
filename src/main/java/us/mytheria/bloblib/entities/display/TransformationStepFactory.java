@@ -19,7 +19,7 @@ public record TransformationStepFactory(TransformationStep step) {
                                                     float degrees,
                                                     int duration) {
         degrees = (float) Math.toRadians(degrees);
-        Transformation transformation = step.copy().transformation();
+        Transformation transformation = step.copy().transformation;
         Quaternionf rotation = transformation.getLeftRotation();
         switch (axis) {
             case X -> {
@@ -28,6 +28,8 @@ public record TransformationStepFactory(TransformationStep step) {
                         transformation.getLeftRotation().rotateX(degrees),
                         transformation.getScale(),
                         transformation.getRightRotation()),
+                        step.shadowRadius,
+                        step.shadowStrength,
                         duration));
             }
             case Y -> {
@@ -36,6 +38,8 @@ public record TransformationStepFactory(TransformationStep step) {
                         transformation.getLeftRotation().rotateY(degrees),
                         transformation.getScale(),
                         transformation.getRightRotation()),
+                        step.shadowRadius,
+                        step.shadowStrength,
                         duration));
             }
             case Z -> {
@@ -44,6 +48,8 @@ public record TransformationStepFactory(TransformationStep step) {
                         transformation.getLeftRotation().rotateZ(degrees),
                         transformation.getScale(),
                         transformation.getRightRotation()),
+                        step.shadowRadius,
+                        step.shadowStrength,
                         duration));
             }
             default -> throw new UnsupportedOperationException("Not implemented yet");
@@ -62,7 +68,7 @@ public record TransformationStepFactory(TransformationStep step) {
                                                      float degrees,
                                                      int duration) {
         degrees = (float) Math.toRadians(degrees);
-        Transformation transformation = step.copy().transformation();
+        Transformation transformation = step.copy().transformation;
         Quaternionf rotation = transformation.getRightRotation();
         switch (axis) {
             case X -> {
@@ -71,6 +77,8 @@ public record TransformationStepFactory(TransformationStep step) {
                         transformation.getLeftRotation(),
                         transformation.getScale(),
                         transformation.getRightRotation().rotateX(degrees)),
+                        step.shadowRadius,
+                        step.shadowStrength,
                         duration));
             }
             case Y -> {
@@ -79,6 +87,8 @@ public record TransformationStepFactory(TransformationStep step) {
                         transformation.getLeftRotation(),
                         transformation.getScale(),
                         transformation.getRightRotation().rotateY(degrees)),
+                        step.shadowRadius,
+                        step.shadowStrength,
                         duration));
             }
             case Z -> {
@@ -87,6 +97,8 @@ public record TransformationStepFactory(TransformationStep step) {
                         transformation.getLeftRotation(),
                         transformation.getScale(),
                         transformation.getRightRotation().rotateZ(degrees)),
+                        step.shadowRadius,
+                        step.shadowStrength,
                         duration));
             }
             default -> throw new UnsupportedOperationException("Not implemented yet");
@@ -104,7 +116,7 @@ public record TransformationStepFactory(TransformationStep step) {
     public TransformationStepFactory uniformScale(float scale,
                                                   int duration) {
         TransformationStep copy = TransformationStep.of(step, duration);
-        copy.transformation().getScale().set(scale);
+        copy.getTransformation().getScale().set(scale);
         return new TransformationStepFactory(copy);
     }
 
@@ -122,7 +134,7 @@ public record TransformationStepFactory(TransformationStep step) {
     public TransformationStepFactory scale(float x, float y, float z,
                                            int duration) {
         TransformationStep copy = TransformationStep.of(step, duration);
-        copy.transformation().getScale().set(x, y, z);
+        copy.getTransformation().getScale().set(x, y, z);
         return new TransformationStepFactory(copy);
     }
 

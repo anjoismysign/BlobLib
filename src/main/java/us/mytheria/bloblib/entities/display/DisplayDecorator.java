@@ -293,8 +293,11 @@ public class DisplayDecorator<T extends Display> {
      * @return the TransformationBuilder
      */
     public TransformationStepFactory manufacture(int interpolationDuration) {
+        T call = call();
         return new TransformationStepFactory(
-                new TransformationStep(call().getTransformation(),
+                new TransformationStep(call.getTransformation(),
+                        call.getShadowRadius(),
+                        call.getShadowStrength(),
                         interpolationDuration));
     }
 

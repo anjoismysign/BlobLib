@@ -4,10 +4,25 @@ import org.bukkit.util.Transformation;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-public record TransformationStep(Transformation transformation, int duration) {
+public class TransformationStep {
+    protected final Transformation transformation;
+    protected final float shadowRadius;
+    protected final float shadowStrength;
+    protected final int duration;
+
+    public TransformationStep(Transformation transformation,
+                              float shadowRadius,
+                              float shadowStrength,
+                              int duration) {
+        this.transformation = transformation;
+        this.shadowRadius = shadowRadius;
+        this.shadowStrength = shadowStrength;
+        this.duration = duration;
+    }
 
     public static TransformationStep of(TransformationStep step, int duration) {
-        return new TransformationStep(step.copy().transformation, duration);
+        return new TransformationStep(step.copy().transformation, step.shadowRadius,
+                step.shadowStrength, duration);
     }
 
     /**
@@ -26,6 +41,23 @@ public record TransformationStep(Transformation transformation, int duration) {
                 new Quaternionf(leftRotation.x, leftRotation.y, leftRotation.z, leftRotation.w),
                 new Vector3f(scale.x, scale.y, scale.z),
                 new Quaternionf(rightRotation.x, rightRotation.y, rightRotation.z, rightRotation.w)),
+                shadowRadius, shadowStrength,
                 duration);
+    }
+
+    public Transformation getTransformation() {
+        return transformation;
+    }
+
+    public float getShadowRadius() {
+        return shadowRadius;
+    }
+
+    public float getShadowStrength() {
+        return shadowStrength;
+    }
+
+    public int getDuration() {
+        return duration;
     }
 }
