@@ -110,4 +110,17 @@ public record DisplayData(Display.Brightness brightness,
             throw new IllegalArgumentException("File is not a .yml file");
         return of(YamlConfiguration.loadConfiguration(file));
     }
+
+    public void write(ConfigurationSection section) {
+        DisplayWriter.WRITE(section, brightness, applyBrightness);
+        DisplayWriter.WRITE(section, billboard);
+        section.set("Shadow-Radius", shadowRadius);
+        section.set("Shadow-Strength", shadowStrength);
+        section.set("View-Range", viewRange);
+        section.set("Display-Width", displayWidth);
+        section.set("Display-Height", displayHeight);
+        if (glowColorOverride != null)
+            section.set("Glow-Color-Override", glowColorOverride.getRed() + "," +
+                    glowColorOverride.getGreen() + "," + glowColorOverride.getBlue());
+    }
 }

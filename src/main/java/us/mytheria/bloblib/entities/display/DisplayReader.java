@@ -53,10 +53,10 @@ public class DisplayReader {
             throw new IllegalArgumentException("Scale is not valid");
         if (!section.isConfigurationSection("Translation"))
             throw new IllegalArgumentException("Translation is not valid");
-        if (!section.isConfigurationSection("LeftRotation"))
-            throw new IllegalArgumentException("LeftRotation is not valid");
-        if (!section.isConfigurationSection("RightRotation"))
-            throw new IllegalArgumentException("RightRotation is not valid");
+        if (!section.isConfigurationSection("Left-Rotation"))
+            throw new IllegalArgumentException("Left-Rotation is not valid");
+        if (!section.isConfigurationSection("Right-Rotation"))
+            throw new IllegalArgumentException("Right-Rotation is not valid");
         ConfigurationSection scaleSection = section.getConfigurationSection("Scale");
         if (!scaleSection.isDouble("X"))
             throw new IllegalArgumentException("Scale.X is not valid");
@@ -71,24 +71,24 @@ public class DisplayReader {
             throw new IllegalArgumentException("Translation.Y is not valid");
         if (!translationSection.isDouble("Z"))
             throw new IllegalArgumentException("Translation.Z is not valid");
-        ConfigurationSection leftRotationSection = section.getConfigurationSection("LeftRotation");
+        ConfigurationSection leftRotationSection = section.getConfigurationSection("Left-Rotation");
         if (!leftRotationSection.isDouble("X"))
-            throw new IllegalArgumentException("LeftRotation.X is not valid");
+            throw new IllegalArgumentException("Left-Rotation.X is not valid");
         if (!leftRotationSection.isDouble("Y"))
-            throw new IllegalArgumentException("LeftRotation.Y is not valid");
+            throw new IllegalArgumentException("Left-Rotation.Y is not valid");
         if (!leftRotationSection.isDouble("Z"))
-            throw new IllegalArgumentException("LeftRotation.Z is not valid");
+            throw new IllegalArgumentException("Left-Rotation.Z is not valid");
         if (!leftRotationSection.isDouble("W"))
-            throw new IllegalArgumentException("LeftRotation.W is not valid");
-        ConfigurationSection rightRotationSection = section.getConfigurationSection("RightRotation");
+            throw new IllegalArgumentException("Left-Rotation.W is not valid");
+        ConfigurationSection rightRotationSection = section.getConfigurationSection("Right-Rotation");
         if (!rightRotationSection.isDouble("X"))
-            throw new IllegalArgumentException("RightRotation.X is not valid");
+            throw new IllegalArgumentException("Right-Rotation.X is not valid");
         if (!rightRotationSection.isDouble("Y"))
-            throw new IllegalArgumentException("RightRotation.Y is not valid");
+            throw new IllegalArgumentException("Right-Rotation.Y is not valid");
         if (!rightRotationSection.isDouble("Z"))
-            throw new IllegalArgumentException("RightRotation.Z is not valid");
+            throw new IllegalArgumentException("Right-Rotation.Z is not valid");
         if (!rightRotationSection.isDouble("W"))
-            throw new IllegalArgumentException("RightRotation.W is not valid");
+            throw new IllegalArgumentException("Right-Rotation.W is not valid");
         Vector3f scale = new Vector3f((float) scaleSection.getDouble("X"), (float) scaleSection.getDouble("Y"), (float) scaleSection.getDouble("Z"));
         Vector3f translation = new Vector3f((float) translationSection.getDouble("X"), (float) translationSection.getDouble("Y"), (float) translationSection.getDouble("Z"));
         Quaternionf leftRotation = new Quaternionf(leftRotationSection.getDouble("X"), leftRotationSection.getDouble("Y"), leftRotationSection.getDouble("Z"), leftRotationSection.getDouble("W"));
@@ -99,8 +99,8 @@ public class DisplayReader {
     public static Transformation TRANSFORMATION_DEFAULT(ConfigurationSection section) {
         Vector3f scale = new Vector3f((float) section.getDouble("Scale.X", 1), (float) section.getDouble("Scale.Y", 1), (float) section.getDouble("Scale.Z", 1));
         Vector3f translation = new Vector3f((float) section.getDouble("Translation.X", 0.5), (float) section.getDouble("Translation.Y", 0.5), (float) section.getDouble("Translation.Z", 0.5));
-        Quaternionf leftRotation = new Quaternionf((float) section.getDouble("LeftRotation.X", 0), (float) section.getDouble("LeftRotation.Y", 0), (float) section.getDouble("LeftRotation.Z", 0), (float) section.getDouble("LeftRotation.W", 1));
-        Quaternionf rightRotation = new Quaternionf((float) section.getDouble("RightRotation.X", 0), (float) section.getDouble("RightRotation.Y", 0), (float) section.getDouble("RightRotation.Z", 0), (float) section.getDouble("RightRotation.W", 1));
+        Quaternionf leftRotation = new Quaternionf((float) section.getDouble("Left-Rotation.X", 0), (float) section.getDouble("Left-Rotation.Y", 0), (float) section.getDouble("Left-Rotation.Z", 0), (float) section.getDouble("Left-Rotation.W", 1));
+        Quaternionf rightRotation = new Quaternionf((float) section.getDouble("Right-Rotation.X", 0), (float) section.getDouble("Right-Rotation.Y", 0), (float) section.getDouble("Right-Rotation.Z", 0), (float) section.getDouble("Right-Rotation.W", 1));
         return new Transformation(translation, leftRotation, scale, rightRotation);
     }
 
@@ -110,9 +110,9 @@ public class DisplayReader {
             return null;
         if (!section.isConfigurationSection("Translation"))
             return null;
-        if (!section.isConfigurationSection("LeftRotation"))
+        if (!section.isConfigurationSection("Left-Rotation"))
             return null;
-        if (!section.isConfigurationSection("RightRotation"))
+        if (!section.isConfigurationSection("Right-Rotation"))
             return null;
         ConfigurationSection scaleSection = section.getConfigurationSection("Scale");
         if (!scaleSection.isDouble("X"))
@@ -128,7 +128,7 @@ public class DisplayReader {
             return null;
         if (!translationSection.isDouble("Z"))
             return null;
-        ConfigurationSection leftRotationSection = section.getConfigurationSection("LeftRotation");
+        ConfigurationSection leftRotationSection = section.getConfigurationSection("Left-Rotation");
         if (!leftRotationSection.isDouble("X"))
             return null;
         if (!leftRotationSection.isDouble("Y"))
@@ -137,7 +137,7 @@ public class DisplayReader {
             return null;
         if (!leftRotationSection.isDouble("W"))
             return null;
-        ConfigurationSection rightRotationSection = section.getConfigurationSection("RightRotation");
+        ConfigurationSection rightRotationSection = section.getConfigurationSection("Right-Rotation");
         if (!rightRotationSection.isDouble("X"))
             return null;
         if (!rightRotationSection.isDouble("Y"))
