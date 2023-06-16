@@ -97,6 +97,15 @@ public abstract class ManagerDirector implements IManagerDirector {
     }
 
     /**
+     * Will proxy this ManagerDirector to a new instance of ManagerDirector.
+     *
+     * @return The proxied ManagerDirector
+     */
+    public IManagerDirector proxy() {
+        return BlobProxifier.PROXY(this);
+    }
+
+    /**
      * Adds a manager to the director.
      *
      * @param key     The key of the manager
