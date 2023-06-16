@@ -61,7 +61,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
             this.addConsumer = player -> {
             };
         }
-        Optional<File> loadFilesDirectory = managerDirector.getFileManager().searchFile(objectDirectorData.objectDirectory());
+        Optional<File> loadFilesDirectory = managerDirector.getRealFileManager().searchFile(objectDirectorData.objectDirectory());
         if (loadFilesDirectory.isEmpty()) {
             Bukkit.getLogger().info("The loadFilesPathKey is not valid");
             throw new IllegalArgumentException("The loadFilesPathKey is not valid");

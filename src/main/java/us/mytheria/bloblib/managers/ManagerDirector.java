@@ -9,16 +9,18 @@ import us.mytheria.bloblib.entities.currency.Currency;
 import us.mytheria.bloblib.entities.currency.EconomyFactory;
 import us.mytheria.bloblib.entities.currency.WalletOwner;
 import us.mytheria.bloblib.entities.currency.WalletOwnerManager;
+import us.mytheria.bloblib.entities.proxy.BlobProxifier;
 import us.mytheria.bloblib.utilities.ResourceUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
-public abstract class ManagerDirector {
+public abstract class ManagerDirector implements IManagerDirector {
     private final BlobPlugin plugin;
     private final HashMap<String, Manager> managers;
     private final ChatListenerManager chatListenerManager;
@@ -26,6 +28,7 @@ public abstract class ManagerDirector {
     private final SelPosListenerManager positionListenerManager;
     private final DropListenerManager dropListenerManager;
     private final BlobFileManager blobFileManager;
+    private final IFileManager proxiedFileManager;
 
     /**
      * Constructs a new ManagerDirector.
@@ -37,6 +40,7 @@ public abstract class ManagerDirector {
         this.blobFileManager = new BlobFileManager(this,
                 "plugins/" + plugin.getName(),
                 plugin);
+        this.proxiedFileManager = BlobProxifier.PROXY(blobFileManager);
         chatListenerManager = BlobLib.getInstance().getChatManager();
         selectorListenerManager = BlobLib.getInstance().getSelectorManager();
         positionListenerManager = BlobLib.getInstance().getPositionManager();
@@ -65,6 +69,7 @@ public abstract class ManagerDirector {
         this.plugin = plugin;
         this.blobFileManager = new BlobFileManager(this,
                 fileManagerPathname, plugin);
+        this.proxiedFileManager = BlobProxifier.PROXY(blobFileManager);
         chatListenerManager = BlobLib.getInstance().getChatManager();
         selectorListenerManager = BlobLib.getInstance().getSelectorManager();
         positionListenerManager = BlobLib.getInstance().getPositionManager();
@@ -81,7 +86,8 @@ public abstract class ManagerDirector {
      */
     public ManagerDirector(BlobPlugin plugin, BlobFileManager fileManager) {
         this.plugin = plugin;
-        this.blobFileManager = fileManager;
+        this.blobFileManager = Objects.requireNonNull(fileManager, "BlobFileManager cannot be null!");
+        this.proxiedFileManager = BlobProxifier.PROXY(blobFileManager);
         chatListenerManager = BlobLib.getInstance().getChatManager();
         selectorListenerManager = BlobLib.getInstance().getSelectorManager();
         positionListenerManager = BlobLib.getInstance().getPositionManager();
@@ -112,7 +118,7 @@ public abstract class ManagerDirector {
                                                    Function<File, T> readFunction,
                                                    boolean hasObjectBuilderManager) {
         ObjectDirectorData directorData =
-                ObjectDirectorData.simple(getFileManager(), objectName);
+                ObjectDirectorData.simple(getRealFileManager(), objectName);
         addManager(objectName + "Director",
                 new ObjectDirector<>(this,
                         directorData, readFunction, hasObjectBuilderManager));
@@ -364,10 +370,14 @@ public abstract class ManagerDirector {
         return dropListenerManager;
     }
 
+    public IFileManager getFileManager() {
+        return proxiedFileManager;
+    }
+
     /**
      * @return The BlobFileManager that the director manages.
      */
-    public BlobFileManager getFileManager() {
+    public BlobFileManager getRealFileManager() {
         return blobFileManager;
     }
 
@@ -388,7 +398,7 @@ public abstract class ManagerDirector {
      */
     public ManagerDirector detachMessageAsset(String fileName, boolean debug) {
         Logger logger = getPlugin().getAnjoLogger();
-        File path = getFileManager().messagesDirectory();
+        File path = getRealFileManager().messagesDirectory();
         File file = new File(path + "/" + fileName + ".yml");
         if (!file.exists()) {
             try {
@@ -429,7 +439,7 @@ public abstract class ManagerDirector {
      */
     public ManagerDirector detachSoundAsset(String fileName, boolean debug) {
         Logger logger = getPlugin().getAnjoLogger();
-        File path = getFileManager().soundsDirectory();
+        File path = getRealFileManager().soundsDirectory();
         File file = new File(path + "/" + fileName + ".yml");
         if (!file.exists()) {
             try {
@@ -469,7 +479,7 @@ public abstract class ManagerDirector {
      * @return The ManagerDirector instance for method chaining
      */
     public ManagerDirector registerAndUpdateBlobInventory(String fileName, boolean debug) {
-        File path = getFileManager().inventoriesDirectory();
+        File path = getRealFileManager().inventoriesDirectory();
         File file = new File(path + "/" + fileName + ".yml");
         if (!blobFileManager.updateYAML(file))
             return this;
@@ -500,7 +510,7 @@ public abstract class ManagerDirector {
      * @return The ManagerDirector instance for method chaining
      */
     public ManagerDirector registerAndUpdateMetaBlobInventory(String fileName, boolean debug) {
-        File path = getFileManager().metaInventoriesDirectory();
+        File path = getRealFileManager().metaInventoriesDirectory();
         File file = new File(path + "/" + fileName + ".yml");
         if (!blobFileManager.updateYAML(file))
             return this;

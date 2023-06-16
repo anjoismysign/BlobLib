@@ -80,7 +80,7 @@ public class PluginManager {
         SoundManager.unloadBlobPlugin(plugin);
     }
 
-    public static void loadAssets(BlobPlugin plugin, ManagerDirector director) {
+    public static void loadAssets(BlobPlugin plugin, IManagerDirector director) {
         SoundManager.loadBlobPlugin(plugin, director);
         MessageManager.loadBlobPlugin(plugin, director);
         ActionManager.loadBlobPlugin(plugin, director);

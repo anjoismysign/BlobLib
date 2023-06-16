@@ -34,7 +34,7 @@ public class ActionManager {
                 .log("Duplicate Action: '" + key + "' (found " + value + " instances)"));
     }
 
-    public void load(BlobPlugin plugin, ManagerDirector director) {
+    public void load(BlobPlugin plugin, IManagerDirector director) {
         String pluginName = plugin.getName();
         if (pluginActions.containsKey(pluginName))
             throw new IllegalArgumentException("Plugin '" + pluginName + "' has already been loaded");
@@ -59,7 +59,7 @@ public class ActionManager {
         BlobLib.getInstance().getMessageManager().unload(plugin);
     }
 
-    public static void loadBlobPlugin(BlobPlugin plugin, ManagerDirector director) {
+    public static void loadBlobPlugin(BlobPlugin plugin, IManagerDirector director) {
         ActionManager manager = BlobLib.getInstance().getActionManager();
         manager.load(plugin, director);
     }

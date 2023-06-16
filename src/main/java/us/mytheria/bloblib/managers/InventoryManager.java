@@ -4,7 +4,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.entities.BlobFileManager;
+import us.mytheria.bloblib.entities.IFileManager;
 import us.mytheria.bloblib.entities.inventory.*;
 
 import javax.annotation.Nullable;
@@ -44,14 +44,14 @@ public class InventoryManager {
                 .log("Duplicate Inventory: '" + key + "' (found " + value + " instances)"));
     }
 
-    public void load(BlobPlugin plugin, ManagerDirector director) {
+    public void load(BlobPlugin plugin, IManagerDirector director) {
         String pluginName = plugin.getName();
         if (pluginBlobInventories.containsKey(pluginName))
             throw new IllegalArgumentException("Plugin '" + pluginName + "' has already been loaded");
         pluginBlobInventories.put(pluginName, new HashSet<>());
         pluginMetaInventories.put(pluginName, new HashSet<>());
         duplicates.clear();
-        BlobFileManager fileManager = director.getFileManager();
+        IFileManager fileManager = director.getFileManager();
         File blobDirectory = fileManager.inventoriesDirectory();
         loadBlobInventories(plugin, blobDirectory);
         File metaDirectory = fileManager.metaInventoriesDirectory();
@@ -60,7 +60,7 @@ public class InventoryManager {
                 .log("Duplicate Inventory: '" + key + "' (found " + value + " instances)"));
     }
 
-    public static void loadBlobPlugin(BlobPlugin plugin, ManagerDirector director) {
+    public static void loadBlobPlugin(BlobPlugin plugin, IManagerDirector director) {
         InventoryManager manager = BlobLib.getInstance().getInventoryManager();
         manager.load(plugin, director);
     }

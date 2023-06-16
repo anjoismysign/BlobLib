@@ -21,7 +21,7 @@ import java.util.*;
  * A BlobFileManager will manage all files related to inventories,
  * messages, sounds and future objects that BlobLib will support.
  */
-public class BlobFileManager extends Manager {
+public class BlobFileManager extends Manager implements IFileManager {
     private final File pluginDirectory;
     private final HashMap<String, File> files;
     private final String lowercased;

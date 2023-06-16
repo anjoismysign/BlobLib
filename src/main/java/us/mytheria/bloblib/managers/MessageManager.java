@@ -37,7 +37,7 @@ public class MessageManager {
                 .log("Duplicate BlobMessage: '" + key + "' (found " + value + " instances)"));
     }
 
-    public void load(BlobPlugin plugin, ManagerDirector director) {
+    public void load(BlobPlugin plugin, IManagerDirector director) {
         String pluginName = plugin.getName();
         if (pluginMessages.containsKey(pluginName))
             throw new IllegalArgumentException("Plugin '" + pluginName + "' has already been loaded");
@@ -67,7 +67,7 @@ public class MessageManager {
         BlobLib.getInstance().getMessageManager().unload(plugin);
     }
 
-    public static void loadBlobPlugin(BlobPlugin plugin, ManagerDirector director) {
+    public static void loadBlobPlugin(BlobPlugin plugin, IManagerDirector director) {
         MessageManager manager = BlobLib.getInstance().getMessageManager();
         manager.load(plugin, director);
     }

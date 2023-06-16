@@ -71,7 +71,7 @@ public abstract class BlobPlugin extends JavaPlugin {
      *
      * @return The ManagerDirector of the plugin.
      */
-    public abstract ManagerDirector getManagerDirector();
+    public abstract IManagerDirector getManagerDirector();
 
     @NotNull
     public BlobPluginLogger getAnjoLogger() {
