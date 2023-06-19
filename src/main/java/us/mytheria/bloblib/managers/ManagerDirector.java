@@ -28,6 +28,7 @@ public abstract class ManagerDirector implements IManagerDirector {
     private final SelPosListenerManager positionListenerManager;
     private final DropListenerManager dropListenerManager;
     private final BlobFileManager blobFileManager;
+    private final BukkitPluginOperator pluginOperator;
     private final IFileManager proxiedFileManager;
 
     /**
@@ -37,6 +38,7 @@ public abstract class ManagerDirector implements IManagerDirector {
      */
     public ManagerDirector(BlobPlugin plugin) {
         this.plugin = plugin;
+        this.pluginOperator = () -> plugin;
         this.blobFileManager = new BlobFileManager(this,
                 "plugins/" + plugin.getName(),
                 plugin);
@@ -67,6 +69,7 @@ public abstract class ManagerDirector implements IManagerDirector {
     @Deprecated
     public ManagerDirector(BlobPlugin plugin, String fileManagerPathname) {
         this.plugin = plugin;
+        this.pluginOperator = () -> plugin;
         this.blobFileManager = new BlobFileManager(this,
                 fileManagerPathname, plugin);
         this.proxiedFileManager = BlobProxifier.PROXY(blobFileManager);
@@ -86,6 +89,7 @@ public abstract class ManagerDirector implements IManagerDirector {
      */
     public ManagerDirector(BlobPlugin plugin, BlobFileManager fileManager) {
         this.plugin = plugin;
+        this.pluginOperator = () -> plugin;
         this.blobFileManager = Objects.requireNonNull(fileManager, "BlobFileManager cannot be null!");
         this.proxiedFileManager = BlobProxifier.PROXY(blobFileManager);
         chatListenerManager = BlobLib.getInstance().getChatManager();
@@ -103,6 +107,15 @@ public abstract class ManagerDirector implements IManagerDirector {
      */
     public IManagerDirector proxy() {
         return BlobProxifier.PROXY(this);
+    }
+
+    /**
+     * Will get the BukkitPluginOperator of the plugin.
+     *
+     * @return The BukkitPluginOperator
+     */
+    public BukkitPluginOperator getPluginOperator() {
+        return pluginOperator;
     }
 
     /**
