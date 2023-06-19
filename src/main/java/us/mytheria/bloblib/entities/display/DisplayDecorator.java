@@ -1,7 +1,7 @@
 package us.mytheria.bloblib.entities.display;
 
 import org.bukkit.entity.Display;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Transformation;
@@ -12,7 +12,7 @@ import java.util.function.Function;
 
 public class DisplayDecorator<T extends Display> {
     private final T decorated;
-    private final JavaPlugin plugin;
+    private final Plugin plugin;
     private TransformationStepMemory<T> stepMemory;
     private BukkitTask perpetualTask;
 
@@ -21,7 +21,7 @@ public class DisplayDecorator<T extends Display> {
      *
      * @param display the itemStack to wrap.
      */
-    public DisplayDecorator(T display, JavaPlugin plugin) {
+    public DisplayDecorator(T display, Plugin plugin) {
         this.decorated = display;
         this.plugin = plugin;
         this.stepMemory = new TransformationStepMemory<>(plugin);
@@ -168,7 +168,7 @@ public class DisplayDecorator<T extends Display> {
      * @param period   the period.
      * @param runnable the runnable.
      */
-    public void setPerpetualAsync(JavaPlugin plugin, long delay,
+    public void setPerpetualAsync(Plugin plugin, long delay,
                                   long period, Runnable runnable) {
         if (perpetualTask != null) {
             perpetualTask.cancel();
@@ -195,7 +195,7 @@ public class DisplayDecorator<T extends Display> {
      * @param period   the period.
      * @param runnable the runnable.
      */
-    public void setPerpetual(JavaPlugin plugin, long delay,
+    public void setPerpetual(Plugin plugin, long delay,
                              long period, Runnable runnable) {
         if (perpetualTask != null) {
             perpetualTask.cancel();
@@ -225,7 +225,7 @@ public class DisplayDecorator<T extends Display> {
      */
     public void transformLeftPerpetual(float x, float y, float z, float degrees,
                                        int interpolationDuration,
-                                       JavaPlugin plugin) {
+                                       Plugin plugin) {
         setPerpetualAsync(plugin, -1, interpolationDuration, () -> transformRight(x, y, z, degrees, interpolationDuration));
     }
 
@@ -244,7 +244,7 @@ public class DisplayDecorator<T extends Display> {
     public void transformLeftPerpetual(float x, float y, float z, float degrees,
                                        int interpolationDuration,
                                        int interpolationDelay,
-                                       JavaPlugin plugin) {
+                                       Plugin plugin) {
         setPerpetualAsync(plugin, -1, interpolationDuration, () -> transformLeft(x, y, z, degrees, interpolationDuration,
                 interpolationDelay));
     }
@@ -262,7 +262,7 @@ public class DisplayDecorator<T extends Display> {
      */
     public void transformRightPerpetual(float x, float y, float z, float degrees,
                                         int interpolationDuration,
-                                        JavaPlugin plugin) {
+                                        Plugin plugin) {
         setPerpetualAsync(plugin, -1, interpolationDuration, () -> transformRight(x, y, z, degrees, interpolationDuration));
     }
 
@@ -281,7 +281,7 @@ public class DisplayDecorator<T extends Display> {
     public void transformRightPerpetual(float x, float y, float z, float degrees,
                                         int interpolationDuration,
                                         int interpolationDelay,
-                                        JavaPlugin plugin) {
+                                        Plugin plugin) {
         setPerpetualAsync(plugin, -1, interpolationDuration, () -> transformRight(x, y, z, degrees, interpolationDuration,
                 interpolationDelay));
     }
@@ -323,7 +323,7 @@ public class DisplayDecorator<T extends Display> {
      * @param function the function that will provide the transformation.
      * @param plugin   the plugin used to schedule the task.
      */
-    public void setPerpetualTransformation(Function<TransformationStepFactory, Transformation> function, JavaPlugin plugin) {
+    public void setPerpetualTransformation(Function<TransformationStepFactory, Transformation> function, Plugin plugin) {
         setPerpetualAsync(plugin, -1, call().getInterpolationDuration(), () -> decorated.setTransformation(function.apply(manufacture())));
     }
 }

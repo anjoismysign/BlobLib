@@ -2,7 +2,7 @@ package us.mytheria.bloblib.entities.display;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Display;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayDeque;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  * @param <T> the type of the display
  */
 public class TransformationStepMemory<T extends Display> {
-    private final JavaPlugin plugin;
+    private final Plugin plugin;
     protected final ArrayDeque<TransformationStep> deque;
     private boolean isRunning;
     private boolean isLocked;
@@ -34,7 +34,7 @@ public class TransformationStepMemory<T extends Display> {
      */
     public static <T extends Display> TransformationStepMemory<T> of(
             List<TransformationStep> list,
-            JavaPlugin plugin) {
+            Plugin plugin) {
         TransformationStepMemory<T> memory = new TransformationStepMemory<>(plugin);
         list.forEach(memory::addLast);
         return memory;
@@ -45,7 +45,7 @@ public class TransformationStepMemory<T extends Display> {
      *
      * @param plugin the plugin to run the clock on
      */
-    public TransformationStepMemory(JavaPlugin plugin) {
+    public TransformationStepMemory(Plugin plugin) {
         this.isLocked = false;
         this.deque = new ArrayDeque<>();
         this.isRunning = false;
