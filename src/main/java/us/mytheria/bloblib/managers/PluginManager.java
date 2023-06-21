@@ -4,6 +4,7 @@ import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.utilities.Debug;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * @author anjoismysign
@@ -54,7 +55,7 @@ public class PluginManager {
      * the 'blobLibReload()' method. Will also load all assets
      * that can be used by BlobLib.
      */
-    public static void registerPlugin(BlobPlugin plugin, ManagerDirector director) {
+    public static void registerPlugin(BlobPlugin plugin, IManagerDirector director) {
         PluginManager manager = BlobLib.getInstance().getPluginManager();
         manager.put(plugin);
         loadAssets(plugin, director);
@@ -81,6 +82,8 @@ public class PluginManager {
     }
 
     public static void loadAssets(BlobPlugin plugin, IManagerDirector director) {
+        director = Objects.requireNonNull(director,
+                plugin.getName() + "'s ManagerDirector is null!");
         SoundManager.loadBlobPlugin(plugin, director);
         MessageManager.loadBlobPlugin(plugin, director);
         ActionManager.loadBlobPlugin(plugin, director);
