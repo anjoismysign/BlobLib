@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 /**
- * TODO: CLASS IS NOT FINISHED
+ * TODO: NOT TESTED YET
  */
 public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
         implements DisplayPet<Display, R> {
