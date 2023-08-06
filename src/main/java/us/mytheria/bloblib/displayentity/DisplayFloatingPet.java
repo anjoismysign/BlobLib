@@ -2,48 +2,45 @@ package us.mytheria.bloblib.displayentity;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Particle;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
-import us.mytheria.bloblib.BlobLib;
 
 import java.util.UUID;
 
-public class ArmorStandFloatingPet implements DisplayPet<ArmorStand, ItemStack> {
+/**
+ * TODO: CLASS IS NOT FINISHED
+ */
+public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
+        implements DisplayPet<Display, R> {
     private Particle particle;
-    private ArmorStand entity;
+    protected T entity;
     private Location location;
     private UUID owner;
     private boolean activated, pauseLogic;
-    private ItemStack display;
     private String customName;
     private DisplayEntityAnimations animations;
     private BukkitTask logicTask;
+    protected R display;
 
     /**
      * Creates a pet
      *
      * @param owner      - the FloatingPet owner
-     * @param itemStack  - the ItemStack to itemStack
+     * @param display    - the display (like BlockData/ItemStack)
      *                   (must be an item or a block)
      * @param particle   - the Particle to itemStack
      * @param customName - the CustomName of the pet
      *                   (if null will be used 'owner's Pet')
      */
-    public ArmorStandFloatingPet(Player owner, ItemStack itemStack, @Nullable Particle particle,
-                                 @Nullable String customName) {
-        Material type = itemStack.getType();
-        if (!type.isItem() && type.isBlock())
-            throw new IllegalArgumentException("ItemStack must be an item or a block");
+    public DisplayFloatingPet(Player owner, R display, @Nullable Particle particle,
+                              @Nullable String customName) {
         this.pauseLogic = false;
         setOwner(owner.getUniqueId());
-        setDisplay(itemStack);
+        setDisplay(display);
         setCustomName(customName);
         setParticle(particle);
     }
@@ -58,22 +55,34 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand, ItemStack> 
         loc.setX(loc.getX() - 1);
         loc.setY(loc.getY() + 0.85);
         setLocation(loc);
-        spawnArmorStand(loc);
+        spawnEntity(loc);
     }
 
-    private void spawnArmorStand(Location loc) {
-        BlobLib plugin = BlobLib.getInstance();
-        entity = createArmorStand(loc);
-        setCustomName(getCustomName());
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> entity.setCustomNameVisible(true), 1);
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> entity.setGravity(false), 3);
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> entity.setSmall(true), 4);
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> entity.setInvulnerable(true), 5);
-        entity.getEquipment().setHelmet(getDisplay());
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> entity.setVisible(false), 6);
-        initAnimations(plugin);
+    /**
+     * Spawns the entity in world and initializes animations
+     *
+     * @param location - the location to spawn
+     */
+    abstract void spawnEntity(Location location);
 
-    }
+    /**
+     * Sets the pet display
+     *
+     * @param display - the new display
+     */
+    public abstract void setDisplay(R display);
+
+//    private void spawnEntity(Location loc) {
+//        BlobLib plugin = BlobLib.getInstance();
+//        entity = (BlockDisplay) loc.getWorld().spawnEntity(loc,
+//                EntityType.BLOCK_DISPLAY);
+//        setCustomName(getCustomName());
+//        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> entity.setCustomNameVisible(true), 1);
+//        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> entity.setGravity(false), 3);
+//        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> entity.setInvulnerable(true), 5);
+//        entity.setBlock(getDisplay());
+//        initAnimations(plugin);
+//    }
 
     /**
      * Will set pet's custom name.
@@ -89,7 +98,7 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand, ItemStack> 
         entity.setCustomName(customName);
     }
 
-    private void initAnimations(JavaPlugin plugin) {
+    protected void initAnimations(JavaPlugin plugin) {
         animations = new DisplayEntityAnimations(this, 0.5, 0.55,
                 0.025, 0.2, -0.5);
         initLogic(plugin);
@@ -130,7 +139,7 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand, ItemStack> 
 
     /**
      * Similar to Entity#remove.
-     * Will mark the pet as deactivated and will remove the armorstand.
+     * Will mark the pet as deactivated and will remove the block display.
      */
     public void destroy() {
         setActive(false);
@@ -142,11 +151,11 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand, ItemStack> 
     }
 
     /**
-     * Returns the pet head
+     * Returns the pet display
      *
-     * @return the head
+     * @return the display
      */
-    public ItemStack getDisplay() {
+    public R getDisplay() {
         return display;
     }
 
@@ -169,11 +178,11 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand, ItemStack> 
     }
 
     /**
-     * Returns the armorstand of the pet
+     * Returns the display entity of the pet
      *
-     * @return the armorstand
+     * @return the display entity
      */
-    public ArmorStand getEntity() {
+    public T getEntity() {
         return entity;
     }
 
@@ -230,11 +239,6 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand, ItemStack> 
 
         if (!loc.getWorld().getChunkAt(loc.getChunk().getX() + 1, loc.getChunk().getZ() - 1).isLoaded())
             loc.getWorld().getChunkAt(loc.getChunk().getX() + 1, loc.getChunk().getZ() - 1).load();
-
-    }
-
-    private ArmorStand createArmorStand(Location loc) {
-        return (ArmorStand) loc.getWorld().spawnEntity(loc, EntityType.ARMOR_STAND);
 
     }
 
@@ -304,14 +308,5 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand, ItemStack> 
      */
     public void setParticle(Particle particle) {
         this.particle = particle;
-    }
-
-    /**
-     * Sets the pet head
-     *
-     * @param itemStack - the new head
-     */
-    public void setDisplay(ItemStack itemStack) {
-        this.display = itemStack;
     }
 }

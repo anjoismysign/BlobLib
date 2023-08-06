@@ -2,7 +2,6 @@ package us.mytheria.bloblib.displayentity;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
-import org.bukkit.inventory.ItemStack;
 
 /**
  * A display entity is an entity which is not a real entity
@@ -16,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
  *            or in case of complex display entities, the
  *            root parent part/entity.
  */
-public interface DisplayEntity<T extends Entity> {
+public interface DisplayEntity<T extends Entity, R extends Cloneable> {
 
     /**
      * Spawns the entity.
@@ -82,7 +81,7 @@ public interface DisplayEntity<T extends Entity> {
     /**
      * Sets the entity display/ItemStack
      *
-     * @param blockData - the new head
+     * @param display - the new display
      */
-    void setDisplay(ItemStack blockData);
+    void setDisplay(R display);
 }

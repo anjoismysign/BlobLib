@@ -11,9 +11,9 @@ public class DisplayEntityAnimations {
 
     private final double followSpeed, walkAwaySpeed, hoverSpeed, hoverMaxHeightCap, hoverMinHeightCap;
     private double hoverVelocity, hoverHeight;
-    private final DisplayEntity<?> pet;
+    private final DisplayEntity<?, ?> pet;
 
-    public DisplayEntityAnimations(DisplayEntity<?> pet, double followSpeed, double walkAwaySpeed, double hoverSpeed,
+    public DisplayEntityAnimations(DisplayEntity<?, ?> pet, double followSpeed, double walkAwaySpeed, double hoverSpeed,
                                    double hoverMaxHeightCap, double hoverMinHeightCap) {
         this.pet = pet;
         this.followSpeed = followSpeed;

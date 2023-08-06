@@ -8,7 +8,8 @@ import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.entities.Ownable;
 import us.mytheria.bloblib.entities.ParticleContainer;
 
-public interface DisplayPet<T extends Entity> extends DisplayEntity<T>,
+public interface DisplayPet<T extends Entity, R extends Cloneable>
+        extends DisplayEntity<T, R>,
         Nameable, ParticleContainer, Ownable {
 
     /**
