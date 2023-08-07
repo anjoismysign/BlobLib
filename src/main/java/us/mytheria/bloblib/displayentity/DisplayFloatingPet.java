@@ -182,6 +182,7 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
      *
      * @return the display entity
      */
+    @Override
     public T getEntity() {
         return entity;
     }
