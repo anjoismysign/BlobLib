@@ -13,6 +13,10 @@ import us.mytheria.bloblib.managers.*;
 import java.io.File;
 import java.util.Optional;
 
+/**
+ * @deprecated Preparing rewrite for singleton pattern
+ */
+@Deprecated
 public class BlobLibAssetAPI {
     private static final BlobLib main = BlobLib.getInstance();
 

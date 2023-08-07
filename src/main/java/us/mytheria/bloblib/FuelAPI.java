@@ -8,6 +8,10 @@ import us.mytheria.bloblib.itemstack.ItemStackBuilder;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @deprecated Preparing rewrite for singleton pattern
+ */
+@Deprecated
 public class FuelAPI {
     private static final Map<String, Fuel> mapping = new HashMap<>();
 
@@ -34,30 +38,31 @@ public class FuelAPI {
                 "JUNGLE_CHEST_BOAT",
                 "ACACIA_CHEST_BOAT",
                 "DARK_OAK_CHEST_BOAT",
-                "MANGROVE_CHEST_BOAT"
-//                "CHERRY_BOAT.toString(),
-//                "CHERRY_CHEST_BOAT.toString(),
+                "MANGROVE_CHEST_BOAT",
+                "BAMBOO_RAFT",
+                "BAMBOO_CHEST_RAFT",
+                "CHERRY_BOAT",
+                "CHERRY_CHEST_BOAT"
         }) {
             mapping.put(boatMaterial, Fuel.of(1200));
         }
         mapping.put(Material.SCAFFOLDING.toString(), Fuel.of(50));
-//        for (String hangingSign : new String[]{
-//                Material.ACACIA_HANGING_SIGN.toString(),
-//                Material.BAMBOO_HANGING_SIGN.toString(),
-//                Material.BIRCH_HANGING_SIGN.toString(),
-//                Material.DARK_OAK_HANGING_SIGN.toString(),
-//                Material.JUNGLE_HANGING_SIGN.toString(),
-//                Material.OAK_HANGING_SIGN.toString(),
-//                Material.SPRUCE_HANGING_SIGN.toString(),
-//                Material.MANGROVE_HANGING_SIGN.toString(),
-        //missing bamboo boat!
-//                Material.CHERRY_HANGING_SIGN.toString()}) {
-//            mapping.put(hangingSign.toString(), Fuel.of(200));
-//        }
-//        mapping.put(Material.BAMBOO_MOSAIC.toString(), Fuel.of(300));
+        for (String hangingSign : new String[]{
+                "ACACIA_HANGING_SIGN",
+                "BAMBOO_HANGING_SIGN",
+                "BIRCH_HANGING_SIGN",
+                "DARK_OAK_HANGING_SIGN",
+                "JUNGLE_HANGING_SIGN",
+                "OAK_HANGING_SIGN",
+                "SPRUCE_HANGING_SIGN",
+                "MANGROVE_HANGING_SIGN",
+                "CHERRY_HANGING_SIGN"}) {
+            mapping.put(hangingSign.toString(), Fuel.of(200));
+        }
+        mapping.put(Material.BAMBOO_MOSAIC.toString(), Fuel.of(300));
         mapping.put("BEE_NEST", Fuel.of(300));
         mapping.put("BEEHIVE", Fuel.of(300));
-//        mapping.put(Material.CHISELED_BOOKSHELF.toString(), Fuel.of(300));
+        mapping.put("CHISELED_BOOKSHELF", Fuel.of(300));
         for (String woodMaterial : new String[]{
                 "OAK_PLANKS",
                 "BIRCH_PLANKS",
@@ -128,24 +133,24 @@ public class FuelAPI {
                 "MANGROVE_PRESSURE_PLATE",
                 "MANGROVE_TRAPDOOR",
                 "MANGROVE_FENCE_GATE",
-                "MANGROVE_FENCE"
-//                Material.BAMBOO_BLOCK.toString(),
-//                Material.STRIPPED_BAMBOO_BLOCK.toString(),
-//                Material.BAMBOO_STAIRS.toString(),
-//                Material.BAMBOO_PRESSURE_PLATE.toString(),
-//                Material.BAMBOO_TRAPDOOR.toString(),
-//                Material.BAMBOO_FENCE_GATE.toString(),
-//                Material.BAMBOO_FENCE.toString(),
-//                Material.CHERRY_PLANKS.toString(),
-//                Material.CHERRY_LOG.toString(),
-//                Material.STRIPPED_CHERRY_LOG.toString(),
-//                Material.CHERRY_WOOD.toString(),
-//                Material.STRIPPED_CHERRY_WOOD.toString(),
-//                Material.CHERRY_STAIRS.toString(),
-//                Material.CHERRY_PRESSURE_PLATE.toString(),
-//                Material.CHERRY_TRAPDOOR.toString(),
-//                Material.CHERRY_FENCE_GATE.toString(),
-//                Material.CHERRY_FENCE.toString()
+                "MANGROVE_FENCE",
+                "BAMBOO_BLOCK",
+                "STRIPPED_BAMBOO_BLOCK",
+                "BAMBOO_STAIRS",
+                "BAMBOO_PRESSURE_PLATE",
+                "BAMBOO_TRAPDOOR",
+                "BAMBOO_FENCE_GATE",
+                "BAMBOO_FENCE",
+                "CHERRY_PLANKS",
+                "CHERRY_LOG",
+                "STRIPPED_CHERRY_LOG",
+                "CHERRY_WOOD",
+                "STRIPPED_CHERRY_WOOD",
+                "CHERRY_STAIRS",
+                "CHERRY_PRESSURE_PLATE",
+                "CHERRY_TRAPDOOR",
+                "CHERRY_FENCE_GATE",
+                "CHERRY_FENCE"
         }) {
             mapping.put(woodMaterial, Fuel.of(300));
         }
@@ -204,9 +209,9 @@ public class FuelAPI {
                 "JUNGLE_SIGN",
                 "ACACIA_SIGN",
                 "DARK_OAK_SIGN",
-                "MANGROVE_SIGN"
-//                Material.BAMBOO_SIGN.toString(),
-//                Material.CHERRY_SIGN.toString()
+                "MANGROVE_SIGN",
+                "BAMBOO_SIGN.toString()",
+                "CHERRY_SIGN"
         }) {
             mapping.put(sign, Fuel.of(200));
         }
@@ -226,9 +231,9 @@ public class FuelAPI {
                 "JUNGLE_SLAB",
                 "ACACIA_SLAB",
                 "DARK_OAK_SLAB",
-                "MANGROVE_SLAB"
-//                Material.BAMBOO_SLAB.toString(),
-//                Material.CHERRY_SLAB.toString()
+                "MANGROVE_SLAB",
+                "BAMBOO_SLAB",
+                "CHERRY_SLAB"
         }) {
             mapping.put(slab, Fuel.of(150));
         }
@@ -239,9 +244,9 @@ public class FuelAPI {
                 "JUNGLE_BUTTON",
                 "ACACIA_BUTTON",
                 "DARK_OAK_BUTTON",
-                "MANGROVE_BUTTON"
-//                Material.BAMBOO_BUTTON.toString(),
-//                Material.CHERRY_BUTTON.toString()
+                "MANGROVE_BUTTON",
+                "BAMBOO_BUTTON",
+                "CHERRY_BUTTON"
         }) {
             mapping.put(button, Fuel.of(100));
         }
@@ -252,9 +257,9 @@ public class FuelAPI {
                 "JUNGLE_SAPLING",
                 "ACACIA_SAPLING",
                 "DARK_OAK_SAPLING",
-                "MANGROVE_PROPAGULE"
-//                Material.BAMBOO_SAPLING,
-//                Material.CHERRY_SAPLING
+                "MANGROVE_PROPAGULE",
+                "BAMBOO_SAPLING",
+                "CHERRY_SAPLING"
         }) {
             mapping.put(saplingMaterial, Fuel.of(100));
         }

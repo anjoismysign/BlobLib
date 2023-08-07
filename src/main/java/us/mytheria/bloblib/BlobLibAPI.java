@@ -19,7 +19,9 @@ import java.util.function.Consumer;
  * @author anjoismysign
  * This class provides static methods to interact with the BlobLib API.
  * It's not meant to change unless in a future in a big rewrite of the API.
+ * @deprecated Preparing rewrite for singleton pattern
  */
+@Deprecated
 public class BlobLibAPI {
     private static final BlobLib main = BlobLib.getInstance();
 

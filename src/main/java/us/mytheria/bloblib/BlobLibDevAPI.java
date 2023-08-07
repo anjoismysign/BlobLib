@@ -9,7 +9,9 @@ import java.io.File;
  * It's meant to hold quick/static methods that later are meant to be
  * moved to a different class, such as BlobLibAPI.
  * Consider all methods as deprecated and subject to change.
+ * @deprecated Preparing rewrite for singleton pattern
  */
+@Deprecated
 public class BlobLibDevAPI {
     private static final BlobLib main = BlobLib.getInstance();
 
