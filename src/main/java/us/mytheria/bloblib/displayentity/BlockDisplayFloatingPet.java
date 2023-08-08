@@ -1,6 +1,5 @@
 package us.mytheria.bloblib.displayentity;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.block.data.BlockData;
@@ -21,18 +20,26 @@ public class BlockDisplayFloatingPet extends DisplayFloatingPet<BlockDisplay, Bl
      * @param customName - the CustomName of the pet
      *                   (if null will be used 'owner's Pet')
      */
-    public BlockDisplayFloatingPet(Player owner, BlockData display, @Nullable Particle particle, @Nullable String customName) {
-        super(owner, display, particle, customName);
+    public BlockDisplayFloatingPet(Player owner, BlockData display,
+                                   @Nullable Particle particle,
+                                   @Nullable String customName,
+                                   EntityAnimationsCarrier animationsCarrier,
+                                   double particlesOffset) {
+        super(owner, display, particle, customName, animationsCarrier, particlesOffset);
     }
 
     void spawnEntity(Location location) {
         BlobLib plugin = BlobLib.getInstance();
         entity = (BlockDisplay) location.getWorld().spawnEntity(location,
                 EntityType.BLOCK_DISPLAY);
+        vehicle = (BlockDisplay) location.getWorld().spawnEntity(location,
+                EntityType.BLOCK_DISPLAY);
+        entity.setPersistent(false);
+        vehicle.setPersistent(false);
+        if (!vehicle.addPassenger(entity)) {
+            throw new RuntimeException("Failed to add passenger to vehicle");
+        }
         setCustomName(getCustomName());
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> entity.setCustomNameVisible(true), 1);
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> entity.setGravity(false), 3);
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> entity.setInvulnerable(true), 5);
         entity.setBlock(getDisplay());
         initAnimations(plugin);
     }

@@ -9,22 +9,35 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Method;
+import java.util.Random;
 import java.util.UUID;
+import java.util.function.Supplier;
 
-/**
- * TODO: NOT TESTED YET
- */
 public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
         implements DisplayPet<Display, R> {
     private Particle particle;
-    protected T entity;
+    protected T entity, vehicle;
     private Location location;
     private UUID owner;
     private boolean activated, pauseLogic;
     private String customName;
-    private DisplayEntityAnimations animations;
+    private SyncDisplayEntityAnimations animations;
     private BukkitTask logicTask;
     protected R display;
+    private final Method[] methods = ((Supplier<Method[]>) () -> {
+        try {
+            Method getHandle = Class.forName(Bukkit.getServer().getClass().getPackage().getName() + ".entity.CraftEntity").getDeclaredMethod("getHandle");
+            return new Method[]{
+                    getHandle, getHandle.getReturnType().getDeclaredMethod("b", double.class, double.class, double.class, float.class, float.class)
+            };
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }).get();
+    private final EntityAnimationsCarrier animationsCarrier;
+    private final double particlesOffset;
 
     /**
      * Creates a pet
@@ -37,8 +50,13 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
      *                   (if null will be used 'owner's Pet')
      */
     public DisplayFloatingPet(Player owner, R display, @Nullable Particle particle,
-                              @Nullable String customName) {
+                              @Nullable String customName,
+                              EntityAnimationsCarrier animationsCarrier,
+                              double particlesOffset
+    ) {
         this.pauseLogic = false;
+        this.animationsCarrier = animationsCarrier;
+        this.particlesOffset = particlesOffset;
         setOwner(owner.getUniqueId());
         setDisplay(display);
         setCustomName(customName);
@@ -52,7 +70,9 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
     public void spawn() {
         setActive(true);
         Location loc = findOwnerOrFail().getLocation().clone();
-        loc.setX(loc.getX() - 1);
+        Random random = new Random();
+        loc.setX(loc.getX() + random.nextInt(3) - 1);
+        loc.setZ(loc.getZ() + random.nextInt(3) - 1);
         loc.setY(loc.getY() + 0.85);
         setLocation(loc);
         spawnEntity(loc);
@@ -72,18 +92,6 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
      */
     public abstract void setDisplay(R display);
 
-//    private void spawnEntity(Location loc) {
-//        BlobLib plugin = BlobLib.getInstance();
-//        entity = (BlockDisplay) loc.getWorld().spawnEntity(loc,
-//                EntityType.BLOCK_DISPLAY);
-//        setCustomName(getCustomName());
-//        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> entity.setCustomNameVisible(true), 1);
-//        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> entity.setGravity(false), 3);
-//        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> entity.setInvulnerable(true), 5);
-//        entity.setBlock(getDisplay());
-//        initAnimations(plugin);
-//    }
-
     /**
      * Will set pet's custom name.
      * If passing null, will be used 'owner's Pet'
@@ -99,22 +107,25 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
     }
 
     protected void initAnimations(JavaPlugin plugin) {
-        animations = new DisplayEntityAnimations(this, 0.5, 0.55,
-                0.025, 0.2, -0.5);
+        animations = new SyncDisplayEntityAnimations(this, 0.45, 0.2,
+                animationsCarrier.hoverSpeed(),
+                animationsCarrier.hoverMaxHeightCap(),
+                animationsCarrier.hoverMinHeightCap(),
+                animationsCarrier.yOffset());
         initLogic(plugin);
     }
 
     private void initLogic(JavaPlugin plugin) {
-        logicTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+        logicTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             Player owner = findOwner();
             if (owner == null || !owner.isOnline()) {
                 destroy();
                 return;
             }
-            spawnParticles();
+            spawnParticles(0, 0);
             if (!isPauseLogic()) {
                 double distance = Math.sqrt(Math.pow(getLocation().getX() - owner.getLocation().getX(), 2) + Math.pow(getLocation().getZ() - owner.getLocation().getZ(), 2));
-                if (distance >= 2.5D || Math.abs(owner.getLocation().getY() - getLocation().getY()) > 1D)
+                if (distance >= 2.5D)
                     move();
                 else if (distance <= 1.0D) {
                     moveAway();
@@ -205,11 +216,21 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
      * @param loc the new location
      */
     public void teleport(Location loc) {
-        if (entity != null) {
+        if (vehicle != null) {
             loadChunks(location);
             loadChunks(loc);
-            entity.teleport(loc);
-        }
+            /*
+             * Reflection required. Might not work on future versions due
+             * to obfuscation.
+             * Known to work in 1.20.1
+             */
+            try {
+                methods[1].invoke(methods[0].invoke(vehicle), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        } else
+            throw new NullPointerException("Expected vehicle is null");
         setLocation(loc);
     }
 

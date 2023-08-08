@@ -131,4 +131,18 @@ public record SimpleEventListener<T>(boolean register, T value) {
         }
         return false;
     }
+
+    /**
+     * If the SimpleEventListener is not registered, the consumer will be called
+     *
+     * @param runnable The runnable to run
+     * @return true if the SimpleEventListener is not registered, false otherwise
+     */
+    public boolean ifNotRegistered(Runnable runnable) {
+        if (!register) {
+            runnable.run();
+            return true;
+        }
+        return false;
+    }
 }

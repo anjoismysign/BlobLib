@@ -34,6 +34,8 @@ public class BlobLib extends JavaPlugin {
     private ColorManager colorManager;
     private PluginManager pluginManager;
     private ActionManager actionManager;
+    private BlobLibConfigManager configManager;
+    private BlobLibListenerManager listenerManager;
 
     private static BlobLib instance;
 
@@ -82,6 +84,8 @@ public class BlobLib extends JavaPlugin {
         selectorManager = new SelectorListenerManager();
         variableSelectorManager = new VariableSelectorManager();
         dropListenerManager = new DropListenerManager();
+        configManager = BlobLibConfigManager.getInstance(this);
+        listenerManager = BlobLibListenerManager.getInstance(configManager);
 
         //Load reloadable managers
         reload();
@@ -95,6 +99,8 @@ public class BlobLib extends JavaPlugin {
      * Will reload all the managers
      */
     public void reload() {
+        configManager.reload();
+        listenerManager.reload();
         soundManager.reload();
         messageManager.reload();
         actionManager.reload();
