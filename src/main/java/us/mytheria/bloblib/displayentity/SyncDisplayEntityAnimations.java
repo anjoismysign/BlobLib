@@ -30,7 +30,7 @@ public class SyncDisplayEntityAnimations {
     public SyncDisplayEntityAnimations(DisplayEntity<?, ?> pet, double followSpeed,
                                        double walkAwaySpeed, EntityAnimationsCarrier carrier) {
         this(pet, followSpeed, walkAwaySpeed, carrier.hoverSpeed(),
-                carrier.hoverMaxHeightCap(), carrier.hoverMinHeightCap(),
+                carrier.hoverHeightCeiling(), carrier.hoverHeightFloor(),
                 carrier.yOffset());
     }
 

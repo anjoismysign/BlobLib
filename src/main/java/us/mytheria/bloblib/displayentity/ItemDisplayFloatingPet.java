@@ -24,9 +24,8 @@ public class ItemDisplayFloatingPet extends DisplayFloatingPet<ItemDisplay, Item
     public ItemDisplayFloatingPet(Player owner, ItemStack display,
                                   @Nullable Particle particle,
                                   @Nullable String customName,
-                                  EntityAnimationsCarrier animationsCarrier,
-                                  double particlesOffset) {
-        super(owner, display, particle, customName, animationsCarrier, particlesOffset);
+                                  DisplayFloatingPetSettings settings) {
+        super(owner, display, particle, customName, settings);
     }
 
     void spawnEntity(Location location) {

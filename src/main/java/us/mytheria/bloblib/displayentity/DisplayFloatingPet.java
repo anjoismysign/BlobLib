@@ -36,8 +36,7 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
             return null;
         }
     }).get();
-    private final EntityAnimationsCarrier animationsCarrier;
-    private final double particlesOffset;
+    private final DisplayFloatingPetSettings settings;
 
     /**
      * Creates a pet
@@ -51,12 +50,10 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
      */
     public DisplayFloatingPet(Player owner, R display, @Nullable Particle particle,
                               @Nullable String customName,
-                              EntityAnimationsCarrier animationsCarrier,
-                              double particlesOffset
+                              DisplayFloatingPetSettings settings
     ) {
         this.pauseLogic = false;
-        this.animationsCarrier = animationsCarrier;
-        this.particlesOffset = particlesOffset;
+        this.settings = settings;
         setOwner(owner.getUniqueId());
         setDisplay(display);
         setCustomName(customName);
@@ -76,6 +73,7 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
         loc.setY(loc.getY() + 0.85);
         setLocation(loc);
         spawnEntity(loc);
+        entity.setTransformation(settings.displayMeasures().toTransformation());
     }
 
     /**
@@ -107,25 +105,27 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
     }
 
     protected void initAnimations(JavaPlugin plugin) {
+        EntityAnimationsCarrier animationsCarrier = settings.animationsCarrier();
         animations = new SyncDisplayEntityAnimations(this, 0.45, 0.2,
                 animationsCarrier.hoverSpeed(),
-                animationsCarrier.hoverMaxHeightCap(),
-                animationsCarrier.hoverMinHeightCap(),
+                animationsCarrier.hoverHeightCeiling(),
+                animationsCarrier.hoverHeightFloor(),
                 animationsCarrier.yOffset());
         initLogic(plugin);
     }
 
     private void initLogic(JavaPlugin plugin) {
+        EntityAnimationsCarrier animationsCarrier = settings.animationsCarrier();
         logicTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             Player owner = findOwner();
             if (owner == null || !owner.isOnline()) {
                 destroy();
                 return;
             }
-            spawnParticles(0, 0);
+            spawnParticles(animationsCarrier.particlesOffset(), 0);
             if (!isPauseLogic()) {
                 double distance = Math.sqrt(Math.pow(getLocation().getX() - owner.getLocation().getX(), 2) + Math.pow(getLocation().getZ() - owner.getLocation().getZ(), 2));
-                if (distance >= 2.5D)
+                if (distance >= 2.5D || Math.abs(owner.getLocation().getY() + animationsCarrier.yOffset() - getLocation().getY()) > 1D)
                     move();
                 else if (distance <= 1.0D) {
                     moveAway();

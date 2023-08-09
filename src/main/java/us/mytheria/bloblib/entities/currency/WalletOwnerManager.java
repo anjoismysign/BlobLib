@@ -89,8 +89,10 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
             future.complete(walletOwner);
         });
         future.thenAccept(walletOwner -> {
-            if (joinEvent != null)
-                Bukkit.getPluginManager().callEvent(joinEvent.apply(walletOwner));
+            if (joinEvent == null)
+                return;
+            Bukkit.getScheduler().runTask(plugin, () ->
+                    Bukkit.getPluginManager().callEvent(joinEvent.apply(walletOwner)));
         });
     }
 
@@ -175,7 +177,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         consumer.accept(walletOwner);
         crudManager.update(walletOwner.serializeAllAttributes());
     }
-    
+
     public boolean exists(String key) {
         return crudManager.exists(key);
     }

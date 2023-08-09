@@ -23,9 +23,8 @@ public class BlockDisplayFloatingPet extends DisplayFloatingPet<BlockDisplay, Bl
     public BlockDisplayFloatingPet(Player owner, BlockData display,
                                    @Nullable Particle particle,
                                    @Nullable String customName,
-                                   EntityAnimationsCarrier animationsCarrier,
-                                   double particlesOffset) {
-        super(owner, display, particle, customName, animationsCarrier, particlesOffset);
+                                   DisplayFloatingPetSettings settings) {
+        super(owner, display, particle, customName, settings);
     }
 
     void spawnEntity(Location location) {
