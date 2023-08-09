@@ -47,4 +47,16 @@ public record DisplayFloatingPetSettings(EntityAnimationsCarrier animationsCarri
             return null;
         }
     }
+
+    /**
+     * Will serialize to a ConfigurationSection.
+     *
+     * @param section The ConfigurationSection to serialize to.
+     * @param name    The name of the ConfigurationSection to serialize to.
+     */
+    public void serialize(ConfigurationSection section, String name) {
+        ConfigurationSection settings = section.createSection(name);
+        animationsCarrier.serialize(settings, "Animations");
+        displayMeasures.serialize(settings, "Measurements");
+    }
 }

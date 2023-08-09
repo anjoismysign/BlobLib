@@ -114,4 +114,18 @@ public record DisplayMeasures(float scaleX, float scaleY, float scaleZ,
                 getScale(),
                 new Quaternionf(0, 0, 0, 1));
     }
+
+    /**
+     * Will serialize this DisplayMeasures to the given ConfigurationSection.
+     *
+     * @param section The ConfigurationSection to serialize to.
+     * @param name    The name of the ConfigurationSection to serialize to.
+     */
+    public void serialize(ConfigurationSection section, String name) {
+        ConfigurationSection measurements = section.createSection(name);
+        measurements.set("Scale-X", scaleX);
+        measurements.set("Scale-Y", scaleY);
+        measurements.set("Scale-Z", scaleZ);
+        measurements.set("Y-Offset", yOffset);
+    }
 }
