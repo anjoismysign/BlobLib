@@ -176,7 +176,7 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
      * @return The object wrapped in an Optional.
      * If no objects are in memory, Optional.empty() will be returned.
      */
-    Optional<T> pickRandom() {
+    public Optional<T> pickRandom() {
         return values()
                 .stream()
                 .skip(ThreadLocalRandom.current()
