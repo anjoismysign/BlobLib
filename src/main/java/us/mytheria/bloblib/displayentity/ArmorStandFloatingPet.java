@@ -10,9 +10,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 
+import java.util.Objects;
+import java.util.Random;
 import java.util.UUID;
 
 public class ArmorStandFloatingPet implements DisplayPet<ArmorStand, ItemStack> {
@@ -25,6 +28,7 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand, ItemStack> 
     private String customName;
     private DisplayEntityAnimations animations;
     private BukkitTask logicTask;
+    private final EntityAnimationsCarrier animationsCarrier;
 
     /**
      * Creates a pet
@@ -36,8 +40,12 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand, ItemStack> 
      * @param customName - the CustomName of the pet
      *                   (if null will be used 'owner's Pet')
      */
-    public ArmorStandFloatingPet(Player owner, ItemStack itemStack, @Nullable Particle particle,
-                                 @Nullable String customName) {
+    public ArmorStandFloatingPet(@NotNull Player owner,
+                                 @NotNull ItemStack itemStack,
+                                 @Nullable Particle particle,
+                                 @Nullable String customName,
+                                 @NotNull EntityAnimationsCarrier animationsCarrier) {
+        this.animationsCarrier = Objects.requireNonNull(animationsCarrier);
         Material type = itemStack.getType();
         if (!type.isItem() && type.isBlock())
             throw new IllegalArgumentException("ItemStack must be an item or a block");
@@ -55,7 +63,9 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand, ItemStack> 
     public void spawn() {
         setActive(true);
         Location loc = findOwnerOrFail().getLocation().clone();
-        loc.setX(loc.getX() - 1);
+        Random random = new Random();
+        loc.setX(loc.getX() + random.nextInt(3) - 1);
+        loc.setZ(loc.getZ() + random.nextInt(3) - 1);
         loc.setY(loc.getY() + 0.85);
         setLocation(loc);
         spawnArmorStand(loc);
@@ -90,8 +100,7 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand, ItemStack> 
     }
 
     private void initAnimations(JavaPlugin plugin) {
-        animations = new DisplayEntityAnimations(this, 0.5, 0.55,
-                0.025, 0.2, -0.5);
+        animations = new DisplayEntityAnimations(this, animationsCarrier);
         initLogic(plugin);
     }
 
@@ -105,9 +114,11 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand, ItemStack> 
             spawnParticles();
             if (!isPauseLogic()) {
                 double distance = Math.sqrt(Math.pow(getLocation().getX() - owner.getLocation().getX(), 2) + Math.pow(getLocation().getZ() - owner.getLocation().getZ(), 2));
-                if (distance >= 2.5D || Math.abs(owner.getLocation().getY() - getLocation().getY()) > 1D)
+                if (distance >= animationsCarrier.teleportDistanceThreshold())
+                    teleport(owner.getLocation());
+                else if (distance >= animationsCarrier.approachDistanceThreshold() || Math.abs(owner.getLocation().getY() + animationsCarrier.yOffset() - getLocation().getY()) > 1D)
                     move();
-                else if (distance <= 1.0D) {
+                else if (distance <= animationsCarrier.minimumDistance()) {
                     moveAway();
                 } else {
                     idle();
@@ -165,7 +176,7 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand, ItemStack> 
      * @param owner - the new owner
      */
     public void setOwner(UUID owner) {
-        this.owner = owner;
+        this.owner = Objects.requireNonNull(owner);
     }
 
     /**
@@ -312,6 +323,6 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand, ItemStack> 
      * @param itemStack - the new head
      */
     public void setDisplay(ItemStack itemStack) {
-        this.display = itemStack;
+        this.display = Objects.requireNonNull(itemStack);
     }
 }

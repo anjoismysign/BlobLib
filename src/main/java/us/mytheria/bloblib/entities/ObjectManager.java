@@ -10,8 +10,10 @@ import us.mytheria.bloblib.managers.ManagerDirector;
 import java.io.File;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -166,6 +168,20 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
      */
     public Set<String> keys() {
         return objects.keySet();
+    }
+
+    /**
+     * Will pick a random object from the manager
+     *
+     * @return The object wrapped in an Optional.
+     * If no objects are in memory, Optional.empty() will be returned.
+     */
+    Optional<T> pickRandom() {
+        return values()
+                .stream()
+                .skip(ThreadLocalRandom.current()
+                        .nextInt(values().size()))
+                .findAny();
     }
 
     /**

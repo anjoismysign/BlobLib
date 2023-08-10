@@ -9,25 +9,39 @@ import us.mytheria.bloblib.BlobLib;
 public class DisplayEntityAnimations {
     private static final BlobLib plugin = BlobLib.getInstance();
 
-    private final double followSpeed, walkAwaySpeed, hoverSpeed, hoverMaxHeightCap, hoverMinHeightCap;
+    private final double followSpeed, walkAwaySpeed, hoverSpeed, hoverHeightCeiling,
+            hoverHeightFloor, yOffset;
     private double hoverVelocity, hoverHeight;
     private final DisplayEntity<?, ?> pet;
 
-    public DisplayEntityAnimations(DisplayEntity<?, ?> pet, double followSpeed, double walkAwaySpeed, double hoverSpeed,
-                                   double hoverMaxHeightCap, double hoverMinHeightCap) {
+    public DisplayEntityAnimations(DisplayEntity<?, ?> pet,
+                                   double followSpeed,
+                                   double walkAwaySpeed,
+                                   double hoverSpeed,
+                                   double hoverHeightCeiling,
+                                   double hoverHeightFloor,
+                                   double yOffset) {
         this.pet = pet;
         this.followSpeed = followSpeed;
         this.walkAwaySpeed = walkAwaySpeed;
         this.hoverSpeed = hoverSpeed;
-        this.hoverMaxHeightCap = hoverMaxHeightCap;
-        this.hoverMinHeightCap = hoverMinHeightCap;
+        this.hoverHeightCeiling = hoverHeightCeiling;
+        this.hoverHeightFloor = hoverHeightFloor;
         this.hoverVelocity = hoverSpeed;
         this.hoverHeight = 0;
+        this.yOffset = yOffset;
+    }
+
+    public DisplayEntityAnimations(DisplayEntity<?, ?> pet,
+                                   EntityAnimationsCarrier carrier) {
+        this(pet, carrier.followSpeed(), carrier.walkAwaySpeed(), carrier.hoverSpeed(),
+                carrier.hoverHeightCeiling(), carrier.hoverHeightFloor(),
+                carrier.yOffset());
     }
 
     public Location move(Player player, Location loc) {
         Vector goal = vectorFromLocation(player.getLocation());
-        goal.setY(goal.getY() + 0.75);
+        goal.setY(goal.getY() + yOffset);
         double distance = Math.sqrt(Math.pow(loc.getX() - player.getLocation().getX(), 2) + Math.pow(loc.getZ() - player.getLocation().getZ(), 2));
         if (distance < 2.5D) {
             goal.setY(goal.getY() + player.getLocation().getY() - loc.getY());
@@ -57,9 +71,9 @@ public class DisplayEntityAnimations {
 
     public Location idle(Player player, Location loc) {
         //Hover
-        if (hoverHeight >= hoverMaxHeightCap)
+        if (hoverHeight >= hoverHeightCeiling)
             hoverVelocity = -hoverSpeed;
-        if (hoverHeight <= hoverMinHeightCap)
+        if (hoverHeight <= hoverHeightFloor)
             hoverVelocity = hoverSpeed;
         Location newLoc = loc.clone();
         hoverHeight += hoverVelocity;

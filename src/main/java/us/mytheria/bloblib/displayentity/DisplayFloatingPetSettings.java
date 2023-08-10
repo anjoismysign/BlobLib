@@ -6,6 +6,13 @@ import org.jetbrains.annotations.Nullable;
 
 public record DisplayFloatingPetSettings(EntityAnimationsCarrier animationsCarrier,
                                          DisplayMeasures displayMeasures) {
+    private static final DisplayFloatingPetSettings DEFAULT = new DisplayFloatingPetSettings(
+            EntityAnimationsCarrier.DEFAULT(), DisplayMeasures.DEFAULT());
+
+    public static DisplayFloatingPetSettings DEFAULT() {
+        return DEFAULT;
+    }
+
     /**
      * Will read from a ConfigurationSection.
      *

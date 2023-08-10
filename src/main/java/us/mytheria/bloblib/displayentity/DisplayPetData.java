@@ -44,8 +44,22 @@ public class DisplayPetData {
      */
     public ArmorStandFloatingPet asArmorStand(Player owner) {
         if (itemStack == null || itemStack.getType().isAir())
-            throw new IllegalArgumentException("ItemStack cannot be null nor be air");
-        return new ArmorStandFloatingPet(owner, itemStack, particle, customName);
+            throw new IllegalStateException("ItemStack cannot be null nor be air");
+        return new ArmorStandFloatingPet(owner, itemStack, particle, customName,
+                EntityAnimationsCarrier.DEFAULT());
+    }
+
+    /**
+     * Will create a new instance of ItemDisplayFloatingPet
+     *
+     * @param owner the owner of the pet
+     * @return a new instance of ItemDisplayFloatingPet
+     */
+    public ItemDisplayFloatingPet asItemDisplay(Player owner) {
+        if (itemStack == null || itemStack.getType().isAir())
+            throw new IllegalStateException("ItemStack cannot be null nor be air");
+        return new ItemDisplayFloatingPet(owner, itemStack, particle, customName,
+                DisplayFloatingPetSettings.DEFAULT());
     }
 
     /**
@@ -65,6 +79,27 @@ public class DisplayPetData {
      */
     public ArmorStandFloatingPet asArmorStandAndParsePlaceHolder(Player owner, String ownerPlaceholder) {
         ArmorStandFloatingPet floatingPet = asArmorStand(owner);
+        floatingPet.setCustomName(floatingPet.getCustomName().replace(ownerPlaceholder, owner.getName()));
+        return floatingPet;
+    }
+
+    /**
+     * Will create a new instance of ItemDisplayFloatingPet
+     * and parse the placeholder with the owner's name.
+     * Example:
+     * FloatingPetData test = new FloatingPetData(new ItemStack(Material.DIAMOND),
+     * Particle.FLAME, "%owner%'s Pet");
+     * Player player = Bukkit.getPlayer("Notch");
+     * ItemDisplayFloatingPet floatingPet = test.asItemDisplayAndParsePlaceHolder(player, "%owner%");
+     * assert floatingPet.getCustomName().equals("Notch's Pet");
+     * // true
+     *
+     * @param owner            the owner of the pet
+     * @param ownerPlaceholder the placeholder to replace with the owner's name
+     * @return a new instance of ItemDisplayFloatingPet
+     */
+    public ItemDisplayFloatingPet asItemDisplayAndParsePlaceHolder(Player owner, String ownerPlaceholder) {
+        ItemDisplayFloatingPet floatingPet = asItemDisplay(owner);
         floatingPet.setCustomName(floatingPet.getCustomName().replace(ownerPlaceholder, owner.getName()));
         return floatingPet;
     }

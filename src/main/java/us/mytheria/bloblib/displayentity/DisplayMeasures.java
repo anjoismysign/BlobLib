@@ -86,7 +86,7 @@ public record DisplayMeasures(float scaleX, float scaleY, float scaleZ,
     }
 
     public Vector3f getTranslation() {
-        return new Vector3f(-scaleX / 2, yOffset, -scaleZ / 2);
+        return new Vector3f(0, yOffset, 0);
     }
 
     /**

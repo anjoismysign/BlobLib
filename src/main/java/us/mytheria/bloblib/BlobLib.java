@@ -9,6 +9,7 @@ import us.mytheria.bloblib.entities.logger.BlobPluginLogger;
 import us.mytheria.bloblib.hologram.HologramManager;
 import us.mytheria.bloblib.managers.*;
 import us.mytheria.bloblib.managers.fillermanager.FillerManager;
+import us.mytheria.bloblib.reflection.BlobReflectionLib;
 import us.mytheria.bloblib.vault.VaultManager;
 
 /**
@@ -36,6 +37,7 @@ public class BlobLib extends JavaPlugin {
     private ActionManager actionManager;
     private BlobLibConfigManager configManager;
     private BlobLibListenerManager listenerManager;
+    private BlobReflectionLib reflectionLib;
 
     private static BlobLib instance;
 
@@ -63,6 +65,7 @@ public class BlobLib extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        reflectionLib = BlobReflectionLib.getInstance(this);
         anjoLogger = new BlobPluginLogger(this);
         scriptManager = new ScriptManager();
         pluginManager = new PluginManager();

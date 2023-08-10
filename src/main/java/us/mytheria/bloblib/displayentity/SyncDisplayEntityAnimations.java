@@ -3,33 +3,35 @@ package us.mytheria.bloblib.displayentity;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-import us.mytheria.bloblib.BlobLib;
 
 public class SyncDisplayEntityAnimations {
-    private static final BlobLib plugin = BlobLib.getInstance();
 
-    private final double followSpeed, walkAwaySpeed, hoverSpeed, hoverMaxHeightCap,
-            hoverMinHeightCap, yOffset;
+    private final double followSpeed, walkAwaySpeed, hoverSpeed, hoverHeightCeiling,
+            hoverHeightFloor, yOffset;
     private double hoverVelocity, hoverHeight;
     private final DisplayEntity<?, ?> pet;
 
-    public SyncDisplayEntityAnimations(DisplayEntity<?, ?> pet, double followSpeed, double walkAwaySpeed, double hoverSpeed,
-                                       double hoverMaxHeightCap, double hoverMinHeightCap,
+    public SyncDisplayEntityAnimations(DisplayEntity<?, ?> pet,
+                                       double followSpeed,
+                                       double walkAwaySpeed,
+                                       double hoverSpeed,
+                                       double hoverHeightCeiling,
+                                       double hoverHeightFloor,
                                        double yOffset) {
         this.pet = pet;
         this.followSpeed = followSpeed;
         this.walkAwaySpeed = walkAwaySpeed;
         this.hoverSpeed = hoverSpeed;
-        this.hoverMaxHeightCap = hoverMaxHeightCap;
-        this.hoverMinHeightCap = hoverMinHeightCap;
+        this.hoverHeightCeiling = hoverHeightCeiling;
+        this.hoverHeightFloor = hoverHeightFloor;
         this.hoverVelocity = hoverSpeed;
-        this.hoverHeight = 1;
+        this.hoverHeight = 0;
         this.yOffset = yOffset;
     }
 
-    public SyncDisplayEntityAnimations(DisplayEntity<?, ?> pet, double followSpeed,
-                                       double walkAwaySpeed, EntityAnimationsCarrier carrier) {
-        this(pet, followSpeed, walkAwaySpeed, carrier.hoverSpeed(),
+    public SyncDisplayEntityAnimations(DisplayEntity<?, ?> pet,
+                                       EntityAnimationsCarrier carrier) {
+        this(pet, carrier.followSpeed(), carrier.walkAwaySpeed(), carrier.hoverSpeed(),
                 carrier.hoverHeightCeiling(), carrier.hoverHeightFloor(),
                 carrier.yOffset());
     }
@@ -48,24 +50,24 @@ public class SyncDisplayEntityAnimations {
         Location newLoc = loc.clone();
         newLoc.add(direction.multiply(followSpeed));
         //Rotation
-        double a = player.getLocation().getX() - newLoc.getX();
-        double b = player.getLocation().getZ() - newLoc.getZ();
-        double angle = Math.atan(b / a);
-        angle = angle * (180 / Math.PI);
-        if (player.getLocation().getX() - newLoc.getX() >= 0) {
-            angle += 180;
-        }
-        angle += 90;
-        newLoc.setYaw((float) angle);
+//        double a = player.getLocation().getX() - newLoc.getX();
+//        double b = player.getLocation().getZ() - newLoc.getZ();
+//        double angle = Math.atan(b / a);
+//        angle = angle * (180 / Math.PI);
+//        if (player.getLocation().getX() - newLoc.getX() >= 0) {
+//            angle += 180;
+//        }
+//        angle += 90;
+//        newLoc.setYaw((float) angle);
         pet.teleport(newLoc);
         return newLoc;
     }
 
     public Location idle(Player player, Location loc) {
         //Hover
-        if (hoverHeight >= hoverMaxHeightCap)
+        if (hoverHeight >= hoverHeightCeiling)
             hoverVelocity = -hoverSpeed;
-        if (hoverHeight <= hoverMinHeightCap)
+        if (hoverHeight <= hoverHeightFloor)
             hoverVelocity = hoverSpeed;
         Location newLoc = loc.clone();
         hoverHeight += hoverVelocity;
