@@ -1,6 +1,7 @@
 package us.mytheria.bloblib.managers;
 
 import me.anjoismysign.anjo.logger.Logger;
+import org.bukkit.NamespacedKey;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
@@ -30,6 +31,7 @@ public abstract class ManagerDirector implements IManagerDirector {
     private final BlobFileManager blobFileManager;
     private final BukkitPluginOperator pluginOperator;
     private final IFileManager proxiedFileManager;
+    private final Map<String, NamespacedKey> namespacedKeys;
 
     /**
      * Constructs a new ManagerDirector.
@@ -37,6 +39,8 @@ public abstract class ManagerDirector implements IManagerDirector {
      * @param plugin The BlobPlugin
      */
     public ManagerDirector(BlobPlugin plugin) {
+        this.namespacedKeys = new HashMap<>();
+        namespacedKeys.put("tangibleCurrency", new NamespacedKey(plugin, "tangibleCurrency"));
         this.plugin = plugin;
         this.pluginOperator = () -> plugin;
         this.blobFileManager = new BlobFileManager(this,
@@ -68,6 +72,8 @@ public abstract class ManagerDirector implements IManagerDirector {
      */
     @Deprecated
     public ManagerDirector(BlobPlugin plugin, String fileManagerPathname) {
+        this.namespacedKeys = new HashMap<>();
+        namespacedKeys.put("tangibleCurrency", new NamespacedKey(plugin, "tangibleCurrency"));
         this.plugin = plugin;
         this.pluginOperator = () -> plugin;
         this.blobFileManager = new BlobFileManager(this,
@@ -88,6 +94,8 @@ public abstract class ManagerDirector implements IManagerDirector {
      * @param fileManager The file manager
      */
     public ManagerDirector(BlobPlugin plugin, BlobFileManager fileManager) {
+        this.namespacedKeys = new HashMap<>();
+        namespacedKeys.put("tangibleCurrency", new NamespacedKey(plugin, "tangibleCurrency"));
         this.plugin = plugin;
         this.pluginOperator = () -> plugin;
         this.blobFileManager = Objects.requireNonNull(fileManager, "BlobFileManager cannot be null!");
@@ -98,6 +106,10 @@ public abstract class ManagerDirector implements IManagerDirector {
         dropListenerManager = BlobLib.getInstance().getDropListenerManager();
         managers = new HashMap<>();
         plugin.registerToBlobLib(this);
+    }
+
+    public NamespacedKey getNamespacedKey(String key) {
+        return namespacedKeys.get(key);
     }
 
     /**
