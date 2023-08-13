@@ -27,10 +27,10 @@ public class TangibleCurrencyListener implements Listener {
         if (itemMeta == null)
             return null;
         PersistentDataContainer pdc = itemMeta.getPersistentDataContainer();
-        if (!pdc.has(director.getNamespacedKey("tangibleCurrency"),
+        if (!pdc.has(director.getNamespacedKey("tangibleCurrencyKey"),
                 PersistentDataType.STRING))
             return null;
-        return pdc.get(director.getNamespacedKey("tangibleCurrency"),
+        return pdc.get(director.getNamespacedKey("tangibleCurrencyKey"),
                 PersistentDataType.STRING);
     }
 }

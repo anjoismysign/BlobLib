@@ -40,7 +40,8 @@ public abstract class ManagerDirector implements IManagerDirector {
      */
     public ManagerDirector(BlobPlugin plugin) {
         this.namespacedKeys = new HashMap<>();
-        namespacedKeys.put("tangibleCurrency", new NamespacedKey(plugin, "tangibleCurrency"));
+        namespacedKeys.put("tangibleCurrencyKey", new NamespacedKey(plugin, "tangibleCurrencyKey"));
+        namespacedKeys.put("tangibleCurrencyDenomination", new NamespacedKey(plugin, "tangibleCurrencyDenomination"));
         this.plugin = plugin;
         this.pluginOperator = () -> plugin;
         this.blobFileManager = new BlobFileManager(this,
@@ -73,7 +74,8 @@ public abstract class ManagerDirector implements IManagerDirector {
     @Deprecated
     public ManagerDirector(BlobPlugin plugin, String fileManagerPathname) {
         this.namespacedKeys = new HashMap<>();
-        namespacedKeys.put("tangibleCurrency", new NamespacedKey(plugin, "tangibleCurrency"));
+        namespacedKeys.put("tangibleCurrencyKey", new NamespacedKey(plugin, "tangibleCurrencyKey"));
+        namespacedKeys.put("tangibleCurrencyDenomination", new NamespacedKey(plugin, "tangibleCurrencyDenomination"));
         this.plugin = plugin;
         this.pluginOperator = () -> plugin;
         this.blobFileManager = new BlobFileManager(this,
@@ -95,7 +97,8 @@ public abstract class ManagerDirector implements IManagerDirector {
      */
     public ManagerDirector(BlobPlugin plugin, BlobFileManager fileManager) {
         this.namespacedKeys = new HashMap<>();
-        namespacedKeys.put("tangibleCurrency", new NamespacedKey(plugin, "tangibleCurrency"));
+        namespacedKeys.put("tangibleCurrencyKey", new NamespacedKey(plugin, "tangibleCurrencyKey"));
+        namespacedKeys.put("tangibleCurrencyDenomination", new NamespacedKey(plugin, "tangibleCurrencyDenomination"));
         this.plugin = plugin;
         this.pluginOperator = () -> plugin;
         this.blobFileManager = Objects.requireNonNull(fileManager, "BlobFileManager cannot be null!");

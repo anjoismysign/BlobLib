@@ -9,7 +9,9 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.SkullCreator;
+import us.mytheria.bloblib.exception.ConfigurationFieldException;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -18,15 +20,15 @@ import java.util.Objects;
 
 public class ItemStackReader {
 
-    public static ItemStackBuilder read(ConfigurationSection section) {
-        String inputMaterial = section.getString("Material", "DIRT");
+    public static ItemStackBuilder READ_OR_FAIL_FAST(ConfigurationSection section) {
+        if (!section.isString("Material"))
+            throw new ConfigurationFieldException("'Material' field is missing or not a String");
+        String inputMaterial = section.getString("Material");
         ItemStackBuilder builder;
         if (!inputMaterial.startsWith("HEAD-")) {
             Material material = Material.getMaterial(inputMaterial);
-            if (material == null) {
-                Bukkit.getLogger().severe("Material " + inputMaterial + " is not a valid material. Using DIRT instead.");
-                material = Material.DIRT;
-            }
+            if (material == null)
+                throw new ConfigurationFieldException("'Material' field is not a valid material");
             builder = ItemStackBuilder.build(material);
         } else
             builder = ItemStackBuilder.build(SkullCreator.itemFromUrl(inputMaterial.substring(5)));
@@ -69,31 +71,37 @@ public class ItemStackReader {
             ConfigurationSection attributes = section.getConfigurationSection("Attributes");
             Uber<ItemStackBuilder> uber = Uber.drive(builder);
             attributes.getKeys(false).forEach(key -> {
-                if (!attributes.isConfigurationSection(key)) {
-                    Bukkit.getLogger().severe("Attribute " + key + " is not a valid attribute.");
-                    return;
-                }
+                if (!attributes.isConfigurationSection(key))
+                    throw new ConfigurationFieldException("Attribute '" + key + "' is not valid");
                 ConfigurationSection attributeSection = attributes.getConfigurationSection(key);
                 try {
                     Attribute attribute = Attribute.valueOf(key);
-                    if (!attributeSection.isDouble("Amount")) {
-                        Bukkit.getLogger().severe("Attribute " + key + " is not a valid attribute.");
-                        return;
-                    }
+                    if (!attributeSection.isDouble("Amount"))
+                        throw new ConfigurationFieldException("Attribute '" + key + "' has an invalid amount (DECIMAL NUMBER)");
                     double amount = attributeSection.getDouble("Amount");
-                    if (!attributeSection.isString("Operation")) {
-                        Bukkit.getLogger().severe("Attribute " + key + " is not a valid attribute.");
-                        return;
-                    }
+                    if (!attributeSection.isString("Operation"))
+                        throw new ConfigurationFieldException("Attribute '" + key + "' is missing 'Operation' field");
                     AttributeModifier.Operation operation = AttributeModifier.Operation.valueOf(attributeSection.getString("Operation"));
                     uber.talk(uber.thanks().attribute(attribute, amount, operation));
                 } catch (IllegalArgumentException e) {
-                    Bukkit.getLogger().severe("Attribute " + key + " is not a valid attribute.");
+                    throw new ConfigurationFieldException("Attribute '" + key + "' has an invalid Operation");
                 }
             });
             builder = uber.thanks();
         }
         return builder;
+    }
+
+    @Nullable
+    public static ItemStackBuilder read(ConfigurationSection section) {
+        ItemStackBuilder builder;
+        try {
+            builder = READ_OR_FAIL_FAST(section);
+            return builder;
+        } catch (Exception e) {
+            Bukkit.getLogger().severe(e.getMessage());
+            return ItemStackBuilder.build(Material.DIRT);
+        }
     }
 
     public static ItemStackBuilder read(File file, String path) {

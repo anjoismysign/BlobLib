@@ -79,11 +79,16 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                             List<CompletableFuture<Void>> futures = new ArrayList<>();
                             files.forEach(file -> {
                                 CompletableFuture<Void> fileFuture = CompletableFuture.runAsync(() -> {
-                                    T blobObject = readFunction.apply(file);
-                                    if (blobObject != null) {
-                                        if (blobObject.edit() != null)
-                                            objectIsEditable = true;
-                                        this.addObject(blobObject.getKey(), blobObject, file);
+                                    try {
+                                        T blobObject = readFunction.apply(file);
+                                        if (blobObject != null) {
+                                            if (blobObject.edit() != null)
+                                                objectIsEditable = true;
+                                            this.addObject(blobObject.getKey(), blobObject, file);
+                                        }
+                                    } catch (Exception e) {
+                                        Bukkit.getLogger().log(Level.SEVERE, e.getMessage() + "\n" +
+                                                "At: " + file.getPath(), e);
                                     }
                                 });
                                 futures.add(fileFuture);
