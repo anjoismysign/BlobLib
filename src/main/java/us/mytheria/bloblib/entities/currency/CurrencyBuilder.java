@@ -72,6 +72,8 @@ public class CurrencyBuilder extends ObjectBuilder<Currency> {
         String decimalFormatPattern = pattern.get().get();
         double initialBalanceValue = initialBalance.get().get();
 
-        return new Currency(display, initialBalanceValue, true, decimalFormatPattern, key);
+        return new Currency(display, initialBalanceValue,
+                true, decimalFormatPattern, key,
+                false, null, getObjectDirector().getPlugin());
     }
 }
