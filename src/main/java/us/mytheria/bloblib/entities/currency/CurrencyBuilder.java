@@ -74,6 +74,7 @@ public class CurrencyBuilder extends ObjectBuilder<Currency> {
 
         return new Currency(display, initialBalanceValue,
                 true, decimalFormatPattern, key,
-                false, null, getObjectDirector().getPlugin());
+                false, null, getObjectDirector().getPlugin(),
+                key);
     }
 }

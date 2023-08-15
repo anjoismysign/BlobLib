@@ -139,7 +139,7 @@ public class BlobEconomyCommand<T extends WalletOwner> {
             Player player = context.player();
             walletOwner.deposit(currency, amount);
             BlobLibAssetAPI.getMessage("Economy.Deposit").modify(s -> s.replace("%display%", currency.display(amount))
-                    .replace("%currency%", currency.getKey())
+                    .replace("%currency%", currency.getDisplayName())
                     .replace("%player%", player.getName())).toCommandSender(sender);
             return true;
         }
@@ -157,13 +157,13 @@ public class BlobEconomyCommand<T extends WalletOwner> {
             if (!walletOwner.has(currency, amount)) {
                 double missing = amount - walletOwner.getBalance(currency);
                 BlobLibAssetAPI.getMessage("Economy.Cannot-Bankrupt-Others").modify(s -> s.replace("%display%", currency.display(missing))
-                        .replace("%currency%", currency.getKey())
+                        .replace("%currency%", currency.getDisplayName())
                         .replace("%player%", player.getName())).toCommandSender(sender);
                 return true;
             }
             walletOwner.withdraw(currency, amount);
             BlobLibAssetAPI.getMessage("Economy.Withdraw").modify(s -> s.replace("%display%", currency.display(amount))
-                    .replace("%currency%", currency.getKey())
+                    .replace("%currency%", currency.getDisplayName())
                     .replace("%player%", player.getName())).toCommandSender(sender);
             return true;
         }
@@ -178,7 +178,7 @@ public class BlobEconomyCommand<T extends WalletOwner> {
             Player player = context.player();
             context.walletOwner().setBalance(currency, amount);
             BlobLibAssetAPI.getMessage("Economy.Set").modify(s -> s.replace("%display%", currency.display(amount))
-                    .replace("%currency%", currency.getKey())
+                    .replace("%currency%", currency.getDisplayName())
                     .replace("%player%", player.getName())).toCommandSender(sender);
             return true;
         }
@@ -192,7 +192,7 @@ public class BlobEconomyCommand<T extends WalletOwner> {
             Player player = context.player();
             context.walletOwner().reset(currency);
             BlobLibAssetAPI.getMessage("Economy.Reset").modify(s -> s
-                    .replace("%currency%", currency.getKey())
+                    .replace("%currency%", currency.getDisplayName())
                     .replace("%player%", player.getName())).toCommandSender(sender);
             return true;
         }

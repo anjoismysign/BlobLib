@@ -10,6 +10,7 @@ import us.mytheria.bloblib.hologram.HologramManager;
 import us.mytheria.bloblib.managers.*;
 import us.mytheria.bloblib.managers.fillermanager.FillerManager;
 import us.mytheria.bloblib.reflection.BlobReflectionLib;
+import us.mytheria.bloblib.utilities.SerializationLib;
 import us.mytheria.bloblib.vault.VaultManager;
 
 /**
@@ -17,6 +18,9 @@ import us.mytheria.bloblib.vault.VaultManager;
  */
 public class BlobLib extends JavaPlugin {
     private static BlobPluginLogger anjoLogger;
+
+    private BlobLibUpdater bloblibupdater;
+
     private ScriptManager scriptManager;
     private VaultManager vaultManager;
     private EngineHubManager engineHubManager;
@@ -38,6 +42,7 @@ public class BlobLib extends JavaPlugin {
     private BlobLibConfigManager configManager;
     private BlobLibListenerManager listenerManager;
     private BlobReflectionLib reflectionLib;
+    private SerializationLib serializationLib;
 
     private static BlobLib instance;
 
@@ -65,7 +70,9 @@ public class BlobLib extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        bloblibupdater = new BlobLibUpdater(this);
         reflectionLib = BlobReflectionLib.getInstance(this);
+        serializationLib = SerializationLib.getInstance(this);
         anjoLogger = new BlobPluginLogger(this);
         scriptManager = new ScriptManager();
         pluginManager = new PluginManager();
@@ -109,6 +116,10 @@ public class BlobLib extends JavaPlugin {
         actionManager.reload();
         inventoryManager.reload();
         getPluginManager().reload();
+    }
+
+    public BlobLibUpdater getBloblibupdater() {
+        return bloblibupdater;
     }
 
     /**

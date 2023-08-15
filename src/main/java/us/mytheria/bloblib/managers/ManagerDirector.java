@@ -1,6 +1,7 @@
 package us.mytheria.bloblib.managers;
 
 import me.anjoismysign.anjo.logger.Logger;
+import org.apache.commons.io.FileUtils;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
@@ -567,6 +568,61 @@ public abstract class ManagerDirector implements IManagerDirector {
      */
     public ManagerDirector registerAndUpdateMetaBlobInventory(String fileName) {
         return registerAndUpdateMetaBlobInventory(fileName, false);
+    }
+
+    private ManagerDirector registerAsset(String fileName, boolean debug,
+                                          File path, String type) {
+        BlobPlugin plugin = getPlugin();
+        fileName = fileName + ".yml";
+        File file = new File(path + "/" + fileName);
+        if (file.exists()) {
+            if (debug)
+                getPlugin().getAnjoLogger().debug(" " + type + " asset " +
+                        fileName + ".yml was not registered, already exists");
+            return this;
+        }
+        try {
+            FileUtils.copyToFile(plugin.getResource(fileName), file);
+            if (debug)
+                getPlugin().getAnjoLogger().debug(" " + type + " asset " +
+                        fileName + ".yml successfully registered");
+            return this;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return this;
+        }
+    }
+
+    public ManagerDirector registerMetaBlobInventory(String fileName, boolean debug) {
+        return registerAsset(fileName, debug, getRealFileManager().metaInventoriesDirectory(), "inventory");
+    }
+
+    public ManagerDirector registerMetaBlobInventory(String fileName) {
+        return registerMetaBlobInventory(fileName, false);
+    }
+
+    public ManagerDirector registerBlobInventory(String fileName, boolean debug) {
+        return registerAsset(fileName, debug, getRealFileManager().inventoriesDirectory(), "inventory");
+    }
+
+    public ManagerDirector registerBlobInventory(String fileName) {
+        return registerBlobInventory(fileName, false);
+    }
+
+    public ManagerDirector registerBlobMessage(String fileName, boolean debug) {
+        return registerAsset(fileName, debug, getRealFileManager().messagesDirectory(), "message");
+    }
+
+    public ManagerDirector registerBlobMessage(String fileName) {
+        return registerBlobMessage(fileName, false);
+    }
+
+    public ManagerDirector registerBlobSound(String fileName, boolean debug) {
+        return registerAsset(fileName, debug, getRealFileManager().soundsDirectory(), "sound");
+    }
+
+    public ManagerDirector registerBlobSound(String fileName) {
+        return registerBlobSound(fileName, false);
     }
 
     protected Set<Map.Entry<String, Manager>> getManagerEntry() {

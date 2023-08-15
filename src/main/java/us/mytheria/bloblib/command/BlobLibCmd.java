@@ -5,6 +5,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.BlobLibAssetAPI;
+import us.mytheria.bloblib.BlobLibUpdater;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,13 +49,30 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                 debug(sender);
                 return true;
             }
-            String arg1 = args[0];
-            if (arg1.equalsIgnoreCase("reload")) {
-                main.reload();
-                main.getMessageManager().getMessage("System.Reload").toCommandSender(sender);
-                return true;
+            String arg1 = args[0].toLowerCase();
+            switch (arg1) {
+                case "reload" -> {
+                    main.reload();
+                    main.getMessageManager().getMessage("System.Reload").toCommandSender(sender);
+                    return true;
+                }
+                case "update" -> {
+                    BlobLibUpdater updater = main.getBloblibupdater();
+                    boolean successful = updater.download();
+                    if (!successful)
+                        return true;
+                    BlobLibAssetAPI.getMessage("BlobLib.Update-Successful")
+                            .modder()
+                            .replace("%version%", updater.getLatestVersion())
+                            .get()
+                            .toCommandSender(sender);
+                    return true;
+                }
+                default -> {
+                    debug(sender);
+                    return true;
+                }
             }
-            return false;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -68,6 +87,7 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
     public void debug(CommandSender sender) {
         if (sender.hasPermission("bloblib.debug")) {
             sender.sendMessage("/bloblib reload");
+            sender.sendMessage("/bloblib update");
         }
     }
 
@@ -86,6 +106,7 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                 List<String> l = new ArrayList<>();
                 if (args.length == 1) {
                     l.add("reload");
+                    l.add("update");
                 }
                 return l;
             }

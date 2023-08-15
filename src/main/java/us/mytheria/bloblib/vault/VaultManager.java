@@ -99,7 +99,8 @@ public class VaultManager implements Listener {
             }
         }
 
-        if (eventProvider.getService() == Economy.class) {
+        if (eventProvider.getService() == Economy.class ||
+                eventProvider.getService() == MultiEconomy.class) {
             setupEconomy();
         } else if (eventProvider.getService() == Permission.class) {
             setupPermissions();
@@ -174,9 +175,10 @@ public class VaultManager implements Listener {
 
     private boolean hasMultiEconomyProvider() {
         if (!packagesExists("net.milkbowl.vault.economy.MultiEconomy")) {
-            Bukkit.getLogger().severe("Vault is not an instance of Vault2, disabling MultiEconomy features.");
+            Bukkit.getLogger().info("Not using Vault2, disabling MultiEconomy features");
             return false;
         }
+        Bukkit.getLogger().info("Detected Vault2, enabling MultiEconomy features");
         RegisteredServiceProvider<MultiEconomy> multieconomyServiceProvider = servicesManager.getRegistration(MultiEconomy.class);
         if (multieconomyServiceProvider == null) {
             if (!vaultEcoInstalled)

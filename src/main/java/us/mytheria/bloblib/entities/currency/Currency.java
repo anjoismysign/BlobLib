@@ -1,7 +1,6 @@
 package us.mytheria.bloblib.entities.currency;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.NullArgumentException;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -9,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.entities.BlobObject;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
@@ -25,8 +25,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 public class Currency implements BlobObject {
-    private final String display;
-    private final String key;
+    private final String display, key, displayName;
     private final double initialBalance;
     private final boolean isPersistent;
     private final DecimalFormat decimalFormat;
@@ -46,10 +45,11 @@ public class Currency implements BlobObject {
     public Currency(String display, double initialBalance, boolean isPersistent,
                     String pattern, String key, boolean isTangible,
                     @Nullable Map<String, ItemStack> tangibleShapes,
-                    BlobPlugin plugin) {
+                    BlobPlugin plugin, String displayName) {
         this.plugin = plugin;
         this.display = display;
         this.key = key;
+        this.displayName = displayName;
         this.initialBalance = initialBalance;
         this.isPersistent = isPersistent;
         this.decimalFormat = new DecimalFormat(pattern);
@@ -85,11 +85,14 @@ public class Currency implements BlobObject {
      * ItemStacks won't be unique, which means players can stack
      * them in inventories.
      *
-     * @param amount the amount of this currency (not the item)
+     * @param amount the reminder of this currency (not the item)
      *               to split into ItemStacks
-     * @return the ItemStack, null if not tangible
+     * @return the TangibleShapeOperation. Check if it's valid
+     * and if it has a reminder. Reminder means that the currency
+     * cannot be split into ItemStacks with the current denominations
+     * completely!
      */
-    public List<ItemStack> getTangibleShape(double amount) {
+    public TangibleShapeOperation getTangibleShape(double amount) {
         return getTangibleShape(amount, false);
     }
 
@@ -97,24 +100,28 @@ public class Currency implements BlobObject {
      * If the currency is tangible, it will return the ItemStacks
      * which is the way the currency is displayed in the game.
      *
-     * @param amount the amount of this currency (not the item)
+     * @param amount the reminder of this currency (not the item)
      *               to split into ItemStacks
      * @param unique whether the ItemStacks should be unique
-     * @return the ItemStacks. Null if not tangible, if amount is less
-     * than or equal to zero or if it cannot proceed with current denominations
+     * @return the TangibleShapeOperation. Check if it's valid
+     * and if it has a reminder. Reminder means that the currency
+     * cannot be split into ItemStacks with the current denominations
+     * completely!
      */
-    @Nullable
-    public List<ItemStack> getTangibleShape(double amount, boolean unique) {
+    @NotNull
+    public TangibleShapeOperation getTangibleShape(double amount, boolean unique) {
         if (!isTangible)
-            return null;
+            return TangibleShapeOperation.INVALID();
         if (amount <= 0)
-            return null;
+            return TangibleShapeOperation.INVALID();
         if (tangibleShapes == null)
-            return null;
+            return TangibleShapeOperation.INVALID();
         List<ItemStack> list = new ArrayList<>();
-        Map<BigDecimal, Integer> split = split(BigDecimal.valueOf(amount), tangibleShapes.keySet().toArray(new BigDecimal[0]));
+        SplitResult result = split(BigDecimal.valueOf(amount), tangibleShapes.keySet().stream()
+                .map(BigDecimal::new).toArray(BigDecimal[]::new));
+        Map<BigDecimal, Integer> split = result.split();
         if (split.isEmpty())
-            return null;
+            return TangibleShapeOperation.INVALID();
         split.forEach((x, y) -> {
             ItemStack clone = new ItemStack(tangibleShapes.get(x.toString()));
             clone.setAmount(y);
@@ -127,11 +134,12 @@ public class Currency implements BlobObject {
             }
             list.add(clone);
         });
-        return list;
+        return new TangibleShapeOperation(list, result.reminder());
     }
 
-    private static Map<BigDecimal, Integer> split(BigDecimal amount, BigDecimal[] denominations) {
+    private static SplitResult split(BigDecimal amount, BigDecimal[] denominations) {
         Map<BigDecimal, Integer> result = new HashMap<>();
+        Arrays.sort(denominations, Comparator.reverseOrder());
 
         for (BigDecimal denomination : denominations) {
             int count = amount.divide(denomination, RoundingMode.FLOOR).intValue();
@@ -141,7 +149,24 @@ public class Currency implements BlobObject {
             }
         }
 
-        return result;
+        return new SplitResult(result, amount);
+    }
+
+    private record SplitResult(Map<BigDecimal, Integer> split, BigDecimal reminder) {
+    }
+
+    public record TangibleShapeOperation(List<ItemStack> shape, BigDecimal reminder) {
+        private static TangibleShapeOperation INVALID() {
+            return new TangibleShapeOperation(Collections.emptyList(), BigDecimal.ZERO);
+        }
+
+        public boolean hasReminder() {
+            return reminder.compareTo(BigDecimal.ZERO) > 0;
+        }
+
+        public boolean isValid() {
+            return !shape.isEmpty();
+        }
     }
 
     /**
@@ -154,10 +179,19 @@ public class Currency implements BlobObject {
     }
 
     /**
-     * Returns a String that replaces inside customName '%amount%'
-     * with the given amount.
+     * Returns how its name is displayed in the game.
      *
-     * @param amount the amount to display
+     * @return the display name
+     */
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    /**
+     * Returns a String that replaces inside customName '%reminder%'
+     * with the given reminder.
+     *
+     * @param amount the reminder to display
      * @return the formatted String
      */
     public String display(double amount) {
@@ -216,16 +250,19 @@ public class Currency implements BlobObject {
         String fileName = file.getName();
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         String display = TextColor.PARSE(yamlConfiguration.getString("Display"));
-        double initialBalance = yamlConfiguration.getDouble("InitialBalance");
+        double initialBalance = yamlConfiguration.getDouble("Initial-Balance");
         boolean isPersistent = yamlConfiguration.getBoolean("Persistent");
-        String pattern = yamlConfiguration.getString("DecimalFormat");
+        String pattern = yamlConfiguration.getString("Decimal-Format");
         String key = FilenameUtils.removeExtension(fileName);
+        String displayName = key;
+        if (yamlConfiguration.isString("Display-Name"))
+            displayName = TextColor.PARSE(yamlConfiguration.getString("Display-Name"));
         boolean isTangible = yamlConfiguration.getBoolean("Is-Tangible", false);
         final Map<String, ItemStack> tangibleShape = new HashMap<>();
         if (isTangible) {
             ConfigurationSection shapesSection = yamlConfiguration.getConfigurationSection("Tangible-Shapes");
             if (shapesSection == null)
-                throw new NullArgumentException("Tangible-Shape section is missing");
+                throw new ConfigurationFieldException("Tangible-Shape section is missing");
             shapesSection.getKeys(false).forEach(reference -> {
                 String a = "Tangible-Shapes." + reference;
                 if (!shapesSection.isConfigurationSection(reference))
@@ -235,7 +272,7 @@ public class Currency implements BlobObject {
                     throw new ConfigurationFieldException("'" + a + ".ItemStack' is missing or not valid");
                 ConfigurationSection itemSection = shape.getConfigurationSection("ItemStack");
                 if (!shape.isDouble("Denomination"))
-                    throw new ConfigurationFieldException("'" + a + ".Denomination' is missing or not valid");
+                    throw new ConfigurationFieldException("'" + a + ".Denomination' is missing or not valid (DECIMAL NUMBER)");
                 BigDecimal denomination = BigDecimal.valueOf(shape.getDouble("Denomination"));
                 ItemStack builder = ItemStackReader.READ_OR_FAIL_FAST(itemSection).build();
                 ItemMeta itemMeta = builder.getItemMeta();
@@ -247,6 +284,6 @@ public class Currency implements BlobObject {
             });
         }
         return new Currency(display, initialBalance, isPersistent, pattern, key,
-                isTangible, tangibleShape, director.getPlugin());
+                isTangible, tangibleShape, director.getPlugin(), displayName);
     }
 }

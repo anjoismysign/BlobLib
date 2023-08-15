@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import us.mytheria.bloblib.entities.Rep;
+import us.mytheria.bloblib.utilities.TextColor;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -99,16 +100,23 @@ public final class ItemStackBuilder {
         return unflag(flags.toArray(new ItemFlag[0]));
     }
 
+    public ItemStackBuilder displayName(String name, char translateColorChar) {
+        return itemMeta(itemMeta -> itemMeta.setDisplayName(TextColor.CUSTOM_PARSE(translateColorChar, name)));
+    }
+
     public ItemStackBuilder displayName(String name) {
-        return itemMeta(itemMeta -> itemMeta.setDisplayName(name));
+        return displayName(name, '&');
     }
 
     public ItemStackBuilder lore(String line) {
-        return lore(List.of(line));
+        return lore(List.of(TextColor.PARSE(line)));
     }
 
     public ItemStackBuilder lore(String... lore) {
-        return itemMeta(itemMeta -> itemMeta.setLore(List.of(lore)));
+        List<String> list = List.of(lore);
+        List<String> dupe = new ArrayList<>();
+        list.forEach(s -> dupe.add(TextColor.PARSE(s)));
+        return itemMeta(itemMeta -> itemMeta.setLore(dupe));
     }
 
     public ItemStackBuilder lore(List<String> lore) {

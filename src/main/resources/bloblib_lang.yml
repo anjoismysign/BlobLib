@@ -1,3 +1,12 @@
+BlobLib:
+  Update-Available:
+    Type: CHAT
+    Message: '&7A new version of BlobLib is available. You may type &e''/bloblib update'''
+    BlobSound: System.Alert
+  Update-Successful:
+    Type: CHAT
+    Message: '&7BlobLib has been updated to &e%version%&7. You may restart the server now'
+    BlobSound: System.Done
 System:
   Error:
     Type: CHAT

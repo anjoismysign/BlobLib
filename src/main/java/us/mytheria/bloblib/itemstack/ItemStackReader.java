@@ -1,7 +1,6 @@
 package us.mytheria.bloblib.itemstack;
 
 import me.anjoismysign.anjo.entities.Uber;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -12,6 +11,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.SkullCreator;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
+import us.mytheria.bloblib.utilities.TextColor;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -36,15 +36,13 @@ public class ItemStackReader {
             builder = builder.amount(section.getInt("Amount"));
         }
         if (section.isString("DisplayName")) {
-            builder = builder.displayName(ChatColor
-                    .translateAlternateColorCodes('&', section
-                            .getString("DisplayName")));
+            builder = builder.displayName(TextColor.PARSE(section
+                    .getString("DisplayName")));
         }
         if (section.isList("Lore")) {
             List<String> input = section.getStringList("Lore");
             List<String> lore = new ArrayList<>();
-            input.forEach(string -> lore.add(ChatColor
-                    .translateAlternateColorCodes('&', string)));
+            input.forEach(string -> lore.add(TextColor.PARSE(string)));
             builder = builder.lore(lore);
         }
         if (section.isBoolean("Unbreakable")) {

@@ -69,40 +69,32 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
         this.objectManager = new ObjectManager<>(managerDirector, loadFilesDirectory.get(),
                 ConcurrentHashMap::new, ConcurrentHashMap::new, this) {
             public void loadFiles(File path, CompletableFuture<Void> mainFuture) {
-                try {
-                    if (!path.exists())
-                        path.mkdir();
-                    Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () -> {
-                        try {
-                            String[] extensions = {"yml"};
-                            Collection<File> files = FileUtils.listFiles(path, extensions, true);
-                            List<CompletableFuture<Void>> futures = new ArrayList<>();
-                            files.forEach(file -> {
-                                CompletableFuture<Void> fileFuture = CompletableFuture.runAsync(() -> {
-                                    try {
-                                        T blobObject = readFunction.apply(file);
-                                        if (blobObject != null) {
-                                            if (blobObject.edit() != null)
-                                                objectIsEditable = true;
-                                            this.addObject(blobObject.getKey(), blobObject, file);
-                                        }
-                                    } catch (Exception e) {
-                                        Bukkit.getLogger().log(Level.SEVERE, e.getMessage() + "\n" +
-                                                "At: " + file.getPath(), e);
-                                    }
-                                });
-                                futures.add(fileFuture);
-                            });
-                            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).thenAccept(v -> mainFuture.complete(null));
-                        } catch (Exception e) {
-                            Bukkit.getLogger().log(Level.SEVERE, e.getMessage(), e);
-                            mainFuture.completeExceptionally(e);
-                        }
+                if (!path.exists())
+                    path.mkdir();
+                Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () -> {
+                    String[] extensions = {"yml"};
+                    Collection<File> files = FileUtils.listFiles(path, extensions, true);
+                    List<CompletableFuture<Void>> futures = new ArrayList<>();
+                    files.forEach(file -> {
+                        CompletableFuture<Void> fileFuture = CompletableFuture.runAsync(() -> {
+                            T blobObject;
+                            try {
+                                blobObject = readFunction.apply(file);
+                                if (blobObject != null) {
+                                    if (blobObject.edit() != null)
+                                        objectIsEditable = true;
+                                    this.addObject(blobObject.getKey(), blobObject, file);
+                                }
+                            } catch (Exception exception) {
+                                Bukkit.getLogger().log(Level.SEVERE, exception.getMessage() + " \n " +
+                                        "At: " + file.getPath(), exception);
+                                mainFuture.completeExceptionally(exception);
+                            }
+                        });
+                        futures.add(fileFuture);
                     });
-                } catch (Exception exception) {
-                    Bukkit.getLogger().log(Level.SEVERE, exception.getMessage(), exception);
-                    mainFuture.completeExceptionally(exception);
-                }
+                    CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).thenAccept(v -> mainFuture.complete(null));
+                });
             }
         };
         clickEventConsumer = e -> {
