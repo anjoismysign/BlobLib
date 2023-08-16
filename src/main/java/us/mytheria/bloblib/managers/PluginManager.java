@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.utilities.Debug;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -48,6 +49,15 @@ public class PluginManager {
      */
     public void reload() {
         plugins.values().forEach(BlobPlugin::blobLibReload);
+    }
+
+    /**
+     * Will return a Collection of all the BlobPlugins.
+     *
+     * @return A Collection of all the BlobPlugins.
+     */
+    public Collection<BlobPlugin> values() {
+        return plugins.values();
     }
 
     /**

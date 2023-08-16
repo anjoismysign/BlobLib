@@ -4,6 +4,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.plugin.PluginBase;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.entities.PluginUpdater;
@@ -12,6 +13,7 @@ import us.mytheria.bloblib.managers.BlobPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author anjoismysign
@@ -130,6 +132,17 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                 if (args.length == 1) {
                     l.add("reload");
                     l.add("update");
+                }
+                if (args.length == 2) {
+                    if (args[0].equalsIgnoreCase("update")) {
+                        l.addAll(main.getPluginManager().values().stream()
+                                .map(BlobPlugin::getPluginUpdater)
+                                .filter(Objects::nonNull)
+                                .filter(PluginUpdater::hasAvailableUpdate)
+                                .map(PluginUpdater::getPlugin)
+                                .map(PluginBase::getName)
+                                .toList());
+                    }
                 }
                 return l;
             }

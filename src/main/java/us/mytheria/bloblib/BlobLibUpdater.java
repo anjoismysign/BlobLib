@@ -41,6 +41,7 @@ public class BlobLibUpdater implements PluginUpdater {
      * Will reload the updater and re-run their checks
      */
     public void reload() {
+        getLatestUrl();
         updateAvailable = !isLatestVersion();
         listener.reload(updateAvailable);
     }

@@ -3,7 +3,7 @@ package us.mytheria.bloblib.managers;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.mytheria.bloblib.entities.GithubPluginUpdater;
+import us.mytheria.bloblib.entities.GitHubPluginUpdater;
 import us.mytheria.bloblib.entities.PluginUpdater;
 import us.mytheria.bloblib.entities.logger.BlobPluginLogger;
 
@@ -99,7 +99,7 @@ public abstract class BlobPlugin extends JavaPlugin {
      * @param repository The repository name
      * @return The updater
      */
-    public GithubPluginUpdater generateGitHubUpdater(String author, String repository) {
-        return new GithubPluginUpdater(this, author, repository);
+    public GitHubPluginUpdater generateGitHubUpdater(String author, String repository) {
+        return new GitHubPluginUpdater(this, author, repository);
     }
 }

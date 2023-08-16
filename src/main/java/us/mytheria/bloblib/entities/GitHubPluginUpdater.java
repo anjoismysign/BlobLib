@@ -25,14 +25,14 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class GithubPluginUpdater implements PluginUpdater {
+public class GitHubPluginUpdater implements PluginUpdater {
     private final JavaPlugin plugin;
     private final String currentVersion, pluginName, author, repository;
     private boolean updateAvailable;
     private final UpdaterListener listener;
     private String latestVersion;
 
-    public GithubPluginUpdater(JavaPlugin plugin,
+    public GitHubPluginUpdater(JavaPlugin plugin,
                                String author, String repository) {
         this.plugin = plugin;
         this.author = author;
@@ -45,6 +45,7 @@ public class GithubPluginUpdater implements PluginUpdater {
     }
 
     public void reload() {
+        getLatestUrl();
         updateAvailable = !isLatestVersion();
         listener.reload(updateAvailable);
     }
