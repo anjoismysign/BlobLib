@@ -1,7 +1,7 @@
 BlobLib:
   Updater-Available:
     Type: CHAT
-    Message: '&7A new version &8(%version%) &7of %randomColor%%plugin% is available. You may type %randomColor%''/bloblib update %plugin%'''
+    Message: '&7A new version &8(%version%) &7of %randomColor%%plugin% &7is available. You may type %randomColor%''/bloblib update %plugin%'''
     BlobSound: System.Alert
   Updater-Successful:
     Type: CHAT
