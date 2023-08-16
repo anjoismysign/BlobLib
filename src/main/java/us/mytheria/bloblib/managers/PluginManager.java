@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.managers;
 
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.utilities.Debug;
 
@@ -47,6 +48,18 @@ public class PluginManager {
      */
     public void reload() {
         plugins.values().forEach(BlobPlugin::blobLibReload);
+    }
+
+    /**
+     * Will return the BlobPlugin with the given name.
+     *
+     * @param name The name of the BlobPlugin.
+     * @return The BlobPlugin with the given name.
+     * null if there is no BlobPlugin with the given name.
+     */
+    @Nullable
+    public BlobPlugin get(String name) {
+        return plugins.get(name);
     }
 
     /**

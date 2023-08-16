@@ -2,6 +2,9 @@ package us.mytheria.bloblib.managers;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.entities.GithubPluginUpdater;
+import us.mytheria.bloblib.entities.PluginUpdater;
 import us.mytheria.bloblib.entities.logger.BlobPluginLogger;
 
 /**
@@ -73,8 +76,30 @@ public abstract class BlobPlugin extends JavaPlugin {
      */
     public abstract IManagerDirector getManagerDirector();
 
+    /**
+     * Gets the PluginUpdater of this BlobPlugin.
+     * If null, it means the plugin does not have an updater.
+     *
+     * @return The PluginUpdater of this BlobPlugin.
+     */
+    @Nullable
+    public PluginUpdater getPluginUpdater() {
+        return null;
+    }
+
     @NotNull
     public BlobPluginLogger getAnjoLogger() {
         return logger;
+    }
+
+    /**
+     * Will generate an updater for this BlobPlugin
+     *
+     * @param author     The author of GitHub repository
+     * @param repository The repository name
+     * @return The updater
+     */
+    public GithubPluginUpdater generateGitHubUpdater(String author, String repository) {
+        return new GithubPluginUpdater(this, author, repository);
     }
 }

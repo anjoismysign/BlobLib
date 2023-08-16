@@ -6,7 +6,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.BlobLibAssetAPI;
-import us.mytheria.bloblib.BlobLibUpdater;
+import us.mytheria.bloblib.entities.PluginUpdater;
+import us.mytheria.bloblib.entities.message.BlobMessage;
+import us.mytheria.bloblib.managers.BlobPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,15 +59,36 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                     return true;
                 }
                 case "update" -> {
-                    BlobLibUpdater updater = main.getBloblibupdater();
+                    PluginUpdater updater;
+                    boolean isPlugin = false;
+                    if (args.length > 1) {
+                        String input = args[1];
+                        BlobPlugin plugin = main.getPluginManager().get(input);
+                        if (plugin != null && plugin.getPluginUpdater() != null) {
+                            updater = plugin.getPluginUpdater();
+                            isPlugin = true;
+                        } else
+                            updater = main.getBloblibupdater();
+                    } else
+                        updater = main.getBloblibupdater();
                     boolean successful = updater.download();
                     if (!successful)
                         return true;
-                    BlobLibAssetAPI.getMessage("BlobLib.Update-Successful")
-                            .modder()
-                            .replace("%version%", updater.getLatestVersion())
-                            .get()
-                            .toCommandSender(sender);
+                    BlobMessage message = BlobLibAssetAPI.getMessage("BlobLib.Updater-Successful");
+                    if (isPlugin) {
+                        message.modder()
+                                .replace("%randomColor%", main.getColorManager().randomColor().toString())
+                                .replace("%plugin%", updater.getPlugin().getName())
+                                .replace("%version%", updater.getLatestVersion())
+                                .get()
+                                .toCommandSender(sender);
+                    } else
+                        message.modder()
+                                .replace("%randomColor%", main.getColorManager().randomColor().toString())
+                                .replace("%plugin%", updater.getPlugin().getName())
+                                .replace("%version%", updater.getLatestVersion())
+                                .get()
+                                .toCommandSender(sender);
                     return true;
                 }
                 default -> {

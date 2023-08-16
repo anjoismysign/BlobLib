@@ -1,4 +1,4 @@
-package us.mytheria.bloblib;
+package us.mytheria.bloblib.entities;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -9,8 +9,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
-import us.mytheria.bloblib.entities.PluginUpdater;
+import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.BlobLibAssetAPI;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,33 +25,30 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class BlobLibUpdater implements PluginUpdater {
-    private final BlobLib plugin;
-    private final String currentVersion;
+public class GithubPluginUpdater implements PluginUpdater {
+    private final JavaPlugin plugin;
+    private final String currentVersion, pluginName, author, repository;
     private boolean updateAvailable;
     private final UpdaterListener listener;
     private String latestVersion;
 
-    protected BlobLibUpdater(BlobLib plugin) {
+    public GithubPluginUpdater(JavaPlugin plugin,
+                               String author, String repository) {
         this.plugin = plugin;
-        this.currentVersion = plugin.getDescription().getVersion();
-        this.listener = new UpdaterListener(plugin, this);
+        this.author = author;
+        this.repository = repository;
+        PluginDescriptionFile description = plugin.getDescription();
+        this.pluginName = description.getName();
+        this.currentVersion = description.getVersion();
+        this.listener = new UpdaterListener(plugin, pluginName, this);
         reload();
     }
 
-    /**
-     * Will reload the updater and re-run their checks
-     */
     public void reload() {
         updateAvailable = !isLatestVersion();
         listener.reload(updateAvailable);
     }
 
-    /**
-     * Will return true if there is an update available
-     *
-     * @return true if there is an update available
-     */
     public boolean hasAvailableUpdate() {
         return updateAvailable;
     }
@@ -62,11 +61,6 @@ public class BlobLibUpdater implements PluginUpdater {
         return currentVersion.equals(latestVersion);
     }
 
-    /**
-     * Will attempt to download latest version of BlobLib
-     *
-     * @return true if the download was successful
-     */
     public boolean download() {
         if (!updateAvailable)
             return false;
@@ -78,14 +72,14 @@ public class BlobLibUpdater implements PluginUpdater {
                     "the URL was malformed");
             return false;
         }
-        Path existentPath = Path.of("plugins", "BlobLib-" + currentVersion + ".jar");
+        Path existentPath = Path.of("plugins", pluginName + "-" + currentVersion + ".jar");
         try {
             Files.deleteIfExists(existentPath);
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
-        Path targetPath = Path.of("plugins", "BlobLib-" + latestVersion + ".jar");
+        Path targetPath = Path.of("plugins", pluginName + "-" + latestVersion + ".jar");
         try (InputStream inputStream = url.openStream()) {
             Files.copy(inputStream, targetPath);
             return true;
@@ -100,7 +94,8 @@ public class BlobLibUpdater implements PluginUpdater {
     }
 
     private String getLatestUrl() {
-        String repoUrl = "https://api.github.com/repos/anjoismysign/BlobLib/releases";
+        String repoUrl = "https://api.github.com/repos/" + author + "/" + repository +
+                "/releases";
         URL url;
         try {
             url = new URL(repoUrl);
@@ -149,8 +144,7 @@ public class BlobLibUpdater implements PluginUpdater {
         return latestRelease.get("assets").getAsJsonArray().get(0).getAsJsonObject().get("browser_download_url").getAsString();
     }
 
-    private record UpdaterListener(BlobLib plugin, PluginUpdater updater) implements Listener {
-
+    private record UpdaterListener(JavaPlugin plugin, String pluginName, PluginUpdater updater) implements Listener {
         private void reload(boolean updateAvailable) {
             HandlerList.unregisterAll(this);
             if (updateAvailable)
@@ -160,15 +154,14 @@ public class BlobLibUpdater implements PluginUpdater {
         @EventHandler
         public void handle(PlayerJoinEvent event) {
             Player player = event.getPlayer();
-            if (!player.hasPermission("bloblib.admin"))
+            if (!player.hasPermission(pluginName.toLowerCase() + ".admin"))
                 return;
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
                 if (player == null || !player.isOnline())
                     return;
-                BlobLibAssetAPI.getMessage("BlobLib.Update-Available")
+                BlobLibAssetAPI.getMessage("BlobLib.Updater-Available")
                         .modder()
-                        .replace("%randomColor%", plugin.getColorManager().randomColor().toString())
-                        .replace("update %plugin%", "update")
+                        .replace("%randomColor%", BlobLib.getInstance().getColorManager().randomColor().toString())
                         .replace("%plugin%", plugin.getName())
                         .replace("%version%", updater.getLatestVersion())
                         .get()
