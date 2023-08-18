@@ -113,7 +113,7 @@ public class BlobLibUpdater implements PluginUpdater {
         try {
             connection = (HttpURLConnection) url.openConnection();
         } catch (IOException e) {
-            e.printStackTrace();
+            plugin.getLogger().severe("Could not connect to GitHub to check for updates");
             return null;
         }
         try {

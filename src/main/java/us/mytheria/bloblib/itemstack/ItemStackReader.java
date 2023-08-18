@@ -104,7 +104,7 @@ public class ItemStackReader {
 
     public static ItemStackBuilder read(File file, String path) {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-        return read(Objects.requireNonNull(config.getConfigurationSection(path)));
+        return READ_OR_FAIL_FAST(Objects.requireNonNull(config.getConfigurationSection(path)));
     }
 
     public static ItemStackBuilder read(File file) {
@@ -112,7 +112,7 @@ public class ItemStackReader {
     }
 
     public static ItemStackBuilder read(YamlConfiguration config, String path) {
-        return read(Objects.requireNonNull(config.getConfigurationSection(path)));
+        return READ_OR_FAIL_FAST(Objects.requireNonNull(config.getConfigurationSection(path)));
     }
 
     public static ItemStackBuilder read(YamlConfiguration config) {

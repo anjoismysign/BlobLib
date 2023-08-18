@@ -7,6 +7,23 @@ BlobLib:
     Type: CHAT
     Message: '%randomColor%%plugin% &7has been updated to %randomColor%%version%&7. You may restart the server now'
     BlobSound: System.Done
+  Download-Usage:
+    Type: CHAT
+    Message: '&7Usage: &8/bloblib download <provider>'
+  Download-GitHub-Usage:
+    Type: CHAT
+    Message: '&7Usage: &8/bloblib download GitHub <owner/repository>'
+  Download-GitHub-Successful:
+    Type: CHAT
+    Message: '&7Successfully downloaded %randomColor%%fileName%&7. You may restart the server now'
+  Repository-Not-Found:
+    Type: CHAT
+    Message: '&cRepository not found'
+    BlobSound: System.Alert
+  No-Connection:
+    Type: CHAT
+    Message: '&cFailed to connect to the destination. Check your internet connection'
+    BlobSound: System.Alert
 System:
   Error:
     Type: CHAT

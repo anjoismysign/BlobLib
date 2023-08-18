@@ -39,7 +39,7 @@ public class BlobMultiSlotable extends MultiSlotable {
             Bukkit.getLogger().severe("ItemStack section is null for " + key);
             return null;
         }
-        ItemStack itemStack = ItemStackReader.read(itemStackSection).build();
+        ItemStack itemStack = ItemStackReader.READ_OR_FAIL_FAST(itemStackSection).build();
         HashSet<Integer> list = new HashSet<>();
         String read = section.getString("Slot", "-1");
         String[] slots = read.split(",");

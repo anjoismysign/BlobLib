@@ -105,6 +105,11 @@ public class BlobLib extends JavaPlugin {
                 () -> disguiseManager.load());
     }
 
+    @Override
+    public void onDisable() {
+        serializationLib.shutdown();
+    }
+
     /**
      * Will reload all the managers
      */

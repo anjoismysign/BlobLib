@@ -33,6 +33,10 @@ public class SerializationLib {
         return instance;
     }
 
+    public void shutdown() {
+        service.shutdown();
+    }
+
     public static SerializationLib getInstance() {
         return getInstance(null);
     }

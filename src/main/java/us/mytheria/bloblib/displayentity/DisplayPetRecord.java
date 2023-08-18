@@ -28,7 +28,7 @@ public record DisplayPetRecord(ItemStack itemStack, BlockData blockData, Particl
         ItemStack itemStack = null;
         if (section.isConfigurationSection("ItemStack")) {
             ItemStackBuilder builder = ItemStackReader
-                    .read(section.getConfigurationSection("ItemStack"));
+                    .READ_OR_FAIL_FAST(section.getConfigurationSection("ItemStack"));
             itemStack = builder.build();
         }
         BlockData blockData = null;

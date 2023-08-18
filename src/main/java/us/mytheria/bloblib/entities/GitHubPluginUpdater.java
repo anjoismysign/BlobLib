@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.BlobLibAssetAPI;
 
@@ -33,19 +34,23 @@ public class GitHubPluginUpdater implements PluginUpdater {
     private String latestVersion;
 
     public GitHubPluginUpdater(JavaPlugin plugin,
-                               String author, String repository) {
+                               String repositoryOwner, String repository) {
         this.plugin = plugin;
-        this.author = author;
+        this.author = repositoryOwner;
         this.repository = repository;
         PluginDescriptionFile description = plugin.getDescription();
         this.pluginName = description.getName();
         this.currentVersion = description.getVersion();
         this.listener = new UpdaterListener(plugin, pluginName, this);
+        this.updateAvailable = false;
         reload();
     }
 
     public void reload() {
-        getLatestUrl();
+        ReleaseFetch fetch = fetchLast();
+        if (!fetch.isValid())
+            return;
+        this.latestVersion = fetch.latestVersion();
         updateAvailable = !isLatestVersion();
         listener.reload(updateAvailable);
     }
@@ -67,7 +72,7 @@ public class GitHubPluginUpdater implements PluginUpdater {
             return false;
         URL url;
         try {
-            url = new URL(getLatestUrl());
+            url = new URL(fetchLast().latestUrl());
         } catch (MalformedURLException e) {
             BlobLib.getAnjoLogger().error("Could not download latest version of BlobLib because " +
                     "the URL was malformed");
@@ -94,7 +99,8 @@ public class GitHubPluginUpdater implements PluginUpdater {
         return plugin;
     }
 
-    private String getLatestUrl() {
+    @NotNull
+    private ReleaseFetch fetchLast() {
         String repoUrl = "https://api.github.com/repos/" + author + "/" + repository +
                 "/releases";
         URL url;
@@ -102,27 +108,27 @@ public class GitHubPluginUpdater implements PluginUpdater {
             url = new URL(repoUrl);
         } catch (MalformedURLException e) {
             e.printStackTrace();
-            return null;
+            return ReleaseFetch.INVALID();
         }
         HttpURLConnection connection;
         try {
             connection = (HttpURLConnection) url.openConnection();
         } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            plugin.getLogger().severe("Could not connect to GitHub to check for updates");
+            return ReleaseFetch.INVALID();
         }
         try {
             connection.setRequestMethod("GET");
         } catch (ProtocolException e) {
             e.printStackTrace();
-            return null;
+            return ReleaseFetch.INVALID();
         }
         BufferedReader reader;
         try {
             reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            plugin.getLogger().severe("Repository does not exist or is not visible");
+            return ReleaseFetch.INVALID();
         }
         StringBuilder response = new StringBuilder();
         String line;
@@ -133,16 +139,27 @@ public class GitHubPluginUpdater implements PluginUpdater {
             reader.close();
         } catch (IOException e) {
             e.printStackTrace();
-            return null;
+            return ReleaseFetch.INVALID();
         }
 
         Gson gson = new Gson();
         JsonArray releases = gson.fromJson(response.toString(), JsonArray.class);
         JsonObject latestRelease = releases.get(0).getAsJsonObject();
-        latestVersion = latestRelease.get("tag_name").getAsString();
+        String latestVersion = latestRelease.get("tag_name").getAsString();
         if (latestVersion.startsWith("v"))
             latestVersion = latestVersion.substring(1);
-        return latestRelease.get("assets").getAsJsonArray().get(0).getAsJsonObject().get("browser_download_url").getAsString();
+        String latestUrl = latestRelease.get("assets").getAsJsonArray().get(0).getAsJsonObject().get("browser_download_url").getAsString();
+        return new ReleaseFetch(latestVersion, latestUrl);
+    }
+
+    private record ReleaseFetch(String latestVersion, String latestUrl) {
+        private static ReleaseFetch INVALID() {
+            return new ReleaseFetch(null, null);
+        }
+
+        public boolean isValid() {
+            return latestVersion != null && latestUrl != null;
+        }
     }
 
     private record UpdaterListener(JavaPlugin plugin, String pluginName, PluginUpdater updater) implements Listener {
