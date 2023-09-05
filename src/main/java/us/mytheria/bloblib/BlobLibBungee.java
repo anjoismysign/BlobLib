@@ -2,8 +2,8 @@ package us.mytheria.bloblib;
 
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
-import us.mytheria.bloblib.bungee.PluginMessageEventListener;
-import us.mytheria.bloblib.entities.message.BungeeMessage;
+import us.mytheria.bloblib.bungee.BungeeBlobPluginMessageEventListener;
+import us.mytheria.bloblib.entities.message.BlobPluginMessage;
 
 /**
  * BlobLib is planned to be a Bungeecord plugin as well.
@@ -27,14 +27,7 @@ public class BlobLibBungee extends Plugin {
     public void onEnable() {
         instance = this;
         this.getProxy().registerChannel("BlobLib");
-        new PluginMessageEventListener();
-    }
-
-    /**
-     * Called when the plugin is disabled
-     */
-    @Override
-    public void onDisable() {
+        new BungeeBlobPluginMessageEventListener();
     }
 
     /**
@@ -49,7 +42,7 @@ public class BlobLibBungee extends Plugin {
      * is false it has been discarded.
      */
 
-    public static boolean sendMessage(BungeeMessage message, ServerInfo server, boolean queue) {
-        return server.sendData("BlobLib", BungeeMessage.serialize(message), queue);
+    public static boolean sendMessage(BlobPluginMessage message, ServerInfo server, boolean queue) {
+        return server.sendData("BlobLib", BlobPluginMessage.serialize(message), queue);
     }
 }

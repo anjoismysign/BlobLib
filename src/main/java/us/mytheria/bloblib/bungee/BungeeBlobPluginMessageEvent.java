@@ -1,23 +1,16 @@
 package us.mytheria.bloblib.bungee;
 
-import net.md_5.bungee.api.connection.Connection;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Event;
-import us.mytheria.bloblib.entities.message.BungeeMessage;
-
-import javax.annotation.Nullable;
+import us.mytheria.bloblib.entities.message.BlobPluginMessage;
 
 /**
  * @author anjoismysign
  * <p>
- * @deprecated API is in early development
- * state and is highly probable to be subject
- * to change.
  */
-@Deprecated
-public class BlobMessageReceiveEvent extends Event {
-    private final BungeeMessage message;
-    private final Connection sender;
+public class BungeeBlobPluginMessageEvent extends Event {
+    private final BlobPluginMessage message;
+    private final Server sender;
 
     /**
      * Here a protocol example for BlobTycoon:
@@ -29,7 +22,7 @@ public class BlobMessageReceiveEvent extends Event {
      * @param message    the message
      * @param connection the sender's connection
      */
-    public BlobMessageReceiveEvent(BungeeMessage message, Connection connection) {
+    public BungeeBlobPluginMessageEvent(BlobPluginMessage message, Server connection) {
         this.message = message;
         this.sender = connection;
     }
@@ -37,24 +30,14 @@ public class BlobMessageReceiveEvent extends Event {
     /**
      * @return Message
      */
-    public BungeeMessage getMessage() {
+    public BlobPluginMessage getMessage() {
         return message;
     }
 
     /**
      * @return Sender's connection
      */
-    public Connection getSender() {
+    public Server getSender() {
         return sender;
-    }
-
-    /**
-     * @return null if false, Server object otherwise
-     */
-    @Nullable
-    public Server isSenderAServer() {
-        if (getSender() instanceof Server server)
-            return server;
-        return null;
     }
 }

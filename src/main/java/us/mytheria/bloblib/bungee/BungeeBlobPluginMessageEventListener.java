@@ -6,26 +6,24 @@ import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import us.mytheria.bloblib.BlobLibBungee;
-import us.mytheria.bloblib.entities.message.BungeeMessage;
+import us.mytheria.bloblib.entities.message.BlobPluginMessage;
 
-public class PluginMessageEventListener implements Listener {
-    private BlobLibBungee main;
+public class BungeeBlobPluginMessageEventListener implements Listener {
+    private final BlobLibBungee main;
 
-    public PluginMessageEventListener() {
+    public BungeeBlobPluginMessageEventListener() {
         this.main = BlobLibBungee.getInstance();
         main.getProxy().getPluginManager().registerListener(main, this);
     }
 
     @EventHandler
     public void onPluginMessage(PluginMessageEvent e) {
-        if (!e.getTag().equals("BlobLib"))
-            return;
         Connection connection = e.getSender();
-        if (!(connection instanceof Server))
+        if (!(connection instanceof Server server))
             return;
-        BungeeMessage message = BungeeMessage.deserialize(e.getData());
+        BlobPluginMessage message = BlobPluginMessage.deserialize(e.getData());
         if (message == null)
             return;
-        main.getProxy().getPluginManager().callEvent(new BlobMessageReceiveEvent(message, connection));
+        main.getProxy().getPluginManager().callEvent(new BungeeBlobPluginMessageEvent(message, server));
     }
 }

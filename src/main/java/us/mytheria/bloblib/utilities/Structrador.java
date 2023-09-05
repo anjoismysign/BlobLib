@@ -1,0 +1,215 @@
+package us.mytheria.bloblib.utilities;
+
+import me.anjoismysign.anjo.entities.Uber;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.structure.Mirror;
+import org.bukkit.block.structure.StructureRotation;
+import org.bukkit.entity.Entity;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.structure.Palette;
+import org.bukkit.structure.Structure;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Blob;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+
+/**
+ * Your decorator guy for structure related stuff.
+ * Includes I/O and placement.
+ */
+public class Structrador {
+    private final Structure structure;
+    private final JavaPlugin plugin;
+
+    public Structrador(Structure structure, JavaPlugin plugin) {
+        this.structure = structure;
+        this.plugin = plugin;
+    }
+
+    public Structrador(InputStream inputStream, JavaPlugin javaPlugin) {
+        Structure structure;
+        try {
+            structure = Bukkit.getStructureManager().loadStructure(Objects.requireNonNull(inputStream));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        this.structure = structure;
+        this.plugin = javaPlugin;
+    }
+
+    public Structrador(byte[] bytes, JavaPlugin plugin) {
+        this(new ByteArrayInputStream(bytes), plugin);
+    }
+
+    public Structrador(Blob blob, JavaPlugin plugin) {
+        this(BlobUtil.blobToInputStream(blob), plugin);
+    }
+
+    public Structure getStructure() {
+        return structure;
+    }
+
+    public ByteArrayOutputStream toOutputStream() {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            Bukkit.getStructureManager().saveStructure(outputStream, structure);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return outputStream;
+    }
+
+    public byte[] toByteArray() {
+        return toOutputStream().toByteArray();
+    }
+
+    public Blob toBlob() {
+        return BlobUtil.byteArrayOutputStreamToBlob(toOutputStream());
+    }
+
+    /**
+     * Will place the structure at the given location in the same tick.
+     *
+     * @param location          - The location to place the structure at.
+     * @param includeEntities   - If the entities present in the structure should be spawned.
+     * @param structureRotation - The rotation of the structure.
+     * @param mirror            - The mirror settings of the structure.
+     * @param palette           - The palette index of the structure to use, starting at 0, or -1 to pick a random palette.
+     * @param integrity         - Determines how damaged the building should look by randomly skipping blocks to place. This value can range from 0 to 1. With 0 removing all blocks and 1 spawning the structure in pristine condition.
+     * @param random            - The randomizer used for setting the structure's LootTables and integrity.
+     */
+    public void simultaneousPlace(Location location, boolean includeEntities,
+                                  StructureRotation structureRotation, Mirror mirror, int palette,
+                                  float integrity, Random random) {
+        structure.place(location, includeEntities, structureRotation, mirror, palette, integrity, random);
+    }
+
+    /**
+     * Will place the structure at the given location in multiple ticks.
+     * The bigger the structure, the longer it will take to place.
+     * TODO: structureRotation, mirror, palette, integrity and random are not used.
+     *
+     * @param location             - The location to place the structure at.
+     * @param includeEntities      - If the entities present in the structure should be spawned.
+     * @param structureRotation    - The rotation of the structure.
+     * @param mirror               - The mirror settings of the structure.
+     * @param palette              - The palette index of the structure to use, starting at 0, or -1 to pick a random palette.
+     * @param integrity            - Determines how damaged the building should look by randomly skipping blocks to place. This value can range from 0 to 1. With 0 removing all blocks and 1 spawning the structure in pristine condition.
+     * @param random               - The randomizer used for setting the structure's LootTables and integrity.
+     * @param maxPlacedPerPeriod   - The maximum amount of blocks/entities placed per period.
+     * @param period               - The period between each placement in ticks.
+     * @param placedBlockConsumer  - The consumer that will be called when a block is placed.
+     * @param placedEntityConsumer - The consumer that will be called when an entity is placed.
+     * @return A CompletableFuture that completes when the structure is placed.
+     */
+    public CompletableFuture<Void> chainedPlace(Location location, boolean includeEntities,
+                                                StructureRotation structureRotation, Mirror mirror,
+                                                int palette, float integrity, Random random,
+                                                int maxPlacedPerPeriod, long period,
+                                                Consumer<BlockState> placedBlockConsumer,
+                                                Consumer<Entity> placedEntityConsumer) {
+        /*
+         * The location of the returned block states and entities
+         * are offsets relative to the structure's position that
+         * is provided once the structure is placed into the world.
+         */
+        CompletableFuture<Void> chainedPlace = new CompletableFuture<>();
+        List<Palette> palettes = structure.getPalettes();
+        Iterator<Palette> paletteIterator = palettes.iterator();
+        try {
+            // Will place blocks
+            CompletableFuture<Void> paletteFuture = new CompletableFuture<>();
+            BukkitRunnable placeTask = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    Uber<Integer> maxPlaced = Uber.drive(0);
+                    while (paletteIterator.hasNext() && maxPlaced.thanks() < maxPlacedPerPeriod) {
+                        Palette currentPalette = paletteIterator.next();
+                        currentPalette.getBlocks().forEach(blockState -> {
+                            Location blockLocation = location.clone().add(blockState.getX(), blockState.getY(), blockState.getZ());
+                            BlockState current = blockLocation.getBlock().getState();
+                            current.setType(blockState.getType());
+                            current.setBlockData(blockState.getBlockData());
+                            current.update(true, false);
+                            placedBlockConsumer.accept(current);
+                            maxPlaced.talk(maxPlaced.thanks() + 1);
+                        });
+                    }
+                    if (!paletteIterator.hasNext()) {
+                        paletteFuture.complete(null);
+                        this.cancel();
+                    }
+                }
+            };
+            placeTask.runTaskTimer(plugin, 1L, period);
+
+            //Once blocks are placed, will place entities
+            paletteFuture.whenComplete((aVoid, throwable) -> {
+                if (!includeEntities) {
+                    chainedPlace.complete(null);
+                    return;
+                }
+                Iterator<Entity> entityIterator = structure.getEntities().iterator();
+                BukkitRunnable entityTask = new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        Uber<Integer> maxPlaced = Uber.drive(0);
+                        while (entityIterator.hasNext() && maxPlaced.thanks() < maxPlacedPerPeriod) {
+                            Entity entity = entityIterator.next();
+                            Location offset = entity.getLocation();
+                            Location entityLocation = location.clone().add(offset.getX(), offset.getY(), offset.getZ());
+                            entityLocation.setPitch(offset.getPitch());
+                            entityLocation.setYaw(offset.getYaw());
+                            entity.teleport(entityLocation);
+                            placedEntityConsumer.accept(entity);
+                            maxPlaced.talk(maxPlaced.thanks() + 1);
+                        }
+                        if (!paletteIterator.hasNext()) {
+                            chainedPlace.complete(null);
+                            this.cancel();
+                        }
+                    }
+                };
+                entityTask.runTaskTimer(plugin, 1L, period);
+            });
+        } catch (Exception e) {
+            chainedPlace.completeExceptionally(e);
+        }
+        return chainedPlace;
+    }
+
+    /**
+     * Will place the structure at the given location in multiple ticks.
+     * The bigger the structure, the longer it will take to place.
+     * Places 1 block/entity per tick.
+     * TODO: structureRotation, mirror, palette, integrity and random are not used.
+     *
+     * @param location          - The location to place the structure at.
+     * @param includeEntities   - If the entities present in the structure should be spawned.
+     * @param structureRotation - The rotation of the structure.
+     * @param mirror            - The mirror settings of the structure.
+     * @param palette           - The palette index of the structure to use, starting at 0, or -1 to pick a random palette.
+     * @param integrity         - Determines how damaged the building should look by randomly skipping blocks to place. This value can range from 0 to 1. With 0 removing all blocks and 1 spawning the structure in pristine condition.
+     * @param random            - The randomizer used for setting the structure's LootTables and integrity.
+     * @return A CompletableFuture that completes when the structure is placed.
+     */
+    public CompletableFuture<Void> chainedPlace(Location location, boolean includeEntities,
+                                                StructureRotation structureRotation, Mirror mirror,
+                                                int palette, float integrity, Random random) {
+        return chainedPlace(location, includeEntities, structureRotation, mirror, palette,
+                integrity, random, 1, 1, blockState -> {
+                }, entity -> {
+                });
+    }
+}

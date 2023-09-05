@@ -1,17 +1,20 @@
 package us.mytheria.bloblib.entities.message;
 
+import org.bson.Document;
+import us.mytheria.bloblib.entities.DocumentDecorator;
+
 import javax.annotation.Nullable;
 import java.io.*;
 
-public class BungeeMessage implements Serializable {
+public record BlobPluginMessage(String key, Document value) implements Serializable {
 
-    public static byte[] serialize(BungeeMessage message) {
+    public static byte[] serialize(BlobPluginMessage message) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutput out = null;
+        ObjectOutput out;
         try {
             out = new ObjectOutputStream(bos);
             out.writeObject(message);
-            byte b[] = bos.toByteArray();
+            byte[] b = bos.toByteArray();
             out.close();
             bos.close();
             return b;
@@ -22,15 +25,15 @@ public class BungeeMessage implements Serializable {
     }
 
     @Nullable
-    public static BungeeMessage deserialize(byte[] bytes) {
-        BungeeMessage message;
+    public static BlobPluginMessage deserialize(byte[] bytes) {
+        BlobPluginMessage message;
         if (bytes == null)
             return null;
         ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-        ObjectInput in = null;
+        ObjectInput in;
         try {
             in = new ObjectInputStream(bis);
-            message = (BungeeMessage) in.readObject();
+            message = (BlobPluginMessage) in.readObject();
             return message;
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -38,25 +41,7 @@ public class BungeeMessage implements Serializable {
         return null;
     }
 
-    private String key;
-    private String type;
-    private Serializable value;
-
-    public BungeeMessage(String key, String type, Serializable value) {
-        this.key = key;
-        this.type = type;
-        this.value = value;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public Serializable getValue() {
-        return value;
+    public DocumentDecorator getValueAsDecorator() {
+        return new DocumentDecorator(value);
     }
 }
