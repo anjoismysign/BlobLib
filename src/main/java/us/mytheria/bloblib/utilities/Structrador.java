@@ -11,6 +11,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.structure.Palette;
 import org.bukkit.structure.Structure;
+import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -26,18 +28,63 @@ import java.util.function.Consumer;
 
 /**
  * Your decorator guy for structure related stuff.
- * Includes I/O and placement.
+ * Includes I/O, fill and placement.
+ * Needs further testing
  */
 public class Structrador {
     private final Structure structure;
     private final JavaPlugin plugin;
 
-    public Structrador(Structure structure, JavaPlugin plugin) {
-        this.structure = structure;
-        this.plugin = plugin;
+    /**
+     * Will create a structure from the given location and radius.
+     * Let's say that the center is at 0,0,0 and the radius is 5,5,5.
+     * The structure will cover from -5,-5,-5 to 5,5,5.
+     *
+     * @param plugin          - The plugin that will be used to create the structure.
+     * @param center          - The center of the structure.
+     * @param radius          - The radius of the structure.
+     * @param includeEntities - If the entities present in the structure should be included.
+     * @return A Structrador with the structure.
+     */
+    @NotNull
+    public static Structrador CENTERED(JavaPlugin plugin, Location center,
+                                       Vector radius, boolean includeEntities) {
+        Structure structure = Bukkit.getStructureManager().createStructure();
+        structure.fill(Objects.requireNonNull(center).clone().subtract(Objects.requireNonNull(radius)),
+                center.clone().add(radius), includeEntities);
+        return new Structrador(structure, plugin);
     }
 
-    public Structrador(InputStream inputStream, JavaPlugin javaPlugin) {
+    /**
+     * Will create a structure from the given locations.
+     * The structure will cover from the first corner to the second corner.
+     *
+     * @param plugin          - The plugin that will be used to create the structure.
+     * @param pos1            - The first corner of the structure.
+     * @param pos2            - The second corner of the structure.
+     * @param includeEntities - If the entities present in the structure should be included.
+     * @return A Structrador with the structure.
+     */
+    @NotNull
+    public static Structrador CORNERS(JavaPlugin plugin, Location pos1,
+                                      Location pos2, boolean includeEntities) {
+        Structure structure = Bukkit.getStructureManager().createStructure();
+        if (!Objects.equals(Objects.requireNonNull(pos1).getWorld(), Objects.requireNonNull(pos2).getWorld()))
+            throw new IllegalArgumentException("Locations must be in the same world.");
+        Location min = new Location(pos1.getWorld(), Math.min(pos1.getX(), pos2.getX()),
+                Math.min(pos1.getY(), pos2.getY()), Math.min(pos1.getZ(), pos2.getZ()));
+        Location max = new Location(pos1.getWorld(), Math.max(pos1.getX(), pos2.getX()),
+                Math.max(pos1.getY(), pos2.getY()), Math.max(pos1.getZ(), pos2.getZ()));
+        structure.fill(min, max, includeEntities);
+        return new Structrador(structure, plugin);
+    }
+
+    public Structrador(Structure structure, JavaPlugin plugin) {
+        this.structure = Objects.requireNonNull(structure);
+        this.plugin = Objects.requireNonNull(plugin);
+    }
+
+    public Structrador(InputStream inputStream, JavaPlugin plugin) {
         Structure structure;
         try {
             structure = Bukkit.getStructureManager().loadStructure(Objects.requireNonNull(inputStream));
@@ -45,7 +92,7 @@ public class Structrador {
             throw new RuntimeException(e);
         }
         this.structure = structure;
-        this.plugin = javaPlugin;
+        this.plugin = Objects.requireNonNull(plugin);
     }
 
     public Structrador(byte[] bytes, JavaPlugin plugin) {
