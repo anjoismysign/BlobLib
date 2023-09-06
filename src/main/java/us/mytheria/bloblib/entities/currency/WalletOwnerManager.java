@@ -82,21 +82,23 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
     public void onJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
         UUID uuid = player.getUniqueId();
-        CompletableFuture<T> future = new CompletableFuture<>();
+        CompletableFuture<BlobCrudable> future = new CompletableFuture<>();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             if (player == null || !player.isOnline()) {
                 future.completeExceptionally(new NullPointerException("Player is null"));
                 return;
             }
-            T walletOwner = this.generator.apply(crudManager.read(player));
-            walletOwners.put(uuid, walletOwner);
-            future.complete(walletOwner);
+            BlobCrudable crudable = crudManager.read(uuid.toString());
+            future.complete(crudable);
         });
-        future.thenAccept(walletOwner -> {
+        future.thenAccept(crudable -> {
+            if (player == null || !player.isOnline())
+                return;
+            T applied = generator.apply(crudable);
+            walletOwners.put(uuid, applied);
             if (joinEvent == null)
                 return;
-            Bukkit.getScheduler().runTask(plugin, () ->
-                    Bukkit.getPluginManager().callEvent(joinEvent.apply(walletOwner)));
+            Bukkit.getPluginManager().callEvent(joinEvent.apply(applied));
         });
     }
 

@@ -69,20 +69,23 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
     public void onJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
         UUID uuid = player.getUniqueId();
-        CompletableFuture<T> future = new CompletableFuture<>();
+        CompletableFuture<BlobCrudable> future = new CompletableFuture<>();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             if (player == null || !player.isOnline()) {
                 future.completeExceptionally(new NullPointerException("Player is null"));
                 return;
             }
-            T applied = this.generator.apply(crudManager.read(uuid.toString()));
-            serializables.put(uuid, applied);
-            future.complete(applied);
+            BlobCrudable crudable = crudManager.read(uuid.toString());
+            future.complete(crudable);
         });
-        future.thenAccept(serializable -> {
+        future.thenAccept(crudable -> {
+            if (player == null || !player.isOnline())
+                return;
+            T applied = generator.apply(crudable);
+            serializables.put(uuid, applied);
             if (joinEvent == null)
                 return;
-            Bukkit.getPluginManager().callEvent(joinEvent.apply(serializable));
+            Bukkit.getPluginManager().callEvent(joinEvent.apply(applied));
         });
     }
 
