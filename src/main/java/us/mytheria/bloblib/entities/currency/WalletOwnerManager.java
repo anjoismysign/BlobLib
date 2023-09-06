@@ -84,6 +84,10 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         UUID uuid = player.getUniqueId();
         CompletableFuture<T> future = new CompletableFuture<>();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            if (player == null || !player.isOnline()) {
+                future.completeExceptionally(new NullPointerException("Player is null"));
+                return;
+            }
             T walletOwner = this.generator.apply(crudManager.read(player));
             walletOwners.put(uuid, walletOwner);
             future.complete(walletOwner);
