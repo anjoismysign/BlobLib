@@ -2,12 +2,21 @@ package us.mytheria.bloblib.entities;
 
 import org.bson.Document;
 import org.bson.types.Binary;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public record DocumentDecorator(Document document) {
+
+    @NotNull
+    public static DocumentDecorator deserialize(byte[] bytes) {
+        DocumentDecorator decorator = new DocumentDecorator(Document.parse(new String(bytes)));
+        return Objects.requireNonNull(decorator, "Failed to deserialize document");
+    }
+
     /**
      * Will get an object from the document.
      *
@@ -235,5 +244,16 @@ public record DocumentDecorator(Document document) {
      */
     void serializeByteArray(byte[] byteArray, String key) {
         document.put(key, new Binary(byteArray));
+    }
+
+    /**
+     * Will serialize the document into a byte array
+     * which can later be deserialized through
+     * {@link #deserialize(byte[])}
+     *
+     * @return the byte array
+     */
+    public byte @NotNull [] serialize() {
+        return document.toJson().getBytes();
     }
 }

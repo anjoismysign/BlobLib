@@ -1,4 +1,0 @@
-name: BlobLib
-main: us.mytheria.bloblib.BlobLibBungee
-version: ${project.version}.${buildNumber}
-author: promorrom

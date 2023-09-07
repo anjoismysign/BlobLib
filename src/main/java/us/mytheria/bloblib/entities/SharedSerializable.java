@@ -1,59 +1,49 @@
 package us.mytheria.bloblib.entities;
 
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents an object used in shard/multiple-server instances and can be
  * owned by multiple players/owners.
  */
-public interface SharedSerializable extends BinarySerializable {
+public interface SharedSerializable<T extends SerializableProfile> extends BinarySerializable {
+    Map<String, T> getProprietors();
+
     /**
-     * Will get the owners of this object.
-     * If not set before, it will return an empty list.
+     * Will unpack the owners from the document.
+     * If the document does not contain any owners, it will return an empty list.
      *
      * @return The owners of this object.
      */
+    @SuppressWarnings("unchecked")
     @NotNull
-    default List<String> getOwners() {
-        return blobCrudable().hasStringList("SharedSerializable#Owners")
-                .orElse(new ArrayList<>());
+    default List<Map<String, Object>> unpackProprietors() {
+        List<Map<String, Object>> serializedProprietors = blobCrudable().getDocument().get("SharedSerializable#Proprietors", List.class);
+        return serializedProprietors == null ? new ArrayList<>() : serializedProprietors;
     }
 
     /**
-     * Will set the owners of this object.
-     *
-     * @param owners The owners of this object.
+     * Will pack the owners of this object to the document.
      */
-    default void setOwners(List<String> owners) {
-        blobCrudable().getDocument().put("SharedSerializable#Owners", owners);
+    default void packProprietors() {
+        blobCrudable().getDocument().put("SharedSerializable#Proprietors", serializeProprietors());
+    }
+
+    default List<Map<String, Object>> serializeProprietors() {
+        return getProprietors().values().stream()
+                .map(SerializableProfile::serialize).toList();
     }
 
     /**
-     * Will add an owner to this object.
-     * If already an owner, it will do nothing (no duplicates).
+     * Used inside ProxiedSharedSerializableManager to join a player to a cached
+     * object in a running session.
      *
-     * @param owner The owner to add.
+     * @param player The player to join.
      */
-    default void addOwner(String owner) {
-        List<String> owners = getOwners();
-        if (owners.contains(owner))
-            return;
-        owners.add(owner);
-        setOwners(owners);
-    }
-
-    /**
-     * Will remove an owner from this object.
-     * If not an owner, no issues will occur.
-     *
-     * @param owner The owner to remove.
-     */
-    default void removeOwner(String owner) {
-        List<String> owners = getOwners();
-        owners.remove(owner);
-        setOwners(owners);
-    }
+    void join(Player player);
 }
