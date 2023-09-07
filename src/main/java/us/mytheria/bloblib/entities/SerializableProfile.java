@@ -1,5 +1,7 @@
 package us.mytheria.bloblib.entities;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Map;
 
 /**
@@ -13,6 +15,7 @@ public interface SerializableProfile {
      *
      * @return the serialized profile
      */
+    @NotNull
     default Map<String, Object> serialize() {
         return Map.of(
                 "ProfileName", getProfileName(),

@@ -11,8 +11,6 @@ public interface WalletHolder {
     /**
      * Deposits the amount into the wallet.
      * <p>
-     * Should not interact with the wallet directly, use the methods below.
-     * </p>
      *
      * @param currency the currency
      * @param amount   the amount
@@ -24,8 +22,6 @@ public interface WalletHolder {
     /**
      * Deposits the amount into the wallet.
      * <p>
-     * Should not interact with the wallet directly, use the methods below.
-     * </p>
      *
      * @param key    the key
      * @param amount the amount
@@ -37,8 +33,6 @@ public interface WalletHolder {
     /**
      * Withdraws the amount from the wallet.
      * <p>
-     * Should not interact with the wallet directly, use the methods below.
-     * </p>
      *
      * @param currency the currency
      * @param amount   the amount
@@ -50,8 +44,6 @@ public interface WalletHolder {
     /**
      * Withdraws the amount from the wallet.
      * <p>
-     * Should not interact with the wallet directly, use the methods below.
-     * </p>
      *
      * @param key    the key
      * @param amount the amount
@@ -63,8 +55,6 @@ public interface WalletHolder {
     /**
      * Checks if the wallet has the amount.
      * <p>
-     * Should not interact with the wallet directly, use the methods below.
-     * </p>
      *
      * @param currency the currency
      * @param amount   the amount
@@ -77,8 +67,6 @@ public interface WalletHolder {
     /**
      * Checks if the wallet has the amount.
      * <p>
-     * Should not interact with the wallet directly, use the methods below.
-     * </p>
      *
      * @param key    the key
      * @param amount the amount
@@ -91,8 +79,6 @@ public interface WalletHolder {
     /**
      * Gets the balance of the wallet.
      * <p>
-     * Should not interact with the wallet directly, use the methods below.
-     * </p>
      *
      * @param currency the currency
      * @return the balance
@@ -104,8 +90,6 @@ public interface WalletHolder {
     /**
      * Gets the balance of the wallet.
      * <p>
-     * Should not interact with the wallet directly, use the methods below.
-     * </p>
      *
      * @param key the key
      * @return the balance
@@ -117,8 +101,6 @@ public interface WalletHolder {
     /**
      * Sets the balance of the wallet.
      * <p>
-     * Should not interact with the wallet directly, use the methods below.
-     * </p>
      *
      * @param currency the currency
      * @param amount   the amount
@@ -130,8 +112,6 @@ public interface WalletHolder {
     /**
      * Sets the balance of the wallet.
      * <p>
-     * Should not interact with the wallet directly, use the methods below.
-     * </p>
      *
      * @param key    the key
      * @param amount the amount
@@ -143,8 +123,6 @@ public interface WalletHolder {
     /**
      * Resets the wallet to the initial balance.
      * <p>
-     * Should not interact with the wallet directly, use the methods below.
-     * </p>
      *
      * @param currency the currency
      */

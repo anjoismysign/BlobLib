@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.entities;
 
+import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.entities.currency.WalletHolder;
 
 import java.util.Map;
@@ -11,6 +12,7 @@ public interface WalletProfile extends SerializableProfile, WalletHolder {
      * @return the serialized profile
      */
     @Override
+    @NotNull
     default Map<String, Object> serialize() {
         return Map.of(
                 "ProfileName", getProfileName(),
