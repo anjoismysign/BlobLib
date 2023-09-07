@@ -2,6 +2,7 @@ package us.mytheria.bloblib.entities;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -9,9 +10,9 @@ import java.util.Map;
  * a SharedSerializable object (an object that can be
  * owned by multiple players).
  */
-public interface SerializableProfile {
+public interface SerializableProfile extends Serializable {
     /**
-     * Will serialize the profile into a Map.
+     * Will serialize the profile into a Map.`
      *
      * @return the serialized profile
      */
