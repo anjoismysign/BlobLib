@@ -1,6 +1,6 @@
 package us.mytheria.bloblib.entities;
 
-enum MinecraftTimeUnit {
+public enum MinecraftTimeUnit {
     NANOSECONDS(MinecraftTimeUnit.NANOSECONDS_SCALE),
     MICROSECONDS(MinecraftTimeUnit.MICROSECONDS_SCALE),
     MILLISECONDS(MinecraftTimeUnit.MILLISECONDS_SCALE),
