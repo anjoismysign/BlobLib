@@ -23,7 +23,7 @@ public class BlobPluginLogger extends ConsoleLogger {
 
     @Override
     public void log(String message) {
-        super.log(ChatColor.WHITE + prefix() + start() + message);
+        super.log(prefix() + start() + message);
     }
 
     @Override

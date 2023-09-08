@@ -181,7 +181,9 @@ public class Structrador {
          */
         CompletableFuture<Void> chainedPlace = new CompletableFuture<>();
         List<Palette> palettes = structure.getPalettes();
-        Iterator<Palette> paletteIterator = palettes.iterator();
+        List<BlockState> blocks = palettes.stream().map(Palette::getBlocks)
+                .flatMap(List::stream).toList();
+        Iterator<BlockState> iterator = blocks.iterator();
         try {
             // Will place blocks
             CompletableFuture<Void> paletteFuture = new CompletableFuture<>();
@@ -189,26 +191,23 @@ public class Structrador {
                 @Override
                 public void run() {
                     Uber<Integer> maxPlaced = Uber.drive(0);
-                    while (paletteIterator.hasNext() && maxPlaced.thanks() < maxPlacedPerPeriod) {
-                        Palette currentPalette = paletteIterator.next();
-                        currentPalette.getBlocks().forEach(blockState -> {
-                            Location blockLocation = location.clone().add(blockState.getX(), blockState.getY(), blockState.getZ());
-                            BlockState current = blockLocation.getBlock().getState();
-                            current.setType(blockState.getType());
-                            current.setBlockData(blockState.getBlockData());
-                            current.update(true, false);
-                            placedBlockConsumer.accept(current);
-                            maxPlaced.talk(maxPlaced.thanks() + 1);
-                        });
+                    while (iterator.hasNext() && maxPlaced.thanks() < maxPlacedPerPeriod) {
+                        BlockState blockState = iterator.next();
+                        Location blockLocation = location.clone().add(blockState.getX(), blockState.getY(), blockState.getZ());
+                        BlockState current = blockLocation.getBlock().getState();
+                        current.setType(blockState.getType());
+                        current.setBlockData(blockState.getBlockData());
+                        current.update(true, false);
+                        placedBlockConsumer.accept(current);
+                        maxPlaced.talk(maxPlaced.thanks() + 1);
                     }
-                    if (!paletteIterator.hasNext()) {
+                    if (!iterator.hasNext()) {
                         paletteFuture.complete(null);
                         this.cancel();
                     }
                 }
             };
             placeTask.runTaskTimer(plugin, 1L, period);
-
             //Once blocks are placed, will place entities
             paletteFuture.whenComplete((aVoid, throwable) -> {
                 if (!includeEntities) {
@@ -230,7 +229,7 @@ public class Structrador {
                             placedEntityConsumer.accept(entity);
                             maxPlaced.talk(maxPlaced.thanks() + 1);
                         }
-                        if (!paletteIterator.hasNext()) {
+                        if (!iterator.hasNext()) {
                             chainedPlace.complete(null);
                             this.cancel();
                         }
