@@ -1,24 +1,14 @@
 package us.mytheria.bloblib.entities;
 
 public enum MinecraftTimeUnit {
-    NANOSECONDS(MinecraftTimeUnit.NANOSECONDS_SCALE),
-    MICROSECONDS(MinecraftTimeUnit.MICROSECONDS_SCALE),
-    MILLISECONDS(MinecraftTimeUnit.MILLISECONDS_SCALE),
-    TICKS(MinecraftTimeUnit.TICKS_SCALE),
-    SECONDS(MinecraftTimeUnit.SECONDS_SCALE),
-    MINUTES(MinecraftTimeUnit.MINUTES_SCALE),
-    HOURS(MinecraftTimeUnit.HOURS_SCALE),
-    DAYS(MinecraftTimeUnit.DAYS_SCALE);
-
-    private static final long NANOSECONDS_SCALE = 1;
-    private static final long MICROSECONDS_SCALE = NANOSECONDS_SCALE * 1000;
-    private static final long MILLISECONDS_SCALE = MICROSECONDS_SCALE * 1000;
-    private static final long TICKS_SCALE = MILLISECONDS_SCALE * 50;
-    private static final long SECONDS_SCALE = TICKS_SCALE * 20;
-    private static final long MINUTES_SCALE = SECONDS_SCALE * 60;
-    private static final long HOURS_SCALE = MINUTES_SCALE * 60;
-    private static final long DAYS_SCALE = HOURS_SCALE * 24;
-
+    NANOSECONDS(1L),
+    MICROSECONDS(1000L),
+    MILLISECONDS(1000000L),
+    TICKS(50000000L),
+    SECONDS(1000000000L),
+    MINUTES(60000000000L),
+    HOURS(3600000000000L),
+    DAYS(86400000000000L);
     private final long scale;
 
     MinecraftTimeUnit(long scale) {
