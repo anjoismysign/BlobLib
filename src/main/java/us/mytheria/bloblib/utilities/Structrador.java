@@ -14,10 +14,7 @@ import org.bukkit.structure.Structure;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.sql.Blob;
 import java.util.Iterator;
 import java.util.List;
@@ -84,10 +81,21 @@ public class Structrador {
         this.plugin = Objects.requireNonNull(plugin);
     }
 
+    public Structrador(File file, JavaPlugin plugin) {
+        Structure structure;
+        try {
+            structure = Bukkit.getStructureManager().loadStructure(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        this.structure = structure;
+        this.plugin = Objects.requireNonNull(plugin);
+    }
+
     public Structrador(InputStream inputStream, JavaPlugin plugin) {
         Structure structure;
         try {
-            structure = Bukkit.getStructureManager().loadStructure(Objects.requireNonNull(inputStream));
+            structure = Bukkit.getStructureManager().loadStructure(inputStream);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
