@@ -81,21 +81,6 @@ public class SharedSerializableInstanceManager implements Listener {
                 ServerInfo info = cached.inverse().get(instances);
                 if (info == null)
                     throw new NullPointerException("Instance not cached");
-                if (pending.containsValue(instanceId)) {
-                    /*
-                     * Sends pendingJoin message to server
-                     * This message is to alert fallback server
-                     * that a player is being sent.
-                     * TODO: Check algorithm in case when player is sent fails, to force
-                     * TODO: ProxiedSharedSerializableManager closing the instance
-                     * Listener: ProxiedSharedSerializableManager
-                     */
-                    Document send = new Document();
-                    send.put("Action", "pendingJoin");
-                    send.put("SharedSerializable#UniqueId", instanceId);
-                    info.sendData(tag, new DocumentDecorator(send).serialize());
-                    return;
-                }
                 //Sends instanceClosed message to server
                 //Listener: ProxiedSharedSerializableManager
                 Document send = new Document();
