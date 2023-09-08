@@ -21,7 +21,7 @@ public interface SerializableProfile extends Serializable {
         return Map.of(
                 "ProfileName", getProfileName(),
                 "LastKnownName", getLastKnownName(),
-                "UniqueId", getIdentification()
+                "Identification", getIdentification()
         );
     }
 

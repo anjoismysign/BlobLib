@@ -17,7 +17,7 @@ public interface WalletProfile extends SerializableProfile, WalletHolder {
         return Map.of(
                 "ProfileName", getProfileName(),
                 "LastKnownName", getLastKnownName(),
-                "UniqueId", getIdentification(),
+                "Identification", getIdentification(),
                 "Wallet", getWallet()
         );
     }
