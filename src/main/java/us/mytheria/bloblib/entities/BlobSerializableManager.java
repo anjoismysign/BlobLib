@@ -107,6 +107,14 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
         });
     }
 
+    public void addSaving(UUID uuid) {
+        saving.add(uuid);
+    }
+
+    public void removeSaving(UUID uuid) {
+        saving.remove(uuid);
+    }
+
     public void addObject(UUID key, T serializable) {
         serializables.put(key, serializable);
     }
