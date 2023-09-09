@@ -3,10 +3,14 @@ package us.mytheria.bloblib.utilities;
 import me.anjoismysign.anjo.entities.Uber;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;
+import org.bukkit.craftbukkit.v1_20_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_20_R1.entity.CraftEntity;
 import org.bukkit.entity.Entity;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.structure.Palette;
@@ -184,6 +188,9 @@ public class Structrador {
         List<BlockState> blocks = palettes.stream().map(Palette::getBlocks)
                 .flatMap(List::stream).toList();
         Iterator<BlockState> iterator = blocks.iterator();
+        World world = location.getWorld();
+        if (world == null)
+            throw new IllegalArgumentException("Location must have a world.");
         try {
             // Will place blocks
             CompletableFuture<Void> paletteFuture = new CompletableFuture<>();
@@ -225,8 +232,19 @@ public class Structrador {
                             Location entityLocation = location.clone().add(offset.getX(), offset.getY(), offset.getZ());
                             entityLocation.setPitch(offset.getPitch());
                             entityLocation.setYaw(offset.getYaw());
-                            entity.teleport(entityLocation);
                             placedEntityConsumer.accept(entity);
+                            /*
+                             * Intermediate level of API-NMS
+                             * Known to work in 1.20.1
+                             * Might break in future versions
+                             */
+                            var nmsWorld = ((CraftWorld) world).getHandle();
+                            var nmsEntity = ((CraftEntity) entity).getHandle();
+                            if (!nmsWorld.tryAddFreshEntityWithPassengers
+                                    (nmsEntity, CreatureSpawnEvent.SpawnReason.CUSTOM))
+                                continue;
+                            entity = nmsEntity.getBukkitEntity();
+                            entity.teleport(entityLocation);
                             maxPlaced.talk(maxPlaced.thanks() + 1);
                         }
                         if (!iterator.hasNext()) {

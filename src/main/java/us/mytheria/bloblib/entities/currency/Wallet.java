@@ -2,18 +2,29 @@ package us.mytheria.bloblib.entities.currency;
 
 import org.bson.Document;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Wallet extends HashMap<String, Double> {
+public class Wallet extends HashMap<String, Double> implements Serializable {
+    public static Wallet deserialize(Map<String, Object> map) {
+        Wallet wallet = new Wallet();
+        map.forEach((k, v) -> wallet.put(k, (Double) v));
+        return wallet;
+    }
+
     public void serializeInDocument(Document document) {
         Map<String, String> map = new HashMap<>();
         forEach((k, v) -> map.put(k, v.toString()));
         List<String> list = new ArrayList<>();
         map.forEach((k, v) -> list.add(k + ":" + v));
         document.put("Wallet", list);
+    }
+
+    public Map<String, Object> serialize() {
+        return new HashMap<>(this);
     }
 
     public void add(String key, double amount) {

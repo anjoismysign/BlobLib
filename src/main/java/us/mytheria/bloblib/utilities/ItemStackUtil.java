@@ -15,6 +15,7 @@ import java.util.Base64;
 import java.util.List;
 
 public class ItemStackUtil {
+
     /**
      * Will display an ItemStack by either their ItemMeta's displayname or their Material's name
      *

@@ -8,15 +8,18 @@ import me.anjoismysign.anjo.entities.NamingConventions;
 import me.anjoismysign.anjo.entities.Result;
 import org.bukkit.configuration.ConfigurationSection;
 import us.mytheria.bloblib.entities.BlobCrudable;
+import us.mytheria.bloblib.exception.ConfigurationFieldException;
 import us.mytheria.bloblib.managers.BlobPlugin;
 import us.mytheria.bloblib.storage.*;
 
 import java.util.UUID;
 import java.util.function.Function;
 
+/**
+ * Misleading class name, use BlobCrudManagerFactory instead
+ */
+@Deprecated
 public class BlobCrudManagerBuilder {
-    //Misleading class name, use BlobCrudManagerFactory instead
-    @Deprecated
     public static <T extends BlobCrudable> BlobCrudManager<T> PLAYER(BlobPlugin plugin,
                                                                      String crudableName,
                                                                      Function<BlobCrudable, T> createFunction,
@@ -210,10 +213,19 @@ public class BlobCrudManagerBuilder {
         StorageType storageType = StorageType.valueOf(databaseSection.getString("Type", "SQLITE"));
         if (storageType != StorageType.MONGODB)
             throw new IllegalArgumentException("StorageType is not MONGODB (" + storageType + ")");
-        Result<MongoDB> result = MongoDB.fromConfigurationSection(databaseSection);
-        if (!result.isValid())
-            throw new IllegalArgumentException("Invalid MongoDB configuration");
-        MongoDB mongoDB = result.value();
+        MongoDB mongoDB;
+        if (databaseSection.isString("URI")) {
+            String uri = databaseSection.getString("URI");
+            if (!databaseSection.isString("Database"))
+                throw new ConfigurationFieldException("'Database' field not found");
+            String database = databaseSection.getString("Database");
+            mongoDB = MongoDB.fromURI(uri, database);
+        } else {
+            Result<MongoDB> result = MongoDB.fromConfigurationSection(databaseSection);
+            if (!result.isValid())
+                throw new IllegalArgumentException("Invalid MongoDB configuration");
+            mongoDB = result.value();
+        }
         if (logActivity)
             return new MongoCrudManager<>(mongoDB, NamingConventions.toSnakeCase(crudableName),
                     createFunction, plugin.getAnjoLogger());

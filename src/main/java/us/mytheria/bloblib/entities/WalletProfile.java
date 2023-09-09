@@ -8,6 +8,8 @@ import java.util.Map;
 public interface WalletProfile extends SerializableProfile, WalletHolder {
     /**
      * Will serialize the profile into a Map.
+     * Might want to serialize the wallet for
+     * issues (such as MongoDB)
      *
      * @return the serialized profile
      */
@@ -18,7 +20,7 @@ public interface WalletProfile extends SerializableProfile, WalletHolder {
                 "ProfileName", getProfileName(),
                 "LastKnownName", getLastKnownName(),
                 "Identification", getIdentification(),
-                "Wallet", getWallet()
+                "Wallet", getWallet().serialize()
         );
     }
 }

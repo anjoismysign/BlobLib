@@ -7,13 +7,9 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import me.anjoismysign.anjo.entities.Result;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.bson.Document;
 import org.bukkit.configuration.ConfigurationSection;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
@@ -27,9 +23,9 @@ import java.util.function.Consumer;
  * @author anjoismysign
  */
 public class MongoDB {
-
     private final String connection;
     private final String database;
+    private final @Nullable String uri;
 
     private final MongoClient mongoClient;
 
@@ -40,7 +36,7 @@ public class MongoDB {
      * @return A new MongoDB instance with the default localhost connection and the provided database.
      */
     public static MongoDB LOCALHOST(String database) {
-        return new MongoDB("mongodb://localhost:27017/", database);
+        return new MongoDB("mongodb://localhost:27017/", database, null);
     }
 
     /**
@@ -66,13 +62,17 @@ public class MongoDB {
         return Result.invalidBecauseNull();
     }
 
+    public static MongoDB fromURI(String uri, String database) {
+        return new MongoDB(uri, database, uri);
+    }
+
     private static MongoDB loadFromConfigurationSection(ConfigurationSection configurationSection) {
         String host = configurationSection.getString("Hostname");
         String database = configurationSection.getString("Database");
         String username = configurationSection.getString("Username");
         String password = configurationSection.getString("Password");
         String connection = "mongodb+srv://" + username + ":" + password + "@" + host + "/?retryWrites=true&w=majority";
-        return new MongoDB(connection, database);
+        return new MongoDB(connection, database, null);
     }
 
     /**
@@ -80,17 +80,20 @@ public class MongoDB {
      *
      * @param connection The connection string to use.
      */
-    public MongoDB(String connection, String database) {
+    public MongoDB(String connection, String database, @Nullable String uri) {
         this.connection = connection;
         this.database = database;
+        this.uri = uri;
         this.mongoClient = connect();
     }
 
     private MongoClient connect() {
-        LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
-        Configuration configuration = loggerContext.getConfiguration();
-        LoggerConfig loggerConfig = configuration.getLoggerConfig("org.mongodb.driver");
-        loggerConfig.setLevel(Level.WARN);
+//        LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+//        Configuration configuration = loggerContext.getConfiguration();
+//        LoggerConfig loggerConfig = configuration.getLoggerConfig("org.mongodb.driver");
+//        loggerConfig.setLevel(Level.WARN);
+        if (uri != null)
+            return MongoClients.create(uri);
         return MongoClients.create(connection);
     }
 
@@ -106,11 +109,9 @@ public class MongoDB {
      * @return A valid result if found, otherwise an invalid result.
      */
     public Result<Document> getDocument(String collection, Document searchQuery) {
-        try (MongoClient client = connect()) {
-            MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
-            Document iterable = mongoCollection.find(searchQuery).first();
-            return Result.ofNullable(iterable);
-        }
+        MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
+        Document iterable = mongoCollection.find(searchQuery).first();
+        return Result.ofNullable(iterable);
     }
 
     /**
@@ -124,11 +125,9 @@ public class MongoDB {
      */
     public boolean replaceOne(String collection, Document searchQuery,
                               Document replacement) {
-        try (MongoClient client = connect()) {
-            MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
-            UpdateResult result = mongoCollection.replaceOne(searchQuery, replacement);
-            return result.getModifiedCount() > 0;
-        }
+        MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
+        UpdateResult result = mongoCollection.replaceOne(searchQuery, replacement);
+        return result.getModifiedCount() > 0;
     }
 
     /**
@@ -142,12 +141,10 @@ public class MongoDB {
      */
     public boolean updateMany(String collection, Document searchQuery,
                               Document newValues) {
-        try (MongoClient client = connect()) {
-            MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
-            Document updateQuery = new Document("$set", newValues);
-            UpdateResult result = mongoCollection.updateMany(searchQuery, updateQuery);
-            return result.getModifiedCount() > 0;
-        }
+        MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
+        Document updateQuery = new Document("$set", newValues);
+        UpdateResult result = mongoCollection.updateMany(searchQuery, updateQuery);
+        return result.getModifiedCount() > 0;
     }
 
     /**
@@ -158,11 +155,9 @@ public class MongoDB {
      * @return True if the document was deleted, false otherwise.
      */
     public boolean deleteOne(String collection, Document searchQuery) {
-        try (MongoClient client = connect()) {
-            MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
-            DeleteResult result = mongoCollection.deleteOne(searchQuery);
-            return result.getDeletedCount() > 0;
-        }
+        MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
+        DeleteResult result = mongoCollection.deleteOne(searchQuery);
+        return result.getDeletedCount() > 0;
     }
 
     /**
@@ -173,11 +168,9 @@ public class MongoDB {
      * @return True if the document was deleted, false otherwise.
      */
     public boolean deleteMany(String collection, Document searchQuery) {
-        try (MongoClient client = connect()) {
-            MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
-            DeleteResult result = mongoCollection.deleteMany(searchQuery);
-            return result.getDeletedCount() > 0;
-        }
+        MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
+        DeleteResult result = mongoCollection.deleteMany(searchQuery);
+        return result.getDeletedCount() > 0;
 
     }
 
@@ -187,9 +180,7 @@ public class MongoDB {
      * @param newCollection The name of the new collection.
      */
     public void createCollection(String newCollection) {
-        try (MongoClient client = connect()) {
-            getDatabase().createCollection(newCollection);
-        }
+        getDatabase().createCollection(newCollection);
     }
 
     /**
@@ -199,9 +190,7 @@ public class MongoDB {
      * @return True if the collection exists, false otherwise.
      */
     public boolean collectionExists(String collection) {
-        try (MongoClient client = connect()) {
-            return getDatabase().listCollectionNames().into(new ArrayList<>()).contains(collection);
-        }
+        return getDatabase().listCollectionNames().into(new ArrayList<>()).contains(collection);
     }
 
     /**
@@ -211,10 +200,8 @@ public class MongoDB {
      * @param consumer   The consumer to pass the documents to.
      */
     public void selectAllFromCollection(String collection, Consumer<Document> consumer) {
-        try (MongoClient client = connect()) {
-            MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
-            mongoCollection.find().forEach(consumer);
-        }
+        MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
+        mongoCollection.find().forEach(consumer);
     }
 
     /**
@@ -224,10 +211,8 @@ public class MongoDB {
      * @param document   The document to insert.
      */
     public void insertOne(String collection, Document document) {
-        try (MongoClient client = connect()) {
-            MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
-            mongoCollection.insertOne(document);
-        }
+        MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
+        mongoCollection.insertOne(document);
     }
 
 
