@@ -14,7 +14,7 @@ public class BlobReflectionLib {
         this.plugin = plugin;
         String nmsVersion = getNMSVersion();
         if (!nmsVersion.equals("1_20_R1"))
-            throw new UnsupportedOperationException("unsupported NMS version: " + nmsVersion);
+            BlobLib.getAnjoLogger().singleError("Unsupported NMS version: " + nmsVersion);
         this.nleWrapper = new NLEWrapper1_20_R1();
     }
 
