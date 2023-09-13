@@ -17,9 +17,9 @@ public class DisplayDecorator<T extends Display> {
     private BukkitTask perpetualTask;
 
     /**
-     * Will create a new itemStack decorator.
+     * Will create a new display decorator.
      *
-     * @param display the itemStack to wrap.
+     * @param display the display to wrap.
      */
     public DisplayDecorator(T display, Plugin plugin) {
         this.decorated = display;
@@ -28,9 +28,9 @@ public class DisplayDecorator<T extends Display> {
     }
 
     /**
-     * Will return the wrapped itemStack.
+     * Will return the wrapped display.
      *
-     * @return the wrapped itemStack.
+     * @return the wrapped display.
      */
     public T call() {
         return decorated;
@@ -85,7 +85,7 @@ public class DisplayDecorator<T extends Display> {
     }
 
     /**
-     * Will transform the itemStack to leftRotation.
+     * Will transform the display to leftRotation.
      * Will use '-1' as the interpolation delay.
      *
      * @param x                     the x-axis of the rotation.
@@ -100,7 +100,7 @@ public class DisplayDecorator<T extends Display> {
     }
 
     /**
-     * Will transform the itemStack to leftRotation.
+     * Will transform the display to leftRotation.
      *
      * @param x                     the x-axis of the rotation.
      * @param y                     the y-axis of the rotation.
@@ -122,7 +122,7 @@ public class DisplayDecorator<T extends Display> {
     }
 
     /**
-     * Will transform the itemStack to leftRotation.
+     * Will transform the display to leftRotation.
      * Will use '-1' as the interpolation delay.
      *
      * @param x                     the x-axis of the rotation.
@@ -137,7 +137,7 @@ public class DisplayDecorator<T extends Display> {
     }
 
     /**
-     * Will transform the itemStack to rightRotation.
+     * Will transform the display to rightRotation.
      *
      * @param x                     the x-axis of the rotation.
      * @param y                     the y-axis of the rotation.
@@ -213,7 +213,7 @@ public class DisplayDecorator<T extends Display> {
     }
 
     /**
-     * Will transform the itemStack to leftRotation
+     * Will transform the display to leftRotation
      * perpetually using asynchronous tasks.
      *
      * @param x                     the x-axis of the rotation.
@@ -230,7 +230,7 @@ public class DisplayDecorator<T extends Display> {
     }
 
     /**
-     * Will transform the itemStack to leftRotation
+     * Will transform the display to leftRotation
      * perpetually using asynchronous tasks.
      *
      * @param x                     the x-axis of the rotation.
@@ -250,7 +250,7 @@ public class DisplayDecorator<T extends Display> {
     }
 
     /**
-     * Will transform the itemStack to rightRotation
+     * Will transform the display to rightRotation
      * perpetually using asynchronous tasks.
      *
      * @param x                     the x-axis of the rotation.
@@ -267,7 +267,7 @@ public class DisplayDecorator<T extends Display> {
     }
 
     /**
-     * Will transform the itemStack to rightRotation
+     * Will transform the display to rightRotation
      * perpetually using asynchronous tasks.
      *
      * @param x                     the x-axis of the rotation.

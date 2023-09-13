@@ -18,6 +18,15 @@ public record DocumentDecorator(Document document) {
     }
 
     /**
+     * Will get the document.
+     *
+     * @return the document
+     */
+    public Document call() {
+        return document;
+    }
+
+    /**
      * Will get an object from the document.
      *
      * @param key the key

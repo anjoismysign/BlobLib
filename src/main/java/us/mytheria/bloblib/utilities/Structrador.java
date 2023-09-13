@@ -17,6 +17,7 @@ import org.bukkit.structure.Palette;
 import org.bukkit.structure.Structure;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import us.mytheria.bloblib.bukkit.BlobBlockState;
 
 import java.io.*;
 import java.sql.Blob;
@@ -191,22 +192,22 @@ public class Structrador {
         World world = location.getWorld();
         if (world == null)
             throw new IllegalArgumentException("Location must have a world.");
+        var nmsWorld = ((CraftWorld) world).getHandle();
         try {
             // Will place blocks
             CompletableFuture<Void> paletteFuture = new CompletableFuture<>();
             BukkitRunnable placeTask = new BukkitRunnable() {
                 @Override
                 public void run() {
-                    Uber<Integer> maxPlaced = Uber.drive(0);
-                    while (iterator.hasNext() && maxPlaced.thanks() < maxPlacedPerPeriod) {
-                        BlockState blockState = iterator.next();
-                        Location blockLocation = location.clone().add(blockState.getX(), blockState.getY(), blockState.getZ());
+                    Uber<Integer> placed = Uber.drive(0);
+                    while (iterator.hasNext() && placed.thanks() < maxPlacedPerPeriod) {
+                        BlockState next = iterator.next();
+                        Location blockLocation = location.clone().add(next.getX(), next.getY(), next.getZ());
+                        BlobBlockState state = BlobBlockState.of(next);
+                        state.update(true, false, blockLocation);
                         BlockState current = blockLocation.getBlock().getState();
-                        current.setType(blockState.getType());
-                        current.setBlockData(blockState.getBlockData());
-                        current.update(true, false);
                         placedBlockConsumer.accept(current);
-                        maxPlaced.talk(maxPlaced.thanks() + 1);
+                        placed.talk(placed.thanks() + 1);
                     }
                     if (!iterator.hasNext()) {
                         paletteFuture.complete(null);
@@ -238,7 +239,6 @@ public class Structrador {
                              * Known to work in 1.20.1
                              * Might break in future versions
                              */
-                            var nmsWorld = ((CraftWorld) world).getHandle();
                             var nmsEntity = ((CraftEntity) entity).getHandle();
                             if (!nmsWorld.tryAddFreshEntityWithPassengers
                                     (nmsEntity, CreatureSpawnEvent.SpawnReason.CUSTOM))
