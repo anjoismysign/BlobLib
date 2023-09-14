@@ -4,17 +4,20 @@ import me.anjoismysign.anjo.entities.Uber;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.craftbukkit.v1_20_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_20_R1.entity.CraftEntity;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Hanging;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.structure.Palette;
 import org.bukkit.structure.Structure;
+import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.bukkit.BlobBlockState;
@@ -158,7 +161,7 @@ public class Structrador {
     /**
      * Will place the structure at the given location in multiple ticks.
      * The bigger the structure, the longer it will take to place.
-     * TODO: structureRotation, mirror, palette, integrity and random are not used.
+     * TODO: mirror, palette, integrity and random are not used.
      *
      * @param location             - The location to place the structure at.
      * @param includeEntities      - If the entities present in the structure should be spawned.
@@ -173,6 +176,7 @@ public class Structrador {
      * @param placedEntityConsumer - The consumer that will be called when an entity is placed.
      * @return A CompletableFuture that completes when the structure is placed.
      */
+    @NotNull
     public CompletableFuture<Void> chainedPlace(Location location, boolean includeEntities,
                                                 StructureRotation structureRotation, Mirror mirror,
                                                 int palette, float integrity, Random random,
@@ -193,6 +197,40 @@ public class Structrador {
         if (world == null)
             throw new IllegalArgumentException("Location must have a world.");
         var nmsWorld = ((CraftWorld) world).getHandle();
+        int degree;
+        Vector blockOffset;
+        Vector entityOffset;
+        BlockVector size = structure.getSize();
+        float extraYaw;
+        switch (structureRotation) {
+            case NONE -> {
+                degree = 0;
+                blockOffset = new Vector(0, 0, 0);
+                entityOffset = new Vector(0, 0, 0);
+                extraYaw = 0;
+            }
+            case CLOCKWISE_90 -> {
+                degree = 270;
+                blockOffset = new Vector(size.getX() - 1, 0, 0);
+                entityOffset = new Vector(size.getX(), 0, 0);
+                extraYaw = 90;
+            }
+            case CLOCKWISE_180 -> {
+                degree = 180;
+                blockOffset = new Vector(size.getX() - 1, 0, size.getZ() - 1);
+                entityOffset = new Vector(size.getX(), 0, size.getZ());
+                extraYaw = 180;
+            }
+            case COUNTERCLOCKWISE_90 -> {
+                degree = 90;
+                blockOffset = new Vector(0, 0, size.getZ() - 1);
+                entityOffset = new Vector(0, 0, size.getZ());
+                extraYaw = 270;
+            }
+            default -> {
+                throw new IllegalStateException("Unexpected value: " + structureRotation);
+            }
+        }
         try {
             // Will place blocks
             CompletableFuture<Void> paletteFuture = new CompletableFuture<>();
@@ -202,7 +240,12 @@ public class Structrador {
                     Uber<Integer> placed = Uber.drive(0);
                     while (iterator.hasNext() && placed.thanks() < maxPlacedPerPeriod) {
                         BlockState next = iterator.next();
-                        Location blockLocation = location.clone().add(next.getX(), next.getY(), next.getZ());
+                        Vector nextVector = next.getLocation().toVector();
+                        Vector result = VectorUtil.rotateVector(nextVector, degree);
+                        Location blockLocation = location.clone()
+                                .add(result.getX() + blockOffset.getX(),
+                                        result.getY() + blockOffset.getY(),
+                                        result.getZ() + blockOffset.getZ());
                         BlobBlockState state = BlobBlockState.of(next);
                         state.update(true, false, blockLocation);
                         BlockState current = blockLocation.getBlock().getState();
@@ -228,23 +271,36 @@ public class Structrador {
                     public void run() {
                         Uber<Integer> maxPlaced = Uber.drive(0);
                         while (entityIterator.hasNext() && maxPlaced.thanks() < maxPlacedPerPeriod) {
-                            Entity entity = entityIterator.next();
-                            Location offset = entity.getLocation();
-                            Location entityLocation = location.clone().add(offset.getX(), offset.getY(), offset.getZ());
-                            entityLocation.setPitch(offset.getPitch());
-                            entityLocation.setYaw(offset.getYaw());
-                            placedEntityConsumer.accept(entity);
+                            Entity next = entityIterator.next();
+                            Location nextLocation = next.getLocation();
+                            Vector nextVector = nextLocation.toVector();
+                            Vector result = VectorUtil.floatRotateVector(nextVector, degree);
+                            Location entityLocation = location.clone()
+                                    .add(result.getX() + entityOffset.getX(),
+                                            result.getY() + entityOffset.getY(),
+                                            result.getZ() + entityOffset.getZ());
+                            entityLocation.setYaw(nextLocation.getYaw() + extraYaw);
+                            boolean isSilent = next.isSilent();
+                            next.setSilent(true);
                             /*
                              * Intermediate level of API-NMS
                              * Known to work in 1.20.1
                              * Might break in future versions
                              */
-                            var nmsEntity = ((CraftEntity) entity).getHandle();
+                            var nmsEntity = ((CraftEntity) next).getHandle();
                             if (!nmsWorld.tryAddFreshEntityWithPassengers
                                     (nmsEntity, CreatureSpawnEvent.SpawnReason.CUSTOM))
                                 continue;
-                            entity = nmsEntity.getBukkitEntity();
-                            entity.teleport(entityLocation);
+                            next = nmsEntity.getBukkitEntity();
+                            next.teleport(entityLocation);
+                            if (next instanceof Hanging hanging) {
+                                BlockFace facing = hanging.getFacing();
+                                hanging.setFacingDirection(
+                                        BlockFaceUtil.rotate(facing, structureRotation),
+                                        true);
+                            }
+                            next.setSilent(isSilent);
+                            placedEntityConsumer.accept(next);
                             maxPlaced.talk(maxPlaced.thanks() + 1);
                         }
                         if (!iterator.hasNext()) {
