@@ -1,15 +1,17 @@
 package us.mytheria.bloblib.entities.inventory;
 
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.BlobLib;
 
 import java.util.Collection;
 import java.util.Set;
 
-public abstract class InventoryBuilder {
+public abstract class InventoryBuilder<T extends InventoryButton> {
     private String title;
     private int size;
-    private ButtonManager buttonManager;
+    private ButtonManager<T> buttonManager;
 
     public String getTitle() {
         return title;
@@ -27,11 +29,11 @@ public abstract class InventoryBuilder {
         this.size = size;
     }
 
-    public ButtonManager getButtonManager() {
+    public ButtonManager<T> getButtonManager() {
         return buttonManager;
     }
 
-    public void setButtonManager(ButtonManager buttonManager) {
+    public void setButtonManager(ButtonManager<T> buttonManager) {
         this.buttonManager = buttonManager;
     }
 
@@ -44,7 +46,39 @@ public abstract class InventoryBuilder {
         return buttonManager.get(slot);
     }
 
+    public T getButton(String key) {
+        return buttonManager.getButton(key);
+    }
+
     public Collection<String> getKeys() {
         return buttonManager.keys();
+    }
+
+    public boolean isInsideButton(String key, int slot) {
+        T button = getButton(key);
+        if (button == null) {
+            BlobLib.getAnjoLogger().singleError("InventoryButton with key '" + key + "' inside " +
+                    "inventory '" + getTitle() + "' does not exist!");
+            return false;
+        }
+        return button.containsSlot(slot);
+    }
+
+    /**
+     * Will handle both the permission and payment of the button.
+     * Should always be checked!
+     *
+     * @param key    The key of the button.
+     * @param player The player to handle the permission and payment for.
+     * @return Whether the permission and payment was handled successfully.
+     */
+    public boolean handleAll(String key, Player player) {
+        T button = getButton(key);
+        if (button == null) {
+            BlobLib.getAnjoLogger().singleError("InventoryButton with key '" + key + "' inside " +
+                    "inventory '" + getTitle() + "' does not exist!");
+            return false;
+        }
+        return button.handleAll(player);
     }
 }

@@ -29,7 +29,7 @@ Buttons:
       CustomModelData: 0
       DisplayName: "&6Display"
       Lore:
-        - "&7Selected: &f%display%"
+        - "&7Selected: &f%itemStack%"
     Slot: 3
   InitialBalance:
     ItemStack:
@@ -63,4 +63,4 @@ Buttons:
       Lore:
         - "&7Click to add reward"
         - "&7to the files."
-    Slot: 13
+    Slot: 22

@@ -2,6 +2,7 @@ package us.mytheria.bloblib.utilities;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -60,6 +61,24 @@ public class BukkitUtil {
         section.set("Yaw", location.getYaw());
         section.set("Pitch", location.getPitch());
         return section;
+    }
+
+    @Nullable
+    public static Location deserializeLocationOrNull(ConfigurationSection section) {
+        if (!section.isDouble("X") || !section.isDouble("Y") || !section.isDouble("Z") || !section.isString("World"))
+            return null;
+        double x = section.getDouble("X");
+        double y = section.getDouble("Y");
+        double z = section.getDouble("Z");
+        float yaw = (float) section.getDouble("Yaw", 0.0);
+        float pitch = (float) section.getDouble("Pitch", 0.0);
+        World world;
+        try {
+            world = SerializationLib.deserializeWorld(section.getString("World"));
+        } catch (Exception e) {
+            return null;
+        }
+        return new Location(world, x, y, z, yaw, pitch);
     }
 
     public static Location deserializeLocation(ConfigurationSection section) {

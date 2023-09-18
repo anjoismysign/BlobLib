@@ -1,17 +1,28 @@
 package us.mytheria.bloblib.managers;
 
 import me.anjoismysign.anjo.logger.Logger;
+import org.apache.commons.io.FileUtils;
+import org.bukkit.NamespacedKey;
+import org.bukkit.event.Event;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.entities.BlobFileManager;
+import us.mytheria.bloblib.entities.*;
+import us.mytheria.bloblib.entities.currency.Currency;
+import us.mytheria.bloblib.entities.currency.EconomyFactory;
+import us.mytheria.bloblib.entities.currency.WalletOwner;
+import us.mytheria.bloblib.entities.currency.WalletOwnerManager;
+import us.mytheria.bloblib.entities.proxy.BlobProxifier;
 import us.mytheria.bloblib.utilities.ResourceUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 
-public abstract class ManagerDirector {
+public abstract class ManagerDirector implements IManagerDirector {
     private final BlobPlugin plugin;
     private final HashMap<String, Manager> managers;
     private final ChatListenerManager chatListenerManager;
@@ -19,6 +30,9 @@ public abstract class ManagerDirector {
     private final SelPosListenerManager positionListenerManager;
     private final DropListenerManager dropListenerManager;
     private final BlobFileManager blobFileManager;
+    private final BukkitPluginOperator pluginOperator;
+    private final IFileManager proxiedFileManager;
+    private final Map<String, NamespacedKey> namespacedKeys;
 
     /**
      * Constructs a new ManagerDirector.
@@ -26,8 +40,15 @@ public abstract class ManagerDirector {
      * @param plugin The BlobPlugin
      */
     public ManagerDirector(BlobPlugin plugin) {
+        this.namespacedKeys = new HashMap<>();
+        namespacedKeys.put("tangibleCurrencyKey", new NamespacedKey(plugin, "tangibleCurrencyKey"));
+        namespacedKeys.put("tangibleCurrencyDenomination", new NamespacedKey(plugin, "tangibleCurrencyDenomination"));
         this.plugin = plugin;
-        this.blobFileManager = new BlobFileManager(this, "plugins/" + plugin.getName());
+        this.pluginOperator = () -> plugin;
+        this.blobFileManager = new BlobFileManager(this,
+                "plugins/" + plugin.getName(),
+                plugin);
+        this.proxiedFileManager = BlobProxifier.PROXY(blobFileManager);
         chatListenerManager = BlobLib.getInstance().getChatManager();
         selectorListenerManager = BlobLib.getInstance().getSelectorManager();
         positionListenerManager = BlobLib.getInstance().getPositionManager();
@@ -53,8 +74,14 @@ public abstract class ManagerDirector {
      */
     @Deprecated
     public ManagerDirector(BlobPlugin plugin, String fileManagerPathname) {
+        this.namespacedKeys = new HashMap<>();
+        namespacedKeys.put("tangibleCurrencyKey", new NamespacedKey(plugin, "tangibleCurrencyKey"));
+        namespacedKeys.put("tangibleCurrencyDenomination", new NamespacedKey(plugin, "tangibleCurrencyDenomination"));
         this.plugin = plugin;
-        this.blobFileManager = new BlobFileManager(this, fileManagerPathname);
+        this.pluginOperator = () -> plugin;
+        this.blobFileManager = new BlobFileManager(this,
+                fileManagerPathname, plugin);
+        this.proxiedFileManager = BlobProxifier.PROXY(blobFileManager);
         chatListenerManager = BlobLib.getInstance().getChatManager();
         selectorListenerManager = BlobLib.getInstance().getSelectorManager();
         positionListenerManager = BlobLib.getInstance().getPositionManager();
@@ -70,8 +97,13 @@ public abstract class ManagerDirector {
      * @param fileManager The file manager
      */
     public ManagerDirector(BlobPlugin plugin, BlobFileManager fileManager) {
+        this.namespacedKeys = new HashMap<>();
+        namespacedKeys.put("tangibleCurrencyKey", new NamespacedKey(plugin, "tangibleCurrencyKey"));
+        namespacedKeys.put("tangibleCurrencyDenomination", new NamespacedKey(plugin, "tangibleCurrencyDenomination"));
         this.plugin = plugin;
-        this.blobFileManager = fileManager;
+        this.pluginOperator = () -> plugin;
+        this.blobFileManager = Objects.requireNonNull(fileManager, "BlobFileManager cannot be null!");
+        this.proxiedFileManager = BlobProxifier.PROXY(blobFileManager);
         chatListenerManager = BlobLib.getInstance().getChatManager();
         selectorListenerManager = BlobLib.getInstance().getSelectorManager();
         positionListenerManager = BlobLib.getInstance().getPositionManager();
@@ -80,8 +112,179 @@ public abstract class ManagerDirector {
         plugin.registerToBlobLib(this);
     }
 
+    public NamespacedKey getNamespacedKey(String key) {
+        return namespacedKeys.get(key);
+    }
+
+    /**
+     * Will proxy this ManagerDirector to a new instance of ManagerDirector.
+     *
+     * @return The proxied ManagerDirector
+     */
+    public IManagerDirector proxy() {
+        return BlobProxifier.PROXY(this);
+    }
+
+    /**
+     * Will get the BukkitPluginOperator of the plugin.
+     *
+     * @return The BukkitPluginOperator
+     */
+    public BukkitPluginOperator getPluginOperator() {
+        return pluginOperator;
+    }
+
+    /**
+     * Adds a manager to the director.
+     *
+     * @param key     The key of the manager
+     * @param manager The manager
+     */
     public void addManager(String key, Manager manager) {
         managers.put(key, manager);
+    }
+
+    /**
+     * Adds an object director to the director.
+     *
+     * @param objectName              The name of the object
+     * @param readFunction            The function that reads the file
+     * @param hasObjectBuilderManager Whether the object director will implement object builder manager
+     * @param <T>                     The type of the object
+     */
+    public <T extends BlobObject> void addDirector(String objectName,
+                                                   Function<File, T> readFunction,
+                                                   boolean hasObjectBuilderManager) {
+        ObjectDirectorData directorData =
+                ObjectDirectorData.simple(getRealFileManager(), objectName);
+        addManager(objectName + "Director",
+                new ObjectDirector<>(this,
+                        directorData, readFunction, hasObjectBuilderManager));
+    }
+
+    /**
+     * Adds a currency director to the director.
+     *
+     * @param objectName The name of the object
+     */
+    public void addCurrencyDirector(String objectName) {
+        addManager(objectName + "Director",
+                EconomyFactory.CURRENCY_DIRECTOR(this, objectName));
+    }
+
+    /**
+     * Adds a BlobSerializableManager to the director
+     * that does not listen to events.
+     *
+     * @param key          The key of the manager
+     * @param generator    The generator function
+     * @param crudableName The name of the crudable
+     * @param logActivity  Whether to log activity
+     * @param <T>          The type of the BlobSerializable
+     */
+    public <T extends BlobSerializable> void addSimpleBlobSerializableManager(String key,
+                                                                              Function<BlobCrudable, T> generator,
+                                                                              String crudableName,
+                                                                              boolean logActivity) {
+        addManager(key, BlobSerializableManagerFactory.SIMPLE(this,
+                generator, crudableName, logActivity));
+    }
+
+    /**
+     * Adds a BlobSerializableManager to the director
+     * that listens to events.
+     *
+     * @param key          The key of the manager
+     * @param generator    The generator function
+     * @param crudableName The name of the crudable
+     * @param logActivity  Whether to log activity
+     * @param joinEvent    The join event.
+     *                     Function consumes the BlobSerializable
+     *                     related in the event and needs to return
+     *                     the event to be called.
+     * @param quitEvent    The quit event.
+     *                     Function consumes the BlobSerializable
+     *                     related in the event and needs to return
+     *                     the event to be called.
+     * @param <T>          The type of the blob serializable
+     */
+    public <T extends BlobSerializable> void addListenerBlobSerializableManager(String key,
+                                                                                Function<BlobCrudable, T> generator,
+                                                                                String crudableName,
+                                                                                boolean logActivity,
+                                                                                @Nullable Function<T, Event> joinEvent,
+                                                                                @Nullable Function<T, Event> quitEvent) {
+        addManager(key, BlobSerializableManagerFactory.LISTENER(this,
+                generator, crudableName, logActivity, joinEvent, quitEvent));
+    }
+
+    /**
+     * Adds a wallet owner manager to the director.
+     *
+     * @param key          The key of the manager
+     * @param newBorn      A function that by passing a UUID, it will fill a BlobCrudable
+     *                     with default key-value pairs.
+     *                     This is used to create new/fresh WalletOwners.
+     * @param walletOwner  A function that by passing a BlobCrudable, it will return a WalletOwner.
+     *                     WalletOwners use this to store their data inside databases.
+     * @param crudableName The name of the BlobCrudable. This will be used for
+     *                     as the column name in the database.
+     * @param logActivity  Whether to log activity in the console.
+     * @param joinEvent    A function that by passing a WalletOwner, it will return a join event.
+     *                     It's called SYNCHRONOUSLY.
+     *                     It's called when a player joins the server.
+     * @param quitEvent    A function that by passing a WalletOwner, it will return a quit event.
+     *                     It's called SYNCHRONOUSLY.
+     *                     It's called when a player quits/leaves the server.
+     * @param <T>          The type of WalletOwner.
+     */
+    public <T extends WalletOwner> void addWalletOwnerManager(String key,
+                                                              Function<BlobCrudable, BlobCrudable> newBorn,
+                                                              Function<BlobCrudable, T> walletOwner,
+                                                              String crudableName, boolean logActivity,
+                                                              Function<T, Event> joinEvent,
+                                                              Function<T, Event> quitEvent) {
+        addManager(key,
+                EconomyFactory.WALLET_OWNER_MANAGER(this,
+                        newBorn, walletOwner, crudableName, logActivity, joinEvent, quitEvent));
+    }
+
+    /**
+     * Adds a wallet owner manager to the director.
+     * This is a simplified version {@link EconomyFactory#SIMPLE_WALLET_OWNER_MANAGER(ManagerDirector, Function, Function, String, boolean)}
+     * No events are registered for join and quit actions.
+     *
+     * @param key          The key of the manager
+     * @param newBorn      A function that by passing a UUID, it will fill a BlobCrudable
+     *                     with default key-value pairs.
+     *                     This is used to create new/fresh WalletOwners.
+     * @param walletOwner  A function that by passing a BlobCrudable, it will return a WalletOwner.
+     *                     WalletOwners use this to store their data inside databases.
+     * @param crudableName The name of the BlobCrudable. This will be used for
+     *                     as the column name in the database.
+     * @param logActivity  Whether to log activity in the console.
+     * @param <T>          The type of WalletOwner.
+     */
+    public <T extends WalletOwner> void addSimpleWalletOwnerManager(String key,
+                                                                    Function<BlobCrudable, BlobCrudable> newBorn,
+                                                                    Function<BlobCrudable, T> walletOwner,
+                                                                    String crudableName, boolean logActivity) {
+        addManager(key,
+                EconomyFactory.SIMPLE_WALLET_OWNER_MANAGER(this,
+                        newBorn, walletOwner, crudableName, logActivity));
+    }
+
+    /**
+     * Adds an object director to the director.
+     * This method assumes that the object director will implement object builder manager.
+     *
+     * @param objectName   The name of the object
+     * @param readFunction The function that reads the file
+     * @param <T>          The type of the object
+     */
+    public <T extends BlobObject> void addDirector(String objectName,
+                                                   Function<File, T> readFunction) {
+        addDirector(objectName, readFunction, true);
     }
 
     /**
@@ -98,6 +301,71 @@ public abstract class ManagerDirector {
      */
     public Manager getManager(String key) {
         return managers.get(key);
+    }
+
+    /**
+     * Will retrieve a manager by providing a String 'key'.
+     *
+     * @param key   the key of the manager
+     * @param clazz The class of the object
+     * @param <T>   The type of the object
+     * @return The Manager that corresponds to the key
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends Manager> T getManager(String key, Class<T> clazz) {
+        return (T) getManager(key);
+    }
+
+    /**
+     * Will retrieve an object director by providing a String 'key'.
+     * The key must end with 'Director'
+     *
+     * @param key   the key of the manager
+     * @param clazz The class of the object
+     * @param <T>   The type of the object
+     * @return The ObjectDirector that corresponds to the key
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends BlobObject> ObjectDirector<T> getDirector(String key,
+                                                                Class<T> clazz) {
+        return (ObjectDirector<T>) getManager(key + "Director");
+    }
+
+    /**
+     * Will retrieve a wallet owner manager by providing a String 'key'.
+     *
+     * @param key   the key of the manager
+     * @param clazz The class of the object
+     * @param <T>   The type of the object (needs to implement WalletOwner)
+     * @return The WalletOwnerManager that corresponds to the key
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends WalletOwner> WalletOwnerManager<T> getWalletOwnerManager(String key,
+                                                                               Class<T> clazz) {
+        return (WalletOwnerManager<T>) getManager(key);
+    }
+
+    /**
+     * Will retrieve a blob serializable manager by providing a String 'key'.
+     *
+     * @param key   the key of the manager
+     * @param clazz The class of the object
+     * @param <T>   The type of the object (needs to implement BlobSerializable)
+     * @return The BlobSerializableManager that corresponds to the key
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends BlobSerializable> BlobSerializableManager<T> getBlobSerializableManager(String key, Class<T> clazz) {
+        return (BlobSerializableManager<T>) getManager(key);
+    }
+
+    /**
+     * Will retrieve a currency director by providing a String 'objectName'.
+     *
+     * @param objectName The name of the object
+     * @return The ObjectDirector that corresponds to the key
+     */
+    public ObjectDirector<Currency> getCurrencyDirector(String objectName) {
+        return getDirector(objectName, Currency.class);
     }
 
     /**
@@ -140,10 +408,14 @@ public abstract class ManagerDirector {
         return dropListenerManager;
     }
 
+    public IFileManager getFileManager() {
+        return proxiedFileManager;
+    }
+
     /**
      * @return The BlobFileManager that the director manages.
      */
-    public BlobFileManager getFileManager() {
+    public BlobFileManager getRealFileManager() {
         return blobFileManager;
     }
 
@@ -164,7 +436,7 @@ public abstract class ManagerDirector {
      */
     public ManagerDirector detachMessageAsset(String fileName, boolean debug) {
         Logger logger = getPlugin().getAnjoLogger();
-        File path = getFileManager().messagesDirectory();
+        File path = getRealFileManager().messagesDirectory();
         File file = new File(path + "/" + fileName + ".yml");
         if (!file.exists()) {
             try {
@@ -205,7 +477,7 @@ public abstract class ManagerDirector {
      */
     public ManagerDirector detachSoundAsset(String fileName, boolean debug) {
         Logger logger = getPlugin().getAnjoLogger();
-        File path = getFileManager().soundsDirectory();
+        File path = getRealFileManager().soundsDirectory();
         File file = new File(path + "/" + fileName + ".yml");
         if (!file.exists()) {
             try {
@@ -244,11 +516,12 @@ public abstract class ManagerDirector {
      * @param debug    Whether to print debug messages
      * @return The ManagerDirector instance for method chaining
      */
-    public ManagerDirector registerAndUpdateInventoryAsset(String fileName, boolean debug) {
-        File path = getFileManager().inventoriesDirectory();
+    public ManagerDirector registerAndUpdateBlobInventory(String fileName, boolean debug) {
+        File path = getRealFileManager().inventoriesDirectory();
         File file = new File(path + "/" + fileName + ".yml");
-        blobFileManager.updateYAML(file);
-        InventoryManager.continueLoading(plugin, file);
+        if (!blobFileManager.updateYAML(file))
+            return this;
+        InventoryManager.continueLoadingBlobInventories(plugin, file);
         if (debug)
             getPlugin().getAnjoLogger().debug(" inventory asset " + fileName + ".yml successfully registered");
         return this;
@@ -262,8 +535,94 @@ public abstract class ManagerDirector {
      * @param fileName The name of the file to detach
      * @return The ManagerDirector instance for method chaining
      */
-    public ManagerDirector registerAndUpdateInventoryAsset(String fileName) {
-        return registerAndUpdateInventoryAsset(fileName, false);
+    public ManagerDirector registerAndUpdateBlobInventory(String fileName) {
+        return registerAndUpdateBlobInventory(fileName, false);
+    }
+
+    /**
+     * Will detach an embedded Inventory file/asset from the plugin jar to
+     * the corresponding directory in the plugin data folder.
+     *
+     * @param fileName The name of the file to detach
+     * @param debug    Whether to print debug messages
+     * @return The ManagerDirector instance for method chaining
+     */
+    public ManagerDirector registerAndUpdateMetaBlobInventory(String fileName, boolean debug) {
+        File path = getRealFileManager().metaInventoriesDirectory();
+        File file = new File(path + "/" + fileName + ".yml");
+        if (!blobFileManager.updateYAML(file))
+            return this;
+        InventoryManager.continueLoadingMetaInventories(plugin, file);
+        if (debug)
+            getPlugin().getAnjoLogger().debug(" inventory asset " + fileName + ".yml successfully registered");
+        return this;
+    }
+
+    /**
+     * Will detach an embedded Inventory file/asset from the plugin jar to
+     * the corresponding directory in the plugin data folder.
+     * Will not print debug messages.
+     *
+     * @param fileName The name of the file to detach
+     * @return The ManagerDirector instance for method chaining
+     */
+    public ManagerDirector registerAndUpdateMetaBlobInventory(String fileName) {
+        return registerAndUpdateMetaBlobInventory(fileName, false);
+    }
+
+    private ManagerDirector registerAsset(String fileName, boolean debug,
+                                          File path, String type) {
+        BlobPlugin plugin = getPlugin();
+        fileName = fileName + ".yml";
+        File file = new File(path + "/" + fileName);
+        if (file.exists()) {
+            if (debug)
+                getPlugin().getAnjoLogger().debug(" " + type + " asset " +
+                        fileName + ".yml was not registered, already exists");
+            return this;
+        }
+        try {
+            FileUtils.copyToFile(plugin.getResource(fileName), file);
+            if (debug)
+                getPlugin().getAnjoLogger().debug(" " + type + " asset " +
+                        fileName + ".yml successfully registered");
+            return this;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return this;
+        }
+    }
+
+    public ManagerDirector registerMetaBlobInventory(String fileName, boolean debug) {
+        return registerAsset(fileName, debug, getRealFileManager().metaInventoriesDirectory(), "inventory");
+    }
+
+    public ManagerDirector registerMetaBlobInventory(String fileName) {
+        return registerMetaBlobInventory(fileName, false);
+    }
+
+    public ManagerDirector registerBlobInventory(String fileName, boolean debug) {
+        return registerAsset(fileName, debug, getRealFileManager().inventoriesDirectory(), "inventory");
+    }
+
+    public ManagerDirector registerBlobInventory(String fileName) {
+        return registerBlobInventory(fileName, false);
+    }
+
+    public ManagerDirector registerBlobMessage(String fileName, boolean debug) {
+        return registerAsset(fileName, debug, getRealFileManager().messagesDirectory(), "message");
+    }
+
+    public ManagerDirector registerBlobMessage(String fileName) {
+        return registerBlobMessage(fileName, false);
+    }
+
+    public ManagerDirector registerBlobSound(String fileName, boolean debug) {
+        return registerAsset(fileName, debug, getRealFileManager().soundsDirectory(), "sound");
+    }
+
+    public ManagerDirector registerBlobSound(String fileName) {
+        return registerBlobSound(fileName, false);
     }
 
     protected Set<Map.Entry<String, Manager>> getManagerEntry() {

@@ -1,21 +1,15 @@
 package us.mytheria.bloblib.entities.inventory;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.BlobLibAssetAPI;
+import us.mytheria.bloblib.api.BlobLibInventoryAPI;
+import us.mytheria.bloblib.api.BlobLibSoundAPI;
 import us.mytheria.bloblib.entities.VariableFiller;
 import us.mytheria.bloblib.entities.VariableValue;
-import us.mytheria.bloblib.managers.BlobLibFileManager;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -33,7 +27,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
     private final UUID builderId;
     private final VariableFiller<T> filler;
     private int page;
-    private final int itemsPerPage;
+    private int itemsPerPage;
 
     /**
      * Creates a new VariableSelector
@@ -41,20 +35,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
      * @return the new VariableSelector
      */
     public static BlobInventory DEFAULT() {
-        return BlobLibAssetAPI.getBlobInventory("VariableSelector");
-    }
-
-    /**
-     * Creates a new VariableSelector
-     *
-     * @return the new VariableSelector
-     * @deprecated use {@link #DEFAULT()} instead
-     */
-    @Deprecated
-    public static BlobInventory DEFAULT_ITEMSTACKREADER() {
-        BlobLibFileManager fileManager = BlobLib.getInstance().getFileManager();
-        YamlConfiguration inventories = fileManager.getYml(fileManager.defaultInventoriesFile());
-        return smartFromConfigurationSection(inventories.getConfigurationSection("VariableSelector"));
+        return BlobLibInventoryAPI.getInstance().getBlobInventory("VariableSelector");
     }
 
     /**
@@ -71,11 +52,15 @@ public abstract class VariableSelector<T> extends BlobInventory {
         this.filler = filler;
         this.builderId = builderId;
         this.values = new HashMap<>();
-        this.dataType = dataType;
-        setTitle(blobInventory.getTitle().replace("%variable%", dataType));
+        this.dataType = dataType.toUpperCase();
+        if (dataType != null)
+            setTitle(blobInventory.getTitle().replace("%variable%", dataType));
         buildInventory();
         this.page = 1;
-        this.itemsPerPage = getSlots("White-Background").size();
+        this.itemsPerPage = 1;
+        Set<Integer> slots = getSlots("White-Background");
+        if (slots != null)
+            setItemsPerPage(slots.size());
         loadInConstructor();
     }
 
@@ -287,7 +272,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
     public void nextPage() {
         setPage(page + 1);
         Player player = getPlayer();
-        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
+        BlobLibSoundAPI.getInstance().getSound("Builder.Button-Click").handle(player);
     }
 
     /**
@@ -296,7 +281,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
     public void previousPage() {
         setPage(page - 1);
         Player player = getPlayer();
-        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
+        BlobLibSoundAPI.getInstance().getSound("Builder.Button-Click").handle(player);
     }
 
     /**
@@ -327,5 +312,9 @@ public abstract class VariableSelector<T> extends BlobInventory {
      */
     public void addValues(Collection<T> collection) {
         addValues(collection, false);
+    }
+
+    public void setItemsPerPage(int itemsPerPage) {
+        this.itemsPerPage = itemsPerPage;
     }
 }

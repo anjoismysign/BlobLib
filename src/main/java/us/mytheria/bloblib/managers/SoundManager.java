@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public class SoundManager {
@@ -36,7 +37,7 @@ public class SoundManager {
                 .severe("Duplicate BlobSound: '" + key + "' (found " + value + " instances)"));
     }
 
-    public void load(BlobPlugin plugin, ManagerDirector director) {
+    public void load(BlobPlugin plugin, IManagerDirector director) {
         String pluginName = plugin.getName();
         if (pluginSounds.containsKey(pluginName))
             throw new IllegalArgumentException("Plugin '" + pluginName + "' has already been loaded");
@@ -48,16 +49,22 @@ public class SoundManager {
                 .severe("Duplicate BlobSound: '" + key + "' (found " + value + " instances)"));
     }
 
-    public static void loadBlobPlugin(BlobPlugin plugin, ManagerDirector director) {
+    public static void loadBlobPlugin(BlobPlugin plugin, IManagerDirector director) {
         SoundManager manager = BlobLib.getInstance().getSoundManager();
         manager.load(plugin, director);
     }
 
     public void unload(BlobPlugin plugin) {
         String pluginName = plugin.getName();
-        if (!pluginSounds.containsKey(pluginName))
+        Set<String> sounds = this.pluginSounds.get(pluginName);
+        if (sounds == null)
             return;
-        pluginSounds.get(pluginName).forEach(sounds::remove);
+        Iterator<String> iterator = sounds.iterator();
+        while (iterator.hasNext()) {
+            String inventoryName = iterator.next();
+            this.sounds.remove(inventoryName);
+            iterator.remove();
+        }
         pluginSounds.remove(pluginName);
     }
 

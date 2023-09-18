@@ -4,15 +4,50 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.BlobLib;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.UUID;
+import java.util.concurrent.*;
 
 public class SerializationLib {
+    private static SerializationLib instance;
+    private final ExecutorService service;
+
+    private SerializationLib() {
+        this.service = Executors.newCachedThreadPool();
+    }
+
+    public static SerializationLib getInstance(BlobLib plugin) {
+        if (instance == null) {
+            if (plugin == null)
+                throw new NullPointerException("injected dependency is null");
+            SerializationLib.instance = new SerializationLib();
+        }
+        return instance;
+    }
+
+    public void shutdown() {
+        service.shutdown();
+    }
+
+    public static SerializationLib getInstance() {
+        return getInstance(null);
+    }
+
+    public static String serialize(PotionEffect effect) {
+        return PotionEffectLib.stringSerialize(effect);
+    }
+
+    public static PotionEffect deserializePotionEffect(String string) {
+        return PotionEffectLib.deserializeString(string);
+    }
 
     public static String serialize(Color color) {
         return color.getRed() + "," + color.getGreen() + "," + color.getBlue();
@@ -64,7 +99,12 @@ public class SerializationLib {
 
     public static Location deserializeLocation(String string) {
         String[] split = string.split(",");
-        return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]), Float.parseFloat(split[4]), Float.parseFloat(split[5]));
+        if (split.length == 4)
+            return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]));
+        else if (split.length == 6)
+            return new Location(Bukkit.getWorld(split[0]), Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]), Float.parseFloat(split[4]), Float.parseFloat(split[5]));
+        else
+            throw new IllegalArgumentException("Invalid location string: " + string);
     }
 
     public static String serialize(Block block) {
@@ -96,8 +136,54 @@ public class SerializationLib {
         return world.getName();
     }
 
+    /**
+     * Will attempt to deserialize a world for
+     * a minute. If fails, will throw a RuntimeException.
+     *
+     * @param string World name
+     * @param period period to check for world
+     * @return World
+     */
+    @NotNull
+    public static World deserializeWorld(String string, int period) {
+        Future<World> future = getInstance().service.submit(() -> {
+            CompletableFuture<World> completableFuture = new CompletableFuture<>();
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    World world = Bukkit.getWorld(string);
+                    if (completableFuture.isDone() || completableFuture.isCancelled() || completableFuture.isCompletedExceptionally())
+                        cancel();
+                    if (world == null)
+                        return;
+                    completableFuture.complete(world);
+                    cancel();
+                }
+            }.runTaskTimerAsynchronously(BlobLib.getInstance(), 0, period);
+            World world;
+            try {
+                world = completableFuture.get(1, TimeUnit.MINUTES);
+            } catch (Exception e) {
+                world = null;
+            }
+            return world;
+        });
+        try {
+            return future.get();
+        } catch (Exception e) {
+            throw new RuntimeException("World " + string + " not found after waiting 60 seconds!");
+        }
+    }
+
+    /**
+     * Will attempt to deserialize a world for
+     * a minute. If fails, will throw a RuntimeException.
+     *
+     * @param string World name
+     * @return the World
+     */
     public static World deserializeWorld(String string) {
-        return Bukkit.getWorld(string);
+        return deserializeWorld(string, 15);
     }
 
     public static String serialize(Material material) {

@@ -4,9 +4,13 @@ import me.anjoismysign.anjo.entities.NamingConventions;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 import us.mytheria.bloblib.BlobLibAPI;
-import us.mytheria.bloblib.BlobLibAssetAPI;
+import us.mytheria.bloblib.api.BlobLibListenerAPI;
+import us.mytheria.bloblib.api.BlobLibMessageAPI;
+import us.mytheria.bloblib.entities.ArrayNavigator;
+import us.mytheria.bloblib.entities.BlobEditor;
 import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
 import us.mytheria.bloblib.utilities.BukkitUtil;
 import us.mytheria.bloblib.utilities.ItemStackUtil;
@@ -15,7 +19,9 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+@SuppressWarnings({"ConcatenationWithEmptyString", "unused"})
 public class ObjectBuilderButtonBuilder {
+    private static final BlobLibListenerAPI api = BlobLibAPI.getInstance().getListenerAPI();
 
     /**
      * An ObjectBuilderButton builder for String's.
@@ -32,7 +38,7 @@ public class ObjectBuilderButtonBuilder {
                                                      String timerMessageKey,
                                                      Function<String, Boolean> function) {
         ObjectBuilderButton<String> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout,
+                (button, player) -> api.addChatListener(player, timeout,
                         string -> {
                             if (string.equalsIgnoreCase("null")) {
                                 button.set(null);
@@ -109,7 +115,7 @@ public class ObjectBuilderButtonBuilder {
                                                  Function<Byte, Boolean> function,
                                                  boolean nullable) {
         ObjectBuilderButton<Byte> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> api.addChatListener(player, timeout, string -> {
                             try {
                                 if (nullable) {
                                     if (string.equalsIgnoreCase("null")) {
@@ -121,7 +127,7 @@ public class ObjectBuilderButtonBuilder {
                                 if (function.apply(input))
                                     button.set(input);
                             } catch (NumberFormatException e) {
-                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                                BlobLibMessageAPI.getInstance().getMessage("Builder.Number-Exception").handle(player);
                             }
                         }, timeoutMessageKey,
                         timerMessageKey), function) {
@@ -209,7 +215,7 @@ public class ObjectBuilderButtonBuilder {
             return true;
         };
         ObjectBuilderButton<Byte> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> api.addChatListener(player, timeout, string -> {
                             try {
                                 byte input = Byte.parseByte(string);
                                 if (input < 0) {
@@ -218,7 +224,7 @@ public class ObjectBuilderButtonBuilder {
                                     button.set(input);
                                 }
                             } catch (NumberFormatException e) {
-                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                                BlobLibMessageAPI.getInstance().getMessage("Builder.Number-Exception").handle(player);
                             }
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey), function) {
@@ -243,7 +249,7 @@ public class ObjectBuilderButtonBuilder {
                                                    Function<Short, Boolean> function,
                                                    boolean nullable) {
         ObjectBuilderButton<Short> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> api.addChatListener(player, timeout, string -> {
                     try {
                         if (nullable) {
                             if (string.equalsIgnoreCase("null")) {
@@ -255,7 +261,7 @@ public class ObjectBuilderButtonBuilder {
                         if (function.apply(input))
                             button.set(input);
                     } catch (NumberFormatException e) {
-                        BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                        BlobLibMessageAPI.getInstance().getMessage("Builder.Number-Exception").handle(player);
                     }
                 }, timeoutMessageKey, timerMessageKey), function) {
         };
@@ -341,7 +347,7 @@ public class ObjectBuilderButtonBuilder {
             return true;
         };
         ObjectBuilderButton<Short> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> api.addChatListener(player, timeout, string -> {
                             try {
                                 short input = Short.parseShort(string);
                                 if (input < 0) {
@@ -350,7 +356,7 @@ public class ObjectBuilderButtonBuilder {
                                     button.set(input);
                                 }
                             } catch (NumberFormatException e) {
-                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                                BlobLibMessageAPI.getInstance().getMessage("Builder.Number-Exception").handle(player);
                             }
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey), function) {
@@ -375,7 +381,7 @@ public class ObjectBuilderButtonBuilder {
                                                        Function<Integer, Boolean> function,
                                                        boolean nullable) {
         ObjectBuilderButton<Integer> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> api.addChatListener(player, timeout, string -> {
                     try {
                         if (nullable) {
                             if (string.equalsIgnoreCase("null")) {
@@ -387,7 +393,7 @@ public class ObjectBuilderButtonBuilder {
                         if (function.apply(input))
                             button.set(input);
                     } catch (NumberFormatException ignored) {
-                        BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                        BlobLibMessageAPI.getInstance().getMessage("Builder.Number-Exception").handle(player);
                     }
                 }, timeoutMessageKey, timerMessageKey), function) {
         };
@@ -474,7 +480,7 @@ public class ObjectBuilderButtonBuilder {
             return true;
         };
         ObjectBuilderButton<Integer> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> api.addChatListener(player, timeout, string -> {
                             try {
                                 int input = Integer.parseInt(string);
                                 if (input < 0) {
@@ -483,7 +489,7 @@ public class ObjectBuilderButtonBuilder {
                                     button.set(input);
                                 }
                             } catch (NumberFormatException e) {
-                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                                BlobLibMessageAPI.getInstance().getMessage("Builder.Number-Exception").handle(player);
                             }
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey), function) {
@@ -508,7 +514,7 @@ public class ObjectBuilderButtonBuilder {
                                                  Function<Long, Boolean> function,
                                                  boolean nullable) {
         ObjectBuilderButton<Long> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> api.addChatListener(player, timeout, string -> {
                     try {
                         if (nullable) {
                             if (string.equalsIgnoreCase("null")) {
@@ -520,7 +526,7 @@ public class ObjectBuilderButtonBuilder {
                         if (function.apply(input))
                             button.set(input);
                     } catch (NumberFormatException ignored) {
-                        BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                        BlobLibMessageAPI.getInstance().getMessage("Builder.Number-Exception").handle(player);
                     }
                 }, timeoutMessageKey, timerMessageKey), function) {
         };
@@ -607,7 +613,7 @@ public class ObjectBuilderButtonBuilder {
             return true;
         };
         ObjectBuilderButton<Long> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> api.addChatListener(player, timeout, string -> {
                             try {
                                 long input = Long.parseLong(string);
                                 if (input < 0) {
@@ -616,7 +622,7 @@ public class ObjectBuilderButtonBuilder {
                                     button.set(input);
                                 }
                             } catch (NumberFormatException e) {
-                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                                BlobLibMessageAPI.getInstance().getMessage("Builder.Number-Exception").handle(player);
                             }
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey), function) {
@@ -641,7 +647,7 @@ public class ObjectBuilderButtonBuilder {
                                                    Function<Float, Boolean> function,
                                                    boolean nullable) {
         ObjectBuilderButton<Float> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> api.addChatListener(player, timeout, string -> {
                     try {
                         if (nullable) {
                             if (string.equalsIgnoreCase("null")) {
@@ -653,7 +659,7 @@ public class ObjectBuilderButtonBuilder {
                         if (function.apply(input))
                             button.set(input);
                     } catch (NumberFormatException ignored) {
-                        BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                        BlobLibMessageAPI.getInstance().getMessage("Builder.Number-Exception").handle(player);
                     }
                 }, timeoutMessageKey, timerMessageKey), function) {
         };
@@ -740,7 +746,7 @@ public class ObjectBuilderButtonBuilder {
             return true;
         };
         ObjectBuilderButton<Float> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> api.addChatListener(player, timeout, string -> {
                             try {
                                 float input = Float.parseFloat(string);
                                 if (input < 0) {
@@ -749,7 +755,7 @@ public class ObjectBuilderButtonBuilder {
                                     button.set(input);
                                 }
                             } catch (NumberFormatException e) {
-                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                                BlobLibMessageAPI.getInstance().getMessage("Builder.Number-Exception").handle(player);
                             }
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey), function) {
@@ -774,7 +780,7 @@ public class ObjectBuilderButtonBuilder {
                                                      Function<Double, Boolean> function,
                                                      boolean nullable) {
         ObjectBuilderButton<Double> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> api.addChatListener(player, timeout, string -> {
                     try {
                         if (nullable) {
                             if (string.equalsIgnoreCase("null")) {
@@ -786,7 +792,7 @@ public class ObjectBuilderButtonBuilder {
                         if (function.apply(input))
                             button.set(input);
                     } catch (NumberFormatException ignored) {
-                        BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                        BlobLibMessageAPI.getInstance().getMessage("Builder.Number-Exception").handle(player);
                     }
                 }, timeoutMessageKey, timerMessageKey), function) {
         };
@@ -872,7 +878,7 @@ public class ObjectBuilderButtonBuilder {
             return true;
         };
         ObjectBuilderButton<Double> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> api.addChatListener(player, timeout, string -> {
                             try {
                                 double input = Double.parseDouble(string);
                                 if (input < 0) {
@@ -881,7 +887,7 @@ public class ObjectBuilderButtonBuilder {
                                     button.set(input);
                                 }
                             } catch (NumberFormatException e) {
-                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").sendAndPlay(player);
+                                BlobLibMessageAPI.getInstance().getMessage("Builder.Number-Exception").handle(player);
                             }
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey), function) {
@@ -905,8 +911,33 @@ public class ObjectBuilderButtonBuilder {
                                                    String timerMessageKey,
                                                    Function<Block, Boolean> function) {
         ObjectBuilderButton<Block> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addPositionListener(player, timeout,
+                (button, player) -> api.addPositionListener(player, timeout,
                         button::set, timeoutMessageKey, timerMessageKey), function) {
+        };
+        function.apply(null);
+        return objectBuilderButton;
+    }
+
+    /**
+     * An ObjectBuilderButton builder for Block's.
+     * Will select the block above the clicked block.
+     *
+     * @param buttonKey         The key of the button
+     * @param timeout           The timeout of the chat listener
+     * @param timeoutMessageKey The key of the timeout message
+     * @param timerMessageKey   The key of the timer message
+     * @param function          The function to be executed when the button is clicked
+     * @return The button
+     */
+    public static ObjectBuilderButton<Block> ABOVE_BLOCK(String buttonKey, long timeout,
+                                                         String timeoutMessageKey,
+                                                         String timerMessageKey,
+                                                         Function<Block, Boolean> function) {
+        ObjectBuilderButton<Block> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+                (button, player) -> api.addPositionListener(player, timeout,
+                        block -> {
+                            button.set(block.getRelative(BlockFace.UP));
+                        }, timeoutMessageKey, timerMessageKey), function) {
         };
         function.apply(null);
         return objectBuilderButton;
@@ -953,11 +984,44 @@ public class ObjectBuilderButtonBuilder {
                         + "-Timeout", "Builder." + buttonKey,
                 block -> {
                     objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-                            BukkitUtil.printLocation(block.getLocation()));
+                            block == null ? "N/A" : BukkitUtil.printLocation(block.getLocation()));
                     objectBuilder.openInventory();
                     return true;
                 });
 
+    }
+
+    /**
+     * A quick ObjectBuilderButton for Block's.
+     * Will select block above the clicked block.
+     * An example of how to use it:
+     * <pre>
+     *     ObjectBuilder&lt;Person&gt; objectBuilder = someRandomObjectBuilderYouHave;
+     *
+     *     ObjectBuilderButton&lt;Block&gt; button =
+     *     ObjectBuilderButtonBuilder.QUICK_BLOCK("Spawn", 300, objectBuilder);
+     *     //if block is null, default button will display "N/A"
+     *     </pre>
+     *
+     * @param buttonKey     The key of the button
+     *                      The timeoutmessagekey is "Builder." + buttonKey + "-Timeout"
+     *                      The timermessagekey is "Builder." + buttonKey
+     * @param timeout       The timeout of the chat listener
+     * @param objectBuilder The object builder
+     * @return The button
+     */
+    public static ObjectBuilderButton<Block> QUICK_ABOVE_BLOCK(String buttonKey, long timeout,
+                                                               ObjectBuilder<?> objectBuilder) {
+
+        String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
+        return ABOVE_BLOCK(buttonKey, timeout, "Builder." + buttonKey
+                        + "-Timeout", "Builder." + buttonKey,
+                block -> {
+                    objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                            block == null ? "N/A" : BukkitUtil.printLocation(block.getLocation()));
+                    objectBuilder.openInventory();
+                    return true;
+                });
     }
 
     /**
@@ -980,7 +1044,7 @@ public class ObjectBuilderButtonBuilder {
                 block -> {
                     consumer.accept(block);
                     objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
-                            BukkitUtil.printLocation(block.getLocation()));
+                            block == null ? "N/A" : BukkitUtil.printLocation(block.getLocation()));
                     objectBuilder.openInventory();
                     return true;
                 });
@@ -998,7 +1062,7 @@ public class ObjectBuilderButtonBuilder {
                                                       String timerMessageKey,
                                                       Function<ItemStack, Boolean> function) {
         ObjectBuilderButton<ItemStack> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addDropListener(player,
+                (button, player) -> api.addDropListener(player,
                         button::set, timerMessageKey), function) {
         };
         function.apply(null);
@@ -1080,7 +1144,7 @@ public class ObjectBuilderButtonBuilder {
                                                       Function<T, Boolean> function,
                                                       VariableSelector<T> selector) {
         ObjectBuilderButton<T> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addSelectorListener(player,
+                (button, player) -> api.addSelectorListener(player,
                         button::set, timerMessageKey, selector), function) {
         };
         function.apply(null);
@@ -1177,9 +1241,9 @@ public class ObjectBuilderButtonBuilder {
                                                                     String timerMessageKey,
                                                                     Function<ReferenceBlobMessage, Boolean> function) {
         ObjectBuilderButton<ReferenceBlobMessage> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout,
+                (button, player) -> api.addChatListener(player, timeout,
                         string -> {
-                            ReferenceBlobMessage message = BlobLibAssetAPI.getMessage(string);
+                            ReferenceBlobMessage message = BlobLibMessageAPI.getInstance().getMessage(string);
                             button.set(message);
                         },
                         timeoutMessageKey,
@@ -1273,7 +1337,7 @@ public class ObjectBuilderButtonBuilder {
                                                    String timerMessageKey,
                                                    Function<World, Boolean> function) {
         ObjectBuilderButton<World> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout,
+                (button, player) -> api.addChatListener(player, timeout,
                         string -> {
                             World world = Bukkit.getWorld(string);
                             button.set(world);
@@ -1352,5 +1416,119 @@ public class ObjectBuilderButtonBuilder {
                     objectBuilder.openInventory();
                     return true;
                 });
+    }
+
+    /**
+     * A quick navigator for booleans.
+     * Value cannot be empty nor null.
+     * By default, the value is false.
+     *
+     * @param buttonKey     The key of the button
+     * @param objectBuilder The object builder
+     * @return The button
+     */
+    public static ObjectBuilderButton<Boolean> BOOLEAN(String buttonKey,
+                                                       ObjectBuilder<?> objectBuilder) {
+        String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
+        return NAVIGATOR(buttonKey, new Boolean[]{false, true}, value -> {
+            objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                    value + "");
+            objectBuilder.openInventory();
+            return true;
+        });
+    }
+
+    /**
+     * A quick navigator for booleans.
+     * Value cannot be empty nor null.
+     * By default, the value is true.
+     *
+     * @param buttonKey     The key of the button
+     * @param objectBuilder The object builder
+     * @return The button
+     */
+    public static ObjectBuilderButton<Boolean> BOOLEAN_DEFAULT_TRUE(String buttonKey,
+                                                                    ObjectBuilder<?> objectBuilder) {
+        String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
+        return NAVIGATOR(buttonKey, new Boolean[]{true, false}, value -> {
+            objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                    value + "");
+            objectBuilder.openInventory();
+            return true;
+        });
+    }
+
+    /**
+     * A quick navigator for any type of array.
+     * Value cannot be empty, but it depends on the array
+     * if value can be null (be sure that all values are not null
+     * in case of not wanting this behaviour).
+     * By default, the value is the first element of the array.
+     *
+     * @param buttonKey The key of the button
+     * @param function  The function to apply
+     * @return The button
+     */
+    public static <T> ObjectBuilderButton<T> NAVIGATOR(String buttonKey,
+                                                       T[] array,
+                                                       Function<T, Boolean> function) {
+        ArrayNavigator<T> navigator = new ArrayNavigator<>(array);
+        ObjectBuilderButton<T> objectBuilderButton = new ObjectBuilderButton<>(buttonKey,
+                Optional.of(navigator.current()),
+                (button, player) -> {
+                    T next = navigator.next();
+                    button.set(next);
+                }, function) {
+        };
+        T current = navigator.current();
+        function.apply(current);
+        return objectBuilderButton;
+    }
+
+    /**
+     * A quick navigator for any type of array.
+     * Value cannot be empty nor null.
+     * By default, the value is the first element of the array.
+     *
+     * @param buttonKey     The key of the button
+     * @param enumClass     The enum class
+     * @param <T>           The type of the enum
+     * @param objectBuilder The object builder
+     * @return The button
+     */
+    public static <T extends Enum<T>> ObjectBuilderButton<T> ENUM_NAVIGATOR(String buttonKey,
+                                                                            Class<T> enumClass,
+                                                                            ObjectBuilder<?> objectBuilder) {
+        String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
+        T[] array = enumClass.getEnumConstants();
+        return NAVIGATOR(buttonKey, array, value -> {
+            objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
+                    value == null ? "N/A" : value.name());
+            objectBuilder.openInventory();
+            return true;
+        });
+    }
+
+    /**
+     * Manages a BlobEditor
+     *
+     * @param buttonKey     The key of the button
+     * @param blobEditor    The blob editor
+     * @param objectBuilder The object builder
+     * @param <T>           The type of the blob editor
+     * @return The button
+     */
+    public static <T> ObjectBuilderButton<T> BLOB_EDITOR(String buttonKey,
+                                                         BlobEditor<T> blobEditor,
+                                                         ObjectBuilder<?> objectBuilder) {
+
+
+        String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
+        return new ObjectBuilderButton<>(buttonKey,
+                Optional.empty(),
+                (button, player) -> {
+                    api.addEditorListener(player, button::set, "Builder." + buttonKey, blobEditor);
+                }, t -> true) {
+        };
     }
 }

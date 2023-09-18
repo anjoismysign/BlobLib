@@ -117,7 +117,11 @@ public abstract class ObjectBuilder<T extends BlobObject> extends BlobInventory 
      */
     public void modifyDefaultButton(String key,
                                     Function<ItemStackModder, ItemStackModder> function) {
-        this.getSlots(key).forEach(i -> {
+        Set<Integer> slots = getSlots(key);
+        if (slots == null)
+            throw new NullPointerException("'" + key + "' is not a valid button key" +
+                    "inside '" + getTitle() + "' inventory");
+        slots.forEach(i -> {
             ItemStack itemStack = cloneDefaultButton(key);
             ItemStackModder modder = ItemStackModder.mod(itemStack);
             function.apply(modder);
@@ -323,6 +327,18 @@ public abstract class ObjectBuilder<T extends BlobObject> extends BlobInventory 
     }
 
     /**
+     * Add a quick block button.
+     * Will use the block above selection.
+     *
+     * @param buttonKey the button key
+     * @param timeout   the timeout
+     * @return this
+     */
+    public ObjectBuilder<T> addQuickAboveBlockButton(String buttonKey, long timeout) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.QUICK_ABOVE_BLOCK(buttonKey, timeout, this));
+    }
+
+    /**
      * Add a quick item button.
      *
      * @param buttonKey the button key
@@ -514,6 +530,43 @@ public abstract class ObjectBuilder<T extends BlobObject> extends BlobInventory 
      */
     public ObjectBuilder<T> addPositiveDoubleButton(String buttonKey, long timeout) {
         return addObjectBuilderButton(ObjectBuilderButtonBuilder.POSITIVE_DOUBLE(buttonKey, timeout, this));
+    }
+
+    /**
+     * A quick navigator for booleans.
+     * Value cannot be empty nor null.
+     * By default, the value is false.
+     *
+     * @param buttonKey The key of the button
+     * @return The button
+     */
+    public ObjectBuilder<T> addBoolean(String buttonKey) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.BOOLEAN(buttonKey, this));
+    }
+
+    /**
+     * A quick navigator for booleans.
+     * Value cannot be empty nor null.
+     * By default, the value is true.
+     *
+     * @param buttonKey The key of the button
+     * @return The button
+     */
+    public ObjectBuilder<T> addBooleanDefaultTrue(String buttonKey) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.BOOLEAN_DEFAULT_TRUE(buttonKey, this));
+    }
+
+    /**
+     * A quick navigator for any type of array.
+     * Value cannot be empty nor null.
+     * By default, the value is the first element of the array.
+     *
+     * @param buttonKey The key of the button
+     * @param enumClass The enum class
+     * @return The button
+     */
+    public <E extends Enum<E>> ObjectBuilder<T> addEnumNavigator(String buttonKey, Class<E> enumClass) {
+        return addObjectBuilderButton(ObjectBuilderButtonBuilder.ENUM_NAVIGATOR(buttonKey, enumClass, this));
     }
 
     /**

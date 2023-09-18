@@ -3,8 +3,8 @@ package us.mytheria.bloblib.action;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 
-import javax.annotation.Nullable;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * An action that can be performed on an entity
@@ -20,21 +20,26 @@ public abstract class Action<T extends Entity> {
      */
     public static Action<Entity> fromConfigurationSection(ConfigurationSection section) {
         String type = Objects.requireNonNull(section.getString("Type"), "Action.Type is null");
-        switch (type) {
-            case "ActorCommand", "ConsoleCommand" -> {
+        ActionType actionType;
+        try {
+            actionType = ActionType.valueOf(type);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Unknown Action Type: " + type);
+        }
+        switch (actionType) {
+            case ACTOR_COMMAND -> {
                 String command = Objects.requireNonNull(section.getString("Command"), "Action.Command is null");
-                if (type.equals("ConsoleCommand"))
-                    return ConsoleCommandAction.build(command);
                 return CommandAction.build(command);
             }
-            case "None" -> {
-                return new NoneAction<>();
+            case CONSOLE_COMMAND -> {
+                String command = Objects.requireNonNull(section.getString("Command"), "Action.Command is null");
+                return ConsoleCommandAction.build(command);
             }
             default -> throw new IllegalArgumentException("Unknown Action Type: " + type);
         }
     }
 
-    private T actor;
+    protected T actor;
     /**
      * The type of action
      */
@@ -44,35 +49,49 @@ public abstract class Action<T extends Entity> {
      * Runs the action.
      * Its implementation is left to the child class.
      */
-    protected abstract void run();
+    public abstract void run();
+
+    /**
+     * Updates the actor and runs the action.
+     * A quick way to perform an action on an actor.
+     *
+     * @param actor The actor to update
+     * @param <U>   The type of entity to perform the action on
+     */
+    public <U extends Entity> void perform(U actor) {
+        if (updatesActor()) {
+            Action<U> updatedAction = updateActor(actor);
+            updatedAction.run();
+        } else {
+            run();
+        }
+    }
+
+    /**
+     * Modifies the action, updates the actor and runs the action.
+     * Will modify the action before performing it.
+     * A quick way to perform an action on an actor.
+     *
+     * @param actor    The actor to update
+     * @param function The function to modify the action
+     * @param <U>      The type of entity to perform the action on
+     */
+    public <U extends Entity> void perform(U actor, Function<String, String> function) {
+        Action<T> modify = modify(function);
+        if (updatesActor()) {
+            Action<U> updatedAction = modify.updateActor(actor);
+            updatedAction.run();
+        } else {
+            modify.run();
+        }
+    }
 
     /**
      * Updates the actor
      *
      * @param actor The actor to update
      */
-    protected void updateActor(T actor) {
-        this.actor = actor;
-    }
-
-    /**
-     * Performs the action
-     *
-     * @param entity The entity to perform the action on
-     */
-    public void perform(@Nullable T entity) {
-        if (updatesActor()) {
-            updateActor(entity);
-        }
-        run();
-    }
-
-    /**
-     * Performs the action
-     */
-    public void perform() {
-        perform(null);
-    }
+    public abstract <U extends Entity> Action<U> updateActor(U actor);
 
     /**
      * Saves the action to a configuration section
@@ -89,11 +108,9 @@ public abstract class Action<T extends Entity> {
     }
 
     /**
-     * @return If the action updates the actor
+     * @return If the action updates the actor whenever it is performed
      */
-    public boolean updatesActor() {
-        return true;
-    }
+    public abstract boolean updatesActor();
 
     /**
      * @return If the action is asynchronous
@@ -108,4 +125,6 @@ public abstract class Action<T extends Entity> {
     public ActionType getActionType() {
         return actionType;
     }
+
+    public abstract Action<T> modify(Function<String, String> modifier);
 }

@@ -2,6 +2,7 @@ package us.mytheria.bloblib.entities.message;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
@@ -21,8 +22,8 @@ public class BlobChatMessage extends SerialBlobMessage {
      * @param message The chat message
      * @param sound   The sound to play
      */
-    public BlobChatMessage(String message, BlobSound sound) {
-        super(sound);
+    public BlobChatMessage(String message, BlobSound sound, String locale) {
+        super(sound, locale);
         this.chat = message;
     }
 
@@ -53,7 +54,7 @@ public class BlobChatMessage extends SerialBlobMessage {
     @Override
     public void toCommandSender(CommandSender commandSender) {
         if (commandSender instanceof Player player)
-            sendAndPlay(player);
+            handle(player);
         else
             commandSender.sendMessage(chat);
     }
@@ -63,7 +64,8 @@ public class BlobChatMessage extends SerialBlobMessage {
      * @return a new BlobChatMessage with the modified chat message
      */
     @Override
-    public BlobChatMessage modify(Function<String, String> function) {
-        return new BlobChatMessage(function.apply(chat), getSound());
+    public @NotNull BlobChatMessage modify(Function<String, String> function) {
+        return new BlobChatMessage(function.apply(chat), getSound(),
+                getLocale());
     }
 }

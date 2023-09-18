@@ -1,20 +1,21 @@
 package us.mytheria.bloblib.entities.inventory;
 
 import org.bukkit.inventory.ItemStack;
-import us.mytheria.bloblib.entities.InventoryButton;
-import us.mytheria.bloblib.entities.SuperInventoryButton;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class ButtonManager implements ButtonManagerMethods {
-    private Map<String, Set<Integer>> stringKeys;
+public abstract class ButtonManager<T extends InventoryButton> implements ButtonManagerMethods {
+    private Map<String, T> stringKeys;
     private Map<Integer, ItemStack> integerKeys;
 
-    public ButtonManager(Map<String, Set<Integer>> stringKeys,
-                         Map<Integer, ItemStack> integerKeys) {
-        this.stringKeys = stringKeys;
-        this.integerKeys = integerKeys;
+    public ButtonManager(ButtonManagerData<T> buttonManagerData) {
+        this.stringKeys = new HashMap<>(buttonManagerData.inventoryButtons());
+        this.integerKeys = new HashMap<>(buttonManagerData.itemStackMap());
     }
 
     public ButtonManager() {
@@ -24,7 +25,7 @@ public abstract class ButtonManager implements ButtonManagerMethods {
         return integerKeys;
     }
 
-    public Map<String, Set<Integer>> getStringKeys() {
+    public Map<String, T> getStringKeys() {
         return stringKeys;
     }
 
@@ -32,7 +33,7 @@ public abstract class ButtonManager implements ButtonManagerMethods {
         this.integerKeys = integerKeys;
     }
 
-    public void setStringKeys(Map<String, Set<Integer>> stringKeys) {
+    public void setStringKeys(Map<String, T> stringKeys) {
         this.stringKeys = stringKeys;
     }
 
@@ -40,19 +41,56 @@ public abstract class ButtonManager implements ButtonManagerMethods {
         return get(key);
     }
 
-    public InventoryButton getButton(String key) {
-        return new InventoryButton(key, getSlots(key));
+    /**
+     * Checks if the InventoryButton for the specified key is stored in this ButtonManager
+     *
+     * @param key the key of the InventoryButton
+     * @return the InventoryButton for the specified key is stored in this ButtonManager
+     * null if the InventoryButton for the specified key is not stored in this ButtonManager
+     */
+    @Override
+    @Nullable
+    public T getButton(String key) {
+        return getStringKeys().get(key);
     }
 
-
-    public void addCommand(String key, String command) {
+    /**
+     * @return all InventoryButtons stored in this ButtonManager
+     */
+    @NotNull
+    public Collection<T> getAllButtons() {
+        return getStringKeys().values();
     }
 
-    public String getCommand(String key) {
-        return null;
+    /**
+     * Will copy/clone the ButtonManager to a new instance
+     *
+     * @return the new instance of the ButtonManager
+     */
+    public abstract ButtonManager<T> copy();
+
+    /**
+     * Copies stringKeys map used in ButtonManager constructor
+     *
+     * @return a copy of the stringKeys map
+     */
+    @SuppressWarnings("unchecked")
+    public Map<String, T> copyStringKeys() {
+        Map<String, T> stringKeys = new HashMap<>();
+        this.stringKeys.forEach((key, value) -> {
+            stringKeys.put(key, (T) value.copy());
+        });
+        return stringKeys;
     }
 
-    public SuperInventoryButton getSuperButton(String key) {
-        return null;
+    /**
+     * Copies integerKeys map used in ButtonManager constructor
+     *
+     * @return a copy of the integerKeys map
+     */
+    public Map<Integer, ItemStack> copyIntegerKeys() {
+        Map<Integer, ItemStack> map = new HashMap<>();
+        this.integerKeys.forEach((key, value) -> map.put(key, new ItemStack(value)));
+        return map;
     }
 }

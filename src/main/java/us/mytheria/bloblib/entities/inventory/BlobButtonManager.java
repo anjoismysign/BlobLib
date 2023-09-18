@@ -3,7 +3,6 @@ package us.mytheria.bloblib.entities.inventory;
 import me.anjoismysign.anjo.entities.Uber;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
-import us.mytheria.bloblib.entities.BlobMultiSlotable;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,7 +19,7 @@ import java.util.Set;
  * <p>
  * It handles the above through HashMaps giving it a O(1) time complexity.
  */
-public class BlobButtonManager extends ButtonManager {
+public class BlobButtonManager extends ButtonManager<InventoryButton> {
     /**
      * Builds a ButtonManager through the specified ConfigurationSection.
      * Uses HashMap to store buttons.
@@ -35,27 +34,20 @@ public class BlobButtonManager extends ButtonManager {
     }
 
     /**
-     * Builds a ButtonManager through the specified ConfigurationSection.
-     * Uses HashMap to store buttons.
-     *
-     * @param section configuration section which contains all the buttons
-     * @return a non abstract ButtonManager.
-     * @deprecated Smart methods were made during development and are already
-     * safe to use. Use {@link #fromConfigurationSection(ConfigurationSection)} instead
-     * which is identical to this method.
-     */
-    @Deprecated
-    public static BlobButtonManager smartFromConfigurationSection(ConfigurationSection section) {
-        BlobButtonManager blobButtonManager = new BlobButtonManager();
-        blobButtonManager.read(section);
-        return blobButtonManager;
-    }
-
-    /**
      * Builds a non abstract ButtonManager without any buttons stored yet.
      */
     public BlobButtonManager() {
-        super(new HashMap<>(), new HashMap<>());
+        this(new ButtonManagerData<>(new HashMap<>(), new HashMap<>()));
+    }
+
+    private BlobButtonManager(ButtonManagerData<InventoryButton> buttonManagerData) {
+        super(buttonManagerData);
+    }
+
+    @Override
+    public BlobButtonManager copy() {
+        return new BlobButtonManager(
+                new ButtonManagerData<>(copyStringKeys(), copyIntegerKeys()));
     }
 
     /**
@@ -83,12 +75,15 @@ public class BlobButtonManager extends ButtonManager {
     /**
      * Gets all buttons stored in this ButtonManager that belong to the specified key
      *
-     * @param key the key of the buttons
-     * @return all buttons stored in this ButtonManager that belong to the specified key
+     * @param key the key of the InventoryButton
+     * @return all buttons stored in this ButtonManager that belong to the specified key.
+     * null if the key is not stored in this ButtonManager
      */
     @Override
     public Set<Integer> get(String key) {
-        return getStringKeys().get(key);
+        if (contains(key))
+            return getStringKeys().get(key).getSlots();
+        return null;
     }
 
     /**
@@ -131,29 +126,6 @@ public class BlobButtonManager extends ButtonManager {
      */
     @Override
     public boolean add(ConfigurationSection section) {
-        Set<String> set = section.getKeys(false);
-        Uber<Boolean> madeChanges = new Uber<>(false);
-        set.stream().filter(key -> !contains(key)).forEach(key -> {
-            madeChanges.talk(true);
-            BlobMultiSlotable slotable = BlobMultiSlotable.read(section.getConfigurationSection(key), key);
-            slotable.setInButtonManager(this);
-        });
-        return madeChanges.thanks();
-    }
-
-    /**
-     * adds all buttons inside a configuration section through parsing
-     *
-     * @param section configuration section which contains all the buttons
-     * @return true if at least one button was succesfully added.
-     * this is determined in case the being called after the first add call
-     * @deprecated 'read' method was made during development but is ready and
-     * safe to use. Use {@link #add(ConfigurationSection)} instead which
-     * is identical to this method.
-     */
-    @Deprecated
-    @Override
-    public boolean read(ConfigurationSection section) {
         Set<String> set = section.getKeys(false);
         Uber<Boolean> madeChanges = new Uber<>(false);
         set.stream().filter(key -> !contains(key)).forEach(key -> {

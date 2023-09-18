@@ -3,6 +3,7 @@ package us.mytheria.bloblib.entities;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public record SimpleEventListener<T>(boolean register, T value) {
 
@@ -115,5 +116,33 @@ public record SimpleEventListener<T>(boolean register, T value) {
     public void write(ConfigurationSection section, String path) {
         section.set("Register", register);
         section.set(path, value);
+    }
+
+    /**
+     * If the SimpleEventListener is registered, the consumer will be called
+     *
+     * @param consumer The consumer to call
+     * @return true if the SimpleEventListener is registered, false otherwise
+     */
+    public boolean ifRegister(Consumer<SimpleEventListener<T>> consumer) {
+        if (register) {
+            consumer.accept(this);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * If the SimpleEventListener is not registered, the consumer will be called
+     *
+     * @param runnable The runnable to run
+     * @return true if the SimpleEventListener is not registered, false otherwise
+     */
+    public boolean ifNotRegistered(Runnable runnable) {
+        if (!register) {
+            runnable.run();
+            return true;
+        }
+        return false;
     }
 }

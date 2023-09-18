@@ -1,7 +1,8 @@
 package us.mytheria.bloblib.entities;
 
 import org.bukkit.configuration.ConfigurationSection;
-import us.mytheria.bloblib.BlobLibAssetAPI;
+import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.api.BlobLibMessageAPI;
 import us.mytheria.bloblib.entities.message.*;
 import us.mytheria.bloblib.utilities.TextColor;
 
@@ -22,79 +23,88 @@ public class BlobMessageReader {
      */
     public static SerialBlobMessage read(ConfigurationSection section) {
         String type = section.getString("Type");
+        @Nullable String locale = section.getString("Locale", null);
         Optional<BlobSound> sound = section.contains("BlobSound") ?
                 BlobSoundReader.parse(section) : Optional.empty();
         switch (type) {
             case "ACTIONBAR" -> {
                 if (!section.contains("Message"))
-                    throw new IllegalArgumentException("'Message' is required for ACTIONBAR messages.");
-                return new BlobActionbarMessage(TextColor.PARSE(section.getString("Message")), sound.orElse(null));
+                    throw new IllegalArgumentException("'Message' is required for ACTIONBAR messages at " + section.getCurrentPath());
+                return new BlobActionbarMessage(TextColor.PARSE(section.getString("Message")),
+                        sound.orElse(null),
+                        locale);
             }
             case "TITLE" -> {
                 if (!section.contains("Title"))
-                    throw new IllegalArgumentException("'Title' is required for TITLE messages.");
+                    throw new IllegalArgumentException("'Title' is required for TITLE messages at " + section.getCurrentPath());
                 if (!section.contains("Subtitle"))
-                    throw new IllegalArgumentException("'Subtitle' is required for TITLE messages.");
+                    throw new IllegalArgumentException("'Subtitle' is required for TITLE messages at " + section.getCurrentPath());
                 int fadeIn = section.getInt("FadeIn", 10);
                 int stay = section.getInt("Stay", 40);
                 int fadeOut = section.getInt("FadeOut", 10);
                 return new BlobTitleMessage(TextColor.PARSE(section.getString("Title")),
                         TextColor.PARSE(section.getString("Subtitle")),
-                        fadeIn, stay, fadeOut, sound.orElse(null));
+                        fadeIn, stay, fadeOut, sound.orElse(null),
+                        locale);
             }
             case "CHAT" -> {
                 if (!section.contains("Message"))
-                    throw new IllegalArgumentException("'Message' is required for CHAT messages.");
-                return new BlobChatMessage(TextColor.PARSE(section.getString("Message")), sound.orElse(null));
+                    throw new IllegalArgumentException("'Message' is required for CHAT messages at " + section.getCurrentPath());
+                return new BlobChatMessage(TextColor.PARSE(section.getString("Message")),
+                        sound.orElse(null),
+                        locale);
             }
             case "ACTIONBAR_TITLE" -> {
                 if (!section.contains("Title"))
-                    throw new IllegalArgumentException("'Title' is required for ACTIONBAR_TITLE messages.");
+                    throw new IllegalArgumentException("'Title' is required for ACTIONBAR_TITLE messages at " + section.getCurrentPath());
                 if (!section.contains("Subtitle"))
-                    throw new IllegalArgumentException("'Subtitle' is required for ACTIONBAR_TITLE messages.");
+                    throw new IllegalArgumentException("'Subtitle' is required for ACTIONBAR_TITLE messages at " + section.getCurrentPath());
                 if (!section.contains("Actionbar"))
-                    throw new IllegalArgumentException("'Actionbar' is required for ACTIONBAR_TITLE messages.");
+                    throw new IllegalArgumentException("'Actionbar' is required for ACTIONBAR_TITLE messages at " + section.getCurrentPath());
                 int fadeIn = section.getInt("FadeIn", 10);
                 int stay = section.getInt("Stay", 40);
                 int fadeOut = section.getInt("FadeOut", 10);
                 return new BlobActionbarTitleMessage(TextColor.PARSE(section.getString("Actionbar")),
                         TextColor.PARSE(section.getString("Title")),
                         TextColor.PARSE(section.getString("Subtitle")),
-                        fadeIn, stay, fadeOut, sound.orElse(null));
+                        fadeIn, stay, fadeOut, sound.orElse(null),
+                        locale);
             }
             case "CHAT_ACTIONBAR" -> {
                 if (!section.contains("Chat"))
-                    throw new IllegalArgumentException("'Chat' is required for CHAT_ACTIONBAR messages.");
+                    throw new IllegalArgumentException("'Chat' is required for CHAT_ACTIONBAR messages at " + section.getCurrentPath());
                 if (!section.contains("Actionbar"))
-                    throw new IllegalArgumentException("'Actionbar' is required for CHAT_ACTIONBAR messages.");
+                    throw new IllegalArgumentException("'Actionbar' is required for CHAT_ACTIONBAR messages at " + section.getCurrentPath());
                 return new BlobChatActionbarMessage(TextColor.PARSE(section.getString("Chat")),
                         TextColor.PARSE(section.getString("Actionbar")),
-                        sound.orElse(null));
+                        sound.orElse(null),
+                        locale);
             }
             case "CHAT_TITLE" -> {
                 if (!section.contains("Chat"))
-                    throw new IllegalArgumentException("'Chat' is required for CHAT_TITLE messages.");
+                    throw new IllegalArgumentException("'Chat' is required for CHAT_TITLE messages at " + section.getCurrentPath());
                 if (!section.contains("Title"))
-                    throw new IllegalArgumentException("'Title' is required for CHAT_TITLE messages.");
+                    throw new IllegalArgumentException("'Title' is required for CHAT_TITLE messages at " + section.getCurrentPath());
                 if (!section.contains("Subtitle"))
-                    throw new IllegalArgumentException("'Subtitle' is required for CHAT_TITLE messages.");
+                    throw new IllegalArgumentException("'Subtitle' is required for CHAT_TITLE messages at " + section.getCurrentPath());
                 int fadeIn = section.getInt("FadeIn", 10);
                 int stay = section.getInt("Stay", 40);
                 int fadeOut = section.getInt("FadeOut", 10);
                 return new BlobChatTitleMessage(TextColor.PARSE(section.getString("Chat")),
                         TextColor.PARSE(section.getString("Title")),
                         TextColor.PARSE(section.getString("Subtitle")),
-                        fadeIn, stay, fadeOut, sound.orElse(null));
+                        fadeIn, stay, fadeOut, sound.orElse(null),
+                        locale);
             }
             case "CHAT_ACTIONBAR_TITLE" -> {
                 if (!section.contains("Chat"))
-                    throw new IllegalArgumentException("'Chat' is required for CHAT_ACTIONBAR_TITLE messages.");
+                    throw new IllegalArgumentException("'Chat' is required for CHAT_ACTIONBAR_TITLE messages at " + section.getCurrentPath());
                 if (!section.contains("Actionbar"))
-                    throw new IllegalArgumentException("'Actionbar' is required for CHAT_ACTIONBAR_TITLE messages.");
+                    throw new IllegalArgumentException("'Actionbar' is required for CHAT_ACTIONBAR_TITLE messages at " + section.getCurrentPath());
                 if (!section.contains("Title"))
-                    throw new IllegalArgumentException("'Title' is required for CHAT_ACTIONBAR_TITLE messages.");
+                    throw new IllegalArgumentException("'Title' is required for CHAT_ACTIONBAR_TITLE messages at " + section.getCurrentPath());
                 if (!section.contains("Subtitle"))
-                    throw new IllegalArgumentException("'Subtitle' is required for CHAT_ACTIONBAR_TITLE messages.");
+                    throw new IllegalArgumentException("'Subtitle' is required for CHAT_ACTIONBAR_TITLE messages at " + section.getCurrentPath());
                 int fadeIn = section.getInt("FadeIn", 10);
                 int stay = section.getInt("Stay", 40);
                 int fadeOut = section.getInt("FadeOut", 10);
@@ -102,9 +112,11 @@ public class BlobMessageReader {
                         TextColor.PARSE(section.getString("Actionbar")),
                         TextColor.PARSE(section.getString("Title")),
                         TextColor.PARSE(section.getString("Subtitle")),
-                        fadeIn, stay, fadeOut, sound.orElse(null));
+                        fadeIn, stay, fadeOut, sound.orElse(null),
+                        locale);
             }
-            default -> throw new IllegalArgumentException("Invalid message type: " + type);
+            default ->
+                    throw new IllegalArgumentException("Invalid message type: '" + type + "' at " + section.getCurrentPath());
         }
     }
 
@@ -120,7 +132,7 @@ public class BlobMessageReader {
         if (!parentConfigurationSection.contains("BlobMessage"))
             return Optional.empty();
         if (parentConfigurationSection.isString("BlobMessage"))
-            return Optional.ofNullable(BlobLibAssetAPI.getMessage(parentConfigurationSection.getString("BlobMessage")));
+            return Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(parentConfigurationSection.getString("BlobMessage")));
         return Optional.of(read(parentConfigurationSection.getConfigurationSection("BlobMessage")));
     }
 
@@ -135,6 +147,6 @@ public class BlobMessageReader {
             return Optional.empty();
         if (!section.isString("BlobMessage"))
             throw new IllegalArgumentException("'BlobMessage' must be a String");
-        return Optional.ofNullable(BlobLibAssetAPI.getMessage(section.getString("BlobMessage")));
+        return Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(section.getString("BlobMessage")));
     }
 }

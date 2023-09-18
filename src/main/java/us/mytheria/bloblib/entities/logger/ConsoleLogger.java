@@ -43,8 +43,22 @@ public class ConsoleLogger implements Logger {
         logger.fine(message);
     }
 
+    /**
+     * Prints a warning message to the console.
+     *
+     * @param throwable the throwable to print
+     */
+    public void throwable(Throwable throwable) {
+        logger.severe(throwable.getMessage());
+    }
+
+    /**
+     * Prints a warning message to the console.
+     *
+     * @param exception the exception to print
+     */
     public void exception(Exception exception) {
-        logger.severe(exception.getMessage());
+        throwable(exception);
     }
 
     /**

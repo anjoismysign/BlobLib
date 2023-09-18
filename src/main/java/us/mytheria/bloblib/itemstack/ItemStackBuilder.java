@@ -4,16 +4,20 @@ import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import us.mytheria.bloblib.entities.Rep;
+import us.mytheria.bloblib.utilities.TextColor;
 
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.logging.Level;
 
 public final class ItemStackBuilder {
     private final ItemStack itemStack;
@@ -96,16 +100,23 @@ public final class ItemStackBuilder {
         return unflag(flags.toArray(new ItemFlag[0]));
     }
 
+    public ItemStackBuilder displayName(String name, char translateColorChar) {
+        return itemMeta(itemMeta -> itemMeta.setDisplayName(TextColor.CUSTOM_PARSE(translateColorChar, name)));
+    }
+
     public ItemStackBuilder displayName(String name) {
-        return itemMeta(itemMeta -> itemMeta.setDisplayName(name));
+        return displayName(name, '&');
     }
 
     public ItemStackBuilder lore(String line) {
-        return lore(List.of(line));
+        return lore(List.of(TextColor.PARSE(line)));
     }
 
     public ItemStackBuilder lore(String... lore) {
-        return itemMeta(itemMeta -> itemMeta.setLore(List.of(lore)));
+        List<String> list = List.of(lore);
+        List<String> dupe = new ArrayList<>();
+        list.forEach(s -> dupe.add(TextColor.PARSE(s)));
+        return itemMeta(itemMeta -> itemMeta.setLore(dupe));
     }
 
     public ItemStackBuilder lore(List<String> lore) {
@@ -241,6 +252,18 @@ public final class ItemStackBuilder {
                 LeatherArmorMeta meta = (LeatherArmorMeta) itemStack.getItemMeta();
                 meta.setColor(color);
                 itemStack.setItemMeta(meta);
+            }
+        });
+    }
+
+    public ItemStackBuilder attribute(Attribute attribute, double amount, AttributeModifier.Operation operation) {
+        return itemMeta(itemMeta -> {
+            try {
+                UUID uuid = UUID.randomUUID();
+                AttributeModifier modifier = new AttributeModifier(uuid, uuid.toString(), amount, operation);
+                itemMeta.addAttributeModifier(attribute, modifier);
+            } catch (Exception exception) {
+                Bukkit.getLogger().log(Level.SEVERE, exception, () -> "Failed to add attribute modifier");
             }
         });
     }

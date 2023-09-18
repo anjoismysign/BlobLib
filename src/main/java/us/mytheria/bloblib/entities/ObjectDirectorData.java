@@ -34,7 +34,7 @@ public record ObjectDirectorData(String objectDirectory, String objectBuilderKey
         if (plugin.getResource(fileName) != null) {
             blobFileManager.addFile(objectBuilderFilename, file);
             if (blobFileManager.updateYAML(file))
-                InventoryManager.continueLoading(plugin, file);
+                InventoryManager.continueLoadingBlobInventories(plugin, file);
         }
         return new ObjectDirectorData(objectDirectoryFilename, objectBuilderFilename, objectName);
     }

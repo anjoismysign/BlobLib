@@ -37,11 +37,11 @@ public class ResourceUtil {
      * but are so in the temp file.
      * Comments will be overwritten by the new updated file.
      *
-     * @param newFile                 the file to write to
+     * @param existingFile            the file to write to
      * @param updateYamlConfiguration the file to read from
      */
-    public static void writeNewValues(File newFile, YamlConfiguration updateYamlConfiguration) {
-        FileConfiguration existingYamlConfig = YamlConfiguration.loadConfiguration(newFile);
+    public static void writeNewValues(File existingFile, YamlConfiguration updateYamlConfiguration) {
+        FileConfiguration existingYamlConfig = YamlConfiguration.loadConfiguration(existingFile);
         Set<String> keys = updateYamlConfiguration.getConfigurationSection("").getKeys(true);
         keys.forEach(key -> {
             if (!updateYamlConfiguration.isConfigurationSection(key)) {
@@ -52,12 +52,13 @@ public class ResourceUtil {
                 if (inLine.size() > 0)
                     existingYamlConfig.setInlineComments(key, inLine);
                 // if it's not a section, it's a value
+                if (existingYamlConfig.contains(key)) return;
             }
             if (existingYamlConfig.isConfigurationSection(key)) return; //if it exists, skip
             existingYamlConfig.set(key, updateYamlConfiguration.get(key)); // write
         });
         try {
-            updateYamlConfiguration.save(newFile);
+            existingYamlConfig.save(existingFile);
         } catch (IOException e) {
             e.printStackTrace();
         }

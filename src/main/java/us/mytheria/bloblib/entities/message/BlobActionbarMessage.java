@@ -4,6 +4,7 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
@@ -17,8 +18,9 @@ public class BlobActionbarMessage extends SerialBlobMessage {
      * @param message The message to send
      * @param sound   The sound to play
      */
-    public BlobActionbarMessage(String message, BlobSound sound) {
-        super(sound);
+    public BlobActionbarMessage(String message, BlobSound sound,
+                                String locale) {
+        super(sound, locale);
         this.actionbar = message;
     }
 
@@ -26,7 +28,7 @@ public class BlobActionbarMessage extends SerialBlobMessage {
      * @param message The message to send
      */
     public BlobActionbarMessage(String message) {
-        this(message, null);
+        this(message, null, null);
     }
 
     /**
@@ -43,7 +45,7 @@ public class BlobActionbarMessage extends SerialBlobMessage {
     @Override
     public void toCommandSender(CommandSender commandSender) {
         if (commandSender instanceof Player player)
-            sendAndPlay(player);
+            handle(player);
         else
             commandSender.sendMessage(actionbar);
     }
@@ -53,7 +55,7 @@ public class BlobActionbarMessage extends SerialBlobMessage {
      * @return A new message with the modified message
      */
     @Override
-    public BlobActionbarMessage modify(Function<String, String> function) {
-        return new BlobActionbarMessage(function.apply(actionbar), getSound());
+    public @NotNull BlobActionbarMessage modify(Function<String, String> function) {
+        return new BlobActionbarMessage(function.apply(actionbar), getSound(), getLocale());
     }
 }

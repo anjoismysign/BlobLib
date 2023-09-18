@@ -25,9 +25,9 @@ public class DropListenerManager implements Listener {
     @EventHandler
     public void onDrop(PlayerDropItemEvent e) {
         String name = e.getPlayer().getName();
-        if (!dropListeners.containsKey(name))
-            return;
         DropListener listener = dropListeners.get(name);
+        if (listener == null)
+            return;
         listener.setInput(e.getItemDrop().getItemStack());
         e.setCancelled(true);
     }

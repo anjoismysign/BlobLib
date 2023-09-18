@@ -12,7 +12,7 @@ import java.io.File;
  * And example of this is link {@link us.mytheria.bloblib.entities.currency.Currency}.
  * and link {@link us.mytheria.bloblib.entities.currency.CurrencyBuilder}.
  */
-public interface BlobObject {
+public interface BlobObject extends Comparable<BlobObject> {
     /**
      * The key to identify the object by, inside the ObjectManager.
      *
@@ -33,6 +33,17 @@ public interface BlobObject {
     File saveToFile(File directory);
 
     /**
+     * By providing a File directory, will automatically create an instance
+     * of the file that can be used as a YAML file.
+     *
+     * @param directory The directory to create the file in
+     * @return The file
+     */
+    default File instanceFile(File directory) {
+        return new File(directory + "/" + getKey() + ".yml");
+    }
+
+    /**
      * Should return a new ObjectBuilder that will automatically
      * apply the attributes saved inside this BlobObject.
      *
@@ -40,5 +51,9 @@ public interface BlobObject {
      */
     default ObjectBuilder<BlobObject> edit() {
         return null;
+    }
+
+    default int compareTo(BlobObject o) {
+        return getKey().compareTo(o.getKey());
     }
 }

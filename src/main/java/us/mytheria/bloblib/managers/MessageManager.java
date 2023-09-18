@@ -10,15 +10,14 @@ import us.mytheria.bloblib.entities.message.SerialBlobMessage;
 
 import javax.annotation.Nullable;
 import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class MessageManager {
     private final BlobLib main;
     private HashMap<String, SerialBlobMessage> messages;
     private HashMap<String, Set<String>> pluginMessages;
     private HashMap<String, Integer> duplicates;
+    private HashMap<String, Map<String, SerialBlobMessage>> locales;
 
     public MessageManager() {
         this.main = BlobLib.getInstance();
@@ -30,6 +29,7 @@ public class MessageManager {
 
     public void load() {
         messages = new HashMap<>();
+        locales = new HashMap<>();
         pluginMessages = new HashMap<>();
         duplicates = new HashMap<>();
         loadFiles(main.getFileManager().messagesDirectory());
@@ -37,7 +37,7 @@ public class MessageManager {
                 .log("Duplicate BlobMessage: '" + key + "' (found " + value + " instances)"));
     }
 
-    public void load(BlobPlugin plugin, ManagerDirector director) {
+    public void load(BlobPlugin plugin, IManagerDirector director) {
         String pluginName = plugin.getName();
         if (pluginMessages.containsKey(pluginName))
             throw new IllegalArgumentException("Plugin '" + pluginName + "' has already been loaded");
@@ -51,9 +51,15 @@ public class MessageManager {
 
     public void unload(BlobPlugin plugin) {
         String pluginName = plugin.getName();
-        if (!pluginMessages.containsKey(pluginName))
+        Set<String> messages = this.pluginMessages.get(pluginName);
+        if (messages == null)
             return;
-        pluginMessages.get(pluginName).forEach(messages::remove);
+        Iterator<String> iterator = messages.iterator();
+        while (iterator.hasNext()) {
+            String inventoryName = iterator.next();
+            this.messages.remove(inventoryName);
+            iterator.remove();
+        }
         pluginMessages.remove(pluginName);
     }
 
@@ -61,7 +67,7 @@ public class MessageManager {
         BlobLib.getInstance().getMessageManager().unload(plugin);
     }
 
-    public static void loadBlobPlugin(BlobPlugin plugin, ManagerDirector director) {
+    public static void loadBlobPlugin(BlobPlugin plugin, IManagerDirector director) {
         MessageManager manager = BlobLib.getInstance().getMessageManager();
         manager.load(plugin, director);
     }
@@ -108,7 +114,9 @@ public class MessageManager {
                 addDuplicate(reference);
                 return;
             }
-            messages.put(reference, BlobMessageReader.read(section));
+            SerialBlobMessage message = BlobMessageReader.read(section);
+            messages.put(reference, message);
+            addOrCreateLocale(message, reference);
         });
     }
 
@@ -127,6 +135,11 @@ public class MessageManager {
             messages.put(reference, BlobMessageReader.read(section));
             pluginMessages.get(plugin.getName()).add(reference);
         });
+    }
+
+    private void addOrCreateLocale(SerialBlobMessage message, String reference) {
+        String locale = message.getLocale();
+        locales.computeIfAbsent(locale, k -> new HashMap<>()).put(reference, message);
     }
 
     /**
@@ -157,7 +170,7 @@ public class MessageManager {
     }
 
     public void noPermission(Player player) {
-        messages.get("System.No-Permission").sendAndPlay(player);
+        messages.get("System.No-Permission").handle(player);
     }
 
     @Nullable
@@ -165,11 +178,19 @@ public class MessageManager {
         return new ReferenceBlobMessage(messages.get(key), key);
     }
 
+    @Nullable
+    public ReferenceBlobMessage getMessage(String key, String locale) {
+        Map<String, SerialBlobMessage> localeMap = locales.get(locale);
+        if (localeMap == null)
+            return null;
+        return new ReferenceBlobMessage(localeMap.get(key), key);
+    }
+
     public void playAndSend(Player player, String key) {
         SerialBlobMessage message = messages.get(key);
         if (message == null)
             throw new NullPointerException("Message '" + key + "' does not exist!");
-        message.sendAndPlay(player);
+        message.handle(player);
     }
 
     public void send(Player player, String key) {

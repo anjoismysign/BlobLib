@@ -5,6 +5,15 @@ import org.bukkit.entity.Player;
 public interface VaultEconomyWorker {
 
     /**
+     * In case of being an economy from MultiEconomy, it is expected to return
+     * the currency name.
+     * Else it's the name of the economy plugin or the name of the economy implementation.
+     *
+     * @return Name of the currency
+     */
+    String getName();
+
+    /**
      * Gives the given amount of cash to the player.
      *
      * @param player Player to give cash to
@@ -44,4 +53,12 @@ public interface VaultEconomyWorker {
      * @return Amount of cash the player has
      */
     double getCash(Player player);
+
+    /**
+     * Formats the given amount of cash.
+     *
+     * @param amount Amount to format
+     * @return Formatted amount
+     */
+    String format(double amount);
 }

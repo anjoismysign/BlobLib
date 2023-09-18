@@ -23,12 +23,12 @@ public class BlobPluginLogger extends ConsoleLogger {
 
     @Override
     public void log(String message) {
-        super.log(ChatColor.GREEN + prefix() + start() + message);
+        super.log(prefix() + start() + message);
     }
 
     @Override
     public void debug(String message) {
-        super.debug(ChatColor.GOLD + prefix() + start() + message);
+        super.debug(ChatColor.GREEN + prefix() + start() + message);
     }
 
     @Override
@@ -37,12 +37,17 @@ public class BlobPluginLogger extends ConsoleLogger {
     }
 
     @Override
+    public void throwable(Throwable throwable) {
+        error(throwable.getMessage());
+    }
+
+    @Override
     public void exception(Exception exception) {
-        error(exception.getMessage());
+        throwable(exception);
     }
 
     public String prefix() {
-        return "<{" + plugin.getName() + "}>";
+        return "{" + plugin.getName() + "}";
     }
 
     public String start() {

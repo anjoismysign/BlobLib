@@ -1,4 +1,34 @@
+BlobLib:
+  Updater-Available:
+    Type: CHAT
+    Message: '&7A new version &8(%version%) &7of %randomColor%%plugin% &7is available. You may type %randomColor%''/bloblib update %plugin%'''
+    BlobSound: System.Alert
+  Updater-Successful:
+    Type: CHAT
+    Message: '%randomColor%%plugin% &7has been updated to %randomColor%%version%&7. You may restart the server now'
+    BlobSound: System.Done
+  Download-Usage:
+    Type: CHAT
+    Message: '&7Usage: &8/bloblib download <provider>'
+  Download-GitHub-Usage:
+    Type: CHAT
+    Message: '&7Usage: &8/bloblib download GitHub <owner/repository>'
+  Download-GitHub-Successful:
+    Type: CHAT
+    Message: '&7Successfully downloaded %randomColor%%fileName%&7. You may restart the server now'
+  Repository-Not-Found:
+    Type: CHAT
+    Message: '&cRepository not found'
+    BlobSound: System.Alert
+  No-Connection:
+    Type: CHAT
+    Message: '&cFailed to connect to the destination. Check your internet connection'
+    BlobSound: System.Alert
 System:
+  Error:
+    Type: CHAT
+    Message: '&cAn error has occurred. Please contact the server administrators.'
+    BlobSound: System.Alert
   No-Permission:
     Type: CHAT
     Message: '&cI''m sorry, but you do not have permission to perform this command.
@@ -18,6 +48,10 @@ System:
     Type: CHAT
     Message: '&cCannot proceed. We are expecting you to select something else.'
     BlobSound: System.Alert
+  Already-Editor-Listening:
+    Type: CHAT
+    Message: '&cCannot proceed. We are expecting you to select something else.'
+    BlobSound: System.Alert
   Already-Drop-Listening:
     Type: CHAT
     Message: '&cCannot proceed. We are expecting you to drop something else.'
@@ -27,6 +61,13 @@ System:
     Title: '&f&lDONE'
     Subtitle: '&7Reload complete'
     BlobSound: System.Done
+Algorithm:
+  Adjacent-Null:
+    Type: ACTIONBAR_TITLE
+    Title: '&c&lERROR'
+    Subtitle: '&7Cannot proceed'
+    Actionbar: "&cCouldn't find adyacent block"
+    BlobSound: System.Alert
 Object:
   Not-Found:
     Type: CHAT
@@ -42,6 +83,22 @@ Builder:
     Type: CHAT
     Message: '&cPlease enter a valid number'
     BlobSound: System.Alert
+  Location-Target:
+    Type: ACTIONBAR
+    Message: '&7Click a block. Selected block will be used'
+  Location-Target-Timeout:
+    Type: TITLE
+    Title: '&c&lTIMEOUT'
+    Subtitle: '&7You took too long to select a location'
+    BlobSound: Builder.Timeout
+  Location:
+    Type: ACTIONBAR
+    Message: '&7Click a block. Block above it will be used'
+  Location-Timeout:
+    Type: TITLE
+    Title: '&c&lTIMEOUT'
+    Subtitle: '&7You took too long to select a location'
+    BlobSound: Builder.Timeout
   World-Not-Found:
     Type: CHAT
     Message: "&cWorld '%world%' not found"
@@ -58,11 +115,6 @@ Builder:
     Type: TITLE
     Title: '&c&lTIMEOUT'
     Subtitle: '&7You took too long to type in a world'
-    BlobSound: Builder.Timeout
-  Position-Timeout:
-    Type: TITLE
-    Title: '&c&lTIMEOUT'
-    Subtitle: '&7You took too long to select a position'
     BlobSound: Builder.Timeout
   Material:
     Type: TITLE
@@ -131,6 +183,24 @@ Builder:
     Title: '&c&lTIMEOUT'
     Subtitle: '&7You took too long to type in Message'
     BlobSound: Builder.Timeout
+  BuyingCurrency:
+    Type: TITLE
+    Title: '&f&lBUYING CURRENCY'
+    Subtitle: '&7Type in a currency name'
+  BuyingCurrency-Timeout:
+    Type: TITLE
+    Title: '&c&lTIMEOUT'
+    Subtitle: '&7You took too long to type in BuyingCurrency'
+    BlobSound: Builder.Timeout
+  SellingCurrency:
+    Type: TITLE
+    Title: '&f&lSELLING CURRENCY'
+    Subtitle: '&7Type in a currency name'
+  SellingCurrency-Timeout:
+    Type: TITLE
+    Title: '&c&lTIMEOUT'
+    Subtitle: '&7You took too long to type in SellingCurrency'
+    BlobSound: Builder.Timeout
 Editor:
   Remove:
     Type: ACTIONBAR
@@ -139,6 +209,9 @@ Editor:
     Type: TITLE
     Title: '&f&lREMOVED'
     Subtitle: '&7%element%'
+  Select:
+    Type: ACTIONBAR
+    Message: '&7Click an element to select it'
 Player:
   Not-Found:
     Type: CHAT
@@ -159,6 +232,14 @@ Currency:
     Message: '&cCurrency not found'
     BlobSound: System.Alert
 Economy:
+  Received-Deposit:
+    Type: CHAT
+    Message: '&7+ %display%'
+    BlobSound: Economy.Received-Deposit
+  Received-Withdrawal:
+    Type: CHAT
+    Message: '&7- %display%'
+    BlobSound: Economy.Received-Withdrawal
   Deposit:
     Type: CHAT
     Message: '&7Gave %display% %currency% &7to %player%'

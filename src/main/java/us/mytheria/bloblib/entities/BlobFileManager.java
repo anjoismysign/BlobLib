@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.managers.BlobPlugin;
 import us.mytheria.bloblib.managers.Manager;
 import us.mytheria.bloblib.managers.ManagerDirector;
 import us.mytheria.bloblib.utilities.ResourceUtil;
@@ -20,10 +21,25 @@ import java.util.*;
  * A BlobFileManager will manage all files related to inventories,
  * messages, sounds and future objects that BlobLib will support.
  */
-public class BlobFileManager extends Manager {
+public class BlobFileManager extends Manager implements IFileManager {
     private final File pluginDirectory;
     private final HashMap<String, File> files;
-    private final String lowercased = getPlugin().getName().toLowerCase();
+    private final String lowercased;
+
+    /**
+     * Will make a BlobFileManager from a ManagerDirector.
+     * Doesn't work with GenericManagerDirector
+     * since their #getPlugin() only works after
+     * ManagerDirector constructor.
+     *
+     * @param managerDirector the manager director
+     * @return the BlobFileManager
+     */
+    public static BlobFileManager of(ManagerDirector managerDirector) {
+        BlobPlugin plugin = managerDirector.getPlugin();
+        return new BlobFileManager(managerDirector, "plugins/" +
+                plugin.getDataFolder().getPath(), plugin);
+    }
 
     /**
      * creates a new BlobFileManager
@@ -32,17 +48,23 @@ public class BlobFileManager extends Manager {
      * @param pluginDirectoryPathname the path to the plugin directory
      */
     public BlobFileManager(ManagerDirector managerDirector,
-                           String pluginDirectoryPathname) {
+                           String pluginDirectoryPathname,
+                           JavaPlugin plugin) {
         super(managerDirector);
+        this.lowercased = plugin.getName().toLowerCase();
         this.files = new HashMap<>();
         this.pluginDirectory = new File(pluginDirectoryPathname);
         addFile("messages", new File(pluginDirectory.getPath() + "/BlobMessage"));
         addFile("sounds", new File(pluginDirectory.getPath() + "/BlobSound"));
-        addFile("inventories", new File(pluginDirectory.getPath() + "/BlobInventory"));
+        addFile("blobInventories", new File(pluginDirectory.getPath() + "/BlobInventory"));
+        addFile("metaBlobInventories", new File(pluginDirectory.getPath() + "/MetaBlobInventory"));
+        addFile("actions", new File(pluginDirectory.getPath() + "/Action"));
         addFile("defaultSounds", new File(soundsDirectory().getPath() + "/" + lowercased + "_sounds.yml"));
         addFile("defaultMessages", new File(messagesDirectory().getPath() + "/" + lowercased + "_lang.yml"));
-        addFile("defaultInventories", new File(inventoriesDirectory().getPath() + "/" + lowercased + "_inventories.yml"));
-        loadFiles();
+        addFile("defaultBlobInventories", new File(inventoriesDirectory().getPath() + "/" + lowercased + "_inventories.yml"));
+        addFile("defaultMetaBlobInventories", new File(metaInventoriesDirectory().getPath() + "/" + lowercased + "_meta_inventories.yml"));
+        addFile("defaultActions", new File(actionsDirectory().getPath() + "/" + lowercased + "_actions.yml"));
+        loadFiles(plugin);
     }
 
     /**
@@ -96,10 +118,9 @@ public class BlobFileManager extends Manager {
         String fileName = FilenameUtils.removeExtension(file.getName());
         try {
             boolean isFresh = file.createNewFile();
-            if (isFresh)
-                ResourceUtil.updateYml(file.getParentFile(),
-                        "/temp" + fileName + ".yml",
-                        fileName + ".yml", file, getPlugin());
+            ResourceUtil.updateYml(file.getParentFile(),
+                    "/temp" + fileName + ".yml",
+                    fileName + ".yml", file, getPlugin());
             return isFresh;
         } catch (IOException e) {
             e.printStackTrace();
@@ -156,29 +177,39 @@ public class BlobFileManager extends Manager {
     /**
      * Loads all files
      */
-    public void loadFiles() {
+    public void loadFiles(JavaPlugin plugin) {
         try {
             if (!pluginDirectory.exists()) pluginDirectory.mkdir();
             if (!messagesDirectory().exists()) messagesDirectory().mkdir();
             if (!soundsDirectory().exists()) soundsDirectory().mkdir();
             if (!inventoriesDirectory().exists()) inventoriesDirectory().mkdir();
+            if (!metaInventoriesDirectory().exists()) metaInventoriesDirectory().mkdir();
+            if (!actionsDirectory().exists()) actionsDirectory().mkdir();
             ///////////////////////////////////////////
-
-            JavaPlugin main = getPlugin();
-            Optional<InputStream> soundsOptional = Optional.ofNullable(main.getResource(lowercased + "_sounds.yml"));
+            Optional<InputStream> soundsOptional = Optional.ofNullable(plugin.getResource(lowercased + "_sounds.yml"));
             if (soundsOptional.isPresent()) {
                 getDefaultSounds().createNewFile();
-                ResourceUtil.updateYml(soundsDirectory(), "/temp" + lowercased + "_sounds.yml", lowercased + "_sounds.yml", getDefaultSounds(), getPlugin());
+                ResourceUtil.updateYml(soundsDirectory(), "/temp" + lowercased + "_sounds.yml", lowercased + "_sounds.yml", getDefaultSounds(), plugin);
             }
-            Optional<InputStream> langOptional = Optional.ofNullable(main.getResource(lowercased + "_lang.yml"));
+            Optional<InputStream> langOptional = Optional.ofNullable(plugin.getResource(lowercased + "_lang.yml"));
             if (langOptional.isPresent()) {
                 getDefaultMessages().createNewFile();
-                ResourceUtil.updateYml(messagesDirectory(), "/temp" + lowercased + "_lang.yml", lowercased + "_lang.yml", getDefaultMessages(), getPlugin());
+                ResourceUtil.updateYml(messagesDirectory(), "/temp" + lowercased + "_lang.yml", lowercased + "_lang.yml", getDefaultMessages(), plugin);
             }
-            Optional<InputStream> inventoriesOptional = Optional.ofNullable(main.getResource(lowercased + "_inventories.yml"));
+            Optional<InputStream> inventoriesOptional = Optional.ofNullable(plugin.getResource(lowercased + "_inventories.yml"));
             if (inventoriesOptional.isPresent()) {
                 getDefaultInventories().createNewFile();
-                ResourceUtil.updateYml(inventoriesDirectory(), "/temp" + lowercased + "_inventories.yml", lowercased + "_inventories.yml", getDefaultInventories(), getPlugin());
+                ResourceUtil.updateYml(inventoriesDirectory(), "/temp" + lowercased + "_inventories.yml", lowercased + "_inventories.yml", getDefaultInventories(), plugin);
+            }
+            Optional<InputStream> metaInventoriesOptional = Optional.ofNullable(plugin.getResource(lowercased + "_meta_inventories.yml"));
+            if (metaInventoriesOptional.isPresent()) {
+                getDefaultMetaInventories().createNewFile();
+                ResourceUtil.updateYml(metaInventoriesDirectory(), "/temp" + lowercased + "_meta_inventories.yml", lowercased + "_meta_inventories.yml", getDefaultMetaInventories(), plugin);
+            }
+            Optional<InputStream> actionsOptional = Optional.ofNullable(plugin.getResource(lowercased + "_actions.yml"));
+            if (actionsOptional.isPresent()) {
+                getDefaultActions().createNewFile();
+                ResourceUtil.updateYml(actionsDirectory(), "/temp" + lowercased + "_actions.yml", lowercased + "_actions.yml", getDefaultActions(), plugin);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -280,7 +311,17 @@ public class BlobFileManager extends Manager {
      */
     @NotNull
     public File inventoriesDirectory() {
-        return getFile("inventories");
+        return getFile("blobInventories");
+    }
+
+    @NotNull
+    public File metaInventoriesDirectory() {
+        return getFile("metaBlobInventories");
+    }
+
+    @NotNull
+    public File actionsDirectory() {
+        return getFile("actions");
     }
 
     /**
@@ -310,6 +351,16 @@ public class BlobFileManager extends Manager {
      */
     @NotNull
     public File getDefaultInventories() {
-        return getFile("defaultInventories");
+        return getFile("defaultBlobInventories");
+    }
+
+    @NotNull
+    public File getDefaultMetaInventories() {
+        return getFile("defaultMetaInventories");
+    }
+
+    @NotNull
+    public File getDefaultActions() {
+        return getFile("defaultActions");
     }
 }

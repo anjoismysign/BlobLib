@@ -4,276 +4,212 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.api.*;
+import us.mytheria.bloblib.disguises.Disguiser;
+import us.mytheria.bloblib.entities.BlobEditor;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
-import us.mytheria.bloblib.entities.listeners.BlobChatListener;
-import us.mytheria.bloblib.entities.listeners.BlobDropListener;
-import us.mytheria.bloblib.entities.listeners.BlobSelPosListener;
-import us.mytheria.bloblib.entities.listeners.BlobSelectorListener;
+import us.mytheria.bloblib.vault.multieconomy.ElasticEconomy;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 /**
  * @author anjoismysign
- * This class provides static methods to interact with the BlobLib API.
- * It's not meant to change unless in a future in a big rewrite of the API.
+ * This class provides methods to interact with the BlobLib API.
+ * It's not meant to change now that it follows the singleton pattern.
  */
 public class BlobLibAPI {
-    private static final BlobLib main = BlobLib.getInstance();
+    private static BlobLibAPI instance;
+    private final BlobLibListenerAPI listenerAPI;
+    private final BlobLibEconomyAPI economyAPI;
+    private final BlobLibHologramAPI hologramAPI;
+    private final BlobLibPermissionAPI permissionAPI;
+    private final BlobLibDisguiseAPI disguiseAPI;
+    private final BlobLibAssetAPI assetAPI;
 
-    /**
-     * Adds a new chat listener
-     *
-     * @param player            The player
-     * @param timeout           The timeout
-     * @param consumer          The consumer. The String is the message sent by the player
-     * @param timeoutMessageKey The timeout message key
-     * @param timerMessageKey   The timer message key
-     */
+    private BlobLibAPI(BlobLib plugin) {
+        this.listenerAPI = BlobLibListenerAPI.getInstance(plugin);
+        this.economyAPI = BlobLibEconomyAPI.getInstance(plugin);
+        this.hologramAPI = BlobLibHologramAPI.getInstance(plugin);
+        this.permissionAPI = BlobLibPermissionAPI.getInstance(plugin);
+        this.disguiseAPI = BlobLibDisguiseAPI.getInstance(plugin);
+        this.assetAPI = BlobLibAssetAPI.getInstance(plugin);
+    }
+
+    public static BlobLibAPI getInstance(BlobLib plugin) {
+        if (instance == null) {
+            if (plugin == null)
+                throw new NullPointerException("injected dependency is null");
+            BlobLibAPI.instance = new BlobLibAPI(plugin);
+        }
+        return instance;
+    }
+
+    public static BlobLibAPI getInstance() {
+        return getInstance(null);
+    }
+
+    public BlobLibListenerAPI getListenerAPI() {
+        return listenerAPI;
+    }
+
+    public BlobLibEconomyAPI getEconomyAPI() {
+        return economyAPI;
+    }
+
+    public BlobLibHologramAPI getHologramAPI() {
+        return hologramAPI;
+    }
+
+    public BlobLibPermissionAPI getPermissionAPI() {
+        return permissionAPI;
+    }
+
+    public BlobLibDisguiseAPI getDisguiseAPI() {
+        return disguiseAPI;
+    }
+
+    public BlobLibAssetAPI getAssetAPI() {
+        return assetAPI;
+    }
+
+
+    @Deprecated
     public static void addChatListener(Player player, long timeout, Consumer<String> consumer,
                                        String timeoutMessageKey, String timerMessageKey) {
-        BlobLib.getInstance().getChatManager().addChatListener(player,
-                BlobChatListener.smart(player, timeout, consumer, timeoutMessageKey, timerMessageKey));
+        BlobLibListenerAPI.getInstance().addChatListener(player, timeout, consumer, timeoutMessageKey, timerMessageKey);
     }
 
-    /**
-     * Adds a new drop listener
-     *
-     * @param player          The player
-     * @param consumer        The consumer. The ItemStack is the item dropped.
-     * @param timerMessageKey The timer message key
-     */
+
+    @Deprecated
     public static void addDropListener(Player player, Consumer<ItemStack> consumer,
                                        String timerMessageKey) {
-        BlobLib.getInstance().getDropListenerManager().addDropListener(player,
-                BlobDropListener.smart(player, consumer, timerMessageKey));
+        BlobLibListenerAPI.getInstance().addDropListener(player, consumer, timerMessageKey);
     }
 
-    /**
-     * Adds a new position listener
-     *
-     * @param player            The player
-     * @param timeout           The timeout
-     * @param consumer          The consumer. The Block is the block clicked.
-     * @param timeoutMessageKey The timeout message key
-     * @param timerMessageKey   The timer message key
-     */
+    @Deprecated
     public static void addPositionListener(Player player, long timeout, Consumer<Block> consumer,
                                            String timeoutMessageKey, String timerMessageKey) {
-        BlobLib.getInstance().getPositionManager().addPositionListener(player,
-                BlobSelPosListener.smart(player, timeout, consumer, timeoutMessageKey, timerMessageKey));
+        BlobLibListenerAPI.getInstance().addPositionListener(player, timeout, consumer, timeoutMessageKey, timerMessageKey);
     }
 
-    /**
-     * Adds a new selector listener
-     *
-     * @param player          The player
-     * @param consumer        The consumer. The argument is the item selected.
-     * @param timerMessageKey The timer message key
-     * @param selector        The selector
-     * @param <T>             The type of the selector
-     */
+    @Deprecated
     public static <T> void addSelectorListener(Player player, Consumer<T> consumer,
-                                               String timerMessageKey,
+                                               @Nullable String timerMessageKey,
                                                VariableSelector<T> selector) {
-        BlobLib.getInstance().getSelectorManager().addSelectorListener(player,
-                BlobSelectorListener.wise(player, consumer, timerMessageKey, selector));
+        BlobLibListenerAPI.getInstance().addSelectorListener(player, consumer, timerMessageKey, selector);
     }
 
-    /**
-     * Deposit an amount to a player - DO NOT USE NEGATIVE AMOUNTS
-     *
-     * @param player to deposit to
-     * @param amount amount to deposit
-     */
+    @Deprecated
+    public static <T> void addEditorListener(Player player, Consumer<T> consumer,
+                                             String timerMessageKey,
+                                             BlobEditor<T> editor) {
+        BlobLibListenerAPI.getInstance().addEditorListener(player, consumer, timerMessageKey, editor);
+    }
+
+    @Deprecated
+    public static ElasticEconomy getElasticEconomy() {
+        return BlobLibEconomyAPI.getInstance().getElasticEconomy();
+    }
+
+    @Deprecated
+    public static String format(double amount) {
+        return BlobLibEconomyAPI.getInstance().format(amount);
+    }
+
+    @Deprecated
     public static void addCash(Player player, double amount) {
-        main.getVaultManager().getVaultEconomyWorker().addCash(player, amount);
+        BlobLibEconomyAPI.getInstance().addCash(player, amount);
     }
 
-    /**
-     * Withdraws an amount to a player - DO NOT USE NEGATIVE AMOUNTS
-     *
-     * @param player to deposit to
-     * @param amount amount to deposit
-     */
+    @Deprecated
     public static void withdrawCash(Player player, double amount) {
-        main.getVaultManager().getVaultEconomyWorker().withdrawCash(player, amount);
+        BlobLibEconomyAPI.getInstance().withdrawCash(player, amount);
     }
 
-    /**
-     * Accepts negative values.
-     * Be sure that vault implementation supports negative values.
-     *
-     * @param player to deposit to
-     * @param amount amount to deposit
-     */
+    @Deprecated
     public static void setCash(Player player, double amount) {
-        main.getVaultManager().getVaultEconomyWorker().setCash(player, amount);
+        BlobLibEconomyAPI.getInstance().setCash(player, amount);
     }
 
-    /**
-     * Checks if a player has a certain amount of money
-     *
-     * @param player to check
-     * @param amount amount to check
-     * @return true if player has amount
-     */
+    @Deprecated
     public static boolean hasCashAmount(Player player, double amount) {
-        return main.getVaultManager().getVaultEconomyWorker().hasCashAmount(player, amount);
+        return BlobLibEconomyAPI.getInstance().hasCashAmount(player, amount);
     }
 
-    /**
-     * Gets the amount of money a player has
-     *
-     * @param player to check
-     * @return amount of money
-     */
+    @Deprecated
     public static double getCash(Player player) {
-        return main.getVaultManager().getVaultEconomyWorker().getCash(player);
+        return BlobLibEconomyAPI.getInstance().getCash(player);
     }
 
-    /**
-     * @return true if a vault economy plugin is being used
-     */
+    @Deprecated
     public static boolean hasVaultEconomyDependency() {
-        return main.getVaultManager().isVaultEcoInstalled();
+        return BlobLibEconomyAPI.getInstance().hasVaultEconomyProvider();
     }
 
-    /**
-     * @return true if a vault permission plugin is being used
-     */
+    @Deprecated
     public static boolean hasVaultPermissionsDependency() {
-        return main.getVaultManager().isVaultPermsInstalled();
+        return BlobLibEconomyAPI.getInstance().hasVaultPermissionsProvider();
     }
 
-    /**
-     * Creates a hologram
-     *
-     * @param name     name of hologram
-     * @param location Bukkit's Location of hologram
-     * @param lines    lines of hologram
-     */
+    @Deprecated
     public static void createHologram(String name, Location location, List<String> lines) {
-        main.getHologramManager().create(name, location, lines);
+        BlobLibHologramAPI.getInstance().createHologram(name, location, lines);
     }
 
-    /**
-     * Creates a hologram
-     *
-     * @param name         name of hologram
-     * @param location     Bukkit's Location of hologram
-     * @param lines        lines of hologram
-     * @param saveToConfig if true, hologram will be saved in configuration
-     */
+    @Deprecated
     public static void createHologram(String name, Location location, List<String> lines, boolean saveToConfig) {
-        main.getHologramManager().create(name, location, lines, saveToConfig);
+        BlobLibHologramAPI.getInstance().createHologram(name, location, lines, saveToConfig);
     }
 
-    /**
-     * Updates a hologram
-     *
-     * @param name name of hologram
-     */
+    @Deprecated
     public static void updateHologram(String name) {
-        main.getHologramManager().update(name);
+        BlobLibHologramAPI.getInstance().updateHologram(name);
     }
 
-    /**
-     * Deletes a hologram
-     *
-     * @param name name of hologram
-     */
+    @Deprecated
     public static void removeHologram(String name) {
-        main.getHologramManager().remove(name);
+        BlobLibHologramAPI.getInstance().removeHologram(name);
     }
 
-    /**
-     * Sets a hologram's lines
-     *
-     * @param name  name of hologram
-     * @param lines lines of hologram
-     */
+    @Deprecated
     public static void setHologramLines(String name, List<String> lines) {
-        main.getHologramManager().setLines(name, lines);
+        BlobLibHologramAPI.getInstance().setHologramLines(name, lines);
     }
 
-    /**
-     * Add permission to a player ONLY for the world the player is currently on.
-     * This is a world-specific operation, if you want to add global permission
-     * you must explicitly use NULL for the world.
-     *
-     * @param player     The player to add the permission to
-     * @param permission The permission to add
-     * @return true if the permission was added, false if the player already had the permission
-     */
+    @Deprecated
     public static boolean addPermission(Player player, String permission) {
-        return main.getVaultManager().getVaultPermissionsWorker().addPermission(player, permission);
+        return BlobLibPermissionAPI.getInstance().addPermission(player, permission);
     }
 
-    /**
-     * Remove permission from a player.
-     * Will attempt to remove permission from the player on the player's
-     * current world. This is NOT a global operation.
-     *
-     * @param player     The player to remove the permission from
-     * @param permission The permission to remove
-     * @return true if the permission was removed, false if the player did not have the permission
-     */
+    @Deprecated
     public static boolean removePermission(Player player, String permission) {
-        return main.getVaultManager().getVaultPermissionsWorker().removePermission(player, permission);
+        return BlobLibPermissionAPI.getInstance().removePermission(player, permission);
     }
 
-    /**
-     * Add permission to a player. Supports NULL value for World if the permission
-     * system registered supports global permissions. But May return odd values if
-     * the servers registered permission system does not have a global permission store.
-     *
-     * @param player     The player to add the permission to
-     * @param permission The permission to add
-     * @param world      The world to add the permission to (null for global)
-     * @return true if the permission was added, false if the player already had the permission
-     */
+    @Deprecated
     public static boolean addPermission(Player player, String permission, String world) {
-        return main.getVaultManager().getVaultPermissionsWorker().addPermission(player, permission, world);
+        return BlobLibPermissionAPI.getInstance().addPermission(player, permission, world);
     }
 
-    /**
-     * Remove permission from a player. Supports NULL value for World if the
-     * permission system registered supports global permissions. But May return
-     * odd values if the servers registered permission system does not have a
-     * global permission store.
-     *
-     * @param player     The player to remove the permission from
-     * @param permission The permission to remove
-     * @param world      The world to remove the permission from
-     *                   (null for global)
-     * @return true if the permission was removed, false if the player did not have the permission
-     */
+    @Deprecated
     public static boolean removePermission(Player player, String permission, String world) {
-        return main.getVaultManager().getVaultPermissionsWorker().removePermission(player, permission, world);
+        return BlobLibPermissionAPI.getInstance().removePermission(player, permission, world);
     }
 
-    /**
-     * Add permission to a player. Will attempt to add permission
-     * to the player on the player, GLOBALLY.
-     *
-     * @param player     The player to add the permission to
-     * @param permission The permission to add
-     * @return true if the permission was added, false if the player already had the permission
-     */
+    @Deprecated
     public static boolean addGlobalPermission(Player player, String permission) {
-        return main.getVaultManager().getVaultPermissionsWorker().addGlobalPermission(player, permission);
+        return BlobLibPermissionAPI.getInstance().addGlobalPermission(player, permission);
     }
 
-    /**
-     * Remove permission from a player. Will attempt to remove permission
-     * from the player on the player, GLOBALLY.
-     *
-     * @param player     The player to remove the permission from
-     * @param permission The permission to remove
-     * @return true if the permission was removed, false if the player did not have the permission
-     */
+    @Deprecated
     public static boolean removeGlobalPermission(Player player, String permission) {
-        return main.getVaultManager().getVaultPermissionsWorker().removeGlobalPermission(player, permission);
+        return BlobLibPermissionAPI.getInstance().removeGlobalPermission(player, permission);
+    }
+
+    @Deprecated
+    public static Disguiser getDisguiser() {
+        return BlobLibDisguiseAPI.getInstance().getDisguiser();
     }
 }

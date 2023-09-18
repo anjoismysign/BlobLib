@@ -4,9 +4,9 @@ import me.anjoismysign.anjo.entities.Result;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
-import us.mytheria.bloblib.BlobLibAssetAPI;
-import us.mytheria.bloblib.managers.BlobPlugin;
+import us.mytheria.bloblib.api.BlobLibMessageAPI;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
     private Consumer<CommandSender> debug;
     private final List<String> callers;
 
-    public BlobExecutor(BlobPlugin plugin, String commandName) {
+    public BlobExecutor(JavaPlugin plugin, String commandName) {
         commandName = commandName.toLowerCase();
         PluginCommand command = plugin.getCommand(commandName);
         this.pluginCommand = command;
@@ -50,7 +50,7 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
         };
         this.callers = new ArrayList<>();
         if (command == null) {
-            plugin.getAnjoLogger().debug("Command " + commandName + " not found inside plugin.yml");
+            plugin.getLogger().log(Level.WARNING, "Command " + commandName + " not found inside plugin.yml");
             return;
         }
         command.getAliases().forEach(alias -> callers.add(alias.toLowerCase()));
@@ -166,6 +166,7 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
     /**
      * Will check if CommandSender has the provided permission.
      * If not, will automatically send a ReferenceBlobMessage with the key of blobMessageKey.
+     * If blobMessageKey is null, will not send any BlobMessage.
      *
      * @param sender         The CommandSender to check.
      * @param permission     The permission to check.
@@ -177,7 +178,8 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
                                  String blobMessageKey) {
         boolean has = sender.hasPermission(permission);
         if (!has)
-            BlobLibAssetAPI.getMessage(blobMessageKey).toCommandSender(sender);
+            if (blobMessageKey != null)
+                BlobLibMessageAPI.getInstance().getMessage(blobMessageKey).toCommandSender(sender);
         return has;
     }
 
@@ -204,7 +206,7 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
      */
     public boolean isInstanceOfPlayer(CommandSender sender, String blobMessageKey) {
         if (!(sender instanceof Player player)) {
-            BlobLibAssetAPI.getMessage(blobMessageKey).toCommandSender(sender);
+            BlobLibMessageAPI.getInstance().getMessage(blobMessageKey).toCommandSender(sender);
             return false;
         }
         return true;

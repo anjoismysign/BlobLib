@@ -1,0 +1,10 @@
+Gamemode:
+  Creative:
+    Type: CONSOLE_COMMAND
+    Command: 'gamemode creative %actor%'
+  Survival:
+    Type: CONSOLE_COMMAND
+    Command: 'gamemode survival %actor%'
+  Adventure:
+    Type: CONSOLE_COMMAND
+    Command: 'gamemode survival %actor%'

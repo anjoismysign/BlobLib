@@ -2,6 +2,10 @@ package us.mytheria.bloblib.managers;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.entities.ConfigDecorator;
+import us.mytheria.bloblib.entities.GitHubPluginUpdater;
+import us.mytheria.bloblib.entities.PluginUpdater;
 import us.mytheria.bloblib.entities.logger.BlobPluginLogger;
 
 /**
@@ -71,10 +75,41 @@ public abstract class BlobPlugin extends JavaPlugin {
      *
      * @return The ManagerDirector of the plugin.
      */
-    public abstract ManagerDirector getManagerDirector();
+    public abstract IManagerDirector getManagerDirector();
+
+    /**
+     * Gets the PluginUpdater of this BlobPlugin.
+     * If null, it means the plugin does not have an updater.
+     *
+     * @return The PluginUpdater of this BlobPlugin.
+     */
+    @Nullable
+    public PluginUpdater getPluginUpdater() {
+        return null;
+    }
 
     @NotNull
     public BlobPluginLogger getAnjoLogger() {
         return logger;
+    }
+
+    /**
+     * Will generate an updater for this BlobPlugin
+     *
+     * @param repositoryOwner The owner of GitHub repository
+     * @param repository      The repository name
+     * @return The updater
+     */
+    public GitHubPluginUpdater generateGitHubUpdater(String repositoryOwner, String repository) {
+        return new GitHubPluginUpdater(this, repositoryOwner, repository);
+    }
+
+    /**
+     * Will get a ConfigDecorator for this BlobPlugin
+     *
+     * @return The ConfigDecorator
+     */
+    public ConfigDecorator getConfigDecorator() {
+        return new ConfigDecorator(this);
     }
 }

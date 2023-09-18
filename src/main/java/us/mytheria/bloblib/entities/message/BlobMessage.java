@@ -1,7 +1,12 @@
 package us.mytheria.bloblib.entities.message;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.entities.BlobMessageModder;
 
 import java.util.function.Function;
 
@@ -22,30 +27,137 @@ import java.util.function.Function;
  * plugins and even the same server administrator can use them.
  */
 public interface BlobMessage {
-
     /**
+     * Will send the message to the player.
+     *
      * @param player The player to send the message to
+     * @deprecated Use {@link #handle(Player)} instead
      */
+    @Deprecated
     void send(Player player);
 
     /**
-     * @param player The player to send the message to
+     * If sound is not null, it will play the sound to the player.
+     *
+     * @param player   The player to send the message to
+     * @param location The location to play the sound at
+     * @deprecated Use {@link #handle(Player)} instead
      */
-    void sendAndPlay(Player player);
+    @Deprecated
+    default void sendAndPlay(Player player, Location location) {
+        send(player);
+        if (getSound() != null)
+            getSound().play(player, location);
+    }
 
     /**
+     * If sound is not null, it will play the sound to the player.
+     * Would be played at the player's location.
+     *
+     * @param player The player to send the message to
+     * @deprecated Use {@link #handle(Player)} instead
+     */
+    @Deprecated
+    default void sendAndPlay(Player player) {
+        sendAndPlay(player, player.getLocation());
+    }
+
+    /**
+     * If the sound is not null, it will play the sound at player's location
+     * and nearby players will be able to hear it.
+     *
+     * @param player   The player to send the message to
+     * @param location The location to play the sound at
+     * @deprecated Use {@link #handle(Player)} instead
+     */
+    @Deprecated
+    default void sendAndPlayInWorld(Player player, Location location) {
+        send(player);
+        if (getSound() != null)
+            getSound().playInWorld(location);
+    }
+
+    /**
+     * If the sound is not null, it will play the sound at player's location
+     * and nearby players will be able to hear it.
+     * Would be played at the player's location.
+     *
+     * @param player The player to send the message to
+     * @deprecated Use {@link #handle(Player)} instead
+     */
+    @Deprecated
+    default void sendAndPlayInWorld(Player player) {
+        sendAndPlayInWorld(player, player.getLocation());
+    }
+
+    /**
+     * Will handle the message with the required settings for the player
+     * such as not having a sound, if having sound playing just
+     * to the player, or playing to the whole world, etc.
+     *
+     * @param player   The player to handle the message for
+     * @param location The location to play the sound at
+     */
+    default void handle(Player player, Location location) {
+        if (getSound() == null)
+            send(player);
+        else if (getSound().audience() == MessageAudience.PLAYER)
+            sendAndPlay(player, location);
+        else
+            sendAndPlayInWorld(player, location);
+    }
+
+    /**
+     * Will handle the message with the required settings for the player
+     * such as not having a sound, if having sound playing just
+     * to the player, or playing to the whole world, etc.
+     * Would be played at the player's location.
+     *
+     * @param player The player to handle the message for
+     */
+    default void handle(Player player) {
+        handle(player, player.getLocation());
+    }
+
+    /**
+     * Will handle the message to all online players.
+     */
+    default void broadcast() {
+        Bukkit.getOnlinePlayers().forEach(this::handle);
+    }
+
+    /**
+     * Will send the message to the command sender.
+     *
      * @param commandSender The command sender to send the message to
      */
     void toCommandSender(CommandSender commandSender);
 
     /**
+     * Will retrieve the BlobSound object.
+     *
      * @return The sound to play
      */
+    @Nullable
     BlobSound getSound();
 
     /**
      * @param function The function to modify the message with
      * @return A new message with the modified message
      */
+    @NotNull
     BlobMessage modify(Function<String, String> function);
+
+    @NotNull
+    default BlobMessageModder<BlobMessage> modder() {
+        return BlobMessageModder.mod(this);
+    }
+
+    /**
+     * Will retrieve the locale of the message.
+     *
+     * @return The locale of the message
+     */
+    @Nullable
+    String getLocale();
 }

@@ -1,7 +1,6 @@
 package us.mytheria.bloblib.entities.currency;
 
-import me.anjoismysign.anjo.crud.SQLCrudManager;
-import me.anjoismysign.anjo.entities.NamingConventions;
+import net.milkbowl.vault.economy.IdentityEconomy;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -17,24 +16,23 @@ import us.mytheria.bloblib.entities.ObjectDirector;
 import us.mytheria.bloblib.managers.BlobPlugin;
 import us.mytheria.bloblib.managers.Manager;
 import us.mytheria.bloblib.managers.ManagerDirector;
-import us.mytheria.bloblib.utilities.BlobCrudManagerBuilder;
+import us.mytheria.bloblib.storage.BlobCrudManager;
+import us.mytheria.bloblib.storage.IdentifierType;
+import us.mytheria.bloblib.storage.StorageType;
+import us.mytheria.bloblib.utilities.BlobCrudManagerFactory;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class WalletOwnerManager<T extends WalletOwner> extends Manager implements Listener {
-    protected final HashMap<UUID, T> owners;
-    private HashSet<UUID> saving;
-    protected SQLCrudManager<BlobCrudable> sqlCrudManager;
+    protected final HashMap<UUID, T> walletOwners;
+    private final HashSet<UUID> saving;
+    protected BlobCrudManager<BlobCrudable> crudManager;
     private final BlobPlugin plugin;
-    private final Function<BlobCrudable, T> walletOwner;
-    private final Function<UUID, BlobCrudable> newBorn;
-    private final boolean logActivity;
-    private final String crudableName;
+    private final Function<BlobCrudable, T> generator;
     private final @Nullable Function<T, Event> joinEvent;
     private final @Nullable Function<T, Event> quitEvent;
     private boolean registeredEconomy, registeredPAPI;
@@ -42,24 +40,24 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
     protected ObjectDirector<Currency> currencyDirector;
     @Nullable
     private EconomyPHExpansion<T> economyPHExpansion;
+    private HashMap<String, CurrencyEconomy> implementations;
 
-    protected WalletOwnerManager(ManagerDirector managerDirector, Function<UUID, BlobCrudable> newBorn,
-                                 Function<BlobCrudable, T> walletOwner,
+    protected WalletOwnerManager(ManagerDirector managerDirector, Function<BlobCrudable, BlobCrudable> newBorn,
+                                 Function<BlobCrudable, T> generator,
                                  String crudableName, boolean logActivity,
                                  @Nullable Function<T, Event> joinEvent,
                                  @Nullable Function<T, Event> quitEvent) {
         super(managerDirector);
         plugin = managerDirector.getPlugin();
         Bukkit.getPluginManager().registerEvents(this, plugin);
-        owners = new HashMap<>();
-        this.newBorn = newBorn;
-        this.walletOwner = walletOwner;
-        this.logActivity = logActivity;
-        this.crudableName = NamingConventions.toPascalCase(crudableName);
+        walletOwners = new HashMap<>();
+        this.generator = generator;
         this.joinEvent = joinEvent;
         this.quitEvent = quitEvent;
         this.registeredEconomy = false;
-        reload();
+        saving = new HashSet<>();
+        crudManager = BlobCrudManagerFactory.PLAYER(plugin, crudableName, newBorn, logActivity);
+        saveAll();
     }
 
     @Override
@@ -70,15 +68,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
     @Override
     public void reload() {
         unload();
-        saving = new HashSet<>();
-        boolean useSQLite = getPlugin().getConfig().getBoolean("Database.UseSQLite");
-        if (useSQLite) {
-            sqlCrudManager = BlobCrudManagerBuilder.SQLITE_UUID(plugin, "UUID", 36,
-                    crudableName, newBorn, logActivity);
-        } else {
-            sqlCrudManager = BlobCrudManagerBuilder.MYSQL_UUID(plugin, "UUID", 36,
-                    crudableName, newBorn, logActivity);
-        }
+        Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), this::updateImplementations);
     }
 
     @EventHandler
@@ -92,19 +82,23 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
     public void onJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
         UUID uuid = player.getUniqueId();
-        CompletableFuture<T> future = new CompletableFuture<>();
+        CompletableFuture<BlobCrudable> future = new CompletableFuture<>();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            if (sqlCrudManager.exists(uuid.toString())) {
-                owners.put(uuid, walletOwner.apply(sqlCrudManager.read(uuid.toString())));
+            if (player == null || !player.isOnline()) {
+                future.completeExceptionally(new NullPointerException("Player is null"));
                 return;
             }
-            T walletOwner = this.walletOwner.apply(sqlCrudManager.createAndRegister(uuid.toString()));
-            owners.put(uuid, walletOwner);
-            future.complete(walletOwner);
+            BlobCrudable crudable = crudManager.read(uuid.toString());
+            future.complete(crudable);
         });
-        future.thenAccept(walletOwner -> {
-            if (joinEvent != null)
-                Bukkit.getPluginManager().callEvent(joinEvent.apply(walletOwner));
+        future.thenAccept(crudable -> {
+            if (player == null || !player.isOnline())
+                return;
+            T applied = generator.apply(crudable);
+            walletOwners.put(uuid, applied);
+            if (joinEvent == null)
+                return;
+            Bukkit.getPluginManager().callEvent(joinEvent.apply(applied));
         });
     }
 
@@ -120,53 +114,108 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
             Bukkit.getPluginManager().callEvent(quitEvent.apply(walletOwner));
         saving.add(uuid);
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            sqlCrudManager.update(walletOwner.serializeAllAttributes());
+            crudManager.update(walletOwner.serializeAllAttributes());
+            removeObject(uuid);
             saving.remove(uuid);
         });
     }
 
-    public void addObject(T walletOwner) {
-        owners.put(walletOwner.getUniqueId(), walletOwner);
+    public void addObject(UUID key, T walletOwner) {
+        walletOwners.put(key, walletOwner);
     }
 
-    public void removeObject(T lumber) {
-        owners.remove(lumber.getUniqueId());
+    public void addObject(Player player, T walletOwner) {
+        addObject(player.getUniqueId(), walletOwner);
+    }
+
+    public void removeObject(UUID key) {
+        walletOwners.remove(key);
+    }
+
+    public void removeObject(Player player) {
+        removeObject(player.getUniqueId());
     }
 
     public Optional<T> isWalletOwner(UUID uuid) {
-        return Optional.ofNullable(owners.get(uuid));
+        return Optional.ofNullable(walletOwners.get(uuid));
     }
 
     public Optional<T> isWalletOwner(Player player) {
         return isWalletOwner(player.getUniqueId());
     }
 
-    private void saveAll() {
-        owners.values().forEach(walletOwner -> sqlCrudManager.update(walletOwner.serializeAllAttributes()));
+    public void ifIsOnline(UUID uuid, Consumer<T> consumer) {
+        Optional<T> optional = isWalletOwner(uuid);
+        optional.ifPresent(consumer);
     }
 
-    protected CompletableFuture<T> read(UUID uuid) {
+    public void ifIsOnlineThenUpdateElse(UUID uuid, Consumer<T> consumer,
+                                         Runnable runnable) {
+        Optional<T> optional = isWalletOwner(uuid);
+        boolean isPresent = optional.isPresent();
+        if (isPresent) {
+            T walletOwner = optional.get();
+            consumer.accept(walletOwner);
+            crudManager.update(walletOwner.serializeAllAttributes());
+        } else {
+            runnable.run();
+        }
+    }
+
+    public void ifIsOnlineThenUpdate(UUID uuid, Consumer<T> consumer) {
+        ifIsOnlineThenUpdateElse(uuid, consumer, () -> {
+        });
+    }
+
+    private void saveAll() {
+        walletOwners.values().forEach(walletOwner -> crudManager.update(walletOwner.serializeAllAttributes()));
+    }
+
+    public CompletableFuture<T> readAsynchronously(String key) {
         CompletableFuture<T> future = new CompletableFuture<>();
         Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () ->
-                future.complete(walletOwner.apply(sqlCrudManager.read(uuid.toString()))));
+                future.complete(generator.apply(crudManager.read(key))));
         return future;
+    }
+
+    public void readThenUpdate(String key, Consumer<T> consumer) {
+        T walletOwner = generator.apply(crudManager.read(key));
+        consumer.accept(walletOwner);
+        crudManager.update(walletOwner.serializeAllAttributes());
+    }
+
+    public boolean exists(String key) {
+        return crudManager.exists(key);
+    }
+
+    public Collection<T> getAll() {
+        return walletOwners.values();
     }
 
     /**
      * Registers the BlobEconomy for this plugin.
      *
-     * @param defaultCurrency The default currency for this economy.
+     * @param defaultCurrency  The default currency for this economy.
+     * @param currencyDirector The director for the currencies.
+     * @param force            if true, will override vault economy providers
      * @return The provider for the Economy class in case you
      * later want to use it.
      */
     @NotNull
-    public BlobEconomy<T> registerEconomy(Currency defaultCurrency, ObjectDirector<Currency> currencyDirector) {
+    public BlobEconomy<T> registerEconomy(Currency defaultCurrency,
+                                          ObjectDirector<Currency> currencyDirector,
+                                          boolean force) {
         if (registeredEconomy)
             throw new IllegalStateException("BlobPlugin already registered their BlobEconomy");
         registeredEconomy = true;
-        this.defaultCurrency = defaultCurrency.getKey();
+        this.defaultCurrency = Objects.requireNonNull(defaultCurrency).getKey();
         this.currencyDirector = currencyDirector;
-        return new BlobEconomy<>(this);
+        return new BlobEconomy<>(this, force);
+    }
+
+    public BlobEconomy<T> registerEconomy(Currency defaultCurrency,
+                                          ObjectDirector<Currency> currencyDirector) {
+        return registerEconomy(defaultCurrency, currencyDirector, true);
     }
 
     @Nullable
@@ -222,11 +271,18 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
             throw new IllegalStateException("BlobPlugin already registered their PlaceholderAPI expansion");
         if (!registeredEconomy)
             throw new IllegalStateException("BlobPlugin has not registered their BlobEconomy");
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null)
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
+            getPlugin().getAnjoLogger().log("PlaceholderAPI not found, not registering PlaceholderAPI expansion for " + getPlugin().getName());
             return null;
+        }
         registeredPAPI = true;
         EconomyPHExpansion<T> expansion = new EconomyPHExpansion<>(this);
-        expansion.register();
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        Bukkit.getScheduler().runTask(getPlugin(), () -> {
+            expansion.register();
+            future.complete(null);
+        });
+        future.join();
         economyPHExpansion = expansion;
         return expansion;
     }
@@ -238,5 +294,58 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         economyPHExpansion = null;
         registeredPAPI = false;
         return this;
+    }
+
+    /**
+     * Will get an implementation of the CurrencyEconomy class.
+     * If the implementation doesn't exist, it will
+     * warn through console and return null.
+     *
+     * @param key The key of the implementation.
+     * @return The implementation.
+     */
+    @Nullable
+    public CurrencyEconomy getImplementation(String key) {
+        CurrencyEconomy economy = implementations.get(key);
+        if (economy == null) {
+            getPlugin().getAnjoLogger().singleError("Implementation doesn't exist. Currently available " +
+                    "implementations: " + Arrays.toString(implementations.values().stream()
+                    .map(CurrencyEconomy::getName)
+                    .toArray()));
+        }
+        return economy;
+    }
+
+    public Collection<IdentityEconomy> retrieveImplementations() {
+        return implementations.values()
+                .stream()
+                .map(currencyEconomy -> (IdentityEconomy) currencyEconomy)
+                .collect(Collectors.toList());
+    }
+
+    private HashMap<String, CurrencyEconomy> convertAll() {
+        HashMap<String, CurrencyEconomy> map = new HashMap<>();
+        currencyDirector.getObjectManager().values().stream()
+                .map(currency -> new CurrencyEconomy(currency, this))
+                .forEach(currencyEconomy -> map.put(currencyEconomy.getName(), currencyEconomy));
+        return map;
+    }
+
+    /**
+     * Updates the implementations of the BlobEconomy.
+     */
+    protected void updateImplementations() {
+        if (!registeredEconomy) {
+            throw new IllegalStateException("BlobPlugin has not registered their BlobEconomy");
+        }
+        this.implementations = convertAll();
+    }
+
+    public StorageType getStorageType() {
+        return crudManager.getStorageType();
+    }
+
+    public IdentifierType getIdentifierType() {
+        return crudManager.getIdentifierType();
     }
 }

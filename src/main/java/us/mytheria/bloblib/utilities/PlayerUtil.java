@@ -77,7 +77,7 @@ public class PlayerUtil {
      */
     public static BlockFace getBlockFace(Player player) {
         List<Block> lastTwoTargetBlocks = player.getLastTwoTargetBlocks(null, 100);
-        if (lastTwoTargetBlocks.size() != 2 || !lastTwoTargetBlocks.get(1).getType().isOccluding()) return null;
+        if (lastTwoTargetBlocks.size() != 2) return null;
         Block targetBlock = lastTwoTargetBlocks.get(1);
         Block adjacentBlock = lastTwoTargetBlocks.get(0);
         return targetBlock.getFace(adjacentBlock);
@@ -89,9 +89,9 @@ public class PlayerUtil {
      * @param player the player's who's targeted block is to be checked.
      * @return the adjacent block, or null if the targeted block is non-occluding.
      */
-    public static Block getAdyacentBlock(Player player) {
+    public static Block getAdjacentBlock(Player player) {
         List<Block> lastTwoTargetBlocks = player.getLastTwoTargetBlocks(null, 100);
-        if (lastTwoTargetBlocks.size() != 2 || !lastTwoTargetBlocks.get(1).getType().isOccluding()) return null;
+        if (lastTwoTargetBlocks.size() != 2 || !lastTwoTargetBlocks.get(1).getType().isSolid()) return null;
         return lastTwoTargetBlocks.get(0);
     }
 

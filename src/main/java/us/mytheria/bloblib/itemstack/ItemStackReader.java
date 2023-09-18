@@ -1,12 +1,17 @@
 package us.mytheria.bloblib.itemstack;
 
-import net.md_5.bungee.api.ChatColor;
+import me.anjoismysign.anjo.entities.Uber;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.SkullCreator;
+import us.mytheria.bloblib.exception.ConfigurationFieldException;
+import us.mytheria.bloblib.utilities.TextColor;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -15,60 +20,91 @@ import java.util.Objects;
 
 public class ItemStackReader {
 
-    public static ItemStackBuilder read(ConfigurationSection section) {
-        String inputMaterial = section.getString("Material", "DIRT");
+    public static ItemStackBuilder READ_OR_FAIL_FAST(ConfigurationSection section) {
+        if (!section.isString("Material"))
+            throw new ConfigurationFieldException("'Material' field is missing or not a String");
+        String inputMaterial = section.getString("Material");
         ItemStackBuilder builder;
         if (!inputMaterial.startsWith("HEAD-")) {
             Material material = Material.getMaterial(inputMaterial);
-            if (material == null) {
-                Bukkit.getLogger().severe("Material " + inputMaterial + " is not a valid material. Using DIRT instead.");
-                material = Material.DIRT;
-            }
+            if (material == null)
+                throw new ConfigurationFieldException("'Material' field is not a valid material");
             builder = ItemStackBuilder.build(material);
         } else
             builder = ItemStackBuilder.build(SkullCreator.itemFromUrl(inputMaterial.substring(5)));
-
-        if (section.contains("Amount")) {
+        if (section.isInt("Amount")) {
             builder = builder.amount(section.getInt("Amount"));
         }
-        if (section.contains("DisplayName")) {
-            builder = builder.displayName(ChatColor
-                    .translateAlternateColorCodes('&', section
-                            .getString("DisplayName")));
+        if (section.isString("DisplayName")) {
+            builder = builder.displayName(TextColor.PARSE(section
+                    .getString("DisplayName")));
         }
-        if (section.contains("Lore")) {
+        if (section.isList("Lore")) {
             List<String> input = section.getStringList("Lore");
             List<String> lore = new ArrayList<>();
-            input.forEach(string -> lore.add(ChatColor
-                    .translateAlternateColorCodes('&', string)));
+            input.forEach(string -> lore.add(TextColor.PARSE(string)));
             builder = builder.lore(lore);
         }
-        if (section.contains("Unbreakable")) {
+        if (section.isBoolean("Unbreakable")) {
             builder = builder.unbreakable(section.getBoolean("Unbreakable"));
         }
-        if (section.contains("Color")) {
+        if (section.isString("Color")) {
             builder = builder.color(parseColor(section.getString("Color")));
         }
-        if (section.contains("Enchantments")) {
+        if (section.isList("Enchantments")) {
             List<String> enchantNames = section.getStringList("Enchantments");
             builder = builder.deserializeAndEnchant(enchantNames);
         }
-        if (section.contains("CustomModelData")) {
+        if (section.isInt("CustomModelData")) {
             builder = builder.customModelData(section.getInt("CustomModelData"));
         }
         boolean showAll = section.getBoolean("ShowAllItemFlags", false);
         if (showAll)
             builder = builder.showAll();
-        if (section.contains("ItemFlags")) {
+        if (section.isList("ItemFlags")) {
             List<String> flagNames = section.getStringList("ItemFlags");
             builder = builder.deserializeAndFlag(flagNames);
+        }
+        if (section.isConfigurationSection("Attributes")) {
+            ConfigurationSection attributes = section.getConfigurationSection("Attributes");
+            Uber<ItemStackBuilder> uber = Uber.drive(builder);
+            attributes.getKeys(false).forEach(key -> {
+                if (!attributes.isConfigurationSection(key))
+                    throw new ConfigurationFieldException("Attribute '" + key + "' is not valid");
+                ConfigurationSection attributeSection = attributes.getConfigurationSection(key);
+                try {
+                    Attribute attribute = Attribute.valueOf(key);
+                    if (!attributeSection.isDouble("Amount"))
+                        throw new ConfigurationFieldException("Attribute '" + key + "' has an invalid amount (DECIMAL NUMBER)");
+                    double amount = attributeSection.getDouble("Amount");
+                    if (!attributeSection.isString("Operation"))
+                        throw new ConfigurationFieldException("Attribute '" + key + "' is missing 'Operation' field");
+                    AttributeModifier.Operation operation = AttributeModifier.Operation.valueOf(attributeSection.getString("Operation"));
+                    uber.talk(uber.thanks().attribute(attribute, amount, operation));
+                } catch (IllegalArgumentException e) {
+                    throw new ConfigurationFieldException("Attribute '" + key + "' has an invalid Operation");
+                }
+            });
+            builder = uber.thanks();
         }
         return builder;
     }
 
+    @Nullable
+    public static ItemStackBuilder read(ConfigurationSection section) {
+        ItemStackBuilder builder;
+        try {
+            builder = READ_OR_FAIL_FAST(section);
+            return builder;
+        } catch (Exception e) {
+            Bukkit.getLogger().severe(e.getMessage());
+            return ItemStackBuilder.build(Material.DIRT);
+        }
+    }
+
     public static ItemStackBuilder read(File file, String path) {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-        return read(Objects.requireNonNull(config.getConfigurationSection(path)));
+        return READ_OR_FAIL_FAST(Objects.requireNonNull(config.getConfigurationSection(path)));
     }
 
     public static ItemStackBuilder read(File file) {
@@ -76,7 +112,7 @@ public class ItemStackReader {
     }
 
     public static ItemStackBuilder read(YamlConfiguration config, String path) {
-        return read(Objects.requireNonNull(config.getConfigurationSection(path)));
+        return READ_OR_FAIL_FAST(Objects.requireNonNull(config.getConfigurationSection(path)));
     }
 
     public static ItemStackBuilder read(YamlConfiguration config) {

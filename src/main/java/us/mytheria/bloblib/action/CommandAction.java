@@ -5,6 +5,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * @param <T> The type of entity this action is for
@@ -15,7 +16,7 @@ import java.util.Objects;
  * Entity.
  */
 public class CommandAction<T extends Entity> extends Action<T> {
-    private String command;
+    private final String command;
 
     /**
      * Creates a new CommandAction
@@ -38,19 +39,26 @@ public class CommandAction<T extends Entity> extends Action<T> {
      * Runs the command as the actor
      */
     @Override
-    protected void run() {
+    public void run() {
         Bukkit.dispatchCommand(getActor(), command);
     }
 
     /**
-     * Updates the actor
+     * Updates the actor.
+     * This will return a new instance of the action.
      *
      * @param actor The actor to update to
      */
-    public void updateActor(T actor) {
-        super.updateActor(actor);
-        if (actor != null)
-            command = command.replace("%actor%", actor.getName());
+    @Override
+    public <U extends Entity> CommandAction<U> updateActor(U actor) {
+        if (actor != null) {
+            String updatedCommand = command.replace("%actor%", actor.getName());
+            CommandAction<U> updatedAction = new CommandAction<>(updatedCommand);
+            updatedAction.actor = actor;
+            return updatedAction;
+        } else {
+            throw new IllegalArgumentException("Actor cannot be null");
+        }
     }
 
     /**
@@ -62,5 +70,23 @@ public class CommandAction<T extends Entity> extends Action<T> {
     public void save(ConfigurationSection section) {
         section.set("Command", command);
         section.set("Type", "ActorCommand");
+    }
+
+    /**
+     * Modifies the command.
+     * This will return a new instance of the action.
+     *
+     * @param modifier The modifier to use
+     * @return The new CommandAction
+     */
+    @Override
+    public CommandAction<T> modify(Function<String, String> modifier) {
+        String newCommand = modifier.apply(command);
+        return new CommandAction<>(newCommand);
+    }
+
+    @Override
+    public boolean updatesActor() {
+        return true;
     }
 }

@@ -1,14 +1,17 @@
 package us.mytheria.bloblib.entities;
 
+import me.anjoismysign.anjo.entities.Uber;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
+import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
+import us.mytheria.bloblib.entities.listeners.BlobEditorListener;
 import us.mytheria.bloblib.entities.listeners.BlobSelectorListener;
 import us.mytheria.bloblib.managers.SelectorListenerManager;
 
@@ -24,6 +27,28 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     private final List<T> list;
     private final Collection<T> collection;
     private final SelectorListenerManager selectorManager;
+    private final Consumer<Player> addConsumer;
+    private Consumer<T> removeConsumer;
+    private Function<T, ItemStack> buildFunction;
+
+    /**
+     * Creates a new BlobEditor passing a BlobInventory for VariableSelector
+     * and injects a collection.
+     *
+     * @param <T>           the type of the collection
+     * @param blobInventory the BlobInventory
+     * @param builderId     the id of the builder
+     * @param dataType      the data type of the editor
+     * @param addConsumer   the consumer to add a new element
+     * @param collection    the collection to inject
+     * @return the new BlobEditor
+     */
+    public static <T> BlobEditor<T> build(BlobInventory blobInventory, UUID builderId,
+                                          String dataType, Consumer<Player> addConsumer,
+                                          Collection<T> collection) {
+        return new BlobEditor<>(blobInventory, builderId,
+                dataType, collection, addConsumer);
+    }
 
     /**
      * Creates a new BlobEditor passing a BlobInventory for VariableSelector
@@ -32,91 +57,123 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      * @param blobInventory the BlobInventory
      * @param builderId     the id of the builder
      * @param dataType      the data type of the editor
+     * @param addConsumer   the consumer to add a new element
      * @return the new BlobEditor
      */
     public static <T> BlobEditor<T> build(BlobInventory blobInventory, UUID builderId,
-                                          String dataType) {
+                                          String dataType, Consumer<Player> addConsumer) {
         return new BlobEditor<>(blobInventory, builderId,
-                dataType);
+                dataType, addConsumer);
     }
 
     /**
      * Creates a new BlobEditor
      *
-     * @param <T>       the type of the collection
-     * @param builderId the id of the builder
-     * @param dataType  the data type of the editor
+     * @param <T>         the type of the collection
+     * @param builderId   the id of the builder
+     * @param dataType    the data type of the editor
+     * @param addConsumer the consumer to add a new element
      * @return the new BlobEditor
      */
-    public static <T> BlobEditor<T> DEFAULT(UUID builderId, String dataType) {
+    public static <T> BlobEditor<T> DEFAULT(UUID builderId, String dataType,
+                                            Consumer<Player> addConsumer) {
         return new BlobEditor<>(VariableSelector.DEFAULT(), builderId,
-                dataType);
+                dataType, addConsumer);
     }
 
     /**
      * Creates a new BlobEditor passing specific collection.
      *
-     * @param <T>        the type of the collection
-     * @param builderId  the id of the builder
-     * @param dataType   the data type of the editor
-     * @param collection the collection to edit
+     * @param <T>         the type of the collection
+     * @param builderId   the id of the builder
+     * @param dataType    the data type of the editor
+     * @param collection  the collection to edit
+     * @param addConsumer the consumer to add new elements
      * @return the new BlobEditor
      */
     public static <T> BlobEditor<T> COLLECTION_INJECTION(UUID builderId, String dataType,
-                                                         Collection<T> collection) {
+                                                         Collection<T> collection,
+                                                         Consumer<Player> addConsumer) {
         return new BlobEditor<>(VariableSelector.DEFAULT(), builderId,
-                dataType, collection);
+                dataType, collection, addConsumer);
     }
 
     /**
-     * Creates a new BlobEditor.
+     * Creates a new BlobEditor passing an ObjectDirector as a new elements' provider.
      *
-     * @param <T>       the type of the collection
      * @param builderId the id of the builder
-     * @param dataType  the data type of the editor
+     * @param director  the ObjectDirector
+     * @param <T>       the type of the collection
      * @return the new BlobEditor
-     * @deprecated use {@link #DEFAULT(UUID, String)} instead
      */
-    @Deprecated
-    public static <T> BlobEditor<T> DEFAULT_ITEMSTACKREADER(UUID builderId, String dataType) {
-        return new BlobEditor<>(VariableSelector.DEFAULT_ITEMSTACKREADER(), builderId,
-                dataType);
+    public static <T extends BlobObject> BlobEditor<T> DEFAULT_DIRECTOR(UUID builderId,
+                                                                        ObjectDirector<T> director) {
+        Uber<BlobEditor<T>> uber = Uber.fly();
+        uber.talk(BlobEditor.DEFAULT(builderId, director.objectName, player -> {
+            ObjectManager<T> dropObjectManager = director.getObjectManager();
+            BlobEditor<T> editor = dropObjectManager.makeEditor(player);
+            editor.selectElement(player, element -> uber.thanks().add(element));
+        }));
+        return uber.thanks();
     }
 
     /**
-     * Creates a new BlobEditor passing specific collection.
+     * Creates a new BlobEditor passing an ObjectDirector's ObjectBuilder as a new elements' provider.
      *
-     * @param <T>        the type of the collection
      * @param builderId  the id of the builder
-     * @param dataType   the data type of the editor
      * @param collection the collection to edit
+     * @param director   the ObjectDirector
+     * @param <T>        the type of the collection
      * @return the new BlobEditor
-     * @deprecated use {@link #COLLECTION_INJECTION(UUID, String, Collection)} instead
      */
-    @Deprecated
-    public static <T> BlobEditor<T> DEFAULT_ITEMSTACKREADER(UUID builderId, String dataType,
-                                                            Collection<T> collection) {
-        return new BlobEditor<>(VariableSelector.DEFAULT_ITEMSTACKREADER(), builderId,
-                dataType, collection);
+    public static <T extends BlobObject> BlobEditor<T> COLLECTION_INJECTION_BUILDER(UUID builderId,
+                                                                                    Collection<T> collection,
+                                                                                    ObjectDirector<T> director) {
+        Uber<BlobEditor<T>> uber = Uber.fly();
+        if (!director.hasObjectBuilderManager())
+            throw new IllegalArgumentException("The director does not have an ObjectBuilderManager. " +
+                    "Implement it in constructor.");
+        uber.talk(new BlobEditor<>(VariableSelector.DEFAULT(), builderId,
+                director.objectName, collection, player -> {
+            ObjectBuilder<T> builder = director.getOrDefaultBuilder(player.getUniqueId());
+            builder.open(player);
+        }));
+        return uber.thanks();
     }
 
     protected BlobEditor(BlobInventory blobInventory, UUID builderId,
-                         String dataType) {
+                         String dataType,
+                         Consumer<Player> addConsumer) {
         super(blobInventory, builderId, dataType, null);
-        list = new ArrayList<>();
-        collection = null;
-        selectorManager = BlobLib.getInstance().getSelectorManager();
+        this.selectorManager = BlobLib.getInstance().getSelectorManager();
+        this.list = new ArrayList<>();
+        this.collection = null;
+        this.addConsumer = addConsumer;
+        this.buildFunction = null;
     }
 
     protected BlobEditor(BlobInventory blobInventory, UUID builderId,
-                         String dataType, Collection<T> collection) {
+                         String dataType, Collection<T> collection,
+                         Consumer<Player> addConsumer) {
         super(Objects.requireNonNull(blobInventory, "'blobInventory' cannot be null"),
                 Objects.requireNonNull(builderId, "'builderId' cannot be null"),
                 Objects.requireNonNull(dataType, "'dataType' cannot be null"),
                 null);
+        this.selectorManager = BlobLib.getInstance().getSelectorManager();
         this.collection = collection;
-        list = null;
-        selectorManager = BlobLib.getInstance().getSelectorManager();
+        this.list = null;
+        this.addConsumer = addConsumer;
+        this.buildFunction = null;
+    }
+
+    /**
+     * Gets the remove consumer
+     *
+     * @return the remove consumer
+     */
+    @Nullable
+    public Consumer<T> getRemoveConsumer() {
+        return removeConsumer;
     }
 
     /**
@@ -215,7 +272,10 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
             T get;
             try {
                 get = getList().get(i);
-                values.add(new VariableValue<>(function.apply(get), get));
+                ItemStack itemStack = function.apply(get);
+                if (itemStack == null)
+                    continue;
+                values.add(new VariableValue<>(itemStack, get));
             } catch (IndexOutOfBoundsException e) {
                 break;
             }
@@ -224,65 +284,63 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     }
 
     /**
-     * removes an element from the list
+     * Selects an object from the editor.
      *
-     * @param t the element to remove
+     * @param player          The player that selected the object.
+     * @param consumer        The consumer that will be called when the object is selected.
+     * @param timerMessageKey The key of the message that will be sent to the player when the timer starts.
      */
-    private void remove(T t) {
+    @Override
+    public void selectElement(Player player, Consumer<T> consumer, String timerMessageKey) {
+        if (buildFunction != null) {
+            selectElement(player, consumer, timerMessageKey, buildFunction);
+            return;
+        }
+        loadPage(getPage(), true);
+        selectorManager.addEditorListener(player, BlobEditorListener.wise(player,
+                consumer, timerMessageKey,
+                this));
+    }
+
+    /**
+     * Selects an object from the editor.
+     *
+     * @param player          The player that selected the object.
+     * @param consumer        The consumer that will be called when the object is selected.
+     * @param timerMessageKey The key of the message that will be sent to the player when the timer starts.
+     * @param function        The function that will be called to customize the ItemStack.
+     */
+    @Override
+    public void selectElement(Player player, Consumer<T> consumer, String timerMessageKey, Function<T, ItemStack> function) {
+        loadCustomPage(getPage(), true, function);
+        selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
+                consumer, timerMessageKey,
+                this));
+    }
+
+    /**
+     * Will attempt to remove the element from the collection
+     * based on the loaded remove consumer.
+     *
+     * @param player The player to remove the element from.
+     */
+    public void removeElement(Player player) {
+        if (removeConsumer == null)
+            return;
+        removeElement(player, removeConsumer);
+    }
+
+    /**
+     * Removes an object from the editor.
+     * The change will be reflected in the collection immediately.
+     *
+     * @param t The object to remove.
+     */
+    @Override
+    public void remove(T t) {
         if (list == null)
             return;
         list.remove(t);
-    }
-
-    /**
-     * Removes an element from the list. Will not close the
-     * inventory unless input is null.You have to manually
-     * call player.closeInventory() inside the consumer.
-     *
-     * @param player   the player
-     * @param consumer the consumer to accept the element
-     */
-    public void removeElement(Player player, Consumer<T> consumer) {
-        loadPage(getPage(), true);
-        selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
-                input -> {
-                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
-                    remove(input);
-                    consumer.accept(input);
-                }, "Editor.Remove",
-                this));
-    }
-
-    /**
-     * Removes an element from the list. Will not close the
-     * inventory unless input is null.You have to manually
-     * call player.closeInventory() inside the consumer.
-     *
-     * @param player   the player
-     * @param consumer the consumer to accept the element
-     * @param function the function to get the ItemStack to display
-     *                 the elements.
-     */
-    public void removeElement(Player player, Consumer<T> consumer, Function<T, ItemStack> function) {
-        loadCustomPage(getPage(), true, function);
-        selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
-                input -> {
-                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
-                    remove(input);
-                    consumer.accept(input);
-                }, "Editor.Remove",
-                this));
-    }
-
-    /**
-     * add an element to the list
-     *
-     * @param element the element to add
-     */
-    public void addElement(T element) {
-        if (list == null)
-            return;
-        list.add(element);
     }
 
     /**
@@ -305,9 +363,10 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     }
 
     /**
-     * add an element to the list
+     * Adds a new object to the editor.
+     * The change will be reflected in the collection immediately.
      *
-     * @param t the element to add
+     * @param t The object to add.
      */
     @Override
     public void add(T t) {
@@ -324,5 +383,116 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
             return new ArrayList<>(collection);
         }
         return list;
+    }
+
+    /**
+     * @param slot the slot to check
+     * @return true if the slot is an add element button, false otherwise
+     */
+    public boolean isAddElementButton(int slot) {
+        return Objects.requireNonNull(getSlots("Add-Element"),
+                "Add-Element button not found").contains(slot);
+    }
+
+    /**
+     * @param slot the slot to check
+     * @return true if the slot is a remove element button, false otherwise
+     */
+    public boolean isRemoveElementButton(int slot) {
+        return Objects.requireNonNull(getSlots("Remove-Element"),
+                "Remove-Element button not found").contains(slot);
+    }
+
+    /**
+     * Will attempt to add an element to the collection
+     * through the following player.
+     *
+     * @param player The player to manage the action.
+     */
+    public void addElement(Player player) {
+        if (addConsumer == null)
+            return;
+        addConsumer.accept(player);
+    }
+
+    /**
+     * Will make the editor listen to the player
+     * for actions such as navigating through pages,
+     * adding and removing elements.
+     * If anything of the previous is done,
+     * the editor will adapt to the player for that
+     * specific action.
+     * If player selects an element, nothing will happen.
+     *
+     * @param player The player to manage the editor.
+     */
+    @Override
+    public void manage(Player player, Consumer<T> removeConsumer) {
+        if (buildFunction != null) {
+            manage(player, buildFunction, removeConsumer);
+            return;
+        }
+        loadPage(1, true);
+        if (!selectorManager.addEditorListener(player,
+                BlobEditorListener.wise(player,
+                        input -> {
+                            manageWithCache(player);
+                        }, null,
+                        this)))
+            return;
+        this.removeConsumer = removeConsumer;
+    }
+
+    /**
+     * Will make the editor listen to the player
+     * for actions such as navigating through pages,
+     * adding and removing elements.
+     * If anything of the previous is done,
+     * the editor will adapt to the player for that
+     * specific action.
+     * If player selects an element, nothing will happen.
+     *
+     * @param player   The player to manage the editor.
+     * @param function the function that loads ItemStacks in inventory
+     */
+    @Override
+    public void manage(Player player, Function<T, ItemStack> function,
+                       Consumer<T> removeConsumer) {
+        loadCustomPage(1, true, function);
+        if (!selectorManager.addEditorListener(player,
+                BlobEditorListener.wise(player,
+                        input -> {
+                            manageWithCache(player);
+                        }, null,
+                        this)))
+            return;
+        setBuildFunction(function);
+        this.removeConsumer = removeConsumer;
+    }
+
+    /**
+     * Will make the editor listen to the player
+     * using the cache for actions such as navigating through pages,
+     * adding and removing elements.
+     *
+     * @param player The player to manage the editor.
+     */
+    public void manageWithCache(Player player) {
+        if (removeConsumer == null)
+            throw new IllegalStateException("removeConsumer is null");
+        manage(player, removeConsumer);
+    }
+
+    /**
+     * Will update the build function.
+     * If null, selectElement will use the default build function.
+     * If not null, selectElement will use the new build function.
+     * It is automaitcally called when {@link #manage(Player, Function, Consumer)}
+     * is called.
+     *
+     * @param buildFunction the new build function
+     */
+    public void setBuildFunction(Function<T, ItemStack> buildFunction) {
+        this.buildFunction = buildFunction;
     }
 }

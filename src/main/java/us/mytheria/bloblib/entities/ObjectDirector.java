@@ -1,6 +1,7 @@
 package us.mytheria.bloblib.entities;
 
 import me.anjoismysign.anjo.entities.Result;
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -8,7 +9,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-import us.mytheria.bloblib.BlobLibAssetAPI;
+import org.jetbrains.annotations.NotNull;
+import us.mytheria.bloblib.api.BlobLibMessageAPI;
 import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
 import us.mytheria.bloblib.itemstack.ItemStackBuilder;
 import us.mytheria.bloblib.managers.Manager;
@@ -16,12 +18,12 @@ import us.mytheria.bloblib.managers.ManagerDirector;
 import us.mytheria.bloblib.utilities.ItemStackUtil;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.logging.Level;
 
 public class ObjectDirector<T extends BlobObject> extends Manager implements Listener {
     private final ObjectBuilderManager<T> objectBuilderManager;
@@ -32,9 +34,11 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
     private final List<Function<ExecutorData, Boolean>> adminChildCommands;
     private final List<Function<ExecutorData, List<String>>> nonAdminChildTabCompleter;
     private final List<Function<ExecutorData, List<String>>> adminChildTabCompleter;
-    private final String objectName;
+    protected final String objectName;
     private final boolean hasObjectBuilderManager;
     private boolean objectIsEditable;
+    protected CompletableFuture<Void> loadFilesFuture;
+    private final Consumer<Player> addConsumer;
 
     public ObjectDirector(ManagerDirector managerDirector,
                           ObjectDirectorData objectDirectorData,
@@ -48,33 +52,49 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
         super(managerDirector);
         objectIsEditable = false;
         this.hasObjectBuilderManager = hasObjectBuilderManager;
-        if (hasObjectBuilderManager)
+        if (hasObjectBuilderManager) {
             this.objectBuilderManager = new ObjectBuilderManager<>(managerDirector,
                     objectDirectorData.objectBuilderKey(), this);
-        else
+            this.addConsumer = objectBuilderManager::getOrDefault;
+        } else {
             this.objectBuilderManager = null;
-        Optional<File> loadFilesDirectory = managerDirector.getFileManager().searchFile(objectDirectorData.objectDirectory());
-        if (loadFilesDirectory.isEmpty())
+            this.addConsumer = player -> {
+            };
+        }
+        Optional<File> loadFilesDirectory = managerDirector.getRealFileManager().searchFile(objectDirectorData.objectDirectory());
+        if (loadFilesDirectory.isEmpty()) {
+            Bukkit.getLogger().info("The loadFilesPathKey is not valid");
             throw new IllegalArgumentException("The loadFilesPathKey is not valid");
+        }
         this.objectManager = new ObjectManager<>(managerDirector, loadFilesDirectory.get(),
-                HashMap::new, HashMap::new) {
-            @Override
-            public void loadFiles(File path) {
+                ConcurrentHashMap::new, ConcurrentHashMap::new, this) {
+            public void loadFiles(File path, CompletableFuture<Void> mainFuture) {
                 if (!path.exists())
                     path.mkdir();
-                File[] listOfFiles = path.listFiles();
-                for (File file : listOfFiles) {
-                    if (file.getName().equals(".DS_Store"))
-                        continue;
-                    if (file.isFile()) {
-                        T blobObject = readFunction.apply(file);
-                        if (blobObject.edit() != null)
-                            objectIsEditable = true;
-                        addObject(blobObject.getKey(), blobObject, file);
-                    }
-                    if (file.isDirectory())
-                        loadFiles(file);
-                }
+                Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () -> {
+                    String[] extensions = {"yml"};
+                    Collection<File> files = FileUtils.listFiles(path, extensions, true);
+                    List<CompletableFuture<Void>> futures = new ArrayList<>();
+                    files.forEach(file -> {
+                        CompletableFuture<Void> fileFuture = CompletableFuture.runAsync(() -> {
+                            T blobObject;
+                            try {
+                                blobObject = readFunction.apply(file);
+                                if (blobObject != null) {
+                                    if (blobObject.edit() != null)
+                                        objectIsEditable = true;
+                                    this.addObject(blobObject.getKey(), blobObject, file);
+                                }
+                            } catch (Exception exception) {
+                                Bukkit.getLogger().log(Level.SEVERE, exception.getMessage() + " \n " +
+                                        "At: " + file.getPath(), exception);
+                                mainFuture.completeExceptionally(exception);
+                            }
+                        });
+                        futures.add(fileFuture);
+                    });
+                    CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).thenAccept(v -> mainFuture.complete(null));
+                });
             }
         };
         clickEventConsumer = e -> {
@@ -319,7 +339,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                 if (childTabCompletion != null && !childTabCompletion.isEmpty())
                     suggestions.addAll(childTabCompletion);
             }
-            if (!executor.hasAdminPermission(sender))
+            if (!executor.hasAdminPermission(sender, null))
                 return suggestions;
             for (Function<ExecutorData, List<String>> childTabCompleter : adminChildTabCompleter) {
                 List<String> childTabCompletion = childTabCompleter.apply(new ExecutorData(executor, args, sender));
@@ -345,11 +365,11 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
      * @param player the player who is removing the object.
      */
     public void removeObject(Player player) {
-        removeObject(player, key -> {
+        removeObject(player, object -> {
+            String key = object.getKey();
             ItemStackBuilder builder = ItemStackBuilder.build(Material.COMMAND_BLOCK);
             builder.displayName(key);
             builder.lore();
-            Object object = getObjectManager().getObject(key);
             if (ItemStack.class.isInstance(object.getClass())) {
                 ItemStack itemStack = (ItemStack) object;
                 builder.displayName(ItemStackUtil.display(itemStack));
@@ -366,14 +386,15 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
      * @param function the function that is used to get the ItemStack to display
      *                 the object to be removed.
      */
-    public void removeObject(Player player, Function<String, ItemStack> function) {
-        BlobEditor<String> editor = objectManager.makeEditor(player, objectName);
-        editor.removeElement(player, key -> {
+    public void removeObject(Player player, Function<T, ItemStack> function) {
+        BlobEditor<T> editor = objectManager.makeEditor(player);
+        editor.removeElement(player, element -> {
+            String key = element.getKey();
             player.closeInventory();
             getObjectManager().removeObject(key);
-            BlobLibAssetAPI.getMessage("Editor.Removed")
+            BlobLibMessageAPI.getInstance().getMessage("Editor.Removed")
                     .modify(s -> s.replace("%element%", key))
-                    .sendAndPlay(player);
+                    .handle(player);
         }, function);
     }
 
@@ -384,15 +405,31 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
     @SuppressWarnings("unchecked")
     public void editObject(Player player, String key) {
         if (!objectIsEditable) {
-            BlobLibAssetAPI.getMessage("Object.Not-Editable").sendAndPlay(player);
+            BlobLibMessageAPI.getInstance().getMessage("Object.Not-Editable").handle(player);
             return;
         }
         T object = objectManager.getObject(key);
         if (object == null) {
-            BlobLibAssetAPI.getMessage("Object.Not-Found").sendAndPlay(player);
+            BlobLibMessageAPI.getInstance().getMessage("Object.Not-Found").handle(player);
             return;
         }
         ObjectBuilder<T> builder = (ObjectBuilder<T>) object.edit();
         getObjectBuilderManager().addBuilder(player.getUniqueId(), builder);
+    }
+
+    public void whenObjectManagerFilesLoad(Consumer<ObjectManager<T>> consumer) {
+        this.objectManager.whenFilesLoad(consumer);
+    }
+
+    public boolean hasObjectBuilderManager() {
+        return hasObjectBuilderManager;
+    }
+
+    @NotNull
+    public ObjectBuilder<T> getOrDefaultBuilder(UUID uuid) {
+        if (!hasObjectBuilderManager)
+            throw new IllegalStateException("ObjectBuilderManager is not enabled. " +
+                    "Implement it in constructor.");
+        return getObjectBuilderManager().getOrDefault(uuid);
     }
 }

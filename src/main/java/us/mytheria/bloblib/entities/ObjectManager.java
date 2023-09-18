@@ -3,13 +3,18 @@ package us.mytheria.bloblib.entities;
 import me.anjoismysign.anjo.entities.Result;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.entities.logger.BlobPluginLogger;
 import us.mytheria.bloblib.managers.Manager;
 import us.mytheria.bloblib.managers.ManagerDirector;
 
 import java.io.File;
-import java.util.AbstractMap;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -19,14 +24,16 @@ import java.util.function.Supplier;
  */
 public abstract class ObjectManager<T extends BlobObject> extends Manager {
     private final File loadFilesDirectory;
-    private final Supplier<AbstractMap<String, T>> objectsSupplier;
-    private final Supplier<AbstractMap<String, File>> fileSupplier;
+    private final Supplier<Map<String, T>> objectsSupplier;
+    private final Supplier<Map<String, File>> fileSupplier;
+    private CompletableFuture<Void> loadFiles;
+    private final ObjectDirector<T> parent;
     /**
      * The objects that are loaded in random access memory.
      * Should be initialized in loadInConstructor() method.
      */
-    private AbstractMap<String, T> objects;
-    private AbstractMap<String, File> objectFiles;
+    private Map<String, T> objects;
+    private Map<String, File> objectFiles;
 
     /**
      * Constructor for ObjectManager
@@ -35,12 +42,14 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
      * @param loadFilesDirectory The directory to load files from
      */
     public ObjectManager(ManagerDirector managerDirector, File loadFilesDirectory,
-                         Supplier<AbstractMap<String, T>> supplier,
-                         Supplier<AbstractMap<String, File>> fileSupplier) {
+                         Supplier<Map<String, T>> supplier,
+                         Supplier<Map<String, File>> fileSupplier,
+                         ObjectDirector<T> parent) {
         super(managerDirector);
         this.loadFilesDirectory = loadFilesDirectory;
         this.objectsSupplier = supplier;
         this.fileSupplier = fileSupplier;
+        this.parent = parent;
         reload();
     }
 
@@ -54,23 +63,16 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
     }
 
     /**
-     * Logic that should run in super() method in constructor.
-     */
-    @Override
-    public void loadInConstructor() {
-
-    }
-
-    /**
      * Will load all files in the given directory
      *
      * @param path The directory to load files from
      */
-    public abstract void loadFiles(File path);
+    public abstract void loadFiles(File path, CompletableFuture<Void> mainFuture);
 
     /**
      * Adds an object to the manager and
      * tracks the file it was loaded from.
+     * If file is null, the object will not be tracked.
      *
      * @param key    The key of the object
      * @param file   The file of the object
@@ -80,7 +82,8 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
         if (objectFiles.containsKey(key))
             return;
         objects.put(key, object);
-        objectFiles.put(key, file);
+        if (file != null)
+            objectFiles.put(key, file);
     }
 
     /**
@@ -107,6 +110,8 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
             return;
         objects.remove(key);
         File file = objectFiles.get(key);
+        if (file == null)
+            return;
         if (!file.delete())
             getPlugin().getAnjoLogger().singleError("Failed to delete file " + file.getName());
         objectFiles.remove(key);
@@ -121,14 +126,14 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
     @Override
     public void reload() {
         initializeObjects();
-        loadFiles(loadFilesDirectory);
+        updateLoadFiles(getLoadFilesDirectory());
     }
 
-    @Nullable
     /**
      * @param key The key/fileName of the object
      * @return The object if found, null otherwise
      */
+    @Nullable
     public T getObject(String key) {
         return objects.get(key);
     }
@@ -166,6 +171,20 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
     }
 
     /**
+     * Will pick a random object from the manager
+     *
+     * @return The object wrapped in an Optional.
+     * If no objects are in memory, Optional.empty() will be returned.
+     */
+    public Optional<T> pickRandom() {
+        return values()
+                .stream()
+                .skip(ThreadLocalRandom.current()
+                        .nextInt(values().size()))
+                .findAny();
+    }
+
+    /**
      * Will retrieve the loadFilesPath of the ObjectManager
      *
      * @return The loadFilesPath directory
@@ -174,7 +193,34 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
         return loadFilesDirectory;
     }
 
-    public BlobEditor<String> makeEditor(Player player, String dataType) {
-        return BlobEditor.COLLECTION_INJECTION(player.getUniqueId(), dataType, objects.keySet());
+    /**
+     * Will make a BlobEditor for the given player
+     *
+     * @param player The player to make the editor for
+     * @return A BlobEditor for the given player
+     */
+    public BlobEditor<T> makeEditor(Player player) {
+        return BlobEditor.COLLECTION_INJECTION_BUILDER(player.getUniqueId(), values(),
+                parent);
+    }
+
+    public CompletableFuture<Void> getLoadFiles() {
+        return loadFiles;
+    }
+
+    public void updateLoadFiles(File path) {
+        this.loadFiles = new CompletableFuture<>();
+        loadFiles(path, loadFiles);
+    }
+
+    public void whenFilesLoad(Consumer<ObjectManager<T>> consumer) {
+        BlobPluginLogger logger = getPlugin().getAnjoLogger();
+        loadFiles.whenComplete((objectManager, throwable) -> {
+            if (throwable != null) {
+                logger.singleError(throwable.getMessage());
+                return;
+            }
+            consumer.accept(this);
+        });
     }
 }

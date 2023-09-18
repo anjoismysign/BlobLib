@@ -1,7 +1,8 @@
 package us.mytheria.bloblib.entities.currency;
 
 import org.bukkit.entity.Player;
-import us.mytheria.bloblib.BlobLibAssetAPI;
+import us.mytheria.bloblib.api.BlobLibInventoryAPI;
+import us.mytheria.bloblib.api.BlobLibSoundAPI;
 import us.mytheria.bloblib.entities.ObjectDirector;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
 import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
@@ -21,7 +22,7 @@ public class CurrencyBuilder extends ObjectBuilder<Currency> {
     public static CurrencyBuilder build(UUID builderId,
                                         ObjectDirector<Currency> objectDirector) {
         return new CurrencyBuilder(
-                BlobLibAssetAPI.buildInventory("CurrencyBuilder"), builderId,
+                BlobLibInventoryAPI.getInstance().buildInventory("CurrencyBuilder"), builderId,
                 objectDirector);
     }
 
@@ -36,7 +37,7 @@ public class CurrencyBuilder extends ObjectBuilder<Currency> {
                 "DecimalFormat", 300, this);
         ObjectBuilderButton<Double> initialBalance = ObjectBuilderButtonBuilder.POSITIVE_DOUBLE(
                 "InitialBalance", 300, this);
-        addObjectBuilderButton(displayButton)
+        addObjectBuilderButton(keyButton)
                 .addObjectBuilderButton(displayButton)
                 .addObjectBuilderButton(pattern)
                 .addObjectBuilderButton(initialBalance)
@@ -45,10 +46,9 @@ public class CurrencyBuilder extends ObjectBuilder<Currency> {
                     if (build == null)
                         return null;
                     Player player = getPlayer();
-                    BlobSound sound = BlobLibAssetAPI.getSound("Builder.Build-Complete");
+                    BlobSound sound = BlobLibSoundAPI.getInstance().getSound("Builder.Build-Complete");
                     sound.play(player);
                     player.closeInventory();
-                    build.saveToFile(objectDirector.getObjectManager().getLoadFilesDirectory());
                     objectDirector.getObjectManager().addObject(build.getKey(), build);
                     objectDirector.getBuilderManager().removeBuilder(player);
                     return build;
@@ -64,14 +64,18 @@ public class CurrencyBuilder extends ObjectBuilder<Currency> {
         ObjectBuilderButton<String> pattern = (ObjectBuilderButton<String>) getObjectBuilderButton("DecimalFormat");
         ObjectBuilderButton<Double> initialBalance = (ObjectBuilderButton<Double>) getObjectBuilderButton("InitialBalance");
 
-        if (keyButton.get().isEmpty() || displayButton.get().isEmpty() || pattern.get().isEmpty() || initialBalance.get().isEmpty())
+        if (!keyButton.isValuePresentAndNotNull() || !displayButton.isValuePresentAndNotNull()
+                || !pattern.isValuePresentAndNotNull() || !initialBalance.isValuePresentAndNotNull())
             return null;
 
         String key = keyButton.get().get();
         String display = displayButton.get().get();
         String decimalFormatPattern = pattern.get().get();
         double initialBalanceValue = initialBalance.get().get();
-        
-        return new Currency(display, initialBalanceValue, true, decimalFormatPattern, key);
+
+        return new Currency(display, initialBalanceValue,
+                true, decimalFormatPattern, key,
+                false, null, getObjectDirector().getPlugin(),
+                key);
     }
 }

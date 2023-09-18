@@ -3,11 +3,13 @@ package us.mytheria.bloblib.storage;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import me.anjoismysign.anjo.entities.Result;
 import org.bson.Document;
 import org.bukkit.configuration.ConfigurationSection;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
@@ -22,15 +24,10 @@ import java.util.function.Consumer;
  */
 public class MongoDB {
     private final String connection;
+    private final String database;
+    private final @Nullable String uri;
 
-    /**
-     * Will create a new MongoDB instance with the default localhost connection.
-     *
-     * @return A new MongoDB instance with the default localhost connection.
-     */
-    public static MongoDB LOCALHOST() {
-        return new MongoDB("mongodb://localhost:27017");
-    }
+    private final MongoClient mongoClient;
 
     /**
      * Will create a new MongoDB instance with the default localhost connection and the provided database.
@@ -38,8 +35,8 @@ public class MongoDB {
      * @param database The database to use.
      * @return A new MongoDB instance with the default localhost connection and the provided database.
      */
-    public static MongoDB LOCALHOST_DATABASE(String database) {
-        return new MongoDB("mongodb://localhost:27017/" + database);
+    public static MongoDB LOCALHOST(String database) {
+        return new MongoDB("mongodb://localhost:27017/", database, null);
     }
 
     /**
@@ -49,36 +46,33 @@ public class MongoDB {
      * @return A valid result if found MongoDB settings, otherwise an invalid result.
      */
     public static Result<MongoDB> fromConfigurationSection(ConfigurationSection configurationSection) {
-        if (configurationSection.contains("host") && configurationSection.isString("host") &&
-                configurationSection.contains("port") && configurationSection.isInt("port") &&
-                configurationSection.contains("database") && configurationSection.isString("database") &&
-                configurationSection.contains("username") && configurationSection.isString("username") &&
-                configurationSection.contains("password") && configurationSection.isString("password"))
+        if (configurationSection.isString("Hostname") &&
+                configurationSection.isString("Database") &&
+                configurationSection.isString("Username") &&
+                configurationSection.isString("Password"))
             return Result.valid(loadFromConfigurationSection(configurationSection));
-        for (String reference : configurationSection.getKeys(true)) {
-            if (!configurationSection.isConfigurationSection(reference))
-                continue;
-            if (!reference.equalsIgnoreCase("mongodb"))
-                continue;
-            ConfigurationSection section = configurationSection.getConfigurationSection(reference);
-            if (section.contains("host") && section.isString("host") &&
-                    section.contains("port") && section.isInt("port") &&
-                    section.contains("database") && section.isString("database") &&
-                    section.contains("username") && section.isString("username") &&
-                    section.contains("password") && section.isString("password"))
-                return Result.valid(loadFromConfigurationSection(section));
-        }
+        if (!configurationSection.isConfigurationSection("Database"))
+            return Result.invalidBecauseNull();
+        ConfigurationSection section = configurationSection.getConfigurationSection("Database");
+        if (section.isString("Hostname") &&
+                section.isString("Database") &&
+                section.isString("Username") &&
+                section.isString("Password"))
+            return Result.valid(loadFromConfigurationSection(section));
         return Result.invalidBecauseNull();
     }
 
+    public static MongoDB fromURI(String uri, String database) {
+        return new MongoDB(uri, database, uri);
+    }
+
     private static MongoDB loadFromConfigurationSection(ConfigurationSection configurationSection) {
-        String host = configurationSection.getString("host");
-        int port = configurationSection.getInt("port");
-        String database = configurationSection.getString("database");
-        String username = configurationSection.getString("username");
-        String password = configurationSection.getString("password");
-        String connection = "mongodb://" + username + ":" + password + "@" + host + ":" + port + "/" + database;
-        return new MongoDB(connection);
+        String host = configurationSection.getString("Hostname");
+        String database = configurationSection.getString("Database");
+        String username = configurationSection.getString("Username");
+        String password = configurationSection.getString("Password");
+        String connection = "mongodb+srv://" + username + ":" + password + "@" + host + "/?retryWrites=true&w=majority";
+        return new MongoDB(connection, database, null);
     }
 
     /**
@@ -86,140 +80,140 @@ public class MongoDB {
      *
      * @param connection The connection string to use.
      */
-    public MongoDB(String connection) {
+    public MongoDB(String connection, String database, @Nullable String uri) {
         this.connection = connection;
+        this.database = database;
+        this.uri = uri;
+        this.mongoClient = connect();
     }
 
     private MongoClient connect() {
+//        LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+//        Configuration configuration = loggerContext.getConfiguration();
+//        LoggerConfig loggerConfig = configuration.getLoggerConfig("org.mongodb.driver");
+//        loggerConfig.setLevel(Level.WARN);
+        if (uri != null)
+            return MongoClients.create(uri);
         return MongoClients.create(connection);
+    }
+
+    private MongoDatabase getDatabase() {
+        return mongoClient.getDatabase(this.database);
     }
 
     /**
      * Attempts to retrieve a Document from the provided collection and database.
      *
-     * @param database    The database name to select from.
      * @param collection  The collection name to select from.
      * @param searchQuery The document to filter by.
      * @return A valid result if found, otherwise an invalid result.
      */
-    public Result<Document> getDocument(String database, String collection, Document searchQuery) {
-        try (MongoClient client = connect()) {
-            MongoCollection<Document> mongoCollection = client.getDatabase(database).getCollection(collection);
-            Document iterable = mongoCollection.find(searchQuery).first();
-            return Result.ofNullable(iterable);
-        }
+    public Result<Document> getDocument(String collection, Document searchQuery) {
+        MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
+        Document iterable = mongoCollection.find(searchQuery).first();
+        return Result.ofNullable(iterable);
     }
 
     /**
      * Attempts to update the first document that matches the search query with the new values
      * provided in the newValues document.
      *
-     * @param database    The database name to select from.
      * @param collection  The collection name to select from.
      * @param searchQuery The document to filter by.
-     * @param newValues   The document to update with.
+     * @param replacement The document to replace with
      * @return True if the document was updated, false otherwise.
      */
-    public boolean updateOne(String database, String collection, Document searchQuery,
-                             Document newValues) {
-        try (MongoClient client = connect()) {
-            MongoCollection<Document> mongoCollection = client.getDatabase(database).getCollection(collection);
-            Document updateQuery = new Document("$set", newValues);
-            UpdateResult result = mongoCollection.updateOne(searchQuery, updateQuery);
-            return result.getModifiedCount() > 0;
-        }
+    public boolean replaceOne(String collection, Document searchQuery,
+                              Document replacement) {
+        MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
+        UpdateResult result = mongoCollection.replaceOne(searchQuery, replacement);
+        return result.getModifiedCount() > 0;
     }
 
     /**
      * Attempts to update all documents that match the search query with the new values
      * provided in the newValues document.
      *
-     * @param database    The database name to select from.
      * @param collection  The collection name to select from.
      * @param searchQuery The document to filter by.
      * @param newValues   The document to update with.
      * @return True if at least one document was updated, false otherwise.
      */
-    public boolean updateMany(String database, String collection, Document searchQuery,
+    public boolean updateMany(String collection, Document searchQuery,
                               Document newValues) {
-        try (MongoClient client = connect()) {
-            MongoCollection<Document> mongoCollection = client.getDatabase(database).getCollection(collection);
-            Document updateQuery = new Document("$set", newValues);
-            UpdateResult result = mongoCollection.updateMany(searchQuery, updateQuery);
-            return result.getModifiedCount() > 0;
-        }
+        MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
+        Document updateQuery = new Document("$set", newValues);
+        UpdateResult result = mongoCollection.updateMany(searchQuery, updateQuery);
+        return result.getModifiedCount() > 0;
     }
 
     /**
      * Attempts to delete the first document that matches the search query.
      *
-     * @param database    The database name to select from.
      * @param collection  The collection name to select from.
      * @param searchQuery The document to filter by.
      * @return True if the document was deleted, false otherwise.
      */
-    public boolean deleteOne(String database, String collection, Document searchQuery) {
-        try (MongoClient client = connect()) {
-            MongoCollection<Document> mongoCollection = client.getDatabase(database).getCollection(collection);
-            DeleteResult result = mongoCollection.deleteOne(searchQuery);
-            return result.getDeletedCount() > 0;
-        }
-
+    public boolean deleteOne(String collection, Document searchQuery) {
+        MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
+        DeleteResult result = mongoCollection.deleteOne(searchQuery);
+        return result.getDeletedCount() > 0;
     }
 
     /**
      * Attempts to delete all documents that match the search query.
      *
-     * @param database    The database name to select from.
      * @param collection  The collection name to select from.
      * @param searchQuery The document to filter by.
      * @return True if the document was deleted, false otherwise.
      */
-    public boolean deleteMany(String database, String collection, Document searchQuery) {
-        try (MongoClient client = connect()) {
-            MongoCollection<Document> mongoCollection = client.getDatabase(database).getCollection(collection);
-            DeleteResult result = mongoCollection.deleteMany(searchQuery);
-            return result.getDeletedCount() > 0;
-        }
+    public boolean deleteMany(String collection, Document searchQuery) {
+        MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
+        DeleteResult result = mongoCollection.deleteMany(searchQuery);
+        return result.getDeletedCount() > 0;
 
     }
 
     /**
      * Creates a new collection in the provided database.
      *
-     * @param database      The database to create the collection in.
      * @param newCollection The name of the new collection.
      */
-    public void createCollection(String database, String newCollection) {
-        try (MongoClient client = connect()) {
-            client.getDatabase(database).createCollection(newCollection);
-        }
+    public void createCollection(String newCollection) {
+        getDatabase().createCollection(newCollection);
     }
 
     /**
      * Checks if a collection exists in the provided database.
      *
-     * @param database   The database to check in.
      * @param collection The collection to check for.
      * @return True if the collection exists, false otherwise.
      */
-    public boolean collectionExists(String database, String collection) {
-        try (MongoClient client = connect()) {
-            return client.getDatabase(database).listCollectionNames().into(new ArrayList<>()).contains(collection);
-        }
+    public boolean collectionExists(String collection) {
+        return getDatabase().listCollectionNames().into(new ArrayList<>()).contains(collection);
     }
 
     /**
      * Selects all documents provided in a collection and passes them to the consumer.
      *
-     * @param database   The database to select from.
      * @param collection The collection to select from.
      * @param consumer   The consumer to pass the documents to.
      */
-    public void selectAllFromCollection(String database, String collection, Consumer<Document> consumer) {
-        try (MongoClient client = connect()) {
-            MongoCollection<Document> mongoCollection = client.getDatabase(database).getCollection(collection);
-            mongoCollection.find().forEach(consumer);
-        }
+    public void selectAllFromCollection(String collection, Consumer<Document> consumer) {
+        MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
+        mongoCollection.find().forEach(consumer);
     }
+
+    /**
+     * Inserts a document into a collection.
+     *
+     * @param collection The collection to insert into.
+     * @param document   The document to insert.
+     */
+    public void insertOne(String collection, Document document) {
+        MongoCollection<Document> mongoCollection = getDatabase().getCollection(collection);
+        mongoCollection.insertOne(document);
+    }
+
+
 }

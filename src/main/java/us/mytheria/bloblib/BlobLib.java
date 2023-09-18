@@ -1,22 +1,31 @@
 package us.mytheria.bloblib;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.mytheria.bloblib.command.BlobLibCmd;
+import us.mytheria.bloblib.disguises.DisguiseManager;
 import us.mytheria.bloblib.enginehub.EngineHubManager;
 import us.mytheria.bloblib.entities.logger.BlobPluginLogger;
 import us.mytheria.bloblib.hologram.HologramManager;
 import us.mytheria.bloblib.managers.*;
 import us.mytheria.bloblib.managers.fillermanager.FillerManager;
+import us.mytheria.bloblib.reflection.BlobReflectionLib;
+import us.mytheria.bloblib.utilities.SerializationLib;
 import us.mytheria.bloblib.vault.VaultManager;
 
 /**
  * The main class of the plugin
  */
-public final class BlobLib extends JavaPlugin {
+public class BlobLib extends JavaPlugin {
     private static BlobPluginLogger anjoLogger;
+
+    private BlobLibUpdater bloblibupdater;
+    private BlobLibAPI api;
+
     private ScriptManager scriptManager;
     private VaultManager vaultManager;
     private EngineHubManager engineHubManager;
+    private DisguiseManager disguiseManager;
     private HologramManager hologramManager;
     private BlobLibFileManager fileManager;
     private InventoryManager inventoryManager;
@@ -30,6 +39,11 @@ public final class BlobLib extends JavaPlugin {
     private DropListenerManager dropListenerManager;
     private ColorManager colorManager;
     private PluginManager pluginManager;
+    private ActionManager actionManager;
+    private BlobLibConfigManager configManager;
+    private BlobLibListenerManager listenerManager;
+    private BlobReflectionLib reflectionLib;
+    private SerializationLib serializationLib;
 
     private static BlobLib instance;
 
@@ -57,39 +71,66 @@ public final class BlobLib extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        api = BlobLibAPI.getInstance(this);
+        bloblibupdater = new BlobLibUpdater(this);
+        reflectionLib = BlobReflectionLib.getInstance(this);
+        serializationLib = SerializationLib.getInstance(this);
         anjoLogger = new BlobPluginLogger(this);
         scriptManager = new ScriptManager();
         pluginManager = new PluginManager();
         colorManager = new ColorManager();
         fileManager = new BlobLibFileManager();
         fileManager.unpackYamlFile("/BlobInventory", "CurrencyBuilder", false);
-        
+
         inventoryManager = new InventoryManager();
         messageManager = new MessageManager();
+        actionManager = new ActionManager();
         soundManager = new SoundManager();
         fillerManager = new FillerManager();
         vaultManager = new VaultManager();
         engineHubManager = new EngineHubManager();
+        disguiseManager = new DisguiseManager();
         hologramManager = new HologramManager();
         chatManager = new ChatListenerManager();
         positionManager = new SelPosListenerManager();
         selectorManager = new SelectorListenerManager();
         variableSelectorManager = new VariableSelectorManager();
         dropListenerManager = new DropListenerManager();
+        configManager = BlobLibConfigManager.getInstance(this);
+        listenerManager = BlobLibListenerManager.getInstance(configManager);
 
         //Load reloadable managers
         reload();
         new BlobLibCmd();
+
+        Bukkit.getScheduler().runTask(this,
+                () -> disguiseManager.load());
+    }
+
+    @Override
+    public void onDisable() {
+        serializationLib.shutdown();
     }
 
     /**
      * Will reload all the managers
      */
     public void reload() {
+        configManager.reload();
+        listenerManager.reload();
         soundManager.reload();
         messageManager.reload();
+        actionManager.reload();
         inventoryManager.reload();
         getPluginManager().reload();
+    }
+
+    public BlobLibAPI getAPI() {
+        return api;
+    }
+
+    public BlobLibUpdater getBloblibupdater() {
+        return bloblibupdater;
     }
 
     /**
@@ -146,6 +187,15 @@ public final class BlobLib extends JavaPlugin {
     }
 
     /**
+     * Will retrieve the ActionManager
+     *
+     * @return The ActionManager
+     */
+    public ActionManager getActionManager() {
+        return actionManager;
+    }
+
+    /**
      * Will retrieve the SoundManager
      *
      * @return The SoundManager
@@ -161,6 +211,15 @@ public final class BlobLib extends JavaPlugin {
      */
     public VaultManager getVaultManager() {
         return vaultManager;
+    }
+
+    /**
+     * Will retrieve the VaultManager
+     *
+     * @return The VaultManager
+     */
+    public static VaultManager vaultManager() {
+        return getInstance().getVaultManager();
     }
 
     /**
@@ -233,5 +292,14 @@ public final class BlobLib extends JavaPlugin {
      */
     public EngineHubManager getEngineHubManager() {
         return engineHubManager;
+    }
+
+    /**
+     * Will retrieve the DisguiseManager
+     *
+     * @return The DisguiseManager
+     */
+    public DisguiseManager getDisguiseManager() {
+        return disguiseManager;
     }
 }

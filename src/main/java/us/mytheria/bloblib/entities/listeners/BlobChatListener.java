@@ -5,10 +5,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.BlobLibAssetAPI;
+import us.mytheria.bloblib.api.BlobLibMessageAPI;
 import us.mytheria.bloblib.entities.message.BlobMessage;
 import us.mytheria.bloblib.managers.ChatListenerManager;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -57,9 +58,13 @@ public class BlobChatListener extends ChatListener {
                                          String timeoutMessageKey, String timerMessageKey) {
         BlobLib main = BlobLib.getInstance();
         ChatListenerManager chatManager = main.getChatManager();
-        Optional<BlobMessage> timeoutMessage = Optional.ofNullable(BlobLibAssetAPI.getMessage(timeoutMessageKey));
-        Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibAssetAPI.getMessage(timerMessageKey));
+        Optional<BlobMessage> timeoutMessage = Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(timeoutMessageKey));
+        Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(timerMessageKey));
         List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
+        List<BlobMessage> timerMessages = new ArrayList<>();
+        messages.forEach(message -> timerMessages.add(
+                message.modify(s -> s.replace("%world%", owner.getWorld().getName()))
+        ));
         return new BlobChatListener(owner.getName(), timeout,
                 inputListener -> {
                     String input = inputListener.getInput();
@@ -73,8 +78,8 @@ public class BlobChatListener extends ChatListener {
                 },
                 timeoutListener -> {
                     chatManager.removeChatListener(owner);
-                    timeoutMessage.ifPresent(blobMessage -> blobMessage.sendAndPlay(owner));
-                }, messages);
+                    timeoutMessage.ifPresent(blobMessage -> blobMessage.handle(owner));
+                }, timerMessages);
     }
 
     /**
@@ -101,15 +106,15 @@ public class BlobChatListener extends ChatListener {
     @Override
     public void runTasks() {
         super.runTasks();
+        Player player = Bukkit.getPlayer(getOwner());
         BukkitRunnable bukkitRunnable = new BukkitRunnable() {
             @Override
             public void run() {
-                Player player = Bukkit.getPlayer(getOwner());
                 if (player == null || !player.isOnline()) {
                     this.cancel();
                     return;
                 }
-                messages.forEach(message -> message.sendAndPlay(player));
+                messages.forEach(message -> message.handle(player));
             }
         };
         this.messageTask = bukkitRunnable.runTaskTimerAsynchronously(BlobLib.getInstance(), 0, 10);
