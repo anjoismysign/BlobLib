@@ -28,6 +28,7 @@ public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T
     private long storage = 0;
     private int outputSlot;
     private FurnaceOperation lastOperation;
+    private final FuelAPI fuelAPI;
 
     public static <T extends InventoryButton> SuperFurnace<T>
     fromInventoryBuilderCarrier(InventoryBuilderCarrier<T> carrier,
@@ -83,6 +84,7 @@ public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T
         this.outputSlot = outputSlot;
         this.fuelButton = fuelButton;
         this.inputButton = inputButton;
+        this.fuelAPI = FuelAPI.getInstance();
     }
 
     /**
@@ -93,6 +95,7 @@ public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T
      * and get used to the API for a strong workflow.
      */
     public SuperFurnace() {
+        this.fuelAPI = FuelAPI.getInstance();
     }
 
     /**
@@ -137,7 +140,7 @@ public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T
         long operationSize = this.operationSize * amount;
         int compare = Long.compare(storage, operationSize);
         if (compare <= 0) {
-            Result<Fuel> isFuel = FuelAPI.isFuel(fuel.getType());
+            Result<Fuel> isFuel = fuelAPI.isFuel(fuel.getType());
             if (!isFuel.isValid())
                 return FurnaceOperation.fail();
             Fuel value = isFuel.value();

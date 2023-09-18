@@ -8,14 +8,16 @@ import us.mytheria.bloblib.itemstack.ItemStackBuilder;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @deprecated Preparing rewrite for singleton pattern
+/*
+ * Provides Fuel objects for vanilla items.
+ * Might want to check if item is custom.
+ * If so, might want to apply your own
+ * fuel time.
  */
-@Deprecated
 public class FuelAPI {
-    private static final Map<String, Fuel> mapping = new HashMap<>();
+    private static FuelAPI instance;
 
-    static {
+    private FuelAPI() {
         mapping.put("LAVA_BUCKET",
                 Fuel.withReplacement(ItemStackBuilder.build(Material.BUCKET).build(),
                         20000));
@@ -306,6 +308,16 @@ public class FuelAPI {
         mapping.put("BAMBOO", Fuel.of(50));
     }
 
+    public static FuelAPI getInstance() {
+        if (instance == null) {
+            FuelAPI.instance = new FuelAPI();
+        }
+        return instance;
+    }
+
+
+    private final Map<String, Fuel> mapping = new HashMap<>();
+
     /**
      * Checks if the material is a fuel, whether
      * it belongs to a custom item or not.
@@ -314,7 +326,7 @@ public class FuelAPI {
      * @param material The material to check
      * @return A Result containing the Fuel if it is a fuel, an invalid Result otherwise.
      */
-    public static Result<Fuel> isFuel(Material material) {
+    public Result<Fuel> isFuel(Material material) {
         Fuel fuel = mapping.get(material.toString());
         if (fuel == null)
             return Result.invalidBecauseNull();

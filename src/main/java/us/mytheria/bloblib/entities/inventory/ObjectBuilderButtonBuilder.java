@@ -7,7 +7,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 import us.mytheria.bloblib.BlobLibAPI;
-import us.mytheria.bloblib.BlobLibAssetAPI;
+import us.mytheria.bloblib.api.BlobLibListenerAPI;
+import us.mytheria.bloblib.api.BlobLibMessageAPI;
 import us.mytheria.bloblib.entities.ArrayNavigator;
 import us.mytheria.bloblib.entities.BlobEditor;
 import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
@@ -18,7 +19,9 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+@SuppressWarnings({"ConcatenationWithEmptyString", "unused"})
 public class ObjectBuilderButtonBuilder {
+    private static final BlobLibListenerAPI api = BlobLibAPI.getInstance().getListenerAPI();
 
     /**
      * An ObjectBuilderButton builder for String's.
@@ -35,7 +38,7 @@ public class ObjectBuilderButtonBuilder {
                                                      String timerMessageKey,
                                                      Function<String, Boolean> function) {
         ObjectBuilderButton<String> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout,
+                (button, player) -> api.addChatListener(player, timeout,
                         string -> {
                             if (string.equalsIgnoreCase("null")) {
                                 button.set(null);
@@ -112,7 +115,7 @@ public class ObjectBuilderButtonBuilder {
                                                  Function<Byte, Boolean> function,
                                                  boolean nullable) {
         ObjectBuilderButton<Byte> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> api.addChatListener(player, timeout, string -> {
                             try {
                                 if (nullable) {
                                     if (string.equalsIgnoreCase("null")) {
@@ -124,7 +127,7 @@ public class ObjectBuilderButtonBuilder {
                                 if (function.apply(input))
                                     button.set(input);
                             } catch (NumberFormatException e) {
-                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").handle(player);
+                                BlobLibMessageAPI.getInstance().getMessage("Builder.Number-Exception").handle(player);
                             }
                         }, timeoutMessageKey,
                         timerMessageKey), function) {
@@ -212,7 +215,7 @@ public class ObjectBuilderButtonBuilder {
             return true;
         };
         ObjectBuilderButton<Byte> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> api.addChatListener(player, timeout, string -> {
                             try {
                                 byte input = Byte.parseByte(string);
                                 if (input < 0) {
@@ -221,7 +224,7 @@ public class ObjectBuilderButtonBuilder {
                                     button.set(input);
                                 }
                             } catch (NumberFormatException e) {
-                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").handle(player);
+                                BlobLibMessageAPI.getInstance().getMessage("Builder.Number-Exception").handle(player);
                             }
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey), function) {
@@ -246,7 +249,7 @@ public class ObjectBuilderButtonBuilder {
                                                    Function<Short, Boolean> function,
                                                    boolean nullable) {
         ObjectBuilderButton<Short> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> api.addChatListener(player, timeout, string -> {
                     try {
                         if (nullable) {
                             if (string.equalsIgnoreCase("null")) {
@@ -258,7 +261,7 @@ public class ObjectBuilderButtonBuilder {
                         if (function.apply(input))
                             button.set(input);
                     } catch (NumberFormatException e) {
-                        BlobLibAssetAPI.getMessage("Builder.Number-Exception").handle(player);
+                        BlobLibMessageAPI.getInstance().getMessage("Builder.Number-Exception").handle(player);
                     }
                 }, timeoutMessageKey, timerMessageKey), function) {
         };
@@ -344,7 +347,7 @@ public class ObjectBuilderButtonBuilder {
             return true;
         };
         ObjectBuilderButton<Short> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> api.addChatListener(player, timeout, string -> {
                             try {
                                 short input = Short.parseShort(string);
                                 if (input < 0) {
@@ -353,7 +356,7 @@ public class ObjectBuilderButtonBuilder {
                                     button.set(input);
                                 }
                             } catch (NumberFormatException e) {
-                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").handle(player);
+                                BlobLibMessageAPI.getInstance().getMessage("Builder.Number-Exception").handle(player);
                             }
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey), function) {
@@ -378,7 +381,7 @@ public class ObjectBuilderButtonBuilder {
                                                        Function<Integer, Boolean> function,
                                                        boolean nullable) {
         ObjectBuilderButton<Integer> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> api.addChatListener(player, timeout, string -> {
                     try {
                         if (nullable) {
                             if (string.equalsIgnoreCase("null")) {
@@ -390,7 +393,7 @@ public class ObjectBuilderButtonBuilder {
                         if (function.apply(input))
                             button.set(input);
                     } catch (NumberFormatException ignored) {
-                        BlobLibAssetAPI.getMessage("Builder.Number-Exception").handle(player);
+                        BlobLibMessageAPI.getInstance().getMessage("Builder.Number-Exception").handle(player);
                     }
                 }, timeoutMessageKey, timerMessageKey), function) {
         };
@@ -477,7 +480,7 @@ public class ObjectBuilderButtonBuilder {
             return true;
         };
         ObjectBuilderButton<Integer> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> api.addChatListener(player, timeout, string -> {
                             try {
                                 int input = Integer.parseInt(string);
                                 if (input < 0) {
@@ -486,7 +489,7 @@ public class ObjectBuilderButtonBuilder {
                                     button.set(input);
                                 }
                             } catch (NumberFormatException e) {
-                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").handle(player);
+                                BlobLibMessageAPI.getInstance().getMessage("Builder.Number-Exception").handle(player);
                             }
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey), function) {
@@ -511,7 +514,7 @@ public class ObjectBuilderButtonBuilder {
                                                  Function<Long, Boolean> function,
                                                  boolean nullable) {
         ObjectBuilderButton<Long> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> api.addChatListener(player, timeout, string -> {
                     try {
                         if (nullable) {
                             if (string.equalsIgnoreCase("null")) {
@@ -523,7 +526,7 @@ public class ObjectBuilderButtonBuilder {
                         if (function.apply(input))
                             button.set(input);
                     } catch (NumberFormatException ignored) {
-                        BlobLibAssetAPI.getMessage("Builder.Number-Exception").handle(player);
+                        BlobLibMessageAPI.getInstance().getMessage("Builder.Number-Exception").handle(player);
                     }
                 }, timeoutMessageKey, timerMessageKey), function) {
         };
@@ -610,7 +613,7 @@ public class ObjectBuilderButtonBuilder {
             return true;
         };
         ObjectBuilderButton<Long> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> api.addChatListener(player, timeout, string -> {
                             try {
                                 long input = Long.parseLong(string);
                                 if (input < 0) {
@@ -619,7 +622,7 @@ public class ObjectBuilderButtonBuilder {
                                     button.set(input);
                                 }
                             } catch (NumberFormatException e) {
-                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").handle(player);
+                                BlobLibMessageAPI.getInstance().getMessage("Builder.Number-Exception").handle(player);
                             }
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey), function) {
@@ -644,7 +647,7 @@ public class ObjectBuilderButtonBuilder {
                                                    Function<Float, Boolean> function,
                                                    boolean nullable) {
         ObjectBuilderButton<Float> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> api.addChatListener(player, timeout, string -> {
                     try {
                         if (nullable) {
                             if (string.equalsIgnoreCase("null")) {
@@ -656,7 +659,7 @@ public class ObjectBuilderButtonBuilder {
                         if (function.apply(input))
                             button.set(input);
                     } catch (NumberFormatException ignored) {
-                        BlobLibAssetAPI.getMessage("Builder.Number-Exception").handle(player);
+                        BlobLibMessageAPI.getInstance().getMessage("Builder.Number-Exception").handle(player);
                     }
                 }, timeoutMessageKey, timerMessageKey), function) {
         };
@@ -743,7 +746,7 @@ public class ObjectBuilderButtonBuilder {
             return true;
         };
         ObjectBuilderButton<Float> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> api.addChatListener(player, timeout, string -> {
                             try {
                                 float input = Float.parseFloat(string);
                                 if (input < 0) {
@@ -752,7 +755,7 @@ public class ObjectBuilderButtonBuilder {
                                     button.set(input);
                                 }
                             } catch (NumberFormatException e) {
-                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").handle(player);
+                                BlobLibMessageAPI.getInstance().getMessage("Builder.Number-Exception").handle(player);
                             }
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey), function) {
@@ -777,7 +780,7 @@ public class ObjectBuilderButtonBuilder {
                                                      Function<Double, Boolean> function,
                                                      boolean nullable) {
         ObjectBuilderButton<Double> objectBuilder = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> api.addChatListener(player, timeout, string -> {
                     try {
                         if (nullable) {
                             if (string.equalsIgnoreCase("null")) {
@@ -789,7 +792,7 @@ public class ObjectBuilderButtonBuilder {
                         if (function.apply(input))
                             button.set(input);
                     } catch (NumberFormatException ignored) {
-                        BlobLibAssetAPI.getMessage("Builder.Number-Exception").handle(player);
+                        BlobLibMessageAPI.getInstance().getMessage("Builder.Number-Exception").handle(player);
                     }
                 }, timeoutMessageKey, timerMessageKey), function) {
         };
@@ -875,7 +878,7 @@ public class ObjectBuilderButtonBuilder {
             return true;
         };
         ObjectBuilderButton<Double> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout, string -> {
+                (button, player) -> api.addChatListener(player, timeout, string -> {
                             try {
                                 double input = Double.parseDouble(string);
                                 if (input < 0) {
@@ -884,7 +887,7 @@ public class ObjectBuilderButtonBuilder {
                                     button.set(input);
                                 }
                             } catch (NumberFormatException e) {
-                                BlobLibAssetAPI.getMessage("Builder.Number-Exception").handle(player);
+                                BlobLibMessageAPI.getInstance().getMessage("Builder.Number-Exception").handle(player);
                             }
                         }, "Builder." + buttonKey + "-Timeout",
                         "Builder." + buttonKey), function) {
@@ -908,7 +911,7 @@ public class ObjectBuilderButtonBuilder {
                                                    String timerMessageKey,
                                                    Function<Block, Boolean> function) {
         ObjectBuilderButton<Block> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addPositionListener(player, timeout,
+                (button, player) -> api.addPositionListener(player, timeout,
                         button::set, timeoutMessageKey, timerMessageKey), function) {
         };
         function.apply(null);
@@ -931,7 +934,7 @@ public class ObjectBuilderButtonBuilder {
                                                          String timerMessageKey,
                                                          Function<Block, Boolean> function) {
         ObjectBuilderButton<Block> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addPositionListener(player, timeout,
+                (button, player) -> api.addPositionListener(player, timeout,
                         block -> {
                             button.set(block.getRelative(BlockFace.UP));
                         }, timeoutMessageKey, timerMessageKey), function) {
@@ -1059,7 +1062,7 @@ public class ObjectBuilderButtonBuilder {
                                                       String timerMessageKey,
                                                       Function<ItemStack, Boolean> function) {
         ObjectBuilderButton<ItemStack> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addDropListener(player,
+                (button, player) -> api.addDropListener(player,
                         button::set, timerMessageKey), function) {
         };
         function.apply(null);
@@ -1141,7 +1144,7 @@ public class ObjectBuilderButtonBuilder {
                                                       Function<T, Boolean> function,
                                                       VariableSelector<T> selector) {
         ObjectBuilderButton<T> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addSelectorListener(player,
+                (button, player) -> api.addSelectorListener(player,
                         button::set, timerMessageKey, selector), function) {
         };
         function.apply(null);
@@ -1238,9 +1241,9 @@ public class ObjectBuilderButtonBuilder {
                                                                     String timerMessageKey,
                                                                     Function<ReferenceBlobMessage, Boolean> function) {
         ObjectBuilderButton<ReferenceBlobMessage> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout,
+                (button, player) -> api.addChatListener(player, timeout,
                         string -> {
-                            ReferenceBlobMessage message = BlobLibAssetAPI.getMessage(string);
+                            ReferenceBlobMessage message = BlobLibMessageAPI.getInstance().getMessage(string);
                             button.set(message);
                         },
                         timeoutMessageKey,
@@ -1334,7 +1337,7 @@ public class ObjectBuilderButtonBuilder {
                                                    String timerMessageKey,
                                                    Function<World, Boolean> function) {
         ObjectBuilderButton<World> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
-                (button, player) -> BlobLibAPI.addChatListener(player, timeout,
+                (button, player) -> api.addChatListener(player, timeout,
                         string -> {
                             World world = Bukkit.getWorld(string);
                             button.set(world);
@@ -1524,7 +1527,7 @@ public class ObjectBuilderButtonBuilder {
         return new ObjectBuilderButton<>(buttonKey,
                 Optional.empty(),
                 (button, player) -> {
-                    BlobLibAPI.addEditorListener(player, button::set, "Builder." + buttonKey, blobEditor);
+                    api.addEditorListener(player, button::set, "Builder." + buttonKey, blobEditor);
                 }, t -> true) {
         };
     }

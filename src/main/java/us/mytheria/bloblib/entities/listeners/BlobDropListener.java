@@ -6,7 +6,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.BlobLibAssetAPI;
+import us.mytheria.bloblib.api.BlobLibMessageAPI;
 import us.mytheria.bloblib.entities.message.BlobMessage;
 import us.mytheria.bloblib.managers.DropListenerManager;
 
@@ -50,7 +50,7 @@ public class BlobDropListener extends DropListener {
                                          String timerMessageKey) {
         BlobLib main = BlobLib.getInstance();
         DropListenerManager dropManager = main.getDropListenerManager();
-        Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibAssetAPI.getMessage(timerMessageKey));
+        Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(timerMessageKey));
         List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
         return new BlobDropListener(owner.getName(), listener -> {
             ItemStack input = listener.getInput();

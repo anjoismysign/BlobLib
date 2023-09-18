@@ -1,52 +1,48 @@
 package us.mytheria.bloblib;
 
 import org.jetbrains.annotations.NotNull;
+import us.mytheria.bloblib.api.BlobLibInventoryAPI;
+import us.mytheria.bloblib.api.BlobLibMessageAPI;
+import us.mytheria.bloblib.api.BlobLibSoundAPI;
 
 import java.io.File;
 
 /**
  * @author anjoismysign
  * It's meant to hold quick/static methods that later are meant to be
- * moved to a different class, such as BlobLibAPI.
+ * moved to a different, singleton pattern class.
  * Consider all methods as deprecated and subject to change.
- * @deprecated Preparing rewrite for singleton pattern
  */
 @Deprecated
 public class BlobLibDevAPI {
-    private static final BlobLib main = BlobLib.getInstance();
 
     /**
-     * @return The messages file
-     * @deprecated Use {@link BlobLibAssetAPI#getMessagesDirectory()} instead
+     * @deprecated Use {@link BlobLibMessageAPI#getMessagesDirectory()} instead
      * to avoid confusion.
      */
     @Deprecated
     @NotNull
     public static File getMessagesFile() {
-        return main.getFileManager().messagesDirectory();
+        throw new UnsupportedOperationException("Use BlobLibMessageAPI instead");
     }
 
     /**
-     * @return The sounds file
-     * @deprecated Use {@link BlobLibAssetAPI#getSoundsDirectory()} instead
+     * @deprecated Use {@link BlobLibSoundAPI#getSoundsDirectory()} instead
      * to avoid confusion.
      */
     @Deprecated
     @NotNull
     public static File getSoundsFile() {
-        return main.getFileManager().soundsDirectory();
+        throw new UnsupportedOperationException("Use BlobLibSoundAPI instead");
     }
 
     /**
-     * Retrieves a file from the inventories' directory.
-     *
-     * @return The inventories file
-     * @deprecated Use {@link BlobLibAssetAPI#getInventoriesDirectory()} instead
+     * @deprecated Use {@link BlobLibInventoryAPI#getInventoriesDirectory()} instead
      * to avoid confusion.
      */
     @Deprecated
     @NotNull
     public static File getInventoriesFile() {
-        return main.getFileManager().inventoriesDirectory();
+        throw new UnsupportedOperationException("Use BlobLibInventoryAPI instead");
     }
 }

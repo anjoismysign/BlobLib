@@ -1,7 +1,8 @@
 package us.mytheria.bloblib.entities.currency;
 
 import org.bukkit.entity.Player;
-import us.mytheria.bloblib.BlobLibAssetAPI;
+import us.mytheria.bloblib.api.BlobLibInventoryAPI;
+import us.mytheria.bloblib.api.BlobLibSoundAPI;
 import us.mytheria.bloblib.entities.ObjectDirector;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
 import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
@@ -21,7 +22,7 @@ public class CurrencyBuilder extends ObjectBuilder<Currency> {
     public static CurrencyBuilder build(UUID builderId,
                                         ObjectDirector<Currency> objectDirector) {
         return new CurrencyBuilder(
-                BlobLibAssetAPI.buildInventory("CurrencyBuilder"), builderId,
+                BlobLibInventoryAPI.getInstance().buildInventory("CurrencyBuilder"), builderId,
                 objectDirector);
     }
 
@@ -45,7 +46,7 @@ public class CurrencyBuilder extends ObjectBuilder<Currency> {
                     if (build == null)
                         return null;
                     Player player = getPlayer();
-                    BlobSound sound = BlobLibAssetAPI.getSound("Builder.Build-Complete");
+                    BlobSound sound = BlobLibSoundAPI.getInstance().getSound("Builder.Build-Complete");
                     sound.play(player);
                     player.closeInventory();
                     objectDirector.getObjectManager().addObject(build.getKey(), build);

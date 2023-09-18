@@ -30,6 +30,7 @@ public class MultiSuperFurnace<T extends InventoryButton> extends SharableInvent
     private long operationSize = 200;
     private long storage = 0;
     private Map<Integer, FurnaceOperation> operationHistory;
+    private final FuelAPI fuelAPI;
 
     public static <T extends InventoryButton> MultiSuperFurnace<T>
     fromInventoryBuilderCarrier(InventoryBuilderCarrier<T> carrier,
@@ -79,6 +80,7 @@ public class MultiSuperFurnace<T extends InventoryButton> extends SharableInvent
         this.fuelButton = fuelButton;
         this.inputButton = inputButton;
         this.outputButton = outputButton;
+        this.fuelAPI = FuelAPI.getInstance();
     }
 
     /**
@@ -89,6 +91,7 @@ public class MultiSuperFurnace<T extends InventoryButton> extends SharableInvent
      * and get used to the API for a strong workflow.
      */
     public MultiSuperFurnace() {
+        this.fuelAPI = FuelAPI.getInstance();
     }
 
     /**
@@ -139,7 +142,7 @@ public class MultiSuperFurnace<T extends InventoryButton> extends SharableInvent
         int compare = Long.compare(storage, operationSize);
         if (compare <= 0) {
             for (ItemStack fuelItem : fuel) {
-                Result<Fuel> isFuel = FuelAPI.isFuel(fuelItem.getType());
+                Result<Fuel> isFuel = fuelAPI.isFuel(fuelItem.getType());
                 if (!isFuel.isValid())
                     continue;
                 Fuel value = isFuel.value();

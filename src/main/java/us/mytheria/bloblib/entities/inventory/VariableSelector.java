@@ -3,7 +3,8 @@ package us.mytheria.bloblib.entities.inventory;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import us.mytheria.bloblib.BlobLibAssetAPI;
+import us.mytheria.bloblib.api.BlobLibInventoryAPI;
+import us.mytheria.bloblib.api.BlobLibSoundAPI;
 import us.mytheria.bloblib.entities.VariableFiller;
 import us.mytheria.bloblib.entities.VariableValue;
 
@@ -34,7 +35,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
      * @return the new VariableSelector
      */
     public static BlobInventory DEFAULT() {
-        return BlobLibAssetAPI.getBlobInventory("VariableSelector");
+        return BlobLibInventoryAPI.getInstance().getBlobInventory("VariableSelector");
     }
 
     /**
@@ -271,7 +272,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
     public void nextPage() {
         setPage(page + 1);
         Player player = getPlayer();
-        BlobLibAssetAPI.getSound("Builder.Button-Click").handle(player);
+        BlobLibSoundAPI.getInstance().getSound("Builder.Button-Click").handle(player);
     }
 
     /**
@@ -280,7 +281,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
     public void previousPage() {
         setPage(page - 1);
         Player player = getPlayer();
-        BlobLibAssetAPI.getSound("Builder.Button-Click").handle(player);
+        BlobLibSoundAPI.getInstance().getSound("Builder.Button-Click").handle(player);
     }
 
     /**

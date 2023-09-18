@@ -10,6 +10,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import us.mytheria.bloblib.api.BlobLibMessageAPI;
 import us.mytheria.bloblib.entities.PluginUpdater;
 
 import java.io.BufferedReader;
@@ -166,7 +167,7 @@ public class BlobLibUpdater implements PluginUpdater {
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
                 if (player == null || !player.isOnline())
                     return;
-                BlobLibAssetAPI.getMessage("BlobLib.Updater-Available")
+                BlobLibMessageAPI.getInstance().getMessage("BlobLib.Updater-Available")
                         .modder()
                         .replace("%randomColor%", plugin.getColorManager().randomColor().toString())
                         .replace("update %plugin%", "update")

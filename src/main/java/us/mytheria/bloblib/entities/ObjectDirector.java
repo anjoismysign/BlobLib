@@ -10,7 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import us.mytheria.bloblib.BlobLibAssetAPI;
+import us.mytheria.bloblib.api.BlobLibMessageAPI;
 import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
 import us.mytheria.bloblib.itemstack.ItemStackBuilder;
 import us.mytheria.bloblib.managers.Manager;
@@ -392,7 +392,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
             String key = element.getKey();
             player.closeInventory();
             getObjectManager().removeObject(key);
-            BlobLibAssetAPI.getMessage("Editor.Removed")
+            BlobLibMessageAPI.getInstance().getMessage("Editor.Removed")
                     .modify(s -> s.replace("%element%", key))
                     .handle(player);
         }, function);
@@ -405,12 +405,12 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
     @SuppressWarnings("unchecked")
     public void editObject(Player player, String key) {
         if (!objectIsEditable) {
-            BlobLibAssetAPI.getMessage("Object.Not-Editable").handle(player);
+            BlobLibMessageAPI.getInstance().getMessage("Object.Not-Editable").handle(player);
             return;
         }
         T object = objectManager.getObject(key);
         if (object == null) {
-            BlobLibAssetAPI.getMessage("Object.Not-Found").handle(player);
+            BlobLibMessageAPI.getInstance().getMessage("Object.Not-Found").handle(player);
             return;
         }
         ObjectBuilder<T> builder = (ObjectBuilder<T>) object.edit();

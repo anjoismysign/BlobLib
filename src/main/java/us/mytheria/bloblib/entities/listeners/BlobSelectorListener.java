@@ -6,7 +6,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.BlobLibAssetAPI;
+import us.mytheria.bloblib.api.BlobLibMessageAPI;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
 import us.mytheria.bloblib.entities.message.BlobMessage;
 import us.mytheria.bloblib.managers.SelectorListenerManager;
@@ -53,7 +53,7 @@ public class BlobSelectorListener<T> extends SelectorListener<T> {
                                                     VariableSelector<T> selector) {
         BlobLib main = BlobLib.getInstance();
         SelectorListenerManager selectorManager = main.getSelectorManager();
-        Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibAssetAPI.getMessage(timerMessageKey));
+        Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(timerMessageKey));
         List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
         return new BlobSelectorListener<>(player.getName(), () -> {
             @SuppressWarnings("unchecked") T input = (T) selectorManager.getInput(player);
@@ -88,7 +88,7 @@ public class BlobSelectorListener<T> extends SelectorListener<T> {
         SelectorListenerManager selectorManager = main.getSelectorManager();
         Optional<BlobMessage> timerMessage = Optional.empty();
         if (timerMessageKey != null)
-            timerMessage = Optional.ofNullable(BlobLibAssetAPI.getMessage(timerMessageKey));
+            timerMessage = Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(timerMessageKey));
         List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(new ArrayList<>());
         return new BlobSelectorListener<>(player.getName(), listener -> {
             T input = listener.getInput();

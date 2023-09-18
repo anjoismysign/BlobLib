@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
-import us.mytheria.bloblib.BlobLibAssetAPI;
+import us.mytheria.bloblib.api.BlobLibMessageAPI;
 
 import java.util.Optional;
 
@@ -20,12 +20,12 @@ public record BlobEconomyCommandContext<T extends WalletOwner>(Currency currency
         String inputPlayer = args[1];
         Player player = Bukkit.getPlayer(inputPlayer);
         if (player == null) {
-            BlobLibAssetAPI.getMessage("Player.Not-Found").toCommandSender(sender);
+            BlobLibMessageAPI.getInstance().getMessage("Player.Not-Found").toCommandSender(sender);
             return null;
         }
         Optional<T> optional = command.walletOwnerManager.isWalletOwner(player);
         if (optional.isEmpty()) {
-            BlobLibAssetAPI.getMessage("Player.Not-Inside-Plugin-Cache").toCommandSender(sender);
+            BlobLibMessageAPI.getInstance().getMessage("Player.Not-Inside-Plugin-Cache").toCommandSender(sender);
             return null;
         }
         T walletOwner = optional.get();
@@ -35,7 +35,7 @@ public record BlobEconomyCommandContext<T extends WalletOwner>(Currency currency
         try {
             amount = Double.parseDouble(input);
         } catch (NumberFormatException e) {
-            BlobLibAssetAPI.getMessage("Economy.Number-Exception").toCommandSender(sender);
+            BlobLibMessageAPI.getInstance().getMessage("Economy.Number-Exception").toCommandSender(sender);
             return null;
         }
         Currency currency = command.walletOwnerManager.getDefaultCurrency();
@@ -43,7 +43,7 @@ public record BlobEconomyCommandContext<T extends WalletOwner>(Currency currency
             String inputCurrency = args[3];
             currency = command.currencyManager.getObject(inputCurrency);
             if (currency == null) {
-                BlobLibAssetAPI.getMessage("Currency.Not-Found").toCommandSender(sender);
+                BlobLibMessageAPI.getInstance().getMessage("Currency.Not-Found").toCommandSender(sender);
                 return null;
             }
         }
@@ -57,12 +57,12 @@ public record BlobEconomyCommandContext<T extends WalletOwner>(Currency currency
         String inputPlayer = args[1];
         Player player = Bukkit.getPlayer(inputPlayer);
         if (player == null) {
-            BlobLibAssetAPI.getMessage("Player.Not-Found").toCommandSender(sender);
+            BlobLibMessageAPI.getInstance().getMessage("Player.Not-Found").toCommandSender(sender);
             return null;
         }
         Optional<T> optional = command.walletOwnerManager.isWalletOwner(player);
         if (optional.isEmpty()) {
-            BlobLibAssetAPI.getMessage("Player.Not-Inside-Plugin-Cache").toCommandSender(sender);
+            BlobLibMessageAPI.getInstance().getMessage("Player.Not-Inside-Plugin-Cache").toCommandSender(sender);
             return null;
         }
         T walletOwner = optional.get();
@@ -71,7 +71,7 @@ public record BlobEconomyCommandContext<T extends WalletOwner>(Currency currency
             String inputCurrency = args[2];
             currency = command.currencyManager.getObject(inputCurrency);
             if (currency == null) {
-                BlobLibAssetAPI.getMessage("Currency.Not-Found").toCommandSender(sender);
+                BlobLibMessageAPI.getInstance().getMessage("Currency.Not-Found").toCommandSender(sender);
                 return null;
             }
         }

@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.BlobLibAssetAPI;
+import us.mytheria.bloblib.api.BlobLibMessageAPI;
 import us.mytheria.bloblib.entities.message.BlobMessage;
 import us.mytheria.bloblib.managers.SelPosListenerManager;
 
@@ -49,8 +49,8 @@ public class BlobSelPosListener extends SelPosListener {
                                            String timeoutMessageKey, String timerMessageKey) {
         BlobLib main = BlobLib.getInstance();
         SelPosListenerManager selPosManager = main.getPositionManager();
-        Optional<BlobMessage> timeoutMessage = Optional.ofNullable(BlobLibAssetAPI.getMessage(timeoutMessageKey));
-        Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibAssetAPI.getMessage(timerMessageKey));
+        Optional<BlobMessage> timeoutMessage = Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(timeoutMessageKey));
+        Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(timerMessageKey));
         List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
         return new BlobSelPosListener(player.getName(), timeout,
                 inputListener -> {

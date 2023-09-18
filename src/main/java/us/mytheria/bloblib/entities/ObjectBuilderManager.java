@@ -2,7 +2,7 @@ package us.mytheria.bloblib.entities;
 
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import us.mytheria.bloblib.BlobLibAssetAPI;
+import us.mytheria.bloblib.api.BlobLibInventoryAPI;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
 import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
 import us.mytheria.bloblib.managers.*;
@@ -48,7 +48,7 @@ public class ObjectBuilderManager<T extends BlobObject> extends Manager {
 
     public void update() {
         this.builders = new HashMap<>();
-        BlobInventory inventory = BlobLibAssetAPI.getBlobInventory(fileKey);
+        BlobInventory inventory = BlobLibInventoryAPI.getInstance().getBlobInventory(fileKey);
         if (inventory == null)
             throw new RuntimeException("Inventory file '" + fileKey + "' not found.");
         this.title = inventory.getTitle();

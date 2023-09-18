@@ -8,7 +8,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.BlobLibAssetAPI;
+import us.mytheria.bloblib.api.BlobLibSoundAPI;
 import us.mytheria.bloblib.entities.BlobEditor;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
 import us.mytheria.bloblib.entities.listeners.EditorListener;
@@ -42,7 +42,7 @@ public class VariableSelectorManager implements Listener {
         }
         event.setCancelled(true);
         int slot = event.getRawSlot();
-        BlobSound clickSound = BlobLibAssetAPI.getSound("Builder.Button-Click");
+        BlobSound clickSound = BlobLibSoundAPI.getInstance().getSound("Builder.Button-Click");
         if (slot > blobEditor.valuesSize() - 1) {
             if (blobEditor.isNextPageButton(slot)) {
                 blobEditor.nextPage();
@@ -90,7 +90,7 @@ public class VariableSelectorManager implements Listener {
             return;
         }
         listener.setInputFromSlot(variableSelector, slot);
-        BlobLibAssetAPI.getSound("Builder.Button-Click").handle(player);
+        BlobLibSoundAPI.getInstance().getSound("Builder.Button-Click").handle(player);
     }
 
     @EventHandler

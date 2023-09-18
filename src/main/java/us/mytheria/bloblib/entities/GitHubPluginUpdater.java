@@ -13,7 +13,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.BlobLibAssetAPI;
+import us.mytheria.bloblib.api.BlobLibMessageAPI;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -177,7 +177,7 @@ public class GitHubPluginUpdater implements PluginUpdater {
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
                 if (player == null || !player.isOnline())
                     return;
-                BlobLibAssetAPI.getMessage("BlobLib.Updater-Available")
+                BlobLibMessageAPI.getInstance().getMessage("BlobLib.Updater-Available")
                         .modder()
                         .replace("%randomColor%", BlobLib.getInstance().getColorManager().randomColor().toString())
                         .replace("%plugin%", plugin.getName())

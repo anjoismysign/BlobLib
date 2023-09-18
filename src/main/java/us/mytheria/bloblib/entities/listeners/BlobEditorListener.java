@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.BlobLibAssetAPI;
+import us.mytheria.bloblib.api.BlobLibMessageAPI;
 import us.mytheria.bloblib.entities.BlobEditor;
 import us.mytheria.bloblib.entities.message.BlobMessage;
 import us.mytheria.bloblib.managers.SelectorListenerManager;
@@ -41,7 +41,7 @@ public class BlobEditorListener<T> extends EditorListener<T> {
         SelectorListenerManager selectorManager = main.getSelectorManager();
         Optional<BlobMessage> timerMessage = Optional.empty();
         if (timerMessageKey != null)
-            timerMessage = Optional.ofNullable(BlobLibAssetAPI.getMessage(timerMessageKey));
+            timerMessage = Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(timerMessageKey));
         List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(new ArrayList<>());
         return new BlobEditorListener<>(player.getName(), listener -> {
             T input = listener.getInput();

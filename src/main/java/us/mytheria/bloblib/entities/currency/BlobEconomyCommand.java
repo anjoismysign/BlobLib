@@ -4,7 +4,7 @@ import me.anjoismysign.anjo.entities.Result;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import us.mytheria.bloblib.BlobLibAssetAPI;
+import us.mytheria.bloblib.api.BlobLibMessageAPI;
 import us.mytheria.bloblib.entities.BlobChildCommand;
 import us.mytheria.bloblib.entities.BlobExecutor;
 import us.mytheria.bloblib.entities.ExecutorData;
@@ -138,7 +138,7 @@ public class BlobEconomyCommand<T extends WalletOwner> {
             T walletOwner = context.walletOwner();
             Player player = context.player();
             walletOwner.deposit(currency, amount);
-            BlobLibAssetAPI.getMessage("Economy.Deposit").modify(s -> s.replace("%display%", currency.display(amount))
+            BlobLibMessageAPI.getInstance().getMessage("Economy.Deposit").modify(s -> s.replace("%display%", currency.display(amount))
                     .replace("%currency%", currency.getDisplayName())
                     .replace("%player%", player.getName())).toCommandSender(sender);
             return true;
@@ -156,13 +156,13 @@ public class BlobEconomyCommand<T extends WalletOwner> {
             Player player = context.player();
             if (!walletOwner.has(currency, amount)) {
                 double missing = amount - walletOwner.getBalance(currency);
-                BlobLibAssetAPI.getMessage("Economy.Cannot-Bankrupt-Others").modify(s -> s.replace("%display%", currency.display(missing))
+                BlobLibMessageAPI.getInstance().getMessage("Economy.Cannot-Bankrupt-Others").modify(s -> s.replace("%display%", currency.display(missing))
                         .replace("%currency%", currency.getDisplayName())
                         .replace("%player%", player.getName())).toCommandSender(sender);
                 return true;
             }
             walletOwner.withdraw(currency, amount);
-            BlobLibAssetAPI.getMessage("Economy.Withdraw").modify(s -> s.replace("%display%", currency.display(amount))
+            BlobLibMessageAPI.getInstance().getMessage("Economy.Withdraw").modify(s -> s.replace("%display%", currency.display(amount))
                     .replace("%currency%", currency.getDisplayName())
                     .replace("%player%", player.getName())).toCommandSender(sender);
             return true;
@@ -177,7 +177,7 @@ public class BlobEconomyCommand<T extends WalletOwner> {
             double amount = context.amount();
             Player player = context.player();
             context.walletOwner().setBalance(currency, amount);
-            BlobLibAssetAPI.getMessage("Economy.Set").modify(s -> s.replace("%display%", currency.display(amount))
+            BlobLibMessageAPI.getInstance().getMessage("Economy.Set").modify(s -> s.replace("%display%", currency.display(amount))
                     .replace("%currency%", currency.getDisplayName())
                     .replace("%player%", player.getName())).toCommandSender(sender);
             return true;
@@ -191,7 +191,7 @@ public class BlobEconomyCommand<T extends WalletOwner> {
             Currency currency = context.currency();
             Player player = context.player();
             context.walletOwner().reset(currency);
-            BlobLibAssetAPI.getMessage("Economy.Reset").modify(s -> s
+            BlobLibMessageAPI.getInstance().getMessage("Economy.Reset").modify(s -> s
                     .replace("%currency%", currency.getDisplayName())
                     .replace("%player%", player.getName())).toCommandSender(sender);
             return true;

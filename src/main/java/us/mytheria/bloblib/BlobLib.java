@@ -20,6 +20,7 @@ public class BlobLib extends JavaPlugin {
     private static BlobPluginLogger anjoLogger;
 
     private BlobLibUpdater bloblibupdater;
+    private BlobLibAPI api;
 
     private ScriptManager scriptManager;
     private VaultManager vaultManager;
@@ -70,6 +71,7 @@ public class BlobLib extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        api = BlobLibAPI.getInstance(this);
         bloblibupdater = new BlobLibUpdater(this);
         reflectionLib = BlobReflectionLib.getInstance(this);
         serializationLib = SerializationLib.getInstance(this);
@@ -121,6 +123,10 @@ public class BlobLib extends JavaPlugin {
         actionManager.reload();
         inventoryManager.reload();
         getPluginManager().reload();
+    }
+
+    public BlobLibAPI getAPI() {
+        return api;
     }
 
     public BlobLibUpdater getBloblibupdater() {
@@ -288,7 +294,12 @@ public class BlobLib extends JavaPlugin {
         return engineHubManager;
     }
 
-    protected DisguiseManager getDisguiseManager() {
+    /**
+     * Will retrieve the DisguiseManager
+     *
+     * @return The DisguiseManager
+     */
+    public DisguiseManager getDisguiseManager() {
         return disguiseManager;
     }
 }

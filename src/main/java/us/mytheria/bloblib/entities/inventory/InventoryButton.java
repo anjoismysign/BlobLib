@@ -6,9 +6,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.Nullable;
-import us.mytheria.bloblib.BlobLibAPI;
-import us.mytheria.bloblib.BlobLibAssetAPI;
 import us.mytheria.bloblib.action.Action;
+import us.mytheria.bloblib.api.BlobLibActionAPI;
+import us.mytheria.bloblib.api.BlobLibEconomyAPI;
 import us.mytheria.bloblib.vault.multieconomy.ElasticEconomy;
 
 import java.util.HashSet;
@@ -109,7 +109,7 @@ public class InventoryButton {
         double price = getPrice();
         if (Double.compare(price, 0D) <= 0)
             return true;
-        ElasticEconomy elasticEconomy = BlobLibAPI.getElasticEconomy();
+        ElasticEconomy elasticEconomy = BlobLibEconomyAPI.getInstance().getElasticEconomy();
         IdentityEconomy economy = elasticEconomy
                 .map(Optional.ofNullable(getPriceCurrency()));
         boolean hasAmount = economy.has(player.getUniqueId(), price);
@@ -150,7 +150,7 @@ public class InventoryButton {
     public void handleAction(Entity entity) {
         if (action == null)
             return;
-        Action<Entity> fetch = BlobLibAssetAPI.getAction(action);
+        Action<Entity> fetch = BlobLibActionAPI.getInstance().getAction(action);
         fetch.perform(entity);
     }
 

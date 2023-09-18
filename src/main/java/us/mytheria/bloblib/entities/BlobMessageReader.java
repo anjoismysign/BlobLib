@@ -2,7 +2,7 @@ package us.mytheria.bloblib.entities;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.Nullable;
-import us.mytheria.bloblib.BlobLibAssetAPI;
+import us.mytheria.bloblib.api.BlobLibMessageAPI;
 import us.mytheria.bloblib.entities.message.*;
 import us.mytheria.bloblib.utilities.TextColor;
 
@@ -132,7 +132,7 @@ public class BlobMessageReader {
         if (!parentConfigurationSection.contains("BlobMessage"))
             return Optional.empty();
         if (parentConfigurationSection.isString("BlobMessage"))
-            return Optional.ofNullable(BlobLibAssetAPI.getMessage(parentConfigurationSection.getString("BlobMessage")));
+            return Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(parentConfigurationSection.getString("BlobMessage")));
         return Optional.of(read(parentConfigurationSection.getConfigurationSection("BlobMessage")));
     }
 
@@ -147,6 +147,6 @@ public class BlobMessageReader {
             return Optional.empty();
         if (!section.isString("BlobMessage"))
             throw new IllegalArgumentException("'BlobMessage' must be a String");
-        return Optional.ofNullable(BlobLibAssetAPI.getMessage(section.getString("BlobMessage")));
+        return Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(section.getString("BlobMessage")));
     }
 }

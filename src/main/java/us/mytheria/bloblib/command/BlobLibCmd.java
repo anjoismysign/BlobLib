@@ -12,7 +12,7 @@ import org.bukkit.plugin.PluginBase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.BlobLibAssetAPI;
+import us.mytheria.bloblib.api.BlobLibMessageAPI;
 import us.mytheria.bloblib.entities.PluginUpdater;
 import us.mytheria.bloblib.entities.message.BlobMessage;
 import us.mytheria.bloblib.managers.BlobPlugin;
@@ -93,7 +93,7 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                     boolean successful = updater.download();
                     if (!successful)
                         return true;
-                    BlobMessage message = BlobLibAssetAPI.getMessage("BlobLib.Updater-Successful");
+                    BlobMessage message = BlobLibMessageAPI.getInstance().getMessage("BlobLib.Updater-Successful");
                     if (isPlugin) {
                         message.modder()
                                 .replace("%randomColor%", main.getColorManager().randomColor().toString())
@@ -112,11 +112,11 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                 }
                 case "download" -> {
                     if (length < 2) {
-                        BlobLibAssetAPI.getMessage("BlobLib.Download-Usage")
+                        BlobLibMessageAPI.getInstance().getMessage("BlobLib.Download-Usage")
                                 .toCommandSender(sender);
                         return true;
                     } else if (length < 3) {
-                        BlobLibAssetAPI.getMessage("BlobLib.Download-GitHub-Usage")
+                        BlobLibMessageAPI.getInstance().getMessage("BlobLib.Download-GitHub-Usage")
                                 .toCommandSender(sender);
                         return true;
                     } else {
@@ -128,7 +128,7 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                         String input = args[2];
                         String[] split = input.split("/");
                         if (split.length != 2) {
-                            BlobLibAssetAPI.getMessage("BlobLib.Download-GitHub-Usage")
+                            BlobLibMessageAPI.getInstance().getMessage("BlobLib.Download-GitHub-Usage")
                                     .toCommandSender(sender);
                             return true;
                         }
@@ -137,7 +137,7 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                         RepositoryDownload download = downloadGitHub(owner, repo);
                         boolean successful = download.successful();
                         if (successful)
-                            BlobLibAssetAPI.getMessage("BlobLib.Download-GitHub-Successful")
+                            BlobLibMessageAPI.getInstance().getMessage("BlobLib.Download-GitHub-Successful")
                                     .modder()
                                     .replace("%randomColor%", main.getColorManager().randomColor().toString())
                                     .replace("%fileName%", download.fileName())
@@ -146,10 +146,12 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                         else {
                             DownloadError error = download.error();
                             switch (error) {
-                                case NO_CONNECTION -> BlobLibAssetAPI.getMessage("BlobLib.No-Connection")
-                                        .toCommandSender(sender);
-                                case REPO_NOT_FOUND -> BlobLibAssetAPI.getMessage("BlobLib.Repository-Not-Found")
-                                        .toCommandSender(sender);
+                                case NO_CONNECTION ->
+                                        BlobLibMessageAPI.getInstance().getMessage("BlobLib.No-Connection")
+                                                .toCommandSender(sender);
+                                case REPO_NOT_FOUND ->
+                                        BlobLibMessageAPI.getInstance().getMessage("BlobLib.Repository-Not-Found")
+                                                .toCommandSender(sender);
                                 default -> sender.sendMessage(ChatColor.RED + "Could not download file");
                             }
                         }

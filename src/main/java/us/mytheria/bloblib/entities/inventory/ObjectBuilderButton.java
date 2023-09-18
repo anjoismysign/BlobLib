@@ -3,7 +3,7 @@ package us.mytheria.bloblib.entities.inventory;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
-import us.mytheria.bloblib.BlobLibAssetAPI;
+import us.mytheria.bloblib.api.BlobLibSoundAPI;
 import us.mytheria.bloblib.entities.message.BlobSound;
 
 import java.util.Optional;
@@ -57,7 +57,7 @@ public abstract class ObjectBuilderButton<T> {
     }
 
     public void addListener(Player player) {
-        addListener(player, Optional.of(BlobLibAssetAPI.getSound("Builder.Button-Click")));
+        addListener(player, Optional.of(BlobLibSoundAPI.getInstance().getSound("Builder.Button-Click")));
     }
 
     public boolean isValuePresent() {

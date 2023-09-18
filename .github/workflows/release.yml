@@ -1,0 +1,33 @@
+name: Release
+
+on:
+  release:
+    types: [ published ]
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🛎 Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # [!] we need to checkout with tags and commit history
+
+      - name: 📋 Get Commits since last Release
+        id: changes
+        uses: simbo/changes-since-last-release-action@v1
+
+      - name: 📣 Output collected Data
+        run: |
+          echo "Changes since ${{ steps.changes.outputs.last-tag }}:"
+          echo "${{ steps.changes.outputs.log }}"
+      - name: 📝Edit Release
+        uses: irongut/EditRelease@v1.2.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          id: ${{ github.event.release.id }}
+          body: |
+            Changes since ```${{ steps.changes.outputs.last-tag }}```
+            ${{ steps.changes.outputs.log }}

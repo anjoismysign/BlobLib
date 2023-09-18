@@ -6,7 +6,7 @@ import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
-import us.mytheria.bloblib.BlobLibAssetAPI;
+import us.mytheria.bloblib.api.BlobLibMessageAPI;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -179,7 +179,7 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
         boolean has = sender.hasPermission(permission);
         if (!has)
             if (blobMessageKey != null)
-                BlobLibAssetAPI.getMessage(blobMessageKey).toCommandSender(sender);
+                BlobLibMessageAPI.getInstance().getMessage(blobMessageKey).toCommandSender(sender);
         return has;
     }
 
@@ -206,7 +206,7 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
      */
     public boolean isInstanceOfPlayer(CommandSender sender, String blobMessageKey) {
         if (!(sender instanceof Player player)) {
-            BlobLibAssetAPI.getMessage(blobMessageKey).toCommandSender(sender);
+            BlobLibMessageAPI.getInstance().getMessage(blobMessageKey).toCommandSender(sender);
             return false;
         }
         return true;

@@ -4,7 +4,7 @@ import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.configuration.ConfigurationSection;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.BlobLibAssetAPI;
+import us.mytheria.bloblib.api.BlobLibSoundAPI;
 import us.mytheria.bloblib.entities.message.BlobSound;
 import us.mytheria.bloblib.entities.message.MessageAudience;
 
@@ -48,9 +48,9 @@ public class BlobSoundReader {
             String sound = parentConfigurationSection.getString("BlobSound");
             String[] split = sound.split(":");
             if (split.length == 1)
-                return Optional.ofNullable(BlobLibAssetAPI.getSound(sound));
+                return Optional.ofNullable(BlobLibSoundAPI.getInstance().getSound(sound));
             else if (split.length == 2) {
-                Optional<BlobSound> optional = Optional.ofNullable(BlobLibAssetAPI.getSound(split[0]));
+                Optional<BlobSound> optional = Optional.ofNullable(BlobLibSoundAPI.getInstance().getSound(split[0]));
                 if (optional.isEmpty())
                     return Optional.empty();
                 MessageAudience audience;
