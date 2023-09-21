@@ -427,6 +427,35 @@ public abstract class ManagerDirector implements IManagerDirector {
     }
 
     /**
+     * Will detach an embedded file/asset from the plugin jar to
+     * the corresponding directory
+     *
+     * @param fileName The name of the file to detach
+     * @param debug    Whether to print debug messages
+     * @param path     The path to the directory
+     * @return The ManagerDirector instance for method chaining
+     */
+    public ManagerDirector detachAsset(String fileName, boolean debug, File path) {
+        Logger logger = getPlugin().getAnjoLogger();
+        File file = new File(path + "/" + fileName + ".yml");
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                if (debug)
+                    logger.debug(" asset " + fileName + ".yml was not detached");
+                e.printStackTrace();
+                return this;
+            }
+        }
+        ResourceUtil.updateYml(path, "/temp" + fileName + ".yml", fileName + ".yml", file, plugin);
+        boolean successful = MessageManager.loadAndRegisterYamlConfiguration(file, plugin);
+        if (debug && successful)
+            logger.debug(" asset " + fileName + ".yml successfully detached");
+        return this;
+    }
+
+    /**
      * Will detach an embedded BlobMessage file/asset from the plugin jar to
      * the corresponding directory in the plugin data folder.
      *
