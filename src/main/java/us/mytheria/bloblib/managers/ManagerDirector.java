@@ -2,6 +2,7 @@ package us.mytheria.bloblib.managers;
 
 import me.anjoismysign.anjo.logger.Logger;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
@@ -430,26 +431,31 @@ public abstract class ManagerDirector implements IManagerDirector {
      * Will detach an embedded file/asset from the plugin jar to
      * the corresponding directory
      *
-     * @param fileName The name of the file to detach
+     * @param fileName The name of the file to detach. Needs to include the extension.
      * @param debug    Whether to print debug messages
      * @param path     The path to the directory
      * @return The ManagerDirector instance for method chaining
      */
     public ManagerDirector detachAsset(String fileName, boolean debug, File path) {
         Logger logger = getPlugin().getAnjoLogger();
-        File file = new File(path + "/" + fileName + ".yml");
+        File file = new File(path + "/" + fileName);
+        boolean successful = false;
         if (!file.exists()) {
             try {
                 file.createNewFile();
+                successful = true;
             } catch (IOException e) {
                 if (debug)
-                    logger.debug(" asset " + fileName + ".yml was not detached");
+                    logger.debug(" asset " + fileName + " was not detached");
                 e.printStackTrace();
                 return this;
             }
         }
-        ResourceUtil.updateYml(path, "/temp" + fileName + ".yml", fileName + ".yml", file, plugin);
-        boolean successful = MessageManager.loadAndRegisterYamlConfiguration(file, plugin);
+        String extenstion = FilenameUtils.getExtension(fileName);
+        if (extenstion.equals("yml")) {
+            ResourceUtil.updateYml(path, "/temp" + fileName + ".yml", fileName + ".yml", file, plugin);
+            successful = MessageManager.loadAndRegisterYamlConfiguration(file, plugin);
+        }
         if (debug && successful)
             logger.debug(" asset " + fileName + ".yml successfully detached");
         return this;
@@ -464,24 +470,8 @@ public abstract class ManagerDirector implements IManagerDirector {
      * @return The ManagerDirector instance for method chaining
      */
     public ManagerDirector detachMessageAsset(String fileName, boolean debug) {
-        Logger logger = getPlugin().getAnjoLogger();
         File path = getRealFileManager().messagesDirectory();
-        File file = new File(path + "/" + fileName + ".yml");
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                if (debug)
-                    logger.debug(" message asset " + fileName + ".yml was not detached");
-                e.printStackTrace();
-                return this;
-            }
-        }
-        ResourceUtil.updateYml(path, "/temp" + fileName + ".yml", fileName + ".yml", file, plugin);
-        boolean successful = MessageManager.loadAndRegisterYamlConfiguration(file, plugin);
-        if (debug && successful)
-            logger.debug(" message asset " + fileName + ".yml successfully detached");
-        return this;
+        return detachAsset(fileName + ".yml", debug, path);
     }
 
     /**
@@ -505,24 +495,8 @@ public abstract class ManagerDirector implements IManagerDirector {
      * @return The ManagerDirector instance for method chaining
      */
     public ManagerDirector detachSoundAsset(String fileName, boolean debug) {
-        Logger logger = getPlugin().getAnjoLogger();
         File path = getRealFileManager().soundsDirectory();
-        File file = new File(path + "/" + fileName + ".yml");
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                if (debug)
-                    logger.debug(" sound asset " + fileName + ".yml was not detached");
-                e.printStackTrace();
-                return this;
-            }
-        }
-        ResourceUtil.updateYml(path, "/temp" + fileName + ".yml", fileName + ".yml", file, plugin);
-        SoundManager.loadAndRegisterYamlConfiguration(plugin, file);
-        if (debug)
-            logger.debug(" sound asset " + fileName + ".yml successfully detached");
-        return this;
+        return detachAsset(fileName + ".yml", debug, path);
     }
 
     /**
