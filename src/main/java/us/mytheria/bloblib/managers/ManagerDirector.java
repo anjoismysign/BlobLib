@@ -3,6 +3,7 @@ package us.mytheria.bloblib.managers;
 import me.anjoismysign.anjo.logger.Logger;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public abstract class ManagerDirector implements IManagerDirector {
@@ -217,6 +219,22 @@ public abstract class ManagerDirector implements IManagerDirector {
                                                                                 @Nullable Function<T, Event> quitEvent) {
         addManager(key, BlobSerializableManagerFactory.LISTENER(this,
                 generator, crudableName, logActivity, joinEvent, quitEvent));
+    }
+
+    /**
+     * Will instantiate a BlobPHExpansion and still allow calling
+     * methods on it.
+     *
+     * @param identifier The identifier of the expansion
+     * @param consumer   The consumer that will consume the expansion
+     */
+    public void instantiateBlobPHExpansion(String identifier, Consumer<BlobPHExpansion> consumer) {
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
+            getPlugin().getAnjoLogger().log("PlaceholderAPI not found, not registering PlaceholderAPI expansion for " + getPlugin().getName());
+            return;
+        }
+        BlobPHExpansion expansion = new BlobPHExpansion(getPlugin(), identifier);
+        consumer.accept(expansion);
     }
 
     /**
@@ -429,7 +447,10 @@ public abstract class ManagerDirector implements IManagerDirector {
 
     /**
      * Will detach an embedded file/asset from the plugin jar to
-     * the corresponding directory
+     * the corresponding directory.
+     * It won't replace the file if it already exists.
+     * If file does not exist, it will create it and then copy the
+     * embedded file/asset to it.
      *
      * @param fileName The name of the file to detach. Needs to include the extension.
      * @param debug    Whether to print debug messages
@@ -440,21 +461,25 @@ public abstract class ManagerDirector implements IManagerDirector {
         Logger logger = getPlugin().getAnjoLogger();
         File file = new File(path + "/" + fileName);
         boolean successful = false;
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-                successful = true;
-            } catch (IOException e) {
-                if (debug)
-                    logger.debug(" asset " + fileName + " was not detached");
-                e.printStackTrace();
-                return this;
-            }
-        }
         String extenstion = FilenameUtils.getExtension(fileName);
         if (extenstion.equals("yml")) {
+            if (!file.exists()) {
+                try {
+                    file.createNewFile();
+                    successful = true;
+                } catch (IOException e) {
+                    if (debug)
+                        logger.debug(" asset " + fileName + " was not detached");
+                    e.printStackTrace();
+                    return this;
+                }
+            }
             ResourceUtil.updateYml(path, "/temp" + fileName + ".yml", fileName + ".yml", file, plugin);
             successful = MessageManager.loadAndRegisterYamlConfiguration(file, plugin);
+        } else {
+            if (!file.exists())
+                successful = true;
+            ResourceUtil.moveResource(file, plugin.getResource(fileName));
         }
         if (debug && successful)
             logger.debug(" asset " + fileName + ".yml successfully detached");

@@ -113,8 +113,9 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         if (quitEvent != null)
             Bukkit.getPluginManager().callEvent(quitEvent.apply(walletOwner));
         saving.add(uuid);
+        BlobCrudable crudable = walletOwner.serializeAllAttributes();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            crudManager.update(walletOwner.serializeAllAttributes());
+            crudManager.update(crudable);
             removeObject(uuid);
             saving.remove(uuid);
         });

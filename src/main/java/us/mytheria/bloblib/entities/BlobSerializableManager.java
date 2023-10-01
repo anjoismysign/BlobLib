@@ -69,23 +69,19 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
     public void onJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
         UUID uuid = player.getUniqueId();
-        CompletableFuture<BlobCrudable> future = new CompletableFuture<>();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            if (player == null || !player.isOnline()) {
-                future.completeExceptionally(new NullPointerException("Player is null"));
-                return;
-            }
-            BlobCrudable crudable = crudManager.read(uuid.toString());
-            future.complete(crudable);
-        });
-        future.thenAccept(crudable -> {
             if (player == null || !player.isOnline())
                 return;
-            T applied = generator.apply(crudable);
-            serializables.put(uuid, applied);
-            if (joinEvent == null)
-                return;
-            Bukkit.getPluginManager().callEvent(joinEvent.apply(applied));
+            BlobCrudable crudable = crudManager.read(uuid.toString());
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                if (player == null || !player.isOnline())
+                    return;
+                T applied = generator.apply(crudable);
+                serializables.put(uuid, applied);
+                if (joinEvent == null)
+                    return;
+                Bukkit.getPluginManager().callEvent(joinEvent.apply(applied));
+            });
         });
     }
 
@@ -100,8 +96,9 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
         if (quitEvent != null)
             Bukkit.getPluginManager().callEvent(quitEvent.apply(serializable));
         saving.add(uuid);
+        BlobCrudable crudable = serializable.serializeAllAttributes();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            crudManager.update(serializable.serializeAllAttributes());
+            crudManager.update(crudable);
             removeObject(uuid);
             saving.remove(uuid);
         });

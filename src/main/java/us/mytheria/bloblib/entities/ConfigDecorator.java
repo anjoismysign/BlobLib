@@ -11,6 +11,18 @@ public class ConfigDecorator {
         this.plugin = plugin;
     }
 
+    public ConfigurationSection reloadAndGetSection(String path) {
+        FileConfiguration root = plugin.getConfig();
+        root.options().copyDefaults(true);
+        ConfigurationSection section;
+        if (!root.isConfigurationSection(path))
+            section = root.createSection(path);
+        else
+            section = root.getConfigurationSection(path);
+        plugin.saveConfig();
+        return section;
+    }
+
     public ListenersSection reloadAndGetListeners() {
         FileConfiguration root = plugin.getConfig();
         root.options().copyDefaults(true);

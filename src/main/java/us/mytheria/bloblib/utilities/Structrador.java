@@ -21,6 +21,8 @@ import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.bukkit.BlobBlockState;
+import us.mytheria.bloblib.entities.ChainedTask;
+import us.mytheria.bloblib.entities.ChainedTaskProgress;
 
 import java.io.*;
 import java.sql.Blob;
@@ -177,21 +179,28 @@ public class Structrador {
      * @return A CompletableFuture that completes when the structure is placed.
      */
     @NotNull
-    public CompletableFuture<Void> chainedPlace(Location location, boolean includeEntities,
-                                                StructureRotation structureRotation, Mirror mirror,
-                                                int palette, float integrity, Random random,
-                                                int maxPlacedPerPeriod, long period,
-                                                Consumer<BlockState> placedBlockConsumer,
-                                                Consumer<Entity> placedEntityConsumer) {
+    public ChainedTask chainedPlace(Location location, boolean includeEntities,
+                                    StructureRotation structureRotation, Mirror mirror,
+                                    int palette, float integrity, Random random,
+                                    int maxPlacedPerPeriod, long period,
+                                    Consumer<BlockState> placedBlockConsumer,
+                                    Consumer<Entity> placedEntityConsumer) {
         /*
          * The location of the returned block states and entities
          * are offsets relative to the structure's position that
          * is provided once the structure is placed into the world.
          */
-        CompletableFuture<Void> chainedPlace = new CompletableFuture<>();
+        CompletableFuture<Void> future = new CompletableFuture<>();
         List<Palette> palettes = structure.getPalettes();
         List<BlockState> blocks = palettes.stream().map(Palette::getBlocks)
                 .flatMap(List::stream).toList();
+        List<Entity> entities = structure.getEntities();
+        int blocksSize = blocks.size();
+        int entitiesSize = entities.size();
+        int totalSize = blocksSize + entitiesSize;
+        ChainedTask chainedTask = new ChainedTask(future, null,
+                (totalSize / maxPlacedPerPeriod) * period);
+        ChainedTaskProgress progress = new ChainedTaskProgress(totalSize, chainedTask);
         Iterator<BlockState> iterator = blocks.iterator();
         World world = location.getWorld();
         if (world == null)
@@ -251,6 +260,7 @@ public class Structrador {
                         BlockState current = blockLocation.getBlock().getState();
                         placedBlockConsumer.accept(current);
                         placed.talk(placed.thanks() + 1);
+                        progress.run();
                     }
                     if (!iterator.hasNext()) {
                         paletteFuture.complete(null);
@@ -258,14 +268,14 @@ public class Structrador {
                     }
                 }
             };
-            placeTask.runTaskTimer(plugin, 1L, period);
+            chainedTask.setTask(placeTask.runTaskTimer(plugin, 1L, period));
             //Once blocks are placed, will place entities
             paletteFuture.whenComplete((aVoid, throwable) -> {
                 if (!includeEntities) {
-                    chainedPlace.complete(null);
+                    future.complete(null);
                     return;
                 }
-                Iterator<Entity> entityIterator = structure.getEntities().iterator();
+                Iterator<Entity> entityIterator = entities.iterator();
                 BukkitRunnable entityTask = new BukkitRunnable() {
                     @Override
                     public void run() {
@@ -302,26 +312,27 @@ public class Structrador {
                             next.setSilent(isSilent);
                             placedEntityConsumer.accept(next);
                             maxPlaced.talk(maxPlaced.thanks() + 1);
+                            progress.run();
                         }
                         if (!iterator.hasNext()) {
-                            chainedPlace.complete(null);
+                            future.complete(null);
                             this.cancel();
                         }
                     }
                 };
-                entityTask.runTaskTimer(plugin, 1L, period);
+                chainedTask.setTask(entityTask.runTaskTimer(plugin, 1L, period));
             });
         } catch (Exception e) {
-            chainedPlace.completeExceptionally(e);
+            future.completeExceptionally(e);
         }
-        return chainedPlace;
+        return chainedTask;
     }
 
     /**
      * Will place the structure at the given location in multiple ticks.
      * The bigger the structure, the longer it will take to place.
      * Places 1 block/entity per tick.
-     * TODO: structureRotation, mirror, palette, integrity and random are not used.
+     * TODO: mirror, palette, integrity and random are not used.
      *
      * @param location          - The location to place the structure at.
      * @param includeEntities   - If the entities present in the structure should be spawned.
@@ -332,9 +343,9 @@ public class Structrador {
      * @param random            - The randomizer used for setting the structure's LootTables and integrity.
      * @return A CompletableFuture that completes when the structure is placed.
      */
-    public CompletableFuture<Void> chainedPlace(Location location, boolean includeEntities,
-                                                StructureRotation structureRotation, Mirror mirror,
-                                                int palette, float integrity, Random random) {
+    public ChainedTask chainedPlace(Location location, boolean includeEntities,
+                                    StructureRotation structureRotation, Mirror mirror,
+                                    int palette, float integrity, Random random) {
         return chainedPlace(location, includeEntities, structureRotation, mirror, palette,
                 integrity, random, 1, 1, blockState -> {
                 }, entity -> {

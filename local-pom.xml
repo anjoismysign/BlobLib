@@ -5,7 +5,7 @@
     <parent>
         <groupId>us.mytheria</groupId>
         <artifactId>BlobLib</artifactId>
-        <version>1.694.0</version>
+        <version>1.696.4</version>
         <relativePath>pom.xml</relativePath>
     </parent>
     <artifactId>bloblib</artifactId>
@@ -14,10 +14,6 @@
 
     <properties>
         <testServer>/Users/lbenav8095/Documents/Dev/Java/anjoismysign/1.19 Test Server</testServer>
-        <java.version>16</java.version>
-        <maven.compiler.source>16</maven.compiler.source>
-        <maven.compiler.target>16</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <build>
         <finalName>${project.name}-${project.parent.version}</finalName>

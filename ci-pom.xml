@@ -7,17 +7,13 @@
     <parent>
         <groupId>us.mytheria</groupId>
         <artifactId>BlobLib</artifactId>
-        <version>1.694.0</version>
+        <version>1.696.4</version>
         <relativePath>pom.xml</relativePath>
     </parent>
     <artifactId>bloblib</artifactId>
     <packaging>jar</packaging>
     <name>BlobLib</name>
 
-    <properties>
-        <java.version>16</java.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
     <build>
         <finalName>${project.name}-${project.parent.version}</finalName>
         <plugins>
@@ -25,10 +21,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
