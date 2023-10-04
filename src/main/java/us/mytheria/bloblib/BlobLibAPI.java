@@ -1,5 +1,6 @@
 package us.mytheria.bloblib;
 
+import me.anjoismysign.manobukkit.ManoBukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -27,8 +28,10 @@ public class BlobLibAPI {
     private final BlobLibPermissionAPI permissionAPI;
     private final BlobLibDisguiseAPI disguiseAPI;
     private final BlobLibAssetAPI assetAPI;
+    private final ManoBukkit manoBukkit;
 
     private BlobLibAPI(BlobLib plugin) {
+        manoBukkit = ManoBukkit.getInstance();
         this.listenerAPI = BlobLibListenerAPI.getInstance(plugin);
         this.economyAPI = BlobLibEconomyAPI.getInstance(plugin);
         this.hologramAPI = BlobLibHologramAPI.getInstance(plugin);
@@ -74,6 +77,9 @@ public class BlobLibAPI {
         return assetAPI;
     }
 
+    public ManoBukkit getManoBukkit() {
+        return manoBukkit;
+    }
 
     @Deprecated
     public static void addChatListener(Player player, long timeout, Consumer<String> consumer,

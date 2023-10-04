@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.displayentity;
 
+import me.anjoismysign.manobukkit.entities.decorators.implementations.ManoratorFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -9,8 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.mytheria.bloblib.reflection.BlobReflectionLib;
-import us.mytheria.bloblib.reflection.nonlivingentity.NonLivingEntityWrapper;
+import us.mytheria.bloblib.BlobLibAPI;
 
 import java.util.Objects;
 import java.util.Random;
@@ -18,6 +18,8 @@ import java.util.UUID;
 
 public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
         implements DisplayPet<Display, R> {
+    private static final ManoratorFactory MANORATOR_FACTORY = BlobLibAPI.getInstance().getManoBukkit().getManoratorFactory();
+
     private Particle particle;
     protected T entity, vehicle;
     private Location location;
@@ -27,7 +29,6 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
     private SyncDisplayEntityAnimations animations;
     private BukkitTask logicTask;
     protected R display;
-    private final NonLivingEntityWrapper nleWrapper;
     private final DisplayFloatingPetSettings settings;
 
     /**
@@ -48,8 +49,6 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
     ) {
         this.pauseLogic = false;
         this.settings = Objects.requireNonNull(settings);
-        this.nleWrapper = BlobReflectionLib.getInstance()
-                .getNonLivingEntityWrapper();
         setOwner(owner.getUniqueId());
         setDisplay(Objects.requireNonNull(display));
         setCustomName(customName);
@@ -213,7 +212,7 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
         if (vehicle != null) {
             loadChunks(location);
             loadChunks(loc);
-            nleWrapper.vehicleTeleport(vehicle, loc);
+            MANORATOR_FACTORY.of(vehicle).vehicleTeleport(loc);
         } else
             throw new NullPointerException("Expected vehicle is null");
         setLocation(loc);

@@ -1,6 +1,9 @@
 package us.mytheria.bloblib.utilities;
 
 import me.anjoismysign.anjo.entities.Uber;
+import me.anjoismysign.manobukkit.entities.decorators.ManoBlockState;
+import me.anjoismysign.manobukkit.entities.decorators.ManoWorld;
+import me.anjoismysign.manobukkit.entities.decorators.implementations.ManoratorFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -8,11 +11,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;
-import org.bukkit.craftbukkit.v1_20_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_20_R1.entity.CraftEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Hanging;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.structure.Palette;
@@ -20,7 +20,7 @@ import org.bukkit.structure.Structure;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
-import us.mytheria.bloblib.bukkit.BlobBlockState;
+import us.mytheria.bloblib.BlobLibAPI;
 import us.mytheria.bloblib.entities.ChainedTask;
 import us.mytheria.bloblib.entities.ChainedTaskProgress;
 
@@ -39,6 +39,8 @@ import java.util.function.Consumer;
  * Needs further testing
  */
 public class Structrador {
+    private static final ManoratorFactory MANORATOR_FACTORY = BlobLibAPI.getInstance().getManoBukkit().getManoratorFactory();
+
     private final Structure structure;
     private final JavaPlugin plugin;
 
@@ -205,7 +207,6 @@ public class Structrador {
         World world = location.getWorld();
         if (world == null)
             throw new IllegalArgumentException("Location must have a world.");
-        var nmsWorld = ((CraftWorld) world).getHandle();
         int degree;
         Vector blockOffset;
         Vector entityOffset;
@@ -255,7 +256,7 @@ public class Structrador {
                                 .add(result.getX() + blockOffset.getX(),
                                         result.getY() + blockOffset.getY(),
                                         result.getZ() + blockOffset.getZ());
-                        BlobBlockState state = BlobBlockState.of(next);
+                        ManoBlockState state = MANORATOR_FACTORY.of(next);
                         state.update(true, false, blockLocation);
                         BlockState current = blockLocation.getBlock().getState();
                         placedBlockConsumer.accept(current);
@@ -297,11 +298,8 @@ public class Structrador {
                              * Known to work in 1.20.1
                              * Might break in future versions
                              */
-                            var nmsEntity = ((CraftEntity) next).getHandle();
-                            if (!nmsWorld.tryAddFreshEntityWithPassengers
-                                    (nmsEntity, CreatureSpawnEvent.SpawnReason.CUSTOM))
-                                continue;
-                            next = nmsEntity.getBukkitEntity();
+                            ManoWorld manoWorld = MANORATOR_FACTORY.of(world);
+                            manoWorld.tryAddFreshEntityWithPassengers(next);
                             next.teleport(entityLocation);
                             if (next instanceof Hanging hanging) {
                                 BlockFace facing = hanging.getFacing();
