@@ -251,12 +251,13 @@ public class MultiSuperFurnace<T extends InventoryButton> extends SharableInvent
      * @param player The player to apply the experience to.
      * @param slot   The slot of the operation.
      */
-    public void apply(Player player, int slot) {
+    public MultiSuperFurnace<T> apply(Player player, int slot) {
         FurnaceOperation operation = operationHistory.get(slot);
         if (operation == null)
-            return;
+            return this;
         float experience = operation.experience();
         Experience.changeExp(player, experience);
         operationHistory.remove(slot);
+        return this;
     }
 }

@@ -66,20 +66,22 @@ public class SharableInventory<T extends InventoryButton> extends InventoryBuild
      *
      * @param key The key of the button
      */
-    public void addDefaultButton(String key) {
+    public SharableInventory<T> addDefaultButton(String key) {
         for (Integer i : getSlots(key)) {
             addDefaultButton(key, getButton(i));
             break;
         }
+        return this;
     }
 
     /**
      * Loads/reloads the default buttons.
      */
-    public void loadDefaultButtons() {
+    public SharableInventory<T> loadDefaultButtons() {
         setDefaultButtons(new HashMap<>());
         ButtonManager<T> manager = getButtonManager();
         getKeys().forEach(this::addDefaultButton);
+        return this;
     }
 
     /**
@@ -88,8 +90,9 @@ public class SharableInventory<T extends InventoryButton> extends InventoryBuild
      * @param name The name of the button
      * @param item The ItemStack of the button
      */
-    public void addDefaultButton(String name, ItemStack item) {
+    public SharableInventory<T> addDefaultButton(String name, ItemStack item) {
         defaultButtons.put(name, item);
+        return this;
     }
 
     /**
@@ -130,16 +133,18 @@ public class SharableInventory<T extends InventoryButton> extends InventoryBuild
      *
      * @param defaultButtons The default buttons to set
      */
-    public void setDefaultButtons(HashMap<String, ItemStack> defaultButtons) {
+    public SharableInventory<T> setDefaultButtons(HashMap<String, ItemStack> defaultButtons) {
         this.defaultButtons = defaultButtons;
+        return this;
     }
 
     /**
      * Builds the inventory since by default its reference is null
      */
-    public void buildInventory() {
+    public SharableInventory<T> buildInventory() {
         inventory = Bukkit.createInventory(null, getSize(), getTitle());
         getButtonManager().getIntegerKeys().forEach(this::setButton);
+        return this;
     }
 
     /**
@@ -157,8 +162,9 @@ public class SharableInventory<T extends InventoryButton> extends InventoryBuild
      *
      * @param inventory The inventory to set
      */
-    public void setInventory(Inventory inventory) {
+    public SharableInventory<T> setInventory(Inventory inventory) {
         this.inventory = inventory;
+        return this;
     }
 
     /**
@@ -167,8 +173,9 @@ public class SharableInventory<T extends InventoryButton> extends InventoryBuild
      * @param slot      The slot to set the button at
      * @param itemStack The ItemStack to set the button to
      */
-    public void setButton(int slot, ItemStack itemStack) {
+    public SharableInventory<T> setButton(int slot, ItemStack itemStack) {
         inventory.setItem(slot, itemStack);
+        return this;
     }
 
     /**
@@ -176,16 +183,18 @@ public class SharableInventory<T extends InventoryButton> extends InventoryBuild
      *
      * @param key The key of the button
      */
-    public void refillButton(String key) {
+    public SharableInventory<T> refillButton(String key) {
         Set<Integer> set = getSlots(key);
         if (set == null)
-            return;
+            return this;
         for (Integer i : set) {
             setButton(i, getButton(i));
         }
+        return this;
     }
 
-    public void open(Player player) {
+    public SharableInventory<T> open(Player player) {
         player.openInventory(inventory);
+        return this;
     }
 }

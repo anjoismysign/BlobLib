@@ -1,13 +1,16 @@
 package us.mytheria.bloblib.api;
 
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.inventory.*;
 import us.mytheria.bloblib.managers.InventoryManager;
+import us.mytheria.bloblib.managers.InventoryTrackerManager;
 import us.mytheria.bloblib.managers.MetaInventoryShard;
 
 import java.io.File;
+import java.util.Objects;
 import java.util.Optional;
 
 public class BlobLibInventoryAPI {
@@ -39,12 +42,42 @@ public class BlobLibInventoryAPI {
     }
 
     /**
+     * @return The inventory tracker manager
+     */
+    public InventoryTrackerManager getInventoryTrackerManager() {
+        return plugin.getInventoryTrackerManager();
+    }
+
+    /**
+     * @param key    Key that points to the carrier
+     * @param locale The locale
+     * @return The carrier if found. null otherwise
+     */
+    @Nullable
+    public InventoryBuilderCarrier<InventoryButton> getInventoryBuilderCarrier(String key, String locale) {
+        return getInventoryManager().getInventoryBuilderCarrier(key, locale);
+    }
+
+    /**
      * @param key Key that points to the carrier
      * @return The carrier if found. null otherwise
      */
     @Nullable
     public InventoryBuilderCarrier<InventoryButton> getInventoryBuilderCarrier(String key) {
         return getInventoryManager().getInventoryBuilderCarrier(key);
+    }
+
+    /**
+     * Will search for an InventoryBuilderCarrier with the given key.
+     * If found, will attempt to build the inventory.
+     *
+     * @param key    Key that points to the inventory
+     * @param locale The locale
+     * @return The inventory
+     */
+    @Nullable
+    public BlobInventory getBlobInventory(String key, String locale) {
+        return getInventoryManager().getInventory(key, locale);
     }
 
     /**
@@ -60,12 +93,35 @@ public class BlobLibInventoryAPI {
     }
 
     /**
+     * @param key    Key that points to the carrier
+     * @param locale The locale
+     * @return The carrier if found. null otherwise
+     */
+    @Nullable
+    public InventoryBuilderCarrier<MetaInventoryButton> getMetaInventoryBuilderCarrier(String key, String locale) {
+        return getInventoryManager().getMetaInventoryBuilderCarrier(key, locale);
+    }
+
+    /**
      * @param key Key that points to the carrier
      * @return The carrier if found. null otherwise
      */
     @Nullable
     public InventoryBuilderCarrier<MetaInventoryButton> getMetaInventoryBuilderCarrier(String key) {
         return getInventoryManager().getMetaInventoryBuilderCarrier(key);
+    }
+
+    /**
+     * Will search for an InventoryBuilderCarrier with the given key.
+     * If found, will attempt to build the inventory.
+     *
+     * @param key    Key that points to the inventory
+     * @param locale The locale
+     * @return The inventory
+     */
+    @Nullable
+    public MetaBlobInventory getMetaBlobInventory(String key, String locale) {
+        return getInventoryManager().getMetaInventory(key, locale);
     }
 
     /**
@@ -112,17 +168,100 @@ public class BlobLibInventoryAPI {
     }
 
     /**
-     * Attempts to build an inventory from the given file name.
+     * Attempts to build an inventory from the given key.
      * If the inventory is not found, a NullPointerException is thrown.
      *
-     * @param fileName The file name
+     * @param key    Key that points to the inventory
+     * @param locale The locale
      * @return The inventory
      */
-    public BlobInventory buildInventory(String fileName) {
-        BlobInventory inventory = getInventoryManager().cloneInventory(fileName);
-        if (inventory == null) {
-            throw new NullPointerException("Inventory '" + fileName + "' not found");
-        }
-        return inventory;
+    @NotNull
+    public BlobInventory buildInventory(String key, String locale) {
+        return Objects.requireNonNull(getInventoryManager()
+                .cloneInventory(key, locale), "'" + key + "' is not a valid BlobInventory key");
+    }
+
+    /**
+     * Attempts to build an inventory from the given key.
+     * If the inventory is not found, a NullPointerException is thrown.
+     *
+     * @param key Key that points to the inventory
+     * @return The inventory
+     */
+    @NotNull
+    public BlobInventory buildInventory(String key) {
+        return Objects.requireNonNull(getInventoryManager()
+                .cloneInventory(key), "'" + key + "' is not a valid BlobInventory key");
+    }
+
+    /**
+     * Attempts to build a meta blob inventory from the given key.
+     * If the inventory is not found, a NullPointerException is thrown.
+     *
+     * @param key    Key that points to the inventory
+     * @param locale The locale
+     * @return The inventory
+     */
+    @NotNull
+    public MetaBlobInventory buildMetaInventory(String key, String locale) {
+        return Objects.requireNonNull(getInventoryManager()
+                .cloneMetaInventory(key, locale), "'" + key + "' is not a valid MetaBlobInventory key");
+    }
+
+    /**
+     * Attempts to build a MetaBlobInventory from the given key.
+     * If the inventory is not found, a NullPointerException is thrown.
+     *
+     * @param key Key that points to the inventory
+     * @return The inventory
+     */
+    @NotNull
+    public MetaBlobInventory buildMetaInventory(String key) {
+        return Objects.requireNonNull(getInventoryManager()
+                .cloneMetaInventory(key), "'" + key + "' is not a valid MetaBlobInventory key");
+    }
+
+    @Nullable
+    public InventoryDataRegistry<InventoryButton> getInventoryDataRegistry(String key) {
+        return getInventoryManager().getInventoryDataRegistry(key);
+    }
+
+    @Nullable
+    public InventoryDataRegistry<MetaInventoryButton> getMetaInventoryDataRegistry(String key) {
+        return getInventoryManager().getMetaInventoryDataRegistry(key);
+    }
+
+    /**
+     * Will track the inventory of the specified player.
+     * This tracker will dynamically update the inventory when the player's locale changes.
+     * In order to use the live inventory (such as for opening),
+     * you must call {@link InventoryTracker#getInventory()}
+     * <p>
+     * It's your responsibility holding the reference and freeing it when you don't need it anymore.
+     *
+     * @param player the player
+     * @param key    the key of the inventory
+     * @return the Tracker, null if the key is not found
+     */
+    @Nullable
+    public BlobInventoryTracker trackInventory(@NotNull Player player, @NotNull String key) {
+        return getInventoryTrackerManager().trackInventory(player, key);
+    }
+
+    /**
+     * Will track the inventory of the specified player.
+     * This tracker will dynamically update the inventory when the player's locale changes.
+     * In order to use the live inventory (such as for opening),
+     * you must call {@link InventoryTracker#getInventory()}
+     * <p>
+     * It's your responsibility holding the reference and freeing it when you don't need it anymore.
+     *
+     * @param player the player
+     * @param key    the key of the inventory
+     * @return the Tracker, null if the key is not found
+     */
+    @Nullable
+    public MetaBlobInventoryTracker trackMetaInventory(@NotNull Player player, @NotNull String key) {
+        return getInventoryTrackerManager().trackMetaInventory(player, key);
     }
 }

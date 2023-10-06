@@ -42,6 +42,7 @@ public class BlobLib extends JavaPlugin {
     private BlobLibConfigManager configManager;
     private BlobLibListenerManager listenerManager;
     private SerializationLib serializationLib;
+    private InventoryTrackerManager inventoryTrackerManager;
 
     private static BlobLib instance;
 
@@ -80,6 +81,7 @@ public class BlobLib extends JavaPlugin {
         fileManager.unpackYamlFile("/BlobInventory", "CurrencyBuilder", false);
 
         inventoryManager = new InventoryManager();
+        inventoryTrackerManager = new InventoryTrackerManager();
         messageManager = new MessageManager();
         actionManager = new ActionManager();
         soundManager = new SoundManager();
@@ -172,6 +174,10 @@ public class BlobLib extends JavaPlugin {
      */
     public InventoryManager getInventoryManager() {
         return inventoryManager;
+    }
+
+    public InventoryTrackerManager getInventoryTrackerManager() {
+        return inventoryTrackerManager;
     }
 
     /**

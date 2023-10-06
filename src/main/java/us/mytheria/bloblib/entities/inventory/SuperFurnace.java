@@ -197,12 +197,13 @@ public class SuperFurnace<T extends InventoryButton> extends SharableInventory<T
      *
      * @param player The player to apply the experience to.
      */
-    public void apply(Player player) {
+    public SuperFurnace<T> apply(Player player) {
         if (lastOperation == null)
-            return;
+            return this;
         float experience = lastOperation.experience();
         Experience.changeExp(player, experience);
         lastOperation = null;
+        return this;
     }
 
     @Nullable

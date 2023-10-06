@@ -15,7 +15,8 @@ public record InventoryBuilderCarrier<T extends InventoryButton>(@Nullable Strin
                                                                  @NotNull int size,
                                                                  @NotNull ButtonManager<T> buttonManager,
                                                                  @Nullable String type,
-                                                                 @NotNull String reference) {
+                                                                 @NotNull String reference,
+                                                                 @NotNull String locale) {
     public boolean isMetaInventoryButton() {
         return type != null;
     }
@@ -46,8 +47,10 @@ public record InventoryBuilderCarrier<T extends InventoryButton>(@Nullable Strin
                 Bukkit.getLogger().info("to '54' which is default.");
             }
         }
+        String locale = configurationSection.getString("Locale", "en_US");
         BlobButtonManager buttonManager = BlobButtonManager.fromConfigurationSection(configurationSection.getConfigurationSection("Buttons"));
-        return new InventoryBuilderCarrier<>(title, size, buttonManager, null, reference);
+        return new InventoryBuilderCarrier<>(title, size, buttonManager,
+                null, reference, locale);
     }
 
     public static InventoryBuilderCarrier<MetaInventoryButton> META_FROM_FILE(@NotNull File file) {
@@ -78,7 +81,9 @@ public record InventoryBuilderCarrier<T extends InventoryButton>(@Nullable Strin
         }
         String type = configurationSection.isString("Type")
                 ? configurationSection.getString("Type") : "DEFAULT";
+        String locale = configurationSection.getString("Locale", "en_US");
         MetaBlobButtonManager buttonManager = MetaBlobButtonManager.fromConfigurationSection(configurationSection.getConfigurationSection("Buttons"));
-        return new InventoryBuilderCarrier<>(title, size, buttonManager, type, reference);
+        return new InventoryBuilderCarrier<>(title, size, buttonManager,
+                type, reference, locale);
     }
 }
