@@ -93,6 +93,7 @@ public class InventoryTrackerManager implements Listener {
         SharableInventory<?> sharableInventory = inventoryTracker.getInventory();
         InventoryDataRegistry<?> registry = inventoryTracker.getRegistry();
         int slot = event.getRawSlot();
+        event.setCancelled(true);
         sharableInventory.getKeys().forEach(key -> {
             var button = sharableInventory.getButton(key);
             if (!button.containsSlot(slot))
