@@ -1,6 +1,7 @@
 package us.mytheria.bloblib.entities;
 
 import me.anjoismysign.anjo.entities.Uber;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -77,7 +78,8 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      */
     public static <T> BlobEditor<T> DEFAULT(UUID builderId, String dataType,
                                             Consumer<Player> addConsumer) {
-        return new BlobEditor<>(VariableSelector.DEFAULT(), builderId,
+        Player get = Objects.requireNonNull(Bukkit.getPlayer(builderId));
+        return new BlobEditor<>(VariableSelector.DEFAULT(get), builderId,
                 dataType, addConsumer);
     }
 
@@ -133,7 +135,8 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
         if (!director.hasObjectBuilderManager())
             throw new IllegalArgumentException("The director does not have an ObjectBuilderManager. " +
                     "Implement it in constructor.");
-        uber.talk(new BlobEditor<>(VariableSelector.DEFAULT(), builderId,
+        Player get = Objects.requireNonNull(Bukkit.getPlayer(builderId));
+        uber.talk(new BlobEditor<>(VariableSelector.DEFAULT(get), builderId,
                 director.objectName, collection, player -> {
             ObjectBuilder<T> builder = director.getOrDefaultBuilder(player.getUniqueId());
             builder.open(player);
