@@ -44,7 +44,7 @@ public class MessageManager {
         pluginMessages.put(pluginName, new HashSet<>());
         duplicates.clear();
         File directory = director.getFileManager().messagesDirectory();
-        loadFiles(plugin, directory);
+        loadFiles(directory);
         duplicates.forEach((key, value) -> plugin.getAnjoLogger()
                 .log("Duplicate BlobMessage: '" + key + "' (found " + value + " instances)"));
     }
@@ -86,19 +86,6 @@ public class MessageManager {
             }
             if (file.isDirectory())
                 loadFiles(file);
-        }
-    }
-
-    private void loadFiles(BlobPlugin plugin, File path) {
-        File[] listOfFiles = path.listFiles();
-        for (File file : listOfFiles) {
-            if (file.isFile()) {
-                if (file.getName().equals(".DS_Store"))
-                    continue;
-                loadYamlConfiguration(file);
-            }
-            if (file.isDirectory())
-                loadFiles(path);
         }
     }
 

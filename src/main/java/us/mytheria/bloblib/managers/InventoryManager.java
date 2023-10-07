@@ -53,9 +53,9 @@ public class InventoryManager {
         duplicates.clear();
         IFileManager fileManager = director.getFileManager();
         File blobDirectory = fileManager.inventoriesDirectory();
-        loadBlobInventories(plugin, blobDirectory);
+        loadBlobInventories(blobDirectory);
         File metaDirectory = fileManager.metaInventoriesDirectory();
-        loadMetaInventories(plugin, metaDirectory);
+        loadMetaInventories(metaDirectory);
         duplicates.forEach((key, value) -> plugin.getAnjoLogger()
                 .log("Duplicate Inventory: '" + key + "' (found " + value + " instances)"));
     }
@@ -105,7 +105,7 @@ public class InventoryManager {
                 loadBlobInventory(file);
             }
             if (file.isDirectory())
-                loadBlobInventories(path);
+                loadBlobInventories(file);
         }
     }
 
@@ -118,35 +118,7 @@ public class InventoryManager {
                 loadMetaInventory(file);
             }
             if (file.isDirectory())
-                loadMetaInventories(path);
-        }
-    }
-
-    private void loadBlobInventories(BlobPlugin plugin, File path) {
-        File[] listOfFiles = path.listFiles();
-        for (File file : listOfFiles) {
-            if (file.isFile()) {
-                if (!file.getName().endsWith(".yml"))
-                    continue;
-                loadBlobInventory(plugin, file);
-                continue;
-            }
-            if (file.isDirectory())
-                loadBlobInventories(plugin, file);
-        }
-    }
-
-    private void loadMetaInventories(BlobPlugin plugin, File path) {
-        File[] listOfFiles = path.listFiles();
-        for (File file : listOfFiles) {
-            if (file.isFile()) {
-                if (!file.getName().endsWith(".yml"))
-                    continue;
-                loadMetaInventory(plugin, file);
-                continue;
-            }
-            if (file.isDirectory())
-                loadMetaInventory(plugin, file);
+                loadMetaInventories(file);
         }
     }
 
@@ -175,10 +147,6 @@ public class InventoryManager {
         String fileName = FilenameUtils.removeExtension(file.getName());
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
-            if (metaInventories.containsKey(fileName)) {
-                addDuplicate(fileName);
-                return;
-            }
             addMetaInventory(fileName, InventoryBuilderCarrier.
                     META_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName));
             pluginMetaInventories.get(plugin.getName()).add(fileName);
@@ -190,10 +158,6 @@ public class InventoryManager {
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (!section.contains("Size") && !section.isInt("Size"))
                 return;
-            if (metaInventories.containsKey(reference)) {
-                addDuplicate(reference);
-                return;
-            }
             addMetaInventory(reference, InventoryBuilderCarrier.
                     META_FROM_CONFIGURATION_SECTION(section, reference));
             pluginMetaInventories.get(plugin.getName()).add(reference);
@@ -232,10 +196,6 @@ public class InventoryManager {
         String fileName = FilenameUtils.removeExtension(file.getName());
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
-            if (blobInventories.containsKey(fileName)) {
-                addDuplicate(fileName);
-                return;
-            }
             InventoryBuilderCarrier<InventoryButton> carrier = InventoryBuilderCarrier.
                     BLOB_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName);
             addBlobInventory(fileName, carrier);
@@ -247,10 +207,6 @@ public class InventoryManager {
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (!section.contains("Size") && !section.isInt("Size"))
                 return;
-            if (blobInventories.containsKey(reference)) {
-                addDuplicate(reference);
-                return;
-            }
             InventoryBuilderCarrier<InventoryButton> carrier = InventoryBuilderCarrier.
                     BLOB_FROM_CONFIGURATION_SECTION(section, reference);
             addBlobInventory(reference, carrier);
@@ -261,10 +217,6 @@ public class InventoryManager {
         String fileName = FilenameUtils.removeExtension(file.getName());
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
-            if (metaInventories.containsKey(fileName)) {
-                addDuplicate(fileName);
-                return;
-            }
             addMetaInventory(fileName, InventoryBuilderCarrier.
                     META_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName));
             return;
@@ -275,10 +227,6 @@ public class InventoryManager {
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (!section.contains("Size") && !section.isInt("Size"))
                 return;
-            if (blobInventories.containsKey(reference)) {
-                addDuplicate(reference);
-                return;
-            }
             addMetaInventory(reference, InventoryBuilderCarrier.
                     META_FROM_CONFIGURATION_SECTION(section, reference));
         });

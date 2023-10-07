@@ -44,7 +44,7 @@ public class SoundManager {
         pluginSounds.put(pluginName, new HashSet<>());
         duplicates.clear();
         File directory = director.getFileManager().soundsDirectory();
-        loadFiles(plugin, directory);
+        loadFiles(directory);
         duplicates.forEach((key, value) -> main.getLogger()
                 .severe("Duplicate BlobSound: '" + key + "' (found " + value + " instances)"));
     }
@@ -73,19 +73,6 @@ public class SoundManager {
         manager.unload(plugin);
     }
 
-    private void loadFiles(BlobPlugin plugin, File path) {
-        File[] listOfFiles = path.listFiles();
-        for (File file : listOfFiles) {
-            if (file.isFile()) {
-                if (file.getName().equals(".DS_Store"))
-                    continue;
-                loadYamlConfiguration(plugin, file);
-            }
-            if (file.isDirectory())
-                loadFiles(file);
-        }
-    }
-
     private void loadFiles(File path) {
         File[] listOfFiles = path.listFiles();
         for (File file : listOfFiles) {
@@ -95,7 +82,7 @@ public class SoundManager {
                 loadYamlConfiguration(file);
             }
             if (file.isDirectory())
-                loadFiles(path);
+                loadFiles(file);
         }
     }
 
