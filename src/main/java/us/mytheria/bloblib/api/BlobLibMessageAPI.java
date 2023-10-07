@@ -8,6 +8,7 @@ import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
 import us.mytheria.bloblib.managers.MessageManager;
 
 import java.io.File;
+import java.util.Objects;
 
 public class BlobLibMessageAPI {
     private static BlobLibMessageAPI instance;
@@ -54,22 +55,44 @@ public class BlobLibMessageAPI {
     }
 
     /**
+     * Gets the message from the default locale.
+     *
      * @param key The key of the message
      * @return The message
      */
     @Nullable
-    public ReferenceBlobMessage getMessage(String key) {
+    public ReferenceBlobMessage getMessage(@NotNull String key) {
+        Objects.requireNonNull(key);
         return getMessageManager().getMessage(key);
     }
 
     /**
+     * Gets the message from the locale.
+     * If message is not available in the locale, returns the default message.
+     *
      * @param key    The key of the message
      * @param locale The locale of the message
      * @return The message
      */
     @Nullable
-    public ReferenceBlobMessage getMessage(String key, String locale) {
+    public ReferenceBlobMessage getMessage(@NotNull String key, @NotNull String locale) {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(locale);
         return getMessageManager().getMessage(key, locale);
+    }
+
+    /**
+     * Gets the locale of the player and returns the message.
+     * If message is not available in the locale, returns the default message.
+     *
+     * @param key    The key of the message
+     * @param player The player to get the locale from
+     * @return The message
+     */
+    @Nullable
+    public ReferenceBlobMessage getMessage(@NotNull String key, @NotNull Player player) {
+        Objects.requireNonNull(player);
+        return getMessageManager().getMessage(key, player.getLocale());
     }
 
     /**

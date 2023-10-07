@@ -9,11 +9,11 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
-import us.mytheria.bloblib.entities.Rep;
+import us.mytheria.bloblib.utilities.TextColor;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.stream.Stream;
 
 public final class ItemStackModder {
     private final ItemStack itemStack;
@@ -73,46 +73,44 @@ public final class ItemStackModder {
         return unflag(flags.toArray(new ItemFlag[0]));
     }
 
+    public ItemStackModder displayName(String name, char colorChar) {
+        return itemMeta(itemMeta -> itemMeta.setDisplayName(TextColor.CUSTOM_PARSE(colorChar, name)));
+    }
+
     public ItemStackModder displayName(String name) {
-        return itemMeta(itemMeta -> itemMeta.setDisplayName(name));
+        return displayName(name, '&');
+    }
+
+    public ItemStackModder lore(String line, char colorChar) {
+        return lore(List.of(line), colorChar);
     }
 
     public ItemStackModder lore(String line) {
-        return lore(List.of(line));
+        return lore(line, '&');
+    }
+
+    public ItemStackModder lore(char colorChar, String... lore) {
+        List<String> list = Stream.of(lore).map(line -> TextColor.CUSTOM_PARSE(colorChar, line)).toList();
+        return itemMeta(itemMeta -> itemMeta.setLore(list));
     }
 
     public ItemStackModder lore(String... lore) {
-        return itemMeta(itemMeta -> itemMeta.setLore(List.of(lore)));
+        return lore('&', lore);
+    }
+
+    public ItemStackModder lore(List<String> lore, char colorChar) {
+        List<String> list = lore.stream().map(line -> TextColor.CUSTOM_PARSE(colorChar, line)).toList();
+        return itemMeta(itemMeta -> itemMeta.setLore(list));
     }
 
     public ItemStackModder lore(List<String> lore) {
-        return itemMeta(itemMeta -> itemMeta.setLore(lore));
-    }
-
-    public ItemStackModder lore(Function<List<String>, List<String>> lore) {
-        return itemMeta(itemMeta -> itemMeta.setLore(lore.apply(itemMeta.getLore())));
-    }
-
-    public ItemStackModder lore(List<String> lore, Rep... reps) {
-        return lore(Rep.lace(lore, reps));
+        return lore(lore, '&');
     }
 
     private List<String> getLore() {
         ItemMeta meta = itemStack.getItemMeta();
         if (meta == null) return null;
         return meta.getLore();
-    }
-
-    public ItemStackModder lore(Rep... reps) {
-        List<String> lore = getLore();
-        if (lore == null) return this;
-        return lore(Rep.lace(lore, reps));
-    }
-
-    public ItemStackModder lore(Collection<Rep> reps) {
-        List<String> lore = getLore();
-        if (lore == null) return this;
-        return lore(Rep.lace(lore, reps));
     }
 
     /**
@@ -251,19 +249,5 @@ public final class ItemStackModder {
                 itemMeta.setLore(toBeSet);
             }
         });
-    }
-
-    public ItemStackModder replace(Rep... reps) {
-        for (Rep rep : reps) {
-            replace(rep.getCheck(), rep.getReplace());
-        }
-        return this;
-    }
-
-    public ItemStackModder replace(Collection<Rep> reps) {
-        for (Rep rep : reps) {
-            replace(rep.getCheck(), rep.getReplace());
-        }
-        return this;
     }
 }

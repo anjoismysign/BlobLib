@@ -1,7 +1,7 @@
 package us.mytheria.bloblib.entities;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.api.BlobLibMessageAPI;
 import us.mytheria.bloblib.entities.message.*;
 import us.mytheria.bloblib.utilities.TextColor;
@@ -15,15 +15,18 @@ import java.util.Optional;
  * Recommended method is parse(ConfigurationSection section)
  */
 public class BlobMessageReader {
+    public static SerialBlobMessage read(ConfigurationSection section) {
+        return read(section, "en_us");
+    }
+
     /**
      * Will read a BlobMessage from a ConfigurationSection
      *
      * @param section The section to read from
      * @return The BlobMessage
      */
-    public static SerialBlobMessage read(ConfigurationSection section) {
+    public static SerialBlobMessage read(ConfigurationSection section, @NotNull String locale) {
         String type = section.getString("Type");
-        @Nullable String locale = section.getString("Locale", null);
         Optional<BlobSound> sound = section.contains("BlobSound") ?
                 BlobSoundReader.parse(section) : Optional.empty();
         switch (type) {

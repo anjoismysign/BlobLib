@@ -14,7 +14,6 @@ import java.util.*;
 
 public class MessageManager {
     private final BlobLib main;
-    private HashMap<String, SerialBlobMessage> messages;
     private HashMap<String, Set<String>> pluginMessages;
     private HashMap<String, Integer> duplicates;
     private HashMap<String, Map<String, SerialBlobMessage>> locales;
@@ -28,7 +27,6 @@ public class MessageManager {
     }
 
     public void load() {
-        messages = new HashMap<>();
         locales = new HashMap<>();
         pluginMessages = new HashMap<>();
         duplicates = new HashMap<>();
@@ -57,7 +55,7 @@ public class MessageManager {
         Iterator<String> iterator = messages.iterator();
         while (iterator.hasNext()) {
             String inventoryName = iterator.next();
-            this.messages.remove(inventoryName);
+            this.locales.forEach((locale, map) -> map.remove(inventoryName));
             iterator.remove();
         }
         pluginMessages.remove(pluginName);
@@ -91,42 +89,42 @@ public class MessageManager {
 
     private void loadYamlConfiguration(File file) {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
+        String locale = yamlConfiguration.getString("Locale", "en_us");
         yamlConfiguration.getKeys(true).forEach(reference -> {
             if (!yamlConfiguration.isConfigurationSection(reference))
                 return;
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (!section.contains("Type") && !section.isString("Type"))
                 return;
-            if (messages.containsKey(reference)) {
-                addDuplicate(reference);
-                return;
-            }
-            SerialBlobMessage message = BlobMessageReader.read(section);
-            messages.put(reference, message);
+            SerialBlobMessage message = BlobMessageReader.read(section, locale);
             addOrCreateLocale(message, reference);
         });
     }
 
     private void loadYamlConfiguration(File file, BlobPlugin plugin) {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
+        String locale = yamlConfiguration.getString("Locale", "en_us");
         yamlConfiguration.getKeys(true).forEach(reference -> {
             if (!yamlConfiguration.isConfigurationSection(reference))
                 return;
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (!section.contains("Type") && !section.isString("Type"))
                 return;
-            if (messages.containsKey(reference)) {
-                addDuplicate(reference);
+            if (!addOrCreateLocale(BlobMessageReader.read(section, locale), reference))
                 return;
-            }
-            messages.put(reference, BlobMessageReader.read(section));
             pluginMessages.get(plugin.getName()).add(reference);
         });
     }
 
-    private void addOrCreateLocale(SerialBlobMessage message, String reference) {
+    private boolean addOrCreateLocale(SerialBlobMessage message, String reference) {
         String locale = message.getLocale();
-        locales.computeIfAbsent(locale, k -> new HashMap<>()).put(reference, message);
+        Map<String, SerialBlobMessage> localeMap = locales.computeIfAbsent(locale, k -> new HashMap<>());
+        if (localeMap.containsKey(reference)) {
+            addDuplicate(reference);
+            return false;
+        }
+        localeMap.put(reference, message);
+        return true;
     }
 
     /**
@@ -157,12 +155,12 @@ public class MessageManager {
     }
 
     public void noPermission(Player player) {
-        messages.get("System.No-Permission").handle(player);
+        locales.get("en_us").get("System.No-Permission").handle(player);
     }
 
     @Nullable
     public ReferenceBlobMessage getMessage(String key) {
-        return new ReferenceBlobMessage(messages.get(key), key);
+        return new ReferenceBlobMessage(locales.get("en_us").get(key), key);
     }
 
     @Nullable
@@ -174,14 +172,20 @@ public class MessageManager {
     }
 
     public void playAndSend(Player player, String key) {
-        SerialBlobMessage message = messages.get(key);
+        ReferenceBlobMessage message = getMessage(key, player.getLocale());
         if (message == null)
             throw new NullPointerException("Message '" + key + "' does not exist!");
         message.handle(player);
     }
 
+    /**
+     * @param player The player to send the message to
+     * @param key    The key of the message
+     * @deprecated Use {@link #playAndSend(Player, String)} instead
+     */
+    @Deprecated
     public void send(Player player, String key) {
-        SerialBlobMessage message = messages.get(key);
+        ReferenceBlobMessage message = getMessage(key, player.getLocale());
         if (message == null)
             throw new NullPointerException("Message '" + key + "' does not exist!");
         message.send(player);
