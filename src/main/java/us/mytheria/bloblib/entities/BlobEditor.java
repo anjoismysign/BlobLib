@@ -180,7 +180,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      * any actions that should be executed inside the constructor on super call
      */
     @Override
-    public void loadInConstructor() {
+    public void loadFirstPage() {
     }
 
     /**

@@ -85,7 +85,7 @@ public class MessageManager {
                 loadYamlConfiguration(file);
             }
             if (file.isDirectory())
-                loadFiles(path);
+                loadFiles(file);
         }
     }
 

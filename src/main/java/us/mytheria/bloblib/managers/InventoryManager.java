@@ -129,9 +129,10 @@ public class InventoryManager {
                 if (!file.getName().endsWith(".yml"))
                     continue;
                 loadBlobInventory(plugin, file);
+                continue;
             }
             if (file.isDirectory())
-                loadBlobInventories(plugin, path);
+                loadBlobInventories(plugin, file);
         }
     }
 
@@ -142,9 +143,10 @@ public class InventoryManager {
                 if (!file.getName().endsWith(".yml"))
                     continue;
                 loadMetaInventory(plugin, file);
+                continue;
             }
             if (file.isDirectory())
-                loadMetaInventory(plugin, path);
+                loadMetaInventory(plugin, file);
         }
     }
 
@@ -404,7 +406,7 @@ public class InventoryManager {
     private void addBlobInventory(String key, InventoryBuilderCarrier<InventoryButton> inventory) {
         InventoryDataRegistry<InventoryButton> dataRegistry = blobInventories.get(key);
         if (dataRegistry == null)
-            dataRegistry = InventoryDataRegistry.of("en_US", key);
+            dataRegistry = InventoryDataRegistry.of("en_us", key);
         if (!dataRegistry.process(inventory)) {
             addDuplicate(key);
             return;
@@ -415,7 +417,7 @@ public class InventoryManager {
     private void addMetaInventory(String key, InventoryBuilderCarrier<MetaInventoryButton> inventory) {
         InventoryDataRegistry<MetaInventoryButton> dataRegistry = metaInventories.get(key);
         if (dataRegistry == null)
-            dataRegistry = InventoryDataRegistry.of("en_US", key);
+            dataRegistry = InventoryDataRegistry.of("en_us", key);
         if (!dataRegistry.process(inventory)) {
             addDuplicate(key);
             return;

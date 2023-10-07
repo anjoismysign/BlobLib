@@ -3,6 +3,7 @@ package us.mytheria.bloblib.entities.inventory;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.api.BlobLibInventoryAPI;
 import us.mytheria.bloblib.api.BlobLibSoundAPI;
 import us.mytheria.bloblib.entities.VariableFiller;
@@ -31,6 +32,17 @@ public abstract class VariableSelector<T> extends BlobInventory {
 
     /**
      * Creates a new VariableSelector
+     *
+     * @param player the player to get Locale from
+     * @return the new VariableSelector
+     */
+    public static BlobInventory DEFAULT(@NotNull Player player) {
+        return BlobLibInventoryAPI.getInstance().getBlobInventory("VariableSelector", player);
+    }
+
+    /**
+     * Creates a new VariableSelector.
+     * Will use the default Locale
      *
      * @return the new VariableSelector
      */
@@ -61,13 +73,13 @@ public abstract class VariableSelector<T> extends BlobInventory {
         Set<Integer> slots = getSlots("White-Background");
         if (slots != null)
             setItemsPerPage(slots.size());
-        loadInConstructor();
+        loadFirstPage();
     }
 
     /**
-     * runs all code that should run inside constructor in the super call
+     * Loads the first page
      */
-    public void loadInConstructor() {
+    public void loadFirstPage() {
         loadPage(page, false);
     }
 

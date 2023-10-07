@@ -1,17 +1,26 @@
 package us.mytheria.bloblib.api;
 
+import me.anjoismysign.anjo.entities.Uber;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.entities.BlobEditor;
+import us.mytheria.bloblib.entities.BlobSelector;
 import us.mytheria.bloblib.entities.inventory.*;
 import us.mytheria.bloblib.managers.InventoryManager;
 import us.mytheria.bloblib.managers.InventoryTrackerManager;
 import us.mytheria.bloblib.managers.MetaInventoryShard;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class BlobLibInventoryAPI {
     private static BlobLibInventoryAPI instance;
@@ -263,5 +272,222 @@ public class BlobLibInventoryAPI {
     @Nullable
     public MetaBlobInventoryTracker trackMetaInventory(@NotNull Player player, @NotNull String key) {
         return getInventoryTrackerManager().trackMetaInventory(player, key);
+    }
+
+    /**
+     * Will get a BlobInventory from the given key and Player locale
+     *
+     * @param key    the key of the inventory
+     * @param player the player
+     * @return the BlobInventory, null if the key is not found
+     */
+    @Nullable
+    public BlobInventory getBlobInventory(@NotNull String key,
+                                          @NotNull Player player) {
+        Objects.requireNonNull(player, "player cannot be null");
+        return getBlobInventory(key, player.getLocale());
+    }
+
+    /**
+     * Will get a MetaBlobInventory from the given key and Player locale
+     *
+     * @param key    the key of the inventory
+     * @param player the player
+     * @return the MetaBlobInventory, null if the key is not found
+     */
+    @Nullable
+    public MetaBlobInventory getMetaBlobInventory(@NotNull String key,
+                                                  @NotNull Player player) {
+        Objects.requireNonNull(player, "player cannot be null");
+        return getMetaBlobInventory(key, player.getLocale());
+    }
+
+    /**
+     * Attempts to build an inventory from the given key.
+     * Will use the player's locale.
+     * If the inventory is not found, a NullPointerException is thrown.
+     *
+     * @param key    Key that points to the inventory
+     * @param player the player
+     * @return The inventory
+     */
+    @NotNull
+    public BlobInventory buildInventory(@NotNull String key,
+                                        @NotNull Player player) {
+        Objects.requireNonNull(player, "player cannot be null");
+        return buildInventory(key, player.getLocale());
+    }
+
+    /**
+     * Attempts to build a MetaBlobInventory from the given key.
+     * Will use the player's locale.
+     * If the inventory is not found, a NullPointerException is thrown.
+     *
+     * @param key    Key that points to the inventory
+     * @param player the player
+     * @return The inventory
+     */
+    @NotNull
+    public MetaBlobInventory buildMetaInventory(@NotNull String key,
+                                                @NotNull Player player) {
+        Objects.requireNonNull(player, "player cannot be null");
+        return buildMetaInventory(key, player.getLocale());
+    }
+
+    /**
+     * Will make Player to select from a list of elements.
+     * The selector will be placed in the inventory at the specified buttonRangeKey.
+     * The inventory will open automatically.
+     *
+     * @param blobInventoryKey the key of the BlobInventory
+     * @param player           the player
+     * @param buttonRangeKey   the button from the BlobInventory which contains the slots (per page) into which the selector will place the elements
+     * @param dataType         the data type of the selector
+     * @param selectorList     the list of elements to select from
+     * @param onSelect         what's consumed when an element is selected
+     * @param display          the function to display an element, needs to return the ItemStack to display
+     * @param <T>              the type of the selector
+     * @return the selector
+     */
+    public <T> BlobSelector<T> customSelector(@NotNull String blobInventoryKey,
+                                              @NotNull Player player,
+                                              @NotNull String buttonRangeKey,
+                                              @NotNull String dataType,
+                                              @NotNull Supplier<List<T>> selectorList,
+                                              @NotNull Consumer<T> onSelect,
+                                              @Nullable Function<T, ItemStack> display) {
+        BlobInventory inventory = buildInventory(blobInventoryKey, player);
+        BlobSelector<T> selector = BlobSelector.build(inventory, player.getUniqueId(),
+                dataType, selectorList.get());
+        selector.setItemsPerPage(selector.getSlots(buttonRangeKey)
+                == null ? 1 : selector.getSlots(buttonRangeKey).size());
+        if (display != null)
+            selector.selectElement(player,
+                    onSelect,
+                    null,
+                    display);
+        else
+            selector.selectElement(player,
+                    onSelect,
+                    null);
+        return selector;
+    }
+
+    /**
+     * Will make Player to select from a list of elements.
+     * The selector will be placed in the inventory at the specified buttonRangeKey.
+     * The inventory will open automatically.
+     * Will use default VariableSelector inventory.
+     *
+     * @param player       the player
+     * @param dataType     the data type of the selector
+     * @param selectorList the list of elements to select from
+     * @param onSelect     what's consumed when an element is selected
+     * @param display      the function to display an element, needs to return the ItemStack to display
+     * @param <T>          the type of the selector
+     * @return the selector
+     */
+    @Nullable
+    public <T> BlobSelector<T> selector(@NotNull Player player,
+                                        @NotNull String dataType,
+                                        @NotNull Supplier<List<T>> selectorList,
+                                        @NotNull Consumer<T> onSelect,
+                                        @Nullable Function<T, ItemStack> display) {
+        return customSelector("VariableSelector",
+                player,
+                "White-Background",
+                dataType,
+                selectorList,
+                onSelect,
+                display);
+    }
+
+    /**
+     * Will allow player to edit a collection of elements.
+     * The editor will be placed in the inventory at the specified buttonRangeKey.
+     * The inventory will open automatically.
+     *
+     * @param blobInventoryKey the key of the BlobInventory
+     * @param player           the player
+     * @param buttonRangeKey   the button from the BlobInventory which contains the slots (per page) into which the editor will place the elements
+     * @param dataType         the data type of the editor
+     * @param addCollection    the collection of elements to add to
+     * @param onAdd            what's consumed when an element is added
+     * @param addDisplay       the function to display an element, needs to return the ItemStack to display
+     * @param viewCollection   the collection of elements to view
+     * @param removeDisplay    the function to display an element, needs to return the ItemStack to display
+     * @param onRemove         what's consumed when an element is removed
+     * @param <T>              the type of the editor
+     * @return the editor
+     */
+    @Nullable
+    public <T> BlobEditor<T> customEditor(@NotNull String blobInventoryKey,
+                                          @NotNull Player player,
+                                          @NotNull String buttonRangeKey,
+                                          @NotNull String dataType,
+                                          @NotNull Supplier<Collection<T>> addCollection,
+                                          @NotNull Consumer<T> onAdd,
+                                          @Nullable Function<T, ItemStack> addDisplay,
+                                          @NotNull Supplier<Collection<T>> viewCollection,
+                                          @NotNull Function<T, ItemStack> removeDisplay,
+                                          @NotNull Consumer<T> onRemove) {
+        BlobInventory inventory = buildInventory(blobInventoryKey, player);
+        Uber<BlobEditor<T>> uber = Uber.fly();
+        uber.talk(BlobEditor.build(inventory, player.getUniqueId(),
+                dataType, owner -> {
+                    BlobSelector<T> playerSelector = BlobSelector.COLLECTION_INJECTION(player.getUniqueId(),
+                            dataType, addCollection.get());
+                    playerSelector.setItemsPerPage(playerSelector.getSlots(buttonRangeKey)
+                            == null ? 1 : playerSelector.getSlots(buttonRangeKey).size());
+                    playerSelector.selectElement(player,
+                            onAdd,
+                            null,
+                            addDisplay);
+                }, viewCollection.get()));
+        BlobEditor<T> editor = uber.thanks();
+        editor.setItemsPerPage(editor.getSlots(buttonRangeKey) == null
+                ? 1 : editor.getSlots(buttonRangeKey).size());
+        editor.manage(player,
+                removeDisplay,
+                onRemove);
+        return editor;
+    }
+
+    /**
+     * Will allow player to edit a collection of elements.
+     * The editor will be placed in the inventory at the specified buttonRangeKey.
+     * The inventory will open automatically.
+     * Will use default BlobEditor inventory.
+     *
+     * @param player         the player
+     * @param dataType       the data type of the editor
+     * @param addCollection  the collection of elements to add to
+     * @param onAdd          what's consumed when an element is added
+     * @param addDisplay     the function to display an element, needs to return the ItemStack to display
+     * @param viewCollection the collection of elements to view
+     * @param removeDisplay  the function to display an element, needs to return the ItemStack to display
+     * @param onRemove       what's consumed when an element is removed
+     * @param <T>            the type of the editor
+     * @return the editor
+     */
+    @Nullable
+    public <T> BlobEditor<T> editor(@NotNull Player player,
+                                    @NotNull String dataType,
+                                    @NotNull Supplier<Collection<T>> addCollection,
+                                    @NotNull Consumer<T> onAdd,
+                                    @Nullable Function<T, ItemStack> addDisplay,
+                                    @NotNull Supplier<Collection<T>> viewCollection,
+                                    @NotNull Function<T, ItemStack> removeDisplay,
+                                    @NotNull Consumer<T> onRemove) {
+        return customEditor("BlobEditor",
+                player,
+                "White-Background",
+                dataType,
+                addCollection,
+                onAdd,
+                addDisplay,
+                viewCollection,
+                removeDisplay,
+                onRemove);
     }
 }

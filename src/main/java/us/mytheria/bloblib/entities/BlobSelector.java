@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.entities;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -67,7 +68,8 @@ public class BlobSelector<T> extends VariableSelector<T> implements VariableFill
      * @return the new BlobEditor
      */
     public static <T> BlobSelector<T> DEFAULT(UUID builderId, String dataType) {
-        return new BlobSelector<>(VariableSelector.DEFAULT(), builderId,
+        Player player = Objects.requireNonNull(Bukkit.getPlayer(builderId));
+        return new BlobSelector<>(VariableSelector.DEFAULT(player), builderId,
                 dataType);
     }
 
@@ -82,7 +84,8 @@ public class BlobSelector<T> extends VariableSelector<T> implements VariableFill
      */
     public static <T> BlobSelector<T> COLLECTION_INJECTION(UUID builderId, String dataType,
                                                            Collection<T> collection) {
-        return new BlobSelector<>(VariableSelector.DEFAULT(), builderId,
+        Player player = Objects.requireNonNull(Bukkit.getPlayer(builderId));
+        return new BlobSelector<>(VariableSelector.DEFAULT(player), builderId,
                 dataType, collection);
     }
 
@@ -106,10 +109,10 @@ public class BlobSelector<T> extends VariableSelector<T> implements VariableFill
     }
 
     /**
-     * any actions that should be executed inside the constructor on super call
+     * Loads the first page
      */
     @Override
-    public void loadInConstructor() {
+    public void loadFirstPage() {
     }
 
     /**

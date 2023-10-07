@@ -41,7 +41,7 @@ public class ActionManager {
         pluginActions.put(pluginName, new HashSet<>());
         duplicates.clear();
         File directory = director.getFileManager().actionsDirectory();
-        loadFiles(plugin, directory);
+        loadFiles(directory);
         duplicates.forEach((key, value) -> plugin.getAnjoLogger()
                 .log("Duplicate Action: '" + key + "' (found " + value + " instances)"));
     }
@@ -77,20 +77,7 @@ public class ActionManager {
                 loadYamlConfiguration(file);
             }
             if (file.isDirectory())
-                loadFiles(path);
-        }
-    }
-
-    private void loadFiles(BlobPlugin plugin, File path) {
-        File[] listOfFiles = path.listFiles();
-        for (File file : listOfFiles) {
-            if (file.isFile()) {
-                if (file.getName().equals(".DS_Store"))
-                    continue;
-                loadYamlConfiguration(file);
-            }
-            if (file.isDirectory())
-                loadFiles(path);
+                loadFiles(file);
         }
     }
 

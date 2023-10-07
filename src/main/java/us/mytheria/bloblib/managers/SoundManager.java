@@ -82,7 +82,7 @@ public class SoundManager {
                 loadYamlConfiguration(plugin, file);
             }
             if (file.isDirectory())
-                loadFiles(path);
+                loadFiles(file);
         }
     }
 

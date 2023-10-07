@@ -47,7 +47,7 @@ public record InventoryBuilderCarrier<T extends InventoryButton>(@Nullable Strin
                 Bukkit.getLogger().info("to '54' which is default.");
             }
         }
-        String locale = configurationSection.getString("Locale", "en_US");
+        String locale = configurationSection.getString("Locale", "en_us");
         BlobButtonManager buttonManager = BlobButtonManager.fromConfigurationSection(configurationSection.getConfigurationSection("Buttons"));
         return new InventoryBuilderCarrier<>(title, size, buttonManager,
                 null, reference, locale);
@@ -81,7 +81,7 @@ public record InventoryBuilderCarrier<T extends InventoryButton>(@Nullable Strin
         }
         String type = configurationSection.isString("Type")
                 ? configurationSection.getString("Type") : "DEFAULT";
-        String locale = configurationSection.getString("Locale", "en_US");
+        String locale = configurationSection.getString("Locale", "en_us");
         MetaBlobButtonManager buttonManager = MetaBlobButtonManager.fromConfigurationSection(configurationSection.getConfigurationSection("Buttons"));
         return new InventoryBuilderCarrier<>(title, size, buttonManager,
                 type, reference, locale);

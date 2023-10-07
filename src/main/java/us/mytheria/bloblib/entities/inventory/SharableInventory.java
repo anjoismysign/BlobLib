@@ -6,10 +6,13 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.itemstack.ItemStackModder;
 
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * @author anjoismysign
@@ -176,6 +179,39 @@ public class SharableInventory<T extends InventoryButton> extends InventoryBuild
     public SharableInventory<T> setButton(int slot, ItemStack itemStack) {
         inventory.setItem(slot, itemStack);
         return this;
+    }
+
+    /**
+     * Will modify the ItemStacks of the button.
+     * Allows replacing the entire ItemStack.
+     *
+     * @param key      The key of the button.
+     * @param function The consumer to modify the ItemStacks.
+     */
+    public void modify(String key, Function<ItemStack, ItemStack> function) {
+        T button = getButton(key);
+        if (button != null)
+            button.getSlots().forEach(slot -> {
+                ItemStack item = getButton(slot);
+                if (item != null) {
+                    ItemStack result = function.apply(item);
+                    setButton(slot, result);
+                }
+            });
+    }
+
+    /**
+     * Will modify the ItemStacks of the button with an ItemStackModder.
+     * Doesn't allow replacing the entire ItemStack.
+     *
+     * @param key      The key of the button.
+     * @param consumer The consumer to modify the ItemStacks.
+     */
+    public void modder(String key, Consumer<ItemStackModder> consumer) {
+        modify(key, item -> {
+            consumer.accept(ItemStackModder.mod(item));
+            return item;
+        });
     }
 
     /**

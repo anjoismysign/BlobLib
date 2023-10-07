@@ -4,11 +4,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.itemstack.ItemStackModder;
 
 import java.util.Collection;
 import java.util.Set;
-import java.util.function.Consumer;
 
 public abstract class InventoryBuilder<T extends InventoryButton> {
     private String title;
@@ -51,32 +49,6 @@ public abstract class InventoryBuilder<T extends InventoryButton> {
     @Nullable
     public T getButton(String key) {
         return buttonManager.getButton(key);
-    }
-
-    /**
-     * Will modify the ItemStacks of the button.
-     *
-     * @param key      The key of the button.
-     * @param consumer The consumer to modify the ItemStacks.
-     */
-    public void modify(String key, Consumer<ItemStack> consumer) {
-        T button = getButton(key);
-        if (button != null)
-            button.getSlots().forEach(slot -> {
-                ItemStack item = getButton(slot);
-                if (item != null)
-                    consumer.accept(item);
-            });
-    }
-
-    /**
-     * Will modify the ItemStacks of the button with an ItemStackModder.
-     *
-     * @param key      The key of the button.
-     * @param consumer The consumer to modify the ItemStacks.
-     */
-    public void modder(String key, Consumer<ItemStackModder> consumer) {
-        modify(key, item -> consumer.accept(ItemStackModder.mod(item)));
     }
 
     public Collection<String> getKeys() {
