@@ -3,8 +3,7 @@ package us.mytheria.bloblib.utilities;
 import fr.skytasul.guardianbeam.Laser;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author anjoismysign

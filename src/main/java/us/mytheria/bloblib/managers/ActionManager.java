@@ -74,7 +74,12 @@ public class ActionManager {
             if (file.isFile()) {
                 if (file.getName().equals(".DS_Store"))
                     continue;
-                loadYamlConfiguration(file);
+                try {
+                    loadYamlConfiguration(file);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    continue;
+                }
             }
             if (file.isDirectory())
                 loadFiles(file);

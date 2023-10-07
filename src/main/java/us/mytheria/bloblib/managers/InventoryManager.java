@@ -3,11 +3,11 @@ package us.mytheria.bloblib.managers;
 import org.apache.commons.io.FilenameUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.IFileManager;
 import us.mytheria.bloblib.entities.inventory.*;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -102,7 +102,12 @@ public class InventoryManager {
             if (file.isFile()) {
                 if (!file.getName().endsWith(".yml"))
                     continue;
-                loadBlobInventory(file);
+                try {
+                    loadBlobInventory(file);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    continue;
+                }
             }
             if (file.isDirectory())
                 loadBlobInventories(file);
@@ -115,7 +120,12 @@ public class InventoryManager {
             if (file.isFile()) {
                 if (!file.getName().endsWith(".yml"))
                     continue;
-                loadMetaInventory(file);
+                try {
+                    loadMetaInventory(file);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    continue;
+                }
             }
             if (file.isDirectory())
                 loadMetaInventories(file);

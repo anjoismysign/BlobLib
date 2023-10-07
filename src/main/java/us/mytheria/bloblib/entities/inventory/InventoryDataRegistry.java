@@ -53,7 +53,7 @@ public class InventoryDataRegistry<T extends InventoryButton> {
         String locale = carrier.locale();
         if (this.carriers.containsKey(locale))
             return false;
-        this.carriers.put(carrier.locale(), carrier);
+        this.carriers.put(locale, carrier);
         return true;
     }
 

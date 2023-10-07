@@ -3,12 +3,12 @@ package us.mytheria.bloblib.managers;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.BlobMessageReader;
 import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
 import us.mytheria.bloblib.entities.message.SerialBlobMessage;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.util.*;
 
@@ -80,7 +80,12 @@ public class MessageManager {
             if (file.isFile()) {
                 if (file.getName().equals(".DS_Store"))
                     continue;
-                loadYamlConfiguration(file);
+                try {
+                    loadYamlConfiguration(file);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    continue;
+                }
             }
             if (file.isDirectory())
                 loadFiles(file);

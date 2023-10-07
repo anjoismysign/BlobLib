@@ -98,6 +98,7 @@ public class PluginManager {
     }
 
     public static void unloadAssets(BlobPlugin plugin) {
+        TranslatableManager.unloadBlobPlugin(plugin);
         InventoryManager.unloadBlobPlugin(plugin);
         ActionManager.unloadBlobPlugin(plugin);
         MessageManager.unloadBlobPlugin(plugin);
@@ -111,6 +112,7 @@ public class PluginManager {
         MessageManager.loadBlobPlugin(plugin, director);
         ActionManager.loadBlobPlugin(plugin, director);
         InventoryManager.loadBlobPlugin(plugin, director);
+        TranslatableManager.loadBlobPlugin(plugin, director);
     }
 
     public static void loadAssets(BlobPlugin plugin) {

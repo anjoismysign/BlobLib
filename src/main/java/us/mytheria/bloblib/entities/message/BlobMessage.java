@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.entities.BlobMessageModder;
+import us.mytheria.bloblib.entities.Localizable;
 
 import java.util.function.Function;
 
@@ -26,7 +27,7 @@ import java.util.function.Function;
  * plugin and store them in the same way as the BlobMessages in BlobLib so other
  * plugins and even the same server administrator can use them.
  */
-public interface BlobMessage {
+public interface BlobMessage extends Localizable {
     /**
      * Will send the message to the player.
      *
@@ -152,12 +153,4 @@ public interface BlobMessage {
     default BlobMessageModder<BlobMessage> modder() {
         return BlobMessageModder.mod(this);
     }
-
-    /**
-     * Will retrieve the locale of the message.
-     *
-     * @return The locale of the message
-     */
-    @Nullable
-    String getLocale();
 }

@@ -59,11 +59,15 @@ public class BlobFileManager extends Manager implements IFileManager {
         addFile("blobInventories", new File(pluginDirectory.getPath() + "/BlobInventory"));
         addFile("metaBlobInventories", new File(pluginDirectory.getPath() + "/MetaBlobInventory"));
         addFile("actions", new File(pluginDirectory.getPath() + "/Action"));
+        addFile("translatableSnippets", new File(pluginDirectory.getPath() + "/TranslatableSnippet"));
+        addFile("translatableBlocks", new File(pluginDirectory.getPath() + "/TranslatableBlock"));
         addFile("defaultSounds", new File(soundsDirectory().getPath() + "/" + lowercased + "_sounds.yml"));
         addFile("defaultMessages", new File(messagesDirectory().getPath() + "/" + lowercased + "_lang.yml"));
         addFile("defaultBlobInventories", new File(inventoriesDirectory().getPath() + "/" + lowercased + "_inventories.yml"));
         addFile("defaultMetaBlobInventories", new File(metaInventoriesDirectory().getPath() + "/" + lowercased + "_meta_inventories.yml"));
         addFile("defaultActions", new File(actionsDirectory().getPath() + "/" + lowercased + "_actions.yml"));
+        addFile("defaultTranslatableSnippets", new File(translatableSnippetsDirectory().getPath() + "/" + lowercased + "_translatable_snippets.yml"));
+        addFile("defaultTranslatableBlocks", new File(translatableBlocksDirectory().getPath() + "/" + lowercased + "_translatable_blocks.yml"));
         loadFiles(plugin);
     }
 
@@ -185,6 +189,8 @@ public class BlobFileManager extends Manager implements IFileManager {
             if (!inventoriesDirectory().exists()) inventoriesDirectory().mkdir();
             if (!metaInventoriesDirectory().exists()) metaInventoriesDirectory().mkdir();
             if (!actionsDirectory().exists()) actionsDirectory().mkdir();
+            if (!translatableSnippetsDirectory().exists()) translatableSnippetsDirectory().mkdir();
+            if (!translatableBlocksDirectory().exists()) translatableBlocksDirectory().mkdir();
             ///////////////////////////////////////////
             Optional<InputStream> soundsOptional = Optional.ofNullable(plugin.getResource(lowercased + "_sounds.yml"));
             if (soundsOptional.isPresent()) {
@@ -210,6 +216,16 @@ public class BlobFileManager extends Manager implements IFileManager {
             if (actionsOptional.isPresent()) {
                 getDefaultActions().createNewFile();
                 ResourceUtil.updateYml(actionsDirectory(), "/temp" + lowercased + "_actions.yml", lowercased + "_actions.yml", getDefaultActions(), plugin);
+            }
+            Optional<InputStream> translatableSnippetsOptional = Optional.ofNullable(plugin.getResource(lowercased + "_translatable_snippets.yml"));
+            if (translatableSnippetsOptional.isPresent()) {
+                getDefaultTranslatableSnippets().createNewFile();
+                ResourceUtil.updateYml(translatableSnippetsDirectory(), "/temp" + lowercased + "_translatable_snippets.yml", lowercased + "_translatable_snippets.yml", getDefaultTranslatableSnippets(), plugin);
+            }
+            Optional<InputStream> translatableBlocksOptional = Optional.ofNullable(plugin.getResource(lowercased + "_translatable_blocks.yml"));
+            if (translatableBlocksOptional.isPresent()) {
+                getDefaultTranslatableBlocks().createNewFile();
+                ResourceUtil.updateYml(translatableBlocksDirectory(), "/temp" + lowercased + "_translatable_blocks.yml", lowercased + "_translatable_blocks.yml", getDefaultTranslatableBlocks(), plugin);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -324,6 +340,16 @@ public class BlobFileManager extends Manager implements IFileManager {
         return getFile("actions");
     }
 
+    @NotNull
+    public File translatableSnippetsDirectory() {
+        return getFile("translatableSnippets");
+    }
+
+    @NotNull
+    public File translatableBlocksDirectory() {
+        return getFile("translatableBlocks");
+    }
+
     /**
      * Returns the default messages file.
      *
@@ -362,5 +388,15 @@ public class BlobFileManager extends Manager implements IFileManager {
     @NotNull
     public File getDefaultActions() {
         return getFile("defaultActions");
+    }
+
+    @NotNull
+    public File getDefaultTranslatableSnippets() {
+        return getFile("defaultTranslatableSnippets");
+    }
+
+    @NotNull
+    public File getDefaultTranslatableBlocks() {
+        return getFile("defaultTranslatableBlocks");
     }
 }

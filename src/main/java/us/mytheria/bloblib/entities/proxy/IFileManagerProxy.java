@@ -30,4 +30,12 @@ public class IFileManagerProxy implements IFileManager {
     public File actionsDirectory() {
         return fileManager.actionsDirectory();
     }
+
+    public File translatableSnippetsDirectory() {
+        return fileManager.translatableSnippetsDirectory();
+    }
+
+    public File translatableBlocksDirectory() {
+        return fileManager.translatableBlocksDirectory();
+    }
 }

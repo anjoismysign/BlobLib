@@ -8,10 +8,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.listeners.SelPosListener;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 
 public class SelPosListenerManager implements Listener {

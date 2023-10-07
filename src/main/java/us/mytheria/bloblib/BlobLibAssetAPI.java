@@ -4,10 +4,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.action.Action;
-import us.mytheria.bloblib.api.BlobLibActionAPI;
-import us.mytheria.bloblib.api.BlobLibInventoryAPI;
-import us.mytheria.bloblib.api.BlobLibMessageAPI;
-import us.mytheria.bloblib.api.BlobLibSoundAPI;
+import us.mytheria.bloblib.api.*;
 import us.mytheria.bloblib.entities.inventory.*;
 import us.mytheria.bloblib.entities.message.BlobSound;
 import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
@@ -25,12 +22,14 @@ public class BlobLibAssetAPI {
     private final BlobLibInventoryAPI inventoryAPI;
     private final BlobLibActionAPI actionAPI;
     private final BlobLibMessageAPI messageAPI;
+    private final BlobLibTranslatableAPI translatableAPI;
 
     private BlobLibAssetAPI(BlobLib plugin) {
         this.soundAPI = BlobLibSoundAPI.getInstance(plugin);
         this.inventoryAPI = BlobLibInventoryAPI.getInstance(plugin);
         this.actionAPI = BlobLibActionAPI.getInstance(plugin);
         this.messageAPI = BlobLibMessageAPI.getInstance(plugin);
+        this.translatableAPI = BlobLibTranslatableAPI.getInstance(plugin);
     }
 
     public static BlobLibAssetAPI getInstance(BlobLib plugin) {
@@ -60,6 +59,10 @@ public class BlobLibAssetAPI {
 
     public BlobLibMessageAPI getMessageAPI() {
         return messageAPI;
+    }
+
+    public BlobLibTranslatableAPI getTranslatableAPI() {
+        return translatableAPI;
     }
 
     @Deprecated

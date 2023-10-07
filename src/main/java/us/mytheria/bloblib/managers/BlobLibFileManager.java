@@ -21,11 +21,15 @@ public class BlobLibFileManager {
     private final File inventories = new File(path.getPath() + "/BlobInventory");
     private final File metaInventories = new File(path.getPath() + "/MetaBlobInventory");
     private final File actions = new File(path.getPath() + "/Action");
+    private final File snippets = new File(path.getPath() + "/TranslatableSnippet");
+    private final File blocks = new File(path.getPath() + "/TranslatableBlock");
     private final File defaultSounds = new File(sounds.getPath() + "/bloblib_sounds.yml");
     private final File defaultMessages = new File(messages.getPath() + "/bloblib_lang.yml");
     private final File defaultInventories = new File(inventories.getPath() + "/bloblib_inventories.yml");
     private final File defaultMetaInventories = new File(metaInventories.getPath() + "/bloblib_meta_inventories.yml");
     private final File defaultActions = new File(actions.getPath() + "/bloblib_actions.yml");
+    private final File defaultSnippets = new File(snippets.getPath() + "/bloblib_translatable_snippets.yml");
+    private final File defaultBlocks = new File(blocks.getPath() + "/bloblib_translatable_blocks.yml");
 
     /**
      * Will create a new BlobLibFileManager instance
@@ -167,6 +171,24 @@ public class BlobLibFileManager {
      */
     public File defaultMetaInventoriesFile() {
         return defaultMetaInventories;
+    }
+
+    /**
+     * Will return the default TranslatableSnippet directory
+     *
+     * @return The default TranslatableSnippets file
+     */
+    public File snippetsDirectory() {
+        return snippets;
+    }
+
+    /**
+     * Will return the default TranslatableBlock directory
+     *
+     * @return The default TranslatableBlocks file
+     */
+    public File blocksDirectory() {
+        return blocks;
     }
 
     /**

@@ -12,4 +12,8 @@ public interface IFileManager {
     File metaInventoriesDirectory();
 
     File actionsDirectory();
+
+    File translatableSnippetsDirectory();
+
+    File translatableBlocksDirectory();
 }

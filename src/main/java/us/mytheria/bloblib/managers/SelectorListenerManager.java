@@ -1,11 +1,11 @@
 package us.mytheria.bloblib.managers;
 
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.listeners.EditorListener;
 import us.mytheria.bloblib.entities.listeners.SelectorListener;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 
 public class SelectorListenerManager {

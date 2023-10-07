@@ -12,7 +12,7 @@ import java.io.File;
 import java.util.Objects;
 
 public record InventoryBuilderCarrier<T extends InventoryButton>(@Nullable String title,
-                                                                 @NotNull int size,
+                                                                 int size,
                                                                  @NotNull ButtonManager<T> buttonManager,
                                                                  @Nullable String type,
                                                                  @NotNull String reference,
