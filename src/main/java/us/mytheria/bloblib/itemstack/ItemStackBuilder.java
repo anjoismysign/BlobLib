@@ -11,12 +11,10 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
-import us.mytheria.bloblib.entities.Rep;
 import us.mytheria.bloblib.utilities.TextColor;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.logging.Level;
 
 public final class ItemStackBuilder {
@@ -100,51 +98,46 @@ public final class ItemStackBuilder {
         return unflag(flags.toArray(new ItemFlag[0]));
     }
 
-    public ItemStackBuilder displayName(String name, char translateColorChar) {
-        return itemMeta(itemMeta -> itemMeta.setDisplayName(TextColor.CUSTOM_PARSE(translateColorChar, name)));
+    public ItemStackBuilder displayName(String name, char colorChar) {
+        return itemMeta(itemMeta -> itemMeta.setDisplayName(TextColor.CUSTOM_PARSE(colorChar, name)));
     }
 
     public ItemStackBuilder displayName(String name) {
         return displayName(name, '&');
     }
 
-    public ItemStackBuilder lore(String line) {
-        return lore(List.of(TextColor.PARSE(line)));
+    public ItemStackBuilder lore(String line, char colorChar) {
+        return lore(List.of(line), colorChar);
     }
 
-    public ItemStackBuilder lore(String... lore) {
+    public ItemStackBuilder lore(String line) {
+        return lore(line, '&');
+    }
+
+    public ItemStackBuilder lore(char colorChar, String... lore) {
         List<String> list = List.of(lore);
         List<String> dupe = new ArrayList<>();
-        list.forEach(s -> dupe.add(TextColor.PARSE(s)));
+        list.forEach(s -> dupe.add(TextColor.CUSTOM_PARSE(colorChar, s)));
         return itemMeta(itemMeta -> itemMeta.setLore(dupe));
     }
 
+    public ItemStackBuilder lore(String... lore) {
+        return lore('&', lore);
+    }
+
+    public ItemStackBuilder lore(List<String> lore, char colorChar) {
+        List<String> list = lore.stream().map(s -> TextColor.CUSTOM_PARSE(colorChar, s)).toList();
+        return itemMeta(itemMeta -> itemMeta.setLore(list));
+    }
+
     public ItemStackBuilder lore(List<String> lore) {
-        return itemMeta(itemMeta -> itemMeta.setLore(lore));
-    }
-
-    public ItemStackBuilder lore(Function<List<String>, List<String>> lore) {
-        return itemMeta(itemMeta -> itemMeta.setLore(lore.apply(itemMeta.getLore())));
-    }
-
-    public ItemStackBuilder lore(List<String> lore, Rep... reps) {
-        return lore(Rep.lace(lore, reps));
+        return lore(lore, '&');
     }
 
     private List<String> getLore() {
         ItemMeta meta = itemStack.getItemMeta();
         if (meta == null) return null;
         return meta.getLore();
-    }
-
-    public ItemStackBuilder lore(Rep... reps) {
-        List<String> lore = getLore();
-        if (lore == null) return this;
-        return lore(Rep.lace(lore, reps));
-    }
-
-    public ItemStackBuilder lore(Collection<Rep> reps) {
-        return lore(reps.toArray(new Rep[0]));
     }
 
     /**
