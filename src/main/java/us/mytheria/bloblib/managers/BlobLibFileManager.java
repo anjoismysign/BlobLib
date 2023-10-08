@@ -50,17 +50,23 @@ public class BlobLibFileManager {
             if (!inventories.exists()) inventories.mkdir();
             if (!metaInventories.exists()) metaInventories.mkdir();
             if (!actions.exists()) actions.mkdir();
+            if (!snippets.exists()) snippets.mkdir();
+            if (!blocks.exists()) blocks.mkdir();
             ///////////////////////////////////////////
             if (!defaultSounds.exists()) defaultSounds.createNewFile();
             if (!defaultMessages.exists()) defaultMessages.createNewFile();
             if (!defaultInventories.exists()) defaultInventories.createNewFile();
             if (!defaultMetaInventories.exists()) defaultMetaInventories.createNewFile();
             if (!defaultActions.exists()) defaultActions.createNewFile();
+            if (!defaultSnippets.exists()) defaultSnippets.createNewFile();
+            if (!defaultBlocks.exists()) defaultBlocks.createNewFile();
             ResourceUtil.updateYml(sounds, "/tempbloblib_sounds.yml", "bloblib_sounds.yml", defaultSounds, plugin);
             ResourceUtil.updateYml(messages, "/tempbloblib_lang.yml", "bloblib_lang.yml", defaultMessages, plugin);
             ResourceUtil.updateYml(inventories, "/tempInventories.yml", "bloblib_inventories.yml", defaultInventories, plugin);
             ResourceUtil.updateYml(metaInventories, "/tempMetaInventories.yml", "bloblib_meta_inventories.yml", defaultMetaInventories, plugin);
             ResourceUtil.updateYml(actions, "/tempActions.yml", "bloblib_actions.yml", defaultActions, plugin);
+            ResourceUtil.updateYml(snippets, "/tempTranslatableSnippets.yml", "bloblib_translatable_snippets.yml", defaultSnippets, plugin);
+            ResourceUtil.updateYml(blocks, "/tempTranslatableBlocks.yml", "bloblib_translatable_blocks.yml", defaultBlocks, plugin);
         } catch (Exception e) {
             e.printStackTrace();
         }

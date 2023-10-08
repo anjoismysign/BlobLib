@@ -1,6 +1,7 @@
 package us.mytheria.bloblib.entities.translatable;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,7 +60,7 @@ public class TranslatableRegistry<T extends Translatable<?>> {
      * @param locale the locale to get the carrier for
      * @return the carrier for the specified locale, or the default if it doesn't exist
      */
-    @NotNull
+    @Nullable
     public T get(String locale) {
         T result = this.translatables.get(locale);
         if (result == null)

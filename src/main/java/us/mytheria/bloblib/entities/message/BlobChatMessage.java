@@ -3,6 +3,7 @@ package us.mytheria.bloblib.entities.message;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import us.mytheria.bloblib.entities.translatable.BlobTranslatableSnippet;
 
 import java.util.function.Function;
 
@@ -24,7 +25,7 @@ public class BlobChatMessage extends SerialBlobMessage {
      */
     public BlobChatMessage(String message, BlobSound sound, String locale) {
         super(sound, locale);
-        this.chat = message;
+        this.chat = BlobTranslatableSnippet.PARSE(message, locale);
     }
 
     /**

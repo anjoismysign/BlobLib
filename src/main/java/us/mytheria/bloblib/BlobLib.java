@@ -9,6 +9,7 @@ import us.mytheria.bloblib.entities.logger.BlobPluginLogger;
 import us.mytheria.bloblib.hologram.HologramManager;
 import us.mytheria.bloblib.managers.*;
 import us.mytheria.bloblib.managers.fillermanager.FillerManager;
+import us.mytheria.bloblib.placeholderapi.TranslatablePH;
 import us.mytheria.bloblib.utilities.SerializationLib;
 import us.mytheria.bloblib.vault.VaultManager;
 
@@ -44,6 +45,7 @@ public class BlobLib extends JavaPlugin {
     private SerializationLib serializationLib;
     private InventoryTrackerManager inventoryTrackerManager;
     private TranslatableManager translatableManager;
+    private TranslatablePH translatablePH;
 
     private static BlobLib instance;
 
@@ -104,8 +106,10 @@ public class BlobLib extends JavaPlugin {
         reload();
         new BlobLibCmd();
 
-        Bukkit.getScheduler().runTask(this,
-                () -> disguiseManager.load());
+        Bukkit.getScheduler().runTask(this, () -> {
+            TranslatablePH.getInstance(this);
+            disguiseManager.load();
+        });
     }
 
     @Override
@@ -120,6 +124,7 @@ public class BlobLib extends JavaPlugin {
         configManager.reload();
         listenerManager.reload();
         soundManager.reload();
+        translatableManager.reload();
         messageManager.reload();
         actionManager.reload();
         inventoryManager.reload();

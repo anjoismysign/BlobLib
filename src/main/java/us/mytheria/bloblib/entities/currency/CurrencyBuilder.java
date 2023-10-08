@@ -10,6 +10,7 @@ import us.mytheria.bloblib.entities.inventory.ObjectBuilderButton;
 import us.mytheria.bloblib.entities.inventory.ObjectBuilderButtonBuilder;
 import us.mytheria.bloblib.entities.message.BlobSound;
 
+import java.util.Map;
 import java.util.UUID;
 
 public class CurrencyBuilder extends ObjectBuilder<Currency> {
@@ -76,6 +77,6 @@ public class CurrencyBuilder extends ObjectBuilder<Currency> {
         return new Currency(display, initialBalanceValue,
                 true, decimalFormatPattern, key,
                 false, null, getObjectDirector().getPlugin(),
-                key);
+                Map.of("en_us", key));
     }
 }

@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class BlobPHExpansion extends PlaceholderExpansion {
@@ -17,7 +18,7 @@ public class BlobPHExpansion extends PlaceholderExpansion {
     private final String identifier;
 
     private final Map<String, Function<OfflinePlayer, String>> simple;
-    private final Map<String, Function<OfflinePlayer, String>> startsWith;
+    private final Map<String, BiFunction<OfflinePlayer, String, String>> startsWith;
 
     public BlobPHExpansion(JavaPlugin plugin, String identifier) {
         this.plugin = plugin;
@@ -37,7 +38,7 @@ public class BlobPHExpansion extends PlaceholderExpansion {
     /**
      * @return the previous value associated with key, or null if there was no mapping for key. (A null return can also indicate that the map previously associated null with key, if the implementation supports null values.)
      */
-    public Function<OfflinePlayer, String> putStartsWith(String key, Function<OfflinePlayer, String> function) {
+    public BiFunction<OfflinePlayer, String, String> putStartsWith(String key, BiFunction<OfflinePlayer, String, String> function) {
         return startsWith.put(key, function);
     }
 
@@ -69,11 +70,20 @@ public class BlobPHExpansion extends PlaceholderExpansion {
         Function<OfflinePlayer, String> simpleFunction = simple.get(identifier);
         if (simpleFunction != null)
             return simpleFunction.apply(player);
-        return startsWith.entrySet().stream()
-                .filter(entry -> identifier.startsWith(entry.getKey()))
-                .filter(entry -> entry.getValue().apply(player) != null)
-                .findFirst()
-                .map(entry -> entry.getValue().apply(player))
-                .orElse(null);
+        String dynamicKey;
+        for (Map.Entry<String, BiFunction<OfflinePlayer, String, String>> entry : startsWith.entrySet()) {
+            if (identifier.startsWith(entry.getKey())) {
+                dynamicKey = dynamicKey(entry.getKey(), identifier);
+                if (entry.getValue().apply(player, dynamicKey) != null) {
+                    return entry.getValue().apply(player, dynamicKey);
+                }
+            }
+        }
+        return null;
+    }
+
+    private String dynamicKey(String key, String identifier) {
+        int keyLength = key.length();
+        return identifier.substring(keyLength);
     }
 }

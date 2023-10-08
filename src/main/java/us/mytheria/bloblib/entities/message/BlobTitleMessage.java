@@ -3,6 +3,7 @@ package us.mytheria.bloblib.entities.message;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import us.mytheria.bloblib.entities.translatable.BlobTranslatableSnippet;
 
 import java.util.function.Function;
 
@@ -13,8 +14,8 @@ public class BlobTitleMessage extends SerialBlobMessage {
     public BlobTitleMessage(String title, String subtitle, int fadeIn, int stay, int fadeOut,
                             BlobSound sound, String locale) {
         super(sound, locale);
-        this.title = title;
-        this.subtitle = subtitle;
+        this.title = BlobTranslatableSnippet.PARSE(title, locale);
+        this.subtitle = BlobTranslatableSnippet.PARSE(subtitle, locale);
         this.fadeIn = fadeIn;
         this.stay = stay;
         this.fadeOut = fadeOut;

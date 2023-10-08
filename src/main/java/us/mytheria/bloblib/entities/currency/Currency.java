@@ -4,6 +4,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -25,7 +26,8 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 public class Currency implements BlobObject {
-    private final String display, key, displayName;
+    private final String display, key;
+    private final Map<String, String> displayNames;
     private final double initialBalance;
     private final boolean isPersistent;
     private final DecimalFormat decimalFormat;
@@ -45,11 +47,11 @@ public class Currency implements BlobObject {
     public Currency(String display, double initialBalance, boolean isPersistent,
                     String pattern, String key, boolean isTangible,
                     @Nullable Map<String, ItemStack> tangibleShapes,
-                    BlobPlugin plugin, String displayName) {
+                    BlobPlugin plugin, Map<String, String> displayNames) {
         this.plugin = plugin;
         this.display = display;
         this.key = key;
-        this.displayName = displayName;
+        this.displayNames = displayNames;
         this.initialBalance = initialBalance;
         this.isPersistent = isPersistent;
         this.decimalFormat = new DecimalFormat(pattern);
@@ -180,11 +182,40 @@ public class Currency implements BlobObject {
 
     /**
      * Returns how its name is displayed in the game.
+     * Will use the locale to get the name.
+     *
+     * @param locale the to get the locale from
+     * @return the display name
+     */
+    @NotNull
+    public String getDisplayName(@NotNull String locale) {
+        String result = displayNames.get(locale);
+        if (result == null)
+            result = displayNames.get("en_us");
+        Objects.requireNonNull(result, "Default Display-Name for locale '" + locale + "' is missing");
+        return result;
+    }
+
+    /**
+     * Returns how its name is displayed in the game.
+     * Will use the player's locale to get the name.
+     *
+     * @param player the to get the locale from
+     * @return the display name
+     */
+    @NotNull
+    public String getDisplayName(@NotNull Player player) {
+        return getDisplayName(player.getLocale());
+    }
+
+    /**
+     * Returns how its name is displayed in the game.
+     * Will use the default locale to get the name.
      *
      * @return the display name
      */
     public String getDisplayName() {
-        return displayName;
+        return displayNames.get("en_us");
     }
 
     /**
@@ -254,9 +285,20 @@ public class Currency implements BlobObject {
         boolean isPersistent = yamlConfiguration.getBoolean("Persistent");
         String pattern = yamlConfiguration.getString("Decimal-Format");
         String key = FilenameUtils.removeExtension(fileName);
-        String displayName = key;
-        if (yamlConfiguration.isString("Display-Name"))
-            displayName = TextColor.PARSE(yamlConfiguration.getString("Display-Name"));
+        Map<String, String> displayNames = new HashMap<>();
+        if (!yamlConfiguration.isConfigurationSection("Display-Name"))
+            displayNames.put("en_us", key);
+        else {
+            ConfigurationSection namesSection = yamlConfiguration.getConfigurationSection("Display-Name");
+            namesSection.getKeys(false).forEach(locale -> {
+                if (!namesSection.isString(locale))
+                    return;
+                String value = namesSection.getString(locale);
+                displayNames.put(locale, value);
+            });
+            if (!displayNames.containsKey("en_us"))
+                displayNames.put("en_us", key);
+        }
         boolean isTangible = yamlConfiguration.getBoolean("Is-Tangible", false);
         final Map<String, ItemStack> tangibleShape = new HashMap<>();
         if (isTangible) {
@@ -284,6 +326,6 @@ public class Currency implements BlobObject {
             });
         }
         return new Currency(display, initialBalance, isPersistent, pattern, key,
-                isTangible, tangibleShape, director.getPlugin(), displayName);
+                isTangible, tangibleShape, director.getPlugin(), displayNames);
     }
 }

@@ -1,0 +1,7 @@
+BlobLib:
+  Select-Element:
+    Block:
+      - '&7Click to select'
+  Remove-Element:
+    Block:
+      - '&7Click to remove'

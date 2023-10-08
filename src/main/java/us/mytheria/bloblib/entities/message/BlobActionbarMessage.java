@@ -5,6 +5,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import us.mytheria.bloblib.entities.translatable.BlobTranslatableSnippet;
 
 import java.util.function.Function;
 
@@ -21,7 +22,7 @@ public class BlobActionbarMessage extends SerialBlobMessage {
     public BlobActionbarMessage(String message, BlobSound sound,
                                 String locale) {
         super(sound, locale);
-        this.actionbar = message;
+        this.actionbar = BlobTranslatableSnippet.PARSE(message, locale);
     }
 
     /**

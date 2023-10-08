@@ -12,10 +12,7 @@ import us.mytheria.bloblib.entities.translatable.TranslatableRegistry;
 import us.mytheria.bloblib.entities.translatable.TranslatableSnippet;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 public class TranslatableManager {
     private final BlobLib main;
@@ -136,8 +133,9 @@ public class TranslatableManager {
     private void loadSnippet(BlobPlugin plugin, File file) {
         String fileName = FilenameUtils.removeExtension(file.getName());
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
-        if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
-            addSnippet(fileName, TranslatableReader.SNIPPET(yamlConfiguration, fileName));
+        String locale = yamlConfiguration.getString("Locale", "en_us");
+        if (yamlConfiguration.isString("Snippet")) {
+            addSnippet(fileName, TranslatableReader.SNIPPET(yamlConfiguration, locale));
             pluginSnippets.get(plugin.getName()).add(fileName);
             return;
         }
@@ -145,9 +143,9 @@ public class TranslatableManager {
             if (!yamlConfiguration.isConfigurationSection(reference))
                 return;
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
-            if (!section.contains("Size") && !section.isInt("Size"))
+            if (!section.isString("Snippet"))
                 return;
-            addSnippet(reference, TranslatableReader.SNIPPET(section, reference));
+            addSnippet(reference, TranslatableReader.SNIPPET(section, locale));
             pluginSnippets.get(plugin.getName()).add(reference);
         });
     }
@@ -155,8 +153,9 @@ public class TranslatableManager {
     private void loadBlock(BlobPlugin plugin, File file) {
         String fileName = FilenameUtils.removeExtension(file.getName());
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
-        if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
-            addBlock(fileName, TranslatableReader.BLOCK(yamlConfiguration, fileName));
+        String locale = yamlConfiguration.getString("Locale", "en_us");
+        if (!yamlConfiguration.getStringList("Block").isEmpty()) {
+            addBlock(fileName, TranslatableReader.BLOCK(yamlConfiguration, locale));
             pluginBlocks.get(plugin.getName()).add(fileName);
             return;
         }
@@ -164,9 +163,9 @@ public class TranslatableManager {
             if (!yamlConfiguration.isConfigurationSection(reference))
                 return;
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
-            if (!section.contains("Size") && !section.isInt("Size"))
+            if (section.getStringList("Block").isEmpty())
                 return;
-            addBlock(reference, TranslatableReader.BLOCK(section, reference));
+            addBlock(reference, TranslatableReader.BLOCK(section, locale));
             pluginBlocks.get(plugin.getName()).add(reference);
         });
     }
@@ -179,7 +178,6 @@ public class TranslatableManager {
                 manager.loadSnippet(plugin, file);
             } catch (Throwable e) {
                 e.printStackTrace();
-                continue;
             }
         }
         if (warnDuplicates)
@@ -199,7 +197,6 @@ public class TranslatableManager {
                 manager.loadBlock(plugin, file);
             } catch (Throwable e) {
                 e.printStackTrace();
-                continue;
             }
         }
         if (warnDuplicates)
@@ -215,34 +212,36 @@ public class TranslatableManager {
     private void loadSnippet(File file) {
         String fileName = FilenameUtils.removeExtension(file.getName());
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
-        if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
-            addSnippet(fileName, TranslatableReader.SNIPPET(yamlConfiguration, fileName));
+        String locale = yamlConfiguration.getString("Locale", "en_us");
+        if (yamlConfiguration.isString("Snippet")) {
+            addSnippet(fileName, TranslatableReader.SNIPPET(yamlConfiguration, locale));
             return;
         }
         yamlConfiguration.getKeys(true).forEach(reference -> {
             if (!yamlConfiguration.isConfigurationSection(reference))
                 return;
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
-            if (!section.contains("Size") && !section.isInt("Size"))
+            if (!section.isString("Snippet"))
                 return;
-            addSnippet(reference, TranslatableReader.SNIPPET(section, reference));
+            addSnippet(reference, TranslatableReader.SNIPPET(section, locale));
         });
     }
 
     private void loadBlock(File file) {
         String fileName = FilenameUtils.removeExtension(file.getName());
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
-        if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
-            addBlock(fileName, TranslatableReader.BLOCK(yamlConfiguration, fileName));
+        String locale = yamlConfiguration.getString("Locale", "en_us");
+        if (!yamlConfiguration.getStringList("Block").isEmpty()) {
+            addBlock(fileName, TranslatableReader.BLOCK(yamlConfiguration, locale));
             return;
         }
         yamlConfiguration.getKeys(true).forEach(reference -> {
             if (!yamlConfiguration.isConfigurationSection(reference))
                 return;
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
-            if (!section.contains("Size") && !section.isInt("Size"))
+            if (section.getStringList("Block").isEmpty())
                 return;
-            addBlock(reference, TranslatableReader.BLOCK(section, reference));
+            addBlock(reference, TranslatableReader.BLOCK(section, locale));
         });
     }
 
@@ -264,7 +263,11 @@ public class TranslatableManager {
         TranslatableRegistry<TranslatableSnippet> registry = getSnippetRegistry(key);
         if (registry == null)
             return null;
-        return registry.get(locale);
+        TranslatableSnippet snippet = registry.get(locale);
+        if (snippet == null)
+            return registry.getDefault();
+        Objects.requireNonNull(snippet, "Snippet '" + key + "' does not have a default locale and is not available in '" + locale + "'");
+        return snippet;
     }
 
     @Nullable
@@ -285,7 +288,11 @@ public class TranslatableManager {
         TranslatableRegistry<TranslatableBlock> registry = getBlockRegistry(key);
         if (registry == null)
             return null;
-        return registry.get(locale);
+        TranslatableBlock block = registry.get(locale);
+        if (block == null)
+            return registry.getDefault();
+        Objects.requireNonNull(block, "Block '" + key + "' does not have a default locale and is not available in '" + locale + "'");
+        return block;
     }
 
     @Nullable
@@ -296,25 +303,27 @@ public class TranslatableManager {
         return registry.getDefault();
     }
 
-    private void addSnippet(String key, TranslatableSnippet inventory) {
+    private void addSnippet(String key, TranslatableSnippet snippet) {
         TranslatableRegistry<TranslatableSnippet> registry = snippets.get(key);
         if (registry == null)
             registry = TranslatableRegistry.of("en_us", key);
-        if (!registry.process(inventory)) {
+        if (!registry.process(snippet)) {
             addDuplicate(key);
             return;
         }
+        BlobLib.getAnjoLogger().debug("loaded Snippet: " + key + " with locale: " + snippet.getLocale());
         snippets.put(key, registry);
     }
 
-    private void addBlock(String key, TranslatableBlock inventory) {
+    private void addBlock(String key, TranslatableBlock block) {
         TranslatableRegistry<TranslatableBlock> registry = blocks.get(key);
         if (registry == null)
             registry = TranslatableRegistry.of("en_us", key);
-        if (!registry.process(inventory)) {
+        if (!registry.process(block)) {
             addDuplicate(key);
             return;
         }
+        BlobLib.getAnjoLogger().debug("loaded Block: " + key + " with locale: " + block.getLocale());
         blocks.put(key, registry);
     }
 }
