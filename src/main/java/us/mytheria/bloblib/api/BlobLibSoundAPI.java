@@ -51,8 +51,7 @@ public class BlobLibSoundAPI {
     public void playSound(String key, Player player) {
         getSoundManager().play(player, key);
     }
-
-
+    
     /**
      * @return The sounds file
      */

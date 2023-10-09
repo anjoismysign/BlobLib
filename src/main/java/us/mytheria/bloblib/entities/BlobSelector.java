@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
@@ -38,9 +39,10 @@ public class BlobSelector<T> extends VariableSelector<T> implements VariableFill
      * @return the new BlobEditor
      */
     public static <T> BlobSelector<T> build(BlobInventory blobInventory, UUID builderId,
-                                            String dataType, Collection<T> collection) {
+                                            String dataType, Collection<T> collection,
+                                            @Nullable Consumer<Player> onReturn) {
         return new BlobSelector<>(blobInventory, builderId,
-                dataType, collection);
+                dataType, collection, onReturn);
     }
 
 
@@ -54,9 +56,10 @@ public class BlobSelector<T> extends VariableSelector<T> implements VariableFill
      * @return the new BlobEditor
      */
     public static <T> BlobSelector<T> build(BlobInventory blobInventory, UUID builderId,
-                                            String dataType) {
+                                            String dataType,
+                                            @Nullable Consumer<Player> onReturn) {
         return new BlobSelector<>(blobInventory, builderId,
-                dataType);
+                dataType, onReturn);
     }
 
     /**
@@ -67,10 +70,11 @@ public class BlobSelector<T> extends VariableSelector<T> implements VariableFill
      * @param dataType  the data type of the editor
      * @return the new BlobEditor
      */
-    public static <T> BlobSelector<T> DEFAULT(UUID builderId, String dataType) {
+    public static <T> BlobSelector<T> DEFAULT(UUID builderId, String dataType,
+                                              @Nullable Consumer<Player> onReturn) {
         Player player = Objects.requireNonNull(Bukkit.getPlayer(builderId));
         return new BlobSelector<>(VariableSelector.DEFAULT(player), builderId,
-                dataType);
+                dataType, onReturn);
     }
 
     /**
@@ -83,26 +87,28 @@ public class BlobSelector<T> extends VariableSelector<T> implements VariableFill
      * @return the new BlobEditor
      */
     public static <T> BlobSelector<T> COLLECTION_INJECTION(UUID builderId, String dataType,
-                                                           Collection<T> collection) {
+                                                           Collection<T> collection,
+                                                           @Nullable Consumer<Player> onReturn) {
         Player player = Objects.requireNonNull(Bukkit.getPlayer(builderId));
         return new BlobSelector<>(VariableSelector.DEFAULT(player), builderId,
-                dataType, collection);
+                dataType, collection, onReturn);
     }
 
     protected BlobSelector(BlobInventory blobInventory, UUID builderId,
-                           String dataType) {
-        super(blobInventory, builderId, dataType, null);
+                           String dataType, @Nullable Consumer<Player> consumer) {
+        super(blobInventory, builderId, dataType, null, consumer);
         this.selectorManager = BlobLib.getInstance().getSelectorManager();
         this.list = new ArrayList<>();
         this.collection = null;
     }
 
     protected BlobSelector(BlobInventory blobInventory, UUID builderId,
-                           String dataType, Collection<T> collection) {
+                           String dataType, Collection<T> collection,
+                           @Nullable Consumer<Player> consumer) {
         super(Objects.requireNonNull(blobInventory, "'blobInventory' cannot be null"),
                 Objects.requireNonNull(builderId, "'builderId' cannot be null"),
                 Objects.requireNonNull(dataType, "'dataType' cannot be null"),
-                null);
+                null, consumer);
         this.selectorManager = BlobLib.getInstance().getSelectorManager();
         this.collection = collection;
         this.list = null;

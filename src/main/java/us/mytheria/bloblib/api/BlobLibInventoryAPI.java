@@ -346,6 +346,7 @@ public class BlobLibInventoryAPI {
      * @param selectorList     the list of elements to select from
      * @param onSelect         what's consumed when an element is selected
      * @param display          the function to display an element, needs to return the ItemStack to display
+     * @param onReturn         what's consumed when the player returns the selector
      * @param <T>              the type of the selector
      * @return the selector
      */
@@ -355,10 +356,11 @@ public class BlobLibInventoryAPI {
                                               @NotNull String dataType,
                                               @NotNull Supplier<List<T>> selectorList,
                                               @NotNull Consumer<T> onSelect,
-                                              @Nullable Function<T, ItemStack> display) {
+                                              @Nullable Function<T, ItemStack> display,
+                                              @Nullable Consumer<Player> onReturn) {
         BlobInventory inventory = buildInventory(blobInventoryKey, player);
         BlobSelector<T> selector = BlobSelector.build(inventory, player.getUniqueId(),
-                dataType, selectorList.get());
+                dataType, selectorList.get(), onReturn);
         selector.setItemsPerPage(selector.getSlots(buttonRangeKey)
                 == null ? 1 : selector.getSlots(buttonRangeKey).size());
         if (display != null)
@@ -399,7 +401,7 @@ public class BlobLibInventoryAPI {
                 dataType,
                 selectorList,
                 onSelect,
-                display);
+                display, null);
     }
 
     /**
@@ -417,6 +419,7 @@ public class BlobLibInventoryAPI {
      * @param viewCollection   the collection of elements to view
      * @param removeDisplay    the function to display an element, needs to return the ItemStack to display
      * @param onRemove         what's consumed when an element is removed
+     * @param onReturn         what's consumed when the player returns the editor
      * @param <T>              the type of the editor
      * @return the editor
      */
@@ -430,20 +433,33 @@ public class BlobLibInventoryAPI {
                                           @Nullable Function<T, ItemStack> addDisplay,
                                           @NotNull Supplier<Collection<T>> viewCollection,
                                           @NotNull Function<T, ItemStack> removeDisplay,
-                                          @NotNull Consumer<T> onRemove) {
+                                          @NotNull Consumer<T> onRemove,
+                                          @Nullable Consumer<Player> onReturn) {
         BlobInventory inventory = buildInventory(blobInventoryKey, player);
         Uber<BlobEditor<T>> uber = Uber.fly();
         uber.talk(BlobEditor.build(inventory, player.getUniqueId(),
                 dataType, owner -> {
                     BlobSelector<T> playerSelector = BlobSelector.COLLECTION_INJECTION(player.getUniqueId(),
-                            dataType, addCollection.get());
+                            dataType, addCollection.get(), player1 -> {
+                                customEditor(blobInventoryKey,
+                                        player,
+                                        buttonRangeKey,
+                                        dataType,
+                                        addCollection,
+                                        onAdd,
+                                        addDisplay,
+                                        viewCollection,
+                                        removeDisplay,
+                                        onRemove,
+                                        onReturn);
+                            });
                     playerSelector.setItemsPerPage(playerSelector.getSlots(buttonRangeKey)
                             == null ? 1 : playerSelector.getSlots(buttonRangeKey).size());
                     playerSelector.selectElement(player,
                             onAdd,
                             null,
                             addDisplay);
-                }, viewCollection.get()));
+                }, viewCollection.get(), onReturn));
         BlobEditor<T> editor = uber.thanks();
         editor.setItemsPerPage(editor.getSlots(buttonRangeKey) == null
                 ? 1 : editor.getSlots(buttonRangeKey).size());
@@ -488,6 +504,6 @@ public class BlobLibInventoryAPI {
                 addDisplay,
                 viewCollection,
                 removeDisplay,
-                onRemove);
+                onRemove, null);
     }
 }

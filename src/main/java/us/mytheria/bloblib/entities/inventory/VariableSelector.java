@@ -1,6 +1,7 @@
 package us.mytheria.bloblib.entities.inventory;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -11,6 +12,7 @@ import us.mytheria.bloblib.entities.VariableFiller;
 import us.mytheria.bloblib.entities.VariableValue;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -27,6 +29,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
     private final HashMap<Integer, T> values;
     private final UUID builderId;
     private final VariableFiller<T> filler;
+    private final Consumer<Player> returnAction;
     private int page;
     private int itemsPerPage;
 
@@ -59,8 +62,10 @@ public abstract class VariableSelector<T> extends BlobInventory {
      * @param filler        the filler to use
      */
     public VariableSelector(BlobInventory blobInventory, UUID builderId,
-                            String dataType, VariableFiller<T> filler) {
+                            String dataType, VariableFiller<T> filler,
+                            @Nullable Consumer<Player> returnAction) {
         super(blobInventory.getTitle(), blobInventory.getSize(), blobInventory.getButtonManager());
+        this.returnAction = returnAction == null ? HumanEntity::closeInventory : returnAction;
         this.filler = filler;
         this.builderId = builderId;
         this.values = new HashMap<>();
@@ -211,6 +216,19 @@ public abstract class VariableSelector<T> extends BlobInventory {
     }
 
     /**
+     * Checks if the slot is a return button
+     *
+     * @param slot the slot to check
+     * @return true if the slot is a return button, false otherwise
+     */
+    public boolean isReturnButton(int slot) {
+        Set<Integer> slots = getSlots("Return");
+        if (slots == null)
+            return false;
+        return slots.contains(slot);
+    }
+
+    /**
      * @param slot the slot to check
      * @return true if the slot is a next page button, false otherwise
      */
@@ -279,7 +297,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
     }
 
     /**
-     * goes to next page
+     * Goes to next page
      */
     public void nextPage() {
         setPage(page + 1);
@@ -288,11 +306,20 @@ public abstract class VariableSelector<T> extends BlobInventory {
     }
 
     /**
-     * goes to previous page
+     * Goes to previous page
      */
     public void previousPage() {
         setPage(page - 1);
         Player player = getPlayer();
+        BlobLibSoundAPI.getInstance().getSound("Builder.Button-Click").handle(player);
+    }
+
+    /**
+     * Will process the return action
+     */
+    public void processReturn() {
+        Player player = getPlayer();
+        returnAction.accept(player);
         BlobLibSoundAPI.getInstance().getSound("Builder.Button-Click").handle(player);
     }
 

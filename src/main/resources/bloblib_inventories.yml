@@ -16,6 +16,14 @@ VariableSelector:
         DisplayName: " "
         Lore: [ ]
       Slot: 0-44
+    Return:
+      ItemStack:
+        Material: ARROW
+        CustomModelData: 0
+        DisplayName: "&6Done"
+        Lore:
+          - "&7Click if done"
+      Slot: 45
     Previous-Page:
       ItemStack:
         Material: ARROW
@@ -50,6 +58,14 @@ BlobEditor:
         DisplayName: " "
         Lore: [ ]
       Slot: 0-44
+    Return:
+      ItemStack:
+        Material: ARROW
+        CustomModelData: 0
+        DisplayName: "&6Done"
+        Lore:
+          - "&7Click if done"
+      Slot: 45
     Add:
       ItemStack:
         Material: ANVIL

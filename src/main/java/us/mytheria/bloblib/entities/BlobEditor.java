@@ -46,9 +46,10 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      */
     public static <T> BlobEditor<T> build(BlobInventory blobInventory, UUID builderId,
                                           String dataType, Consumer<Player> addConsumer,
-                                          Collection<T> collection) {
+                                          Collection<T> collection,
+                                          @Nullable Consumer<Player> onReturn) {
         return new BlobEditor<>(blobInventory, builderId,
-                dataType, collection, addConsumer);
+                dataType, collection, addConsumer, onReturn);
     }
 
     /**
@@ -62,9 +63,10 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      * @return the new BlobEditor
      */
     public static <T> BlobEditor<T> build(BlobInventory blobInventory, UUID builderId,
-                                          String dataType, Consumer<Player> addConsumer) {
+                                          String dataType, Consumer<Player> addConsumer,
+                                          @Nullable Consumer<Player> onReturn) {
         return new BlobEditor<>(blobInventory, builderId,
-                dataType, addConsumer);
+                dataType, addConsumer, onReturn);
     }
 
     /**
@@ -77,10 +79,11 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      * @return the new BlobEditor
      */
     public static <T> BlobEditor<T> DEFAULT(UUID builderId, String dataType,
-                                            Consumer<Player> addConsumer) {
+                                            Consumer<Player> addConsumer,
+                                            @Nullable Consumer<Player> onReturn) {
         Player get = Objects.requireNonNull(Bukkit.getPlayer(builderId));
         return new BlobEditor<>(VariableSelector.DEFAULT(get), builderId,
-                dataType, addConsumer);
+                dataType, addConsumer, onReturn);
     }
 
     /**
@@ -95,9 +98,10 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      */
     public static <T> BlobEditor<T> COLLECTION_INJECTION(UUID builderId, String dataType,
                                                          Collection<T> collection,
-                                                         Consumer<Player> addConsumer) {
+                                                         Consumer<Player> addConsumer,
+                                                         @Nullable Consumer<Player> onReturn) {
         return new BlobEditor<>(VariableSelector.DEFAULT(), builderId,
-                dataType, collection, addConsumer);
+                dataType, collection, addConsumer, onReturn);
     }
 
     /**
@@ -109,13 +113,14 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      * @return the new BlobEditor
      */
     public static <T extends BlobObject> BlobEditor<T> DEFAULT_DIRECTOR(UUID builderId,
-                                                                        ObjectDirector<T> director) {
+                                                                        ObjectDirector<T> director,
+                                                                        @Nullable Consumer<Player> onReturn) {
         Uber<BlobEditor<T>> uber = Uber.fly();
         uber.talk(BlobEditor.DEFAULT(builderId, director.objectName, player -> {
             ObjectManager<T> dropObjectManager = director.getObjectManager();
             BlobEditor<T> editor = dropObjectManager.makeEditor(player);
             editor.selectElement(player, element -> uber.thanks().add(element));
-        }));
+        }, onReturn));
         return uber.thanks();
     }
 
@@ -130,7 +135,8 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
      */
     public static <T extends BlobObject> BlobEditor<T> COLLECTION_INJECTION_BUILDER(UUID builderId,
                                                                                     Collection<T> collection,
-                                                                                    ObjectDirector<T> director) {
+                                                                                    ObjectDirector<T> director,
+                                                                                    @Nullable Consumer<Player> onReturn) {
         Uber<BlobEditor<T>> uber = Uber.fly();
         if (!director.hasObjectBuilderManager())
             throw new IllegalArgumentException("The director does not have an ObjectBuilderManager. " +
@@ -140,14 +146,15 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
                 director.objectName, collection, player -> {
             ObjectBuilder<T> builder = director.getOrDefaultBuilder(player.getUniqueId());
             builder.open(player);
-        }));
+        }, onReturn));
         return uber.thanks();
     }
 
     protected BlobEditor(BlobInventory blobInventory, UUID builderId,
                          String dataType,
-                         Consumer<Player> addConsumer) {
-        super(blobInventory, builderId, dataType, null);
+                         Consumer<Player> addConsumer,
+                         @Nullable Consumer<Player> consumer) {
+        super(blobInventory, builderId, dataType, null, consumer);
         this.selectorManager = BlobLib.getInstance().getSelectorManager();
         this.list = new ArrayList<>();
         this.collection = null;
@@ -157,11 +164,12 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
 
     protected BlobEditor(BlobInventory blobInventory, UUID builderId,
                          String dataType, Collection<T> collection,
-                         Consumer<Player> addConsumer) {
+                         Consumer<Player> addConsumer,
+                         @Nullable Consumer<Player> consumer) {
         super(Objects.requireNonNull(blobInventory, "'blobInventory' cannot be null"),
                 Objects.requireNonNull(builderId, "'builderId' cannot be null"),
                 Objects.requireNonNull(dataType, "'dataType' cannot be null"),
-                null);
+                null, consumer);
         this.selectorManager = BlobLib.getInstance().getSelectorManager();
         this.collection = collection;
         this.list = null;

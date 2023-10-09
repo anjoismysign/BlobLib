@@ -87,6 +87,9 @@ public class VariableSelectorManager implements Listener {
             if (variableSelector.isPreviousPageButton(slot)) {
                 variableSelector.previousPage();
             }
+            if (variableSelector.isReturnButton(slot)) {
+                variableSelector.processReturn();
+            }
             return;
         }
         listener.setInputFromSlot(variableSelector, slot);

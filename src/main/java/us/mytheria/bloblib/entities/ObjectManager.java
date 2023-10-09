@@ -201,7 +201,7 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
      */
     public BlobEditor<T> makeEditor(Player player) {
         return BlobEditor.COLLECTION_INJECTION_BUILDER(player.getUniqueId(), values(),
-                parent);
+                parent, null);
     }
 
     public CompletableFuture<Void> getLoadFiles() {

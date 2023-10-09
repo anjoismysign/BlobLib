@@ -14,6 +14,7 @@ public class ItemMaterialSelector extends VariableSelector<Material> {
 
     private ItemMaterialSelector(BlobInventory blobInventory, UUID builderId) {
         super(blobInventory, builderId, "MATERIAL",
-                BlobLib.getInstance().getFillerManager().getItemMaterialFiller());
+                BlobLib.getInstance().getFillerManager().getItemMaterialFiller(),
+                null);
     }
 }

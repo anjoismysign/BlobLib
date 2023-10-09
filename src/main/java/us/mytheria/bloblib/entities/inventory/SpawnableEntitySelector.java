@@ -14,6 +14,7 @@ public class SpawnableEntitySelector extends VariableSelector<EntityType> {
 
     private SpawnableEntitySelector(BlobInventory blobInventory, UUID builderId) {
         super(blobInventory, builderId, "ENTITYTYPE",
-                BlobLib.getInstance().getFillerManager().getSpawnableEntityTypeFiller());
+                BlobLib.getInstance().getFillerManager().getSpawnableEntityTypeFiller(),
+                null);
     }
 }
