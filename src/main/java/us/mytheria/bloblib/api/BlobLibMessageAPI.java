@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.api;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -59,7 +60,9 @@ public class BlobLibMessageAPI {
      *
      * @param key The key of the message
      * @return The message
+     * @deprecated Use {@link #getMessage(String, String)} instead
      */
+    @Deprecated
     @Nullable
     public ReferenceBlobMessage getMessage(@NotNull String key) {
         Objects.requireNonNull(key);
@@ -88,11 +91,26 @@ public class BlobLibMessageAPI {
      * @param key    The key of the message
      * @param player The player to get the locale from
      * @return The message
+     * @deprecated Use {@link #getMessage(String, CommandSender)} instead
      */
+    @Deprecated
     @Nullable
     public ReferenceBlobMessage getMessage(@NotNull String key, @NotNull Player player) {
         Objects.requireNonNull(player);
         return getMessageManager().getMessage(key, player.getLocale());
+    }
+
+    /**
+     * Gets the locale of the command sender and returns the message.
+     *
+     * @param key    The key of the message
+     * @param sender The command sender to get the locale from
+     * @return The message
+     */
+    @Nullable
+    public ReferenceBlobMessage getMessage(@NotNull String key, @NotNull CommandSender sender) {
+        Objects.requireNonNull(sender);
+        return getMessageManager().getMessage(key, sender instanceof Player ? ((Player) sender).getLocale() : "en_us");
     }
 
     /**

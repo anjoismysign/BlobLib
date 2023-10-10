@@ -138,9 +138,12 @@ public class BlobEconomyCommand<T extends WalletOwner> {
             T walletOwner = context.walletOwner();
             Player player = context.player();
             walletOwner.deposit(currency, amount);
-            BlobLibMessageAPI.getInstance().getMessage("Economy.Deposit").modify(s -> s.replace("%display%", currency.display(amount))
-                    .replace("%currency%", currency.getDisplayName(player))
-                    .replace("%player%", player.getName())).toCommandSender(sender);
+            BlobLibMessageAPI.getInstance()
+                    .getMessage("Economy.Deposit", sender)
+                    .modify(s -> s.replace("%display%", currency.display(amount))
+                            .replace("%currency%", currency.getDisplayName(player))
+                            .replace("%player%", player.getName()))
+                    .toCommandSender(sender);
             return true;
         }
 
@@ -156,15 +159,20 @@ public class BlobEconomyCommand<T extends WalletOwner> {
             Player player = context.player();
             if (!walletOwner.has(currency, amount)) {
                 double missing = amount - walletOwner.getBalance(currency);
-                BlobLibMessageAPI.getInstance().getMessage("Economy.Cannot-Bankrupt-Others").modify(s -> s.replace("%display%", currency.display(missing))
-                        .replace("%currency%", currency.getDisplayName(player))
-                        .replace("%player%", player.getName())).toCommandSender(sender);
+                BlobLibMessageAPI.getInstance()
+                        .getMessage("Economy.Cannot-Bankrupt-Others", sender)
+                        .modify(s -> s.replace("%display%", currency.display(missing))
+                                .replace("%currency%", currency.getDisplayName(player))
+                                .replace("%player%", player.getName()))
+                        .toCommandSender(sender);
                 return true;
             }
             walletOwner.withdraw(currency, amount);
-            BlobLibMessageAPI.getInstance().getMessage("Economy.Withdraw").modify(s -> s.replace("%display%", currency.display(amount))
-                    .replace("%currency%", currency.getDisplayName(player))
-                    .replace("%player%", player.getName())).toCommandSender(sender);
+            BlobLibMessageAPI.getInstance().getMessage("Economy.Withdraw", sender)
+                    .modify(s -> s.replace("%display%", currency.display(amount))
+                            .replace("%currency%", currency.getDisplayName(player))
+                            .replace("%player%", player.getName()))
+                    .toCommandSender(sender);
             return true;
         }
         Result<BlobChildCommand> setResult = executor
@@ -177,9 +185,11 @@ public class BlobEconomyCommand<T extends WalletOwner> {
             double amount = context.amount();
             Player player = context.player();
             context.walletOwner().setBalance(currency, amount);
-            BlobLibMessageAPI.getInstance().getMessage("Economy.Set").modify(s -> s.replace("%display%", currency.display(amount))
-                    .replace("%currency%", currency.getDisplayName(player))
-                    .replace("%player%", player.getName())).toCommandSender(sender);
+            BlobLibMessageAPI.getInstance().getMessage("Economy.Set", sender)
+                    .modify(s -> s.replace("%display%", currency.display(amount))
+                            .replace("%currency%", currency.getDisplayName(player))
+                            .replace("%player%", player.getName()))
+                    .toCommandSender(sender);
             return true;
         }
         Result<BlobChildCommand> resetResult = executor
@@ -191,9 +201,11 @@ public class BlobEconomyCommand<T extends WalletOwner> {
             Currency currency = context.currency();
             Player player = context.player();
             context.walletOwner().reset(currency);
-            BlobLibMessageAPI.getInstance().getMessage("Economy.Reset").modify(s -> s
-                    .replace("%currency%", currency.getDisplayName(player))
-                    .replace("%player%", player.getName())).toCommandSender(sender);
+            BlobLibMessageAPI.getInstance().getMessage("Economy.Reset", sender)
+                    .modify(s -> s
+                            .replace("%currency%", currency.getDisplayName(player))
+                            .replace("%player%", player.getName()))
+                    .toCommandSender(sender);
             return true;
         }
         return false;

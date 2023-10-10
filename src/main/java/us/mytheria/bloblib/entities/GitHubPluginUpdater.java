@@ -177,7 +177,8 @@ public class GitHubPluginUpdater implements PluginUpdater {
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
                 if (player == null || !player.isOnline())
                     return;
-                BlobLibMessageAPI.getInstance().getMessage("BlobLib.Updater-Available")
+                BlobLibMessageAPI.getInstance()
+                        .getMessage("BlobLib.Updater-Available", player)
                         .modder()
                         .replace("%randomColor%", BlobLib.getInstance().getColorManager().randomColor().toString())
                         .replace("%plugin%", plugin.getName())

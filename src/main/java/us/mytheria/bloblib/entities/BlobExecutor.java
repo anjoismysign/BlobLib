@@ -179,7 +179,9 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
         boolean has = sender.hasPermission(permission);
         if (!has)
             if (blobMessageKey != null)
-                BlobLibMessageAPI.getInstance().getMessage(blobMessageKey).toCommandSender(sender);
+                BlobLibMessageAPI.getInstance()
+                        .getMessage(blobMessageKey, sender)
+                        .toCommandSender(sender);
         return has;
     }
 
@@ -206,7 +208,8 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
      */
     public boolean isInstanceOfPlayer(CommandSender sender, String blobMessageKey) {
         if (!(sender instanceof Player player)) {
-            BlobLibMessageAPI.getInstance().getMessage(blobMessageKey).toCommandSender(sender);
+            BlobLibMessageAPI.getInstance()
+                    .getMessage(blobMessageKey).toCommandSender(sender);
             return false;
         }
         return true;

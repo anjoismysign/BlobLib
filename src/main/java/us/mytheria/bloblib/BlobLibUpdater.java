@@ -167,7 +167,8 @@ public class BlobLibUpdater implements PluginUpdater {
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
                 if (player == null || !player.isOnline())
                     return;
-                BlobLibMessageAPI.getInstance().getMessage("BlobLib.Updater-Available")
+                BlobLibMessageAPI.getInstance()
+                        .getMessage("BlobLib.Updater-Available", player)
                         .modder()
                         .replace("%randomColor%", plugin.getColorManager().randomColor().toString())
                         .replace("update %plugin%", "update")

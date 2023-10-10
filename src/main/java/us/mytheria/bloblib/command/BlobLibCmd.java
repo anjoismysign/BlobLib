@@ -62,7 +62,9 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         try {
             if (!sender.hasPermission("bloblib.admin")) {
-                main.getMessageManager().getMessage("System.No-Permission").toCommandSender(sender);
+                BlobLibMessageAPI.getInstance()
+                        .getMessage("System.No-Permission", sender)
+                        .toCommandSender(sender);
                 return true;
             }
             int length = args.length;
@@ -74,7 +76,9 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
             switch (arg1) {
                 case "reload" -> {
                     main.reload();
-                    main.getMessageManager().getMessage("System.Reload").toCommandSender(sender);
+                    BlobLibMessageAPI.getInstance()
+                            .getMessage("System.Reload", sender)
+                            .toCommandSender(sender);
                     return true;
                 }
                 case "update" -> {
@@ -93,7 +97,8 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                     boolean successful = updater.download();
                     if (!successful)
                         return true;
-                    BlobMessage message = BlobLibMessageAPI.getInstance().getMessage("BlobLib.Updater-Successful");
+                    BlobMessage message = BlobLibMessageAPI.getInstance()
+                            .getMessage("BlobLib.Updater-Successful", sender);
                     if (isPlugin) {
                         message.modder()
                                 .replace("%randomColor%", main.getColorManager().randomColor().toString())
@@ -112,11 +117,13 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                 }
                 case "download" -> {
                     if (length < 2) {
-                        BlobLibMessageAPI.getInstance().getMessage("BlobLib.Download-Usage")
+                        BlobLibMessageAPI.getInstance()
+                                .getMessage("BlobLib.Download-Usage", sender)
                                 .toCommandSender(sender);
                         return true;
                     } else if (length < 3) {
-                        BlobLibMessageAPI.getInstance().getMessage("BlobLib.Download-GitHub-Usage")
+                        BlobLibMessageAPI.getInstance()
+                                .getMessage("BlobLib.Download-GitHub-Usage", sender)
                                 .toCommandSender(sender);
                         return true;
                     } else {
@@ -128,7 +135,8 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                         String input = args[2];
                         String[] split = input.split("/");
                         if (split.length != 2) {
-                            BlobLibMessageAPI.getInstance().getMessage("BlobLib.Download-GitHub-Usage")
+                            BlobLibMessageAPI.getInstance()
+                                    .getMessage("BlobLib.Download-GitHub-Usage", sender)
                                     .toCommandSender(sender);
                             return true;
                         }
@@ -137,7 +145,8 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                         RepositoryDownload download = downloadGitHub(owner, repo);
                         boolean successful = download.successful();
                         if (successful)
-                            BlobLibMessageAPI.getInstance().getMessage("BlobLib.Download-GitHub-Successful")
+                            BlobLibMessageAPI.getInstance()
+                                    .getMessage("BlobLib.Download-GitHub-Successful", sender)
                                     .modder()
                                     .replace("%randomColor%", main.getColorManager().randomColor().toString())
                                     .replace("%fileName%", download.fileName())
@@ -146,12 +155,12 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                         else {
                             DownloadError error = download.error();
                             switch (error) {
-                                case NO_CONNECTION ->
-                                        BlobLibMessageAPI.getInstance().getMessage("BlobLib.No-Connection")
-                                                .toCommandSender(sender);
-                                case REPO_NOT_FOUND ->
-                                        BlobLibMessageAPI.getInstance().getMessage("BlobLib.Repository-Not-Found")
-                                                .toCommandSender(sender);
+                                case NO_CONNECTION -> BlobLibMessageAPI.getInstance()
+                                        .getMessage("BlobLib.No-Connection", sender)
+                                        .toCommandSender(sender);
+                                case REPO_NOT_FOUND -> BlobLibMessageAPI.getInstance()
+                                        .getMessage("BlobLib.Repository-Not-Found", sender)
+                                        .toCommandSender(sender);
                                 default -> sender.sendMessage(ChatColor.RED + "Could not download file");
                             }
                         }
