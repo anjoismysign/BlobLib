@@ -1,7 +1,6 @@
 package us.mytheria.bloblib.entities.currency;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -9,8 +8,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public class EconomyPHExpansion<T extends WalletOwner> extends PlaceholderExpansion {
+    private static final Pattern pattern = Pattern.compile("^.");
+
     private final WalletOwnerManager<T> ownerManager;
 
     public EconomyPHExpansion(WalletOwnerManager<T> ownerManager) {
@@ -65,7 +67,10 @@ public class EconomyPHExpansion<T extends WalletOwner> extends PlaceholderExpans
                         displayName = currency.getDisplayName();
                     else
                         displayName = currency.getDisplayName(player);
-                    displayName = StringUtils.capitalize(displayName);
+                    displayName = pattern
+                            .matcher(displayName)
+                            .replaceFirst(m -> m.group().toUpperCase());
+                    return displayName;
                 }
                 default -> {
                     return "Invalid sub-identifier: " + subIdentifier;
