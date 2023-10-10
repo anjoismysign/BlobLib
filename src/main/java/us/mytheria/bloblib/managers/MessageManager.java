@@ -132,24 +132,14 @@ public class MessageManager {
         return true;
     }
 
-    /**
-     * Loads a YamlConfiguration from a file and registers it to the plugin.
-     * Will return false if the plugin has not been loaded.
-     * Will print duplicates.
-     * NOTE: Printing duplicates runs for each time you call this method!
-     *
-     * @param file   The file to load
-     * @param plugin The plugin to register the messages to
-     * @return Whether the plugin has been loaded
-     */
-    public static boolean loadAndRegisterYamlConfiguration(File file, BlobPlugin plugin) {
+    public static void continueLoadingMessages(BlobPlugin plugin, boolean warnDuplicates, File... files) {
         MessageManager manager = BlobLib.getInstance().getMessageManager();
-        if (!manager.pluginMessages.containsKey(plugin.getName()))
-            return false;
-        manager.loadYamlConfiguration(file, plugin);
-        manager.duplicates.forEach((key, value) -> BlobLib.getAnjoLogger()
-                .log("Duplicate BlobMessage: '" + key + "' (found " + value + " instances)"));
-        return true;
+        manager.duplicates.clear();
+        for (File file : files)
+            manager.loadYamlConfiguration(file, plugin);
+        if (warnDuplicates)
+            manager.duplicates.forEach((key, value) -> plugin.getAnjoLogger()
+                    .log("Duplicate BlobMessage: '" + key + "' (found " + value + " instances)"));
     }
 
     private void addDuplicate(String key) {
@@ -172,8 +162,11 @@ public class MessageManager {
     public ReferenceBlobMessage getMessage(String key, String locale) {
         Map<String, SerialBlobMessage> localeMap = locales.get(locale);
         if (localeMap == null)
+            localeMap = locales.get("en_us");
+        SerialBlobMessage message = localeMap.get(key);
+        if (message == null)
             return null;
-        return new ReferenceBlobMessage(localeMap.get(key), key);
+        return new ReferenceBlobMessage(message, key);
     }
 
     public void playAndSend(Player player, String key) {

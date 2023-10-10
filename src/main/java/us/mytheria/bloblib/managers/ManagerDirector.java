@@ -1,7 +1,6 @@
 package us.mytheria.bloblib.managers;
 
 import me.anjoismysign.anjo.logger.Logger;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -17,11 +16,7 @@ import us.mytheria.bloblib.entities.proxy.BlobProxifier;
 import us.mytheria.bloblib.utilities.ResourceUtil;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -448,209 +443,232 @@ public abstract class ManagerDirector implements IManagerDirector {
     /**
      * Will detach an embedded file/asset from the plugin jar to
      * the corresponding directory.
-     * It won't replace the file if it already exists.
+     * If file extension is '.yml', it won't replace the file if it already exists.
      * If file does not exist, it will create it and then copy the
      * embedded file/asset to it.
+     * Allows custom output directory based on fileName.
+     * "detachAsset("es_es/lang.yml", false, new File("plugins"))"
+     * Would detach the file to "plugins/es_es/lang.yml".
      *
      * @param fileName The name of the file to detach. Needs to include the extension.
      * @param debug    Whether to print debug messages
      * @param path     The path to the directory
      * @return The ManagerDirector instance for method chaining
      */
-    public ManagerDirector detachAsset(String fileName, boolean debug, File path) {
+    public FileDetachment detachAsset(String fileName, boolean debug, File path) {
         Logger logger = getPlugin().getAnjoLogger();
+        String[] split = fileName.split("/");
+        String original = fileName;
+        if (split.length > 1) {
+            String end = split[split.length - 1];
+            path = new File(path + "/" + fileName.replace(end, ""));
+            fileName = end;
+        }
         File file = new File(path + "/" + fileName);
         boolean successful = false;
-        String extenstion = FilenameUtils.getExtension(fileName);
-        if (extenstion.equals("yml")) {
-            if (!file.exists()) {
-                try {
-                    file.createNewFile();
-                    successful = true;
-                } catch (IOException e) {
-                    if (debug)
-                        logger.debug(" asset " + fileName + " was not detached");
-                    e.printStackTrace();
-                    return this;
-                }
-            }
-            ResourceUtil.updateYml(path, "/temp" + fileName + ".yml", fileName + ".yml", file, plugin);
-            successful = MessageManager.loadAndRegisterYamlConfiguration(file, plugin);
+        String extension = FilenameUtils.getExtension(fileName);
+        boolean isFresh = !file.exists();
+        if (extension.equals("yml")) {
+            blobFileManager.updateYAML(file, original);
         } else {
             if (!file.exists())
                 successful = true;
-            ResourceUtil.moveResource(file, plugin.getResource(fileName));
+            ResourceUtil.moveResource(file, plugin.getResource(original));
         }
         if (debug && successful)
-            logger.debug(" asset " + fileName + ".yml successfully detached");
-        return this;
+            logger.debug(" asset " + original + " successfully detached");
+        return new FileDetachment(file, isFresh);
     }
 
-    /**
-     * Will detach an embedded BlobMessage file/asset from the plugin jar to
-     * the corresponding directory in the plugin data folder.
-     *
-     * @param fileName The name of the file to detach
-     * @param debug    Whether to print debug messages
-     * @return The ManagerDirector instance for method chaining
-     */
-    public ManagerDirector detachMessageAsset(String fileName, boolean debug) {
-        File path = getRealFileManager().messagesDirectory();
-        return detachAsset(fileName + ".yml", debug, path);
-    }
-
-    /**
-     * Will detach an embedded BlobMessage file/asset from the plugin jar to
-     * the corresponding directory in the plugin data folder.
-     * Will not print debug messages.
-     *
-     * @param fileName The name of the file to detach
-     * @return The ManagerDirector instance for method chaining
-     */
-    public ManagerDirector detachMessageAsset(String fileName) {
-        return detachMessageAsset(fileName, false);
-    }
-
-    /**
-     * Will detach an embedded BlobSound file/asset from the plugin jar to
-     * the corresponding directory in the plugin data folder.
-     *
-     * @param fileName The name of the file to detach
-     * @param debug    Whether to print debug messages
-     * @return The ManagerDirector instance for method chaining
-     */
-    public ManagerDirector detachSoundAsset(String fileName, boolean debug) {
-        File path = getRealFileManager().soundsDirectory();
-        return detachAsset(fileName + ".yml", debug, path);
-    }
-
-    /**
-     * Will detach an embedded BlobSound file/asset from the plugin jar to
-     * the corresponding directory in the plugin data folder.
-     * Will not print debug messages.
-     *
-     * @param fileName The name of the file to detach
-     * @return The ManagerDirector instance for method chaining
-     */
-    public ManagerDirector detachSoundAsset(String fileName) {
-        return detachSoundAsset(fileName, false);
-    }
-
-    /**
-     * Will detach an embedded Inventory file/asset from the plugin jar to
-     * the corresponding directory in the plugin data folder.
-     *
-     * @param fileName The name of the file to detach
-     * @param debug    Whether to print debug messages
-     * @return The ManagerDirector instance for method chaining
-     */
-    public ManagerDirector registerAndUpdateBlobInventory(String fileName, boolean debug) {
-        File path = getRealFileManager().inventoriesDirectory();
-        File file = new File(path + "/" + fileName + ".yml");
-        if (!blobFileManager.updateYAML(file))
-            return this;
-        InventoryManager.continueLoadingBlobInventories(plugin, file);
-        if (debug)
-            getPlugin().getAnjoLogger().debug(" inventory asset " + fileName + ".yml successfully registered");
-        return this;
-    }
-
-    /**
-     * Will detach an embedded Inventory file/asset from the plugin jar to
-     * the corresponding directory in the plugin data folder.
-     * Will not print debug messages.
-     *
-     * @param fileName The name of the file to detach
-     * @return The ManagerDirector instance for method chaining
-     */
-    public ManagerDirector registerAndUpdateBlobInventory(String fileName) {
-        return registerAndUpdateBlobInventory(fileName, false);
-    }
-
-    /**
-     * Will detach an embedded Inventory file/asset from the plugin jar to
-     * the corresponding directory in the plugin data folder.
-     *
-     * @param fileName The name of the file to detach
-     * @param debug    Whether to print debug messages
-     * @return The ManagerDirector instance for method chaining
-     */
-    public ManagerDirector registerAndUpdateMetaBlobInventory(String fileName, boolean debug) {
-        File path = getRealFileManager().metaInventoriesDirectory();
-        File file = new File(path + "/" + fileName + ".yml");
-        if (!blobFileManager.updateYAML(file))
-            return this;
-        InventoryManager.continueLoadingMetaInventories(plugin, file);
-        if (debug)
-            getPlugin().getAnjoLogger().debug(" inventory asset " + fileName + ".yml successfully registered");
-        return this;
-    }
-
-    /**
-     * Will detach an embedded Inventory file/asset from the plugin jar to
-     * the corresponding directory in the plugin data folder.
-     * Will not print debug messages.
-     *
-     * @param fileName The name of the file to detach
-     * @return The ManagerDirector instance for method chaining
-     */
-    public ManagerDirector registerAndUpdateMetaBlobInventory(String fileName) {
-        return registerAndUpdateMetaBlobInventory(fileName, false);
-    }
-
-    private ManagerDirector registerAsset(String fileName, boolean debug,
-                                          File path, String type) {
-        BlobPlugin plugin = getPlugin();
-        fileName = fileName + ".yml";
-        File file = new File(path + "/" + fileName);
-        if (file.exists()) {
-            if (debug)
-                getPlugin().getAnjoLogger().debug(" " + type + " asset " +
-                        fileName + ".yml was not registered, already exists");
-            return this;
+    private String[] addYml(String... fileNames) {
+        for (int i = 0; i < fileNames.length; i++) {
+            fileNames[i] = fileNames[i] + ".yml";
         }
-        try {
-            FileUtils.copyToFile(plugin.getResource(fileName), file);
-            if (debug)
-                getPlugin().getAnjoLogger().debug(" " + type + " asset " +
-                        fileName + ".yml successfully registered");
-            return this;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return this;
+        return fileNames;
+    }
+
+    private File[] freshFiles(boolean debug, File path, String... fileNames) {
+        List<File> files = new ArrayList<>();
+        for (String fileName : fileNames) {
+            FileDetachment detachment = detachAsset(fileName, debug, path);
+            if (detachment.isFresh())
+                files.add(detachment.file());
         }
+        return files.toArray(new File[0]);
     }
 
-    public ManagerDirector registerMetaBlobInventory(String fileName, boolean debug) {
-        return registerAsset(fileName, debug, getRealFileManager().metaInventoriesDirectory(), "inventory");
+    /**
+     * Will detach all MetaInventories provided.
+     * If they already exist, they won't be replaced.
+     *
+     * @param debug     Whether to print debug messages
+     * @param fileNames The names of the files to detach. Needs to include the extension.
+     * @return The ManagerDirector instance for method chaining
+     */
+    public ManagerDirector registerMetaBlobInventory(boolean debug, String... fileNames) {
+        String[] yaml = addYml(fileNames);
+        File[] freshFiles = freshFiles(debug, getRealFileManager().metaInventoriesDirectory(), yaml);
+        InventoryManager.continueLoadingMetaInventories(plugin, freshFiles);
+        if (debug)
+            getPlugin().getAnjoLogger().debug(" inventory asset " + Arrays.toString(fileNames) + " successfully registered");
+        return this;
     }
 
-    public ManagerDirector registerMetaBlobInventory(String fileName) {
-        return registerMetaBlobInventory(fileName, false);
+    /**
+     * Will detach all MetaInventories provided.
+     * If they already exist, they won't be replaced.
+     * It won't print debug messages.
+     *
+     * @param fileNames The names of the files to detach. Needs to include the extension.
+     * @return The ManagerDirector instance for method chaining
+     */
+    public ManagerDirector registerMetaBlobInventory(String... fileNames) {
+        return registerMetaBlobInventory(false, fileNames);
     }
 
-    public ManagerDirector registerBlobInventory(String fileName, boolean debug) {
-        return registerAsset(fileName, debug, getRealFileManager().inventoriesDirectory(), "inventory");
+    /**
+     * Will detach all BlobInventories provided.
+     * If they already exist, they won't be replaced.
+     *
+     * @param debug     Whether to print debug messages
+     * @param fileNames The names of the files to detach. Needs to include the extension.
+     * @return The ManagerDirector instance for method chaining
+     */
+    public ManagerDirector registerBlobInventory(boolean debug, String... fileNames) {
+        String[] yaml = addYml(fileNames);
+        File[] freshFiles = freshFiles(debug, getRealFileManager().inventoriesDirectory(), yaml);
+        InventoryManager.continueLoadingBlobInventories(plugin, freshFiles);
+        if (debug)
+            getPlugin().getAnjoLogger().debug(" inventory asset " + Arrays.toString(fileNames) + ".yml successfully registered");
+        return this;
     }
 
-    public ManagerDirector registerBlobInventory(String fileName) {
-        return registerBlobInventory(fileName, false);
+    /**
+     * Will detach all BlobInventories provided.
+     * If they already exist, they won't be replaced.
+     * It won't print debug messages.
+     *
+     * @param fileNames The names of the files to detach. Needs to include the extension.
+     * @return The ManagerDirector instance for method chaining
+     */
+    public ManagerDirector registerBlobInventory(String... fileNames) {
+        return registerBlobInventory(false, fileNames);
     }
 
-    public ManagerDirector registerBlobMessage(String fileName, boolean debug) {
-        return registerAsset(fileName, debug, getRealFileManager().messagesDirectory(), "message");
+    /**
+     * Will detach all BlobMessages provided.
+     * If they already exist, they won't be replaced.
+     *
+     * @param debug     Whether to print debug messages
+     * @param fileNames The names of the files to detach. Needs to include the extension.
+     * @return The ManagerDirector instance for method chaining
+     */
+    public ManagerDirector registerBlobMessage(boolean debug, String... fileNames) {
+        String[] yaml = addYml(fileNames);
+        File[] freshFiles = freshFiles(debug, getRealFileManager().messagesDirectory(), yaml);
+        MessageManager.continueLoadingMessages(plugin, true, freshFiles);
+        if (debug)
+            getPlugin().getAnjoLogger().debug(" message asset " + Arrays.toString(fileNames) + " successfully registered");
+        return this;
     }
 
-    public ManagerDirector registerBlobMessage(String fileName) {
-        return registerBlobMessage(fileName, false);
+    /**
+     * Will detach all BlobMessages provided.
+     * If they already exist, they won't be replaced.
+     * It won't print debug messages.
+     *
+     * @param fileNames The names of the files to detach. Needs to include the extension.
+     * @return The ManagerDirector instance for method chaining
+     */
+    public ManagerDirector registerBlobMessage(String... fileNames) {
+        return registerBlobMessage(false, fileNames);
     }
 
-    public ManagerDirector registerBlobSound(String fileName, boolean debug) {
-        return registerAsset(fileName, debug, getRealFileManager().soundsDirectory(), "sound");
+    /**
+     * Will detach all BlobSounds provided.
+     * If they already exist, they won't be replaced.
+     *
+     * @param debug     Whether to print debug messages
+     * @param fileNames The names of the files to detach. Needs to include the extension.
+     * @return The ManagerDirector instance for method chaining
+     */
+    public ManagerDirector registerBlobSound(boolean debug, String... fileNames) {
+        String[] yaml = addYml(fileNames);
+        File[] freshFiles = freshFiles(debug, getRealFileManager().soundsDirectory(), yaml);
+        SoundManager.continueLoadingSounds(plugin, true, freshFiles);
+        if (debug)
+            getPlugin().getAnjoLogger().debug(" sound asset " + Arrays.toString(fileNames) + " successfully registered");
+        return this;
     }
 
-    public ManagerDirector registerBlobSound(String fileName) {
-        return registerBlobSound(fileName, false);
+    /**
+     * Will detach all BlobSounds provided.
+     * If they already exist, they won't be replaced.
+     * It won't print debug messages.
+     *
+     * @param fileNames The names of the files to detach. Needs to include the extension.
+     * @return The ManagerDirector instance for method chaining
+     */
+    public ManagerDirector registerBlobSound(String... fileNames) {
+        return registerBlobSound(false, fileNames);
+    }
+
+    /**
+     * Will detach all TranslatableBlocks provided.
+     * If they already exist, they won't be replaced.
+     *
+     * @param debug     Whether to print debug messages
+     * @param fileNames The names of the files to detach. Needs to include the extension.
+     * @return The ManagerDirector instance for method chaining
+     */
+    public ManagerDirector registerTranslatableBlock(boolean debug, String... fileNames) {
+        String[] yaml = addYml(fileNames);
+        File[] freshFiles = freshFiles(debug, getRealFileManager().translatableBlocksDirectory(), yaml);
+        TranslatableManager.continueLoadingBlocks(plugin, true, freshFiles);
+        if (debug)
+            getPlugin().getAnjoLogger().debug(" translatable block asset " + Arrays.toString(fileNames) + " successfully registered");
+        return this;
+    }
+
+    /**
+     * Will detach all TranslatableBlocks provided.
+     * If they already exist, they won't be replaced.
+     * It won't print debug messages.
+     *
+     * @param fileNames The names of the files to detach. Needs to include the extension.
+     * @return The ManagerDirector instance for method chaining
+     */
+    public ManagerDirector registerTranslatableBlock(String... fileNames) {
+        return registerTranslatableBlock(false, fileNames);
+    }
+
+    /**
+     * Will detach all TranslatableSnippets provided.
+     * If they already exist, they won't be replaced.
+     *
+     * @param debug     Whether to print debug messages
+     * @param fileNames The names of the files to detach. Needs to include the extension.
+     * @return The ManagerDirector instance for method chaining
+     */
+    public ManagerDirector registerTranslatableSnippet(boolean debug, String... fileNames) {
+        String[] yaml = addYml(fileNames);
+        File[] freshFiles = freshFiles(debug, getRealFileManager().translatableSnippetsDirectory(), yaml);
+        TranslatableManager.continueLoadingSnippets(plugin, true, freshFiles);
+        if (debug)
+            getPlugin().getAnjoLogger().debug(" translatable block asset " + Arrays.toString(fileNames) + " successfully registered");
+        return this;
+    }
+
+    /**
+     * Will detach all TranslatableSnippets provided.
+     * If they already exist, they won't be replaced.
+     * It won't print debug messages.
+     *
+     * @param fileNames The names of the files to detach. Needs to include the extension.
+     * @return The ManagerDirector instance for method chaining
+     */
+    public ManagerDirector registerTranslatableSnippet(String... fileNames) {
+        return registerTranslatableSnippet(false, fileNames);
     }
 
     protected Set<Map.Entry<String, Manager>> getManagerEntry() {

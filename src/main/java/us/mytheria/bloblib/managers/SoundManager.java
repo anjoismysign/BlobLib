@@ -132,6 +132,16 @@ public class SoundManager {
         });
     }
 
+    public static void continueLoadingSounds(BlobPlugin plugin, boolean warnDuplicates, File... files) {
+        SoundManager manager = BlobLib.getInstance().getSoundManager();
+        manager.duplicates.clear();
+        for (File file : files)
+            manager.loadYamlConfiguration(plugin, file);
+        if (warnDuplicates)
+            manager.duplicates.forEach((key, value) -> plugin.getAnjoLogger()
+                    .log("Duplicate BlobSound: '" + key + "' (found " + value + " instances)"));
+    }
+
     private void addDuplicate(String key) {
         if (duplicates.containsKey(key))
             duplicates.put(key, duplicates.get(key) + 1);

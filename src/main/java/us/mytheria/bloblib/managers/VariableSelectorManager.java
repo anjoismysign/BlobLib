@@ -62,6 +62,10 @@ public class VariableSelectorManager implements Listener {
                 blobEditor.removeElement(player);
                 return;
             }
+            if (blobEditor.isReturnButton(slot)) {
+                blobEditor.processReturn();
+                return;
+            }
             return;
         }
         listener.setInputFromSlot(blobEditor, event.getRawSlot());
@@ -86,9 +90,11 @@ public class VariableSelectorManager implements Listener {
             }
             if (variableSelector.isPreviousPageButton(slot)) {
                 variableSelector.previousPage();
+                return;
             }
             if (variableSelector.isReturnButton(slot)) {
                 variableSelector.processReturn();
+                return;
             }
             return;
         }

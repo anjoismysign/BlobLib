@@ -119,12 +119,27 @@ public class BlobFileManager extends Manager implements IFileManager {
      * @return if it's a fresh file / was just created.
      */
     public boolean updateYAML(File file) {
+        return updateYAML(file, null);
+    }
+
+    /**
+     * It will auto update it with the most recent
+     * version that's embedded in the plugin jar.
+     *
+     * @param file the YAML file to update
+     * @param path the path to the embedded file
+     * @return if it's a fresh file / was just created.
+     */
+    public boolean updateYAML(File file, String path) {
+        if (path == null)
+            path = file.getName();
         String fileName = FilenameUtils.removeExtension(file.getName());
+        file.getParentFile().mkdirs();
         try {
             boolean isFresh = file.createNewFile();
             ResourceUtil.updateYml(file.getParentFile(),
                     "/temp" + fileName + ".yml",
-                    fileName + ".yml", file, getPlugin());
+                    path, file, getPlugin());
             return isFresh;
         } catch (IOException e) {
             e.printStackTrace();

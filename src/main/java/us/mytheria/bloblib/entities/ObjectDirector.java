@@ -11,6 +11,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.api.BlobLibMessageAPI;
+import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
 import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
 import us.mytheria.bloblib.itemstack.ItemStackBuilder;
 import us.mytheria.bloblib.managers.Manager;
@@ -369,7 +370,8 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
             String key = object.getKey();
             ItemStackBuilder builder = ItemStackBuilder.build(Material.COMMAND_BLOCK);
             builder.displayName(key);
-            builder.lore();
+            builder.lore(BlobLibTranslatableAPI.getInstance()
+                    .getTranslatableBlock("BlobLib.Remove-Element", player).get());
             if (ItemStack.class.isInstance(object.getClass())) {
                 ItemStack itemStack = (ItemStack) object;
                 builder.displayName(ItemStackUtil.display(itemStack));

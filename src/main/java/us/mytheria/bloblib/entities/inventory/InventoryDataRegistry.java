@@ -19,7 +19,7 @@ public class InventoryDataRegistry<T extends InventoryButton> {
     @NotNull
     private final String defaultLocale, key;
     private final Map<String, InventoryBuilderCarrier<T>> carriers;
-    private final Map<String, Consumer<InventoryClickEvent>> clickEvents;
+    private final Map<String, Consumer<InventoryClickEvent>> buttonClickEvents;
 
     /**
      * Will instantiate a new InventoryDataRegistry with the specified default locale.
@@ -39,7 +39,7 @@ public class InventoryDataRegistry<T extends InventoryButton> {
         this.defaultLocale = defaultLocale;
         this.key = key;
         this.carriers = new HashMap<>();
-        this.clickEvents = new HashMap<>();
+        this.buttonClickEvents = new HashMap<>();
     }
 
     /**
@@ -51,9 +51,9 @@ public class InventoryDataRegistry<T extends InventoryButton> {
     public boolean process(@NotNull InventoryBuilderCarrier<T> carrier) {
         Objects.requireNonNull(carrier, "carrier cannot be null");
         String locale = carrier.locale();
-        if (this.carriers.containsKey(locale))
+        if (carriers.containsKey(locale))
             return false;
-        this.carriers.put(locale, carrier);
+        carriers.put(locale, carrier);
         return true;
     }
 
@@ -93,7 +93,7 @@ public class InventoryDataRegistry<T extends InventoryButton> {
      * @param event  the click event
      */
     public void onClick(String button, Consumer<InventoryClickEvent> event) {
-        this.clickEvents.put(button, event);
+        this.buttonClickEvents.put(button, event);
     }
 
     /**
@@ -103,7 +103,7 @@ public class InventoryDataRegistry<T extends InventoryButton> {
      * @param event  the click event
      */
     public void processClickEvent(String button, InventoryClickEvent event) {
-        Consumer<InventoryClickEvent> clickEvent = this.clickEvents.get(button);
+        Consumer<InventoryClickEvent> clickEvent = this.buttonClickEvents.get(button);
         if (clickEvent == null)
             return;
         clickEvent.accept(event);

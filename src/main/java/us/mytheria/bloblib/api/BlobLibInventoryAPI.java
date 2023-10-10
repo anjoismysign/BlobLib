@@ -338,6 +338,38 @@ public class BlobLibInventoryAPI {
      * Will make Player to select from a list of elements.
      * The selector will be placed in the inventory at the specified buttonRangeKey.
      * The inventory will open automatically.
+     * Clicking the return button will close the selector inventory.
+     *
+     * @param blobInventoryKey the key of the BlobInventory
+     * @param player           the player
+     * @param buttonRangeKey   the button from the BlobInventory which contains the slots (per page) into which the selector will place the elements
+     * @param dataType         the data type of the selector
+     * @param selectorList     the list of elements to select from
+     * @param onSelect         what's consumed when an element is selected
+     * @param display          the function to display an element, needs to return the ItemStack to display
+     * @param <T>              the type of the selector
+     * @return the selector
+     */
+    public <T> BlobSelector<T> customSelector(@NotNull String blobInventoryKey,
+                                              @NotNull Player player,
+                                              @NotNull String buttonRangeKey,
+                                              @NotNull String dataType,
+                                              @NotNull Supplier<List<T>> selectorList,
+                                              @NotNull Consumer<T> onSelect,
+                                              @Nullable Function<T, ItemStack> display) {
+        return customSelector(blobInventoryKey,
+                player,
+                buttonRangeKey,
+                dataType,
+                selectorList,
+                onSelect,
+                display, null);
+    }
+
+    /**
+     * Will make Player to select from a list of elements.
+     * The selector will be placed in the inventory at the specified buttonRangeKey.
+     * The inventory will open automatically.
      *
      * @param blobInventoryKey the key of the BlobInventory
      * @param player           the player
@@ -402,6 +434,48 @@ public class BlobLibInventoryAPI {
                 selectorList,
                 onSelect,
                 display, null);
+    }
+
+    /**
+     * Will allow player to edit a collection of elements.
+     * The editor will be placed in the inventory at the specified buttonRangeKey.
+     * The inventory will open automatically.
+     * Clicking the return button will close the editor inventory.
+     *
+     * @param blobInventoryKey the key of the BlobInventory
+     * @param player           the player
+     * @param buttonRangeKey   the button from the BlobInventory which contains the slots (per page) into which the editor will place the elements
+     * @param dataType         the data type of the editor
+     * @param addCollection    the collection of elements to add to
+     * @param onAdd            what's consumed when an element is added
+     * @param addDisplay       the function to display an element, needs to return the ItemStack to display
+     * @param viewCollection   the collection of elements to view
+     * @param removeDisplay    the function to display an element, needs to return the ItemStack to display
+     * @param onRemove         what's consumed when an element is removed
+     * @param <T>              the type of the editor
+     * @return the editor
+     */
+    @Nullable
+    public <T> BlobEditor<T> customEditor(@NotNull String blobInventoryKey,
+                                          @NotNull Player player,
+                                          @NotNull String buttonRangeKey,
+                                          @NotNull String dataType,
+                                          @NotNull Supplier<Collection<T>> addCollection,
+                                          @NotNull Consumer<T> onAdd,
+                                          @Nullable Function<T, ItemStack> addDisplay,
+                                          @NotNull Supplier<Collection<T>> viewCollection,
+                                          @NotNull Function<T, ItemStack> removeDisplay,
+                                          @NotNull Consumer<T> onRemove) {
+        return customEditor(blobInventoryKey,
+                player,
+                buttonRangeKey,
+                dataType,
+                addCollection,
+                onAdd,
+                addDisplay,
+                viewCollection,
+                removeDisplay,
+                onRemove, null);
     }
 
     /**
