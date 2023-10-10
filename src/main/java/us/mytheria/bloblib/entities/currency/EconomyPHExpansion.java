@@ -1,6 +1,7 @@
 package us.mytheria.bloblib.entities.currency;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -57,6 +58,14 @@ public class EconomyPHExpansion<T extends WalletOwner> extends PlaceholderExpans
                         return currency.getDisplayName();
                     else
                         return currency.getDisplayName(player);
+                }
+                case "capitalizeDisplayName" -> {
+                    String displayName;
+                    if (player == null)
+                        displayName = currency.getDisplayName();
+                    else
+                        displayName = currency.getDisplayName(player);
+                    displayName = StringUtils.capitalize(displayName);
                 }
                 default -> {
                     return "Invalid sub-identifier: " + subIdentifier;
