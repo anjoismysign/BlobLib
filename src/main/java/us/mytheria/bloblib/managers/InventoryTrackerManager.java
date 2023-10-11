@@ -78,8 +78,10 @@ public class InventoryTrackerManager implements Listener {
         InventoryTracker<?, ?> result = this.playerTracker.get(player.getUniqueId());
         if (result == null)
             return;
+        this.tracker.remove(result.getInventory().getInventory());
         String locale = event.getLocale();
         result.setLocale(locale);
+        this.tracker.put(result.getInventory().getInventory(), result);
     }
 
     @EventHandler
