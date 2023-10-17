@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.translatable.TranslatableBlock;
 import us.mytheria.bloblib.entities.translatable.TranslatableSnippet;
+import us.mytheria.bloblib.managers.BlobLibConfigManager;
 import us.mytheria.bloblib.managers.TranslatableManager;
 
 import java.util.Objects;
@@ -114,5 +115,17 @@ public class BlobLibTranslatableAPI {
                                                       @NotNull Player player) {
         Objects.requireNonNull(player);
         return getTranslatableManager().getSnippet(key, player.getLocale());
+    }
+
+    /**
+     * Will get the real locale from the locale.
+     *
+     * @param locale The locale to get the real locale from
+     * @return The real locale
+     */
+    @NotNull
+    public String getRealLocale(@NotNull String locale) {
+        Objects.requireNonNull(locale);
+        return BlobLibConfigManager.getInstance().getRealLocale(locale);
     }
 }

@@ -2,6 +2,8 @@ package us.mytheria.bloblib.entities;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
 
 import java.util.List;
@@ -20,6 +22,31 @@ public record ListenersSection(ConfigurationSection tinyListeners,
                                ConfigurationSection complexListeners,
                                ConfigurationSection simpleListeners,
                                FileConfiguration root) {
+
+    /**
+     * Will create a ListenersSection from the configuration of the plugin.
+     *
+     * @param plugin Plugin to get the configuration from.
+     * @return ListenersSection.
+     */
+    @NotNull
+    public static ListenersSection of(JavaPlugin plugin) {
+        FileConfiguration configuration = plugin.getConfig();
+        configuration.options().copyDefaults(true);
+        ConfigurationSection listeners = configuration.getConfigurationSection("Listeners");
+        if (!listeners.isConfigurationSection("TinyListeners"))
+            listeners.createSection("TinyListeners");
+        if (!listeners.isConfigurationSection("ComplexListeners"))
+            listeners.createSection("ComplexListeners");
+        if (!listeners.isConfigurationSection("SimpleListeners"))
+            listeners.createSection("SimpleListeners");
+        ConfigurationSection tinyListeners = listeners.getConfigurationSection("TinyListeners");
+        ConfigurationSection complexListeners = listeners.getConfigurationSection("ComplexListeners");
+        ConfigurationSection simpleListeners = listeners.getConfigurationSection("SimpleListeners");
+        plugin.saveConfig();
+        return new ListenersSection(tinyListeners, complexListeners, simpleListeners, configuration);
+    }
+
     /**
      * Gets a tiny event listener from the tiny listeners section.
      *

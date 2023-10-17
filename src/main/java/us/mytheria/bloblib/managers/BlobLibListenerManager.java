@@ -3,7 +3,6 @@ package us.mytheria.bloblib.managers;
 import us.mytheria.bloblib.listeners.DisplayUnriding;
 
 public class BlobLibListenerManager {
-    // Singleton
     private static BlobLibListenerManager instance;
 
     public static BlobLibListenerManager getInstance(BlobLibConfigManager configManager) {
@@ -18,7 +17,6 @@ public class BlobLibListenerManager {
     public static BlobLibListenerManager getInstance() {
         return getInstance(null);
     }
-    // Initium
 
     private final DisplayUnriding displayUnriding;
 

@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
+import us.mytheria.bloblib.managers.BlobLibConfigManager;
 import us.mytheria.bloblib.managers.MessageManager;
 
 import java.io.File;
@@ -110,7 +111,8 @@ public class BlobLibMessageAPI {
     @Nullable
     public ReferenceBlobMessage getMessage(@NotNull String key, @NotNull CommandSender sender) {
         Objects.requireNonNull(sender);
-        return getMessageManager().getMessage(key, sender instanceof Player ? ((Player) sender).getLocale() : "en_us");
+        return getMessageManager().getMessage(key, sender instanceof Player ? ((Player) sender).getLocale() :
+                BlobLibConfigManager.getInstance().getConsoleLocale());
     }
 
     /**

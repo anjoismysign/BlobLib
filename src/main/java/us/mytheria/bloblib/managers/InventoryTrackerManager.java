@@ -10,6 +10,7 @@ import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
 import us.mytheria.bloblib.entities.inventory.*;
 
 import java.util.HashMap;
@@ -40,6 +41,7 @@ public class InventoryTrackerManager implements Listener {
     public BlobInventoryTracker trackInventory(@NotNull Player player, @NotNull String key) {
         Objects.requireNonNull(player, "player cannot be null");
         String locale = player.getLocale();
+        locale = BlobLibTranslatableAPI.getInstance().getRealLocale(locale);
         InventoryDataRegistry<InventoryButton> registry = plugin.getInventoryManager().getInventoryDataRegistry(key);
         if (registry == null)
             return null;
@@ -61,6 +63,7 @@ public class InventoryTrackerManager implements Listener {
     public MetaBlobInventoryTracker trackMetaInventory(@NotNull Player player, @NotNull String key) {
         Objects.requireNonNull(player, "player cannot be null");
         String locale = player.getLocale();
+        locale = BlobLibTranslatableAPI.getInstance().getRealLocale(locale);
         InventoryDataRegistry<MetaInventoryButton> registry = plugin.getInventoryManager()
                 .getMetaInventoryDataRegistry(key);
         if (registry == null)

@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
 import us.mytheria.bloblib.entities.BlobMessageReader;
 import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
 import us.mytheria.bloblib.entities.message.SerialBlobMessage;
@@ -160,6 +161,7 @@ public class MessageManager {
 
     @Nullable
     public ReferenceBlobMessage getMessage(String key, String locale) {
+        locale = BlobLibTranslatableAPI.getInstance().getRealLocale(locale);
         Map<String, SerialBlobMessage> localeMap = locales.get(locale);
         if (localeMap == null)
             localeMap = locales.get("en_us");
@@ -170,7 +172,9 @@ public class MessageManager {
     }
 
     public void playAndSend(Player player, String key) {
-        ReferenceBlobMessage message = getMessage(key, player.getLocale());
+        String locale = player.getLocale();
+        locale = BlobLibTranslatableAPI.getInstance().getRealLocale(locale);
+        ReferenceBlobMessage message = getMessage(key, locale);
         if (message == null)
             throw new NullPointerException("Message '" + key + "' does not exist!");
         message.handle(player);
@@ -183,7 +187,9 @@ public class MessageManager {
      */
     @Deprecated
     public void send(Player player, String key) {
-        ReferenceBlobMessage message = getMessage(key, player.getLocale());
+        String locale = player.getLocale();
+        locale = BlobLibTranslatableAPI.getInstance().getRealLocale(locale);
+        ReferenceBlobMessage message = getMessage(key, locale);
         if (message == null)
             throw new NullPointerException("Message '" + key + "' does not exist!");
         message.send(player);

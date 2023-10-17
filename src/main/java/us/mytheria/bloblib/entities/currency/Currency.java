@@ -11,6 +11,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
 import us.mytheria.bloblib.entities.BlobObject;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
 import us.mytheria.bloblib.itemstack.ItemStackReader;
@@ -205,7 +206,9 @@ public class Currency implements BlobObject {
      */
     @NotNull
     public String getDisplayName(@NotNull Player player) {
-        return getDisplayName(player.getLocale());
+        String locale = player.getLocale();
+        locale = BlobLibTranslatableAPI.getInstance().getRealLocale(locale);
+        return getDisplayName(locale);
     }
 
     /**

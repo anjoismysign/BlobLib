@@ -5,6 +5,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
 import us.mytheria.bloblib.entities.IFileManager;
 import us.mytheria.bloblib.entities.translatable.TranslatableBlock;
 import us.mytheria.bloblib.entities.translatable.TranslatableReader;
@@ -263,6 +264,7 @@ public class TranslatableManager {
         TranslatableRegistry<TranslatableSnippet> registry = getSnippetRegistry(key);
         if (registry == null)
             return null;
+        locale = BlobLibTranslatableAPI.getInstance().getRealLocale(locale);
         TranslatableSnippet snippet = registry.get(locale);
         if (snippet == null)
             return registry.getDefault();
@@ -288,6 +290,7 @@ public class TranslatableManager {
         TranslatableRegistry<TranslatableBlock> registry = getBlockRegistry(key);
         if (registry == null)
             return null;
+        locale = BlobLibTranslatableAPI.getInstance().getRealLocale(locale);
         TranslatableBlock block = registry.get(locale);
         if (block == null)
             return registry.getDefault();

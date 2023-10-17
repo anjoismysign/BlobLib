@@ -5,6 +5,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
 import us.mytheria.bloblib.entities.IFileManager;
 import us.mytheria.bloblib.entities.inventory.*;
 
@@ -260,6 +261,7 @@ public class InventoryManager {
         InventoryDataRegistry<InventoryButton> registry = getInventoryDataRegistry(key);
         if (registry == null)
             return null;
+        locale = BlobLibTranslatableAPI.getInstance().getRealLocale(locale);
         return registry.get(locale);
     }
 
@@ -276,6 +278,7 @@ public class InventoryManager {
         InventoryBuilderCarrier<InventoryButton> carrier = getInventoryBuilderCarrier(key, locale);
         if (carrier == null)
             return null;
+        locale = BlobLibTranslatableAPI.getInstance().getRealLocale(locale);
         return BlobInventory.fromInventoryBuilderCarrier(carrier);
     }
 
@@ -292,6 +295,7 @@ public class InventoryManager {
         BlobInventory inventory = getInventory(key, locale);
         if (inventory == null)
             return null;
+        locale = BlobLibTranslatableAPI.getInstance().getRealLocale(locale);
         return inventory.copy();
     }
 
@@ -313,6 +317,7 @@ public class InventoryManager {
         InventoryDataRegistry<MetaInventoryButton> registry = getMetaInventoryDataRegistry(key);
         if (registry == null)
             return null;
+        locale = BlobLibTranslatableAPI.getInstance().getRealLocale(locale);
         return registry.get(locale);
     }
 
@@ -329,6 +334,7 @@ public class InventoryManager {
         InventoryBuilderCarrier<MetaInventoryButton> carrier = getMetaInventoryBuilderCarrier(key, locale);
         if (carrier == null)
             return null;
+        locale = BlobLibTranslatableAPI.getInstance().getRealLocale(locale);
         return MetaBlobInventory.fromInventoryBuilderCarrier(carrier);
     }
 
@@ -345,6 +351,7 @@ public class InventoryManager {
         MetaBlobInventory inventory = getMetaInventory(key, locale);
         if (inventory == null)
             return null;
+        locale = BlobLibTranslatableAPI.getInstance().getRealLocale(locale);
         return inventory.copy();
     }
 

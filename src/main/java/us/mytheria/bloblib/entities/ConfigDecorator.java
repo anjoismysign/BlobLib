@@ -2,15 +2,22 @@ package us.mytheria.bloblib.entities;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import us.mytheria.bloblib.managers.BlobPlugin;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 public class ConfigDecorator {
-    private final BlobPlugin plugin;
+    private final JavaPlugin plugin;
 
-    public ConfigDecorator(BlobPlugin plugin) {
+    public ConfigDecorator(JavaPlugin plugin) {
         this.plugin = plugin;
     }
 
+    /**
+     * Will reload and either create a section or return it if already exists
+     *
+     * @param path the path to the section
+     * @return the section
+     */
     public ConfigurationSection reloadAndGetSection(String path) {
         FileConfiguration root = plugin.getConfig();
         root.options().copyDefaults(true);
@@ -23,20 +30,13 @@ public class ConfigDecorator {
         return section;
     }
 
+    /**
+     * Will reload the config and return the listeners section.
+     *
+     * @return the listeners section
+     */
+    @NotNull
     public ListenersSection reloadAndGetListeners() {
-        FileConfiguration root = plugin.getConfig();
-        root.options().copyDefaults(true);
-        ConfigurationSection listeners = root.getConfigurationSection("Listeners");
-        if (!listeners.isConfigurationSection("TinyListeners"))
-            listeners.createSection("TinyListeners");
-        if (!listeners.isConfigurationSection("ComplexListeners"))
-            listeners.createSection("ComplexListeners");
-        if (!listeners.isConfigurationSection("SimpleListeners"))
-            listeners.createSection("SimpleListeners");
-        ConfigurationSection tinyListeners = listeners.getConfigurationSection("TinyListeners");
-        ConfigurationSection complexListeners = listeners.getConfigurationSection("ComplexListeners");
-        ConfigurationSection simpleListeners = listeners.getConfigurationSection("SimpleListeners");
-        plugin.saveConfig();
-        return new ListenersSection(tinyListeners, complexListeners, simpleListeners, root);
+        return ListenersSection.of(plugin);
     }
 }
