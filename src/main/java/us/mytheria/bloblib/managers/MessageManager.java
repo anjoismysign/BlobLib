@@ -163,7 +163,7 @@ public class MessageManager {
     public ReferenceBlobMessage getMessage(String key, String locale) {
         locale = BlobLibTranslatableAPI.getInstance().getRealLocale(locale);
         Map<String, SerialBlobMessage> localeMap = locales.get(locale);
-        if (localeMap == null)
+        if (localeMap == null || !localeMap.containsKey(key))
             localeMap = locales.get("en_us");
         SerialBlobMessage message = localeMap.get(key);
         if (message == null)
