@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.entities.message;
 
+import net.md_5.bungee.api.chat.ClickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -28,6 +29,14 @@ import java.util.function.Function;
  * plugins and even the same server administrator can use them.
  */
 public interface BlobMessage extends Localizable {
+    /**
+     * A click event that will be executed if BlobMessage has a chat message instance and is clicked.
+     *
+     * @return The click event. Null if there is no click event.
+     */
+    @Nullable
+    ClickEvent getClickEvent();
+
     /**
      * Will send the message to the player.
      *
@@ -148,6 +157,15 @@ public interface BlobMessage extends Localizable {
      */
     @NotNull
     BlobMessage modify(Function<String, String> function);
+
+    /**
+     * Will return a new BlobMessage with the click event set to the given click event.
+     *
+     * @param clickEvent The click event to set
+     * @return A new BlobMessage with the click event set to the given click event
+     */
+    @NotNull
+    BlobMessage onClick(ClickEvent clickEvent);
 
     @NotNull
     default BlobMessageModder<BlobMessage> modder() {

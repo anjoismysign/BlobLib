@@ -1,8 +1,13 @@
 package us.mytheria.bloblib.entities.message;
 
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.entities.translatable.BlobTranslatableSnippet;
 
 import java.util.function.Function;
@@ -15,17 +20,28 @@ public class BlobChatMessage extends SerialBlobMessage {
     /**
      * The chat message
      */
+    @Nullable
+    protected final String hover;
+    @NotNull
     protected final String chat;
 
     /**
      * Creates a new BlobChatMessage
      *
-     * @param message The chat message
-     * @param sound   The sound to play
+     * @param message    The chat message
+     * @param hover      The hover message
+     * @param sound      The sound to play
+     * @param locale     The locale to use
+     * @param clickEvent The click event to use
      */
-    public BlobChatMessage(String message, BlobSound sound, String locale) {
-        super(sound, locale);
+    public BlobChatMessage(@NotNull String message,
+                           @Nullable String hover,
+                           BlobSound sound,
+                           String locale,
+                           @Nullable ClickEvent clickEvent) {
+        super(sound, locale, clickEvent);
         this.chat = BlobTranslatableSnippet.PARSE(message, locale);
+        this.hover = hover == null ? null : BlobTranslatableSnippet.PARSE(hover, locale);
     }
 
     /**
@@ -35,7 +51,17 @@ public class BlobChatMessage extends SerialBlobMessage {
      */
     @Override
     public void send(Player player) {
-        player.sendMessage(chat);
+        if (hover == null)
+            player.sendMessage(chat);
+        else {
+            TextComponent component = new TextComponent(TextComponent.fromLegacyText(chat));
+            component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                    new Text(hover)));
+            ClickEvent clickEvent = getClickEvent();
+            if (clickEvent != null)
+                component.setClickEvent(clickEvent);
+            player.spigot().sendMessage(component);
+        }
     }
 
     /**
@@ -66,7 +92,16 @@ public class BlobChatMessage extends SerialBlobMessage {
      */
     @Override
     public @NotNull BlobChatMessage modify(Function<String, String> function) {
-        return new BlobChatMessage(function.apply(chat), getSound(),
-                getLocale());
+        return new BlobChatMessage(function.apply(chat),
+                hover == null ? null : function.apply(hover),
+                getSound(),
+                getLocale(),
+                getClickEvent());
+    }
+
+    @Override
+    @NotNull
+    public BlobChatMessage onClick(ClickEvent event) {
+        return new BlobChatMessage(chat, hover, getSound(), getLocale(), event);
     }
 }

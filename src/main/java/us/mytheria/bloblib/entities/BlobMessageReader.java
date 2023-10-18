@@ -53,9 +53,11 @@ public class BlobMessageReader {
             case "CHAT" -> {
                 if (!section.contains("Message"))
                     throw new IllegalArgumentException("'Message' is required for CHAT messages at " + section.getCurrentPath());
+                String hover = section.isString("Hover") ? TextColor.PARSE(section.getString("Hover")) : null;
                 return new BlobChatMessage(TextColor.PARSE(section.getString("Message")),
+                        hover,
                         sound.orElse(null),
-                        locale);
+                        locale, null);
             }
             case "ACTIONBAR_TITLE" -> {
                 if (!section.contains("Title"))
@@ -78,10 +80,12 @@ public class BlobMessageReader {
                     throw new IllegalArgumentException("'Chat' is required for CHAT_ACTIONBAR messages at " + section.getCurrentPath());
                 if (!section.contains("Actionbar"))
                     throw new IllegalArgumentException("'Actionbar' is required for CHAT_ACTIONBAR messages at " + section.getCurrentPath());
+                String hover = section.isString("Hover") ? TextColor.PARSE(section.getString("Hover")) : null;
                 return new BlobChatActionbarMessage(TextColor.PARSE(section.getString("Chat")),
+                        hover,
                         TextColor.PARSE(section.getString("Actionbar")),
                         sound.orElse(null),
-                        locale);
+                        locale, null);
             }
             case "CHAT_TITLE" -> {
                 if (!section.contains("Chat"))
@@ -90,14 +94,16 @@ public class BlobMessageReader {
                     throw new IllegalArgumentException("'Title' is required for CHAT_TITLE messages at " + section.getCurrentPath());
                 if (!section.contains("Subtitle"))
                     throw new IllegalArgumentException("'Subtitle' is required for CHAT_TITLE messages at " + section.getCurrentPath());
+                String hover = section.isString("Hover") ? TextColor.PARSE(section.getString("Hover")) : null;
                 int fadeIn = section.getInt("FadeIn", 10);
                 int stay = section.getInt("Stay", 40);
                 int fadeOut = section.getInt("FadeOut", 10);
                 return new BlobChatTitleMessage(TextColor.PARSE(section.getString("Chat")),
+                        hover,
                         TextColor.PARSE(section.getString("Title")),
                         TextColor.PARSE(section.getString("Subtitle")),
                         fadeIn, stay, fadeOut, sound.orElse(null),
-                        locale);
+                        locale, null);
             }
             case "CHAT_ACTIONBAR_TITLE" -> {
                 if (!section.contains("Chat"))
@@ -108,15 +114,17 @@ public class BlobMessageReader {
                     throw new IllegalArgumentException("'Title' is required for CHAT_ACTIONBAR_TITLE messages at " + section.getCurrentPath());
                 if (!section.contains("Subtitle"))
                     throw new IllegalArgumentException("'Subtitle' is required for CHAT_ACTIONBAR_TITLE messages at " + section.getCurrentPath());
+                String hover = section.isString("Hover") ? TextColor.PARSE(section.getString("Hover")) : null;
                 int fadeIn = section.getInt("FadeIn", 10);
                 int stay = section.getInt("Stay", 40);
                 int fadeOut = section.getInt("FadeOut", 10);
                 return new BlobChatActionbarTitleMessage(TextColor.PARSE(section.getString("Chat")),
+                        hover,
                         TextColor.PARSE(section.getString("Actionbar")),
                         TextColor.PARSE(section.getString("Title")),
                         TextColor.PARSE(section.getString("Subtitle")),
                         fadeIn, stay, fadeOut, sound.orElse(null),
-                        locale);
+                        locale, null);
             }
             default ->
                     throw new IllegalArgumentException("Invalid message type: '" + type + "' at " + section.getCurrentPath());

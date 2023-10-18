@@ -1,10 +1,12 @@
 package us.mytheria.bloblib.entities.message;
 
 import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.entities.translatable.BlobTranslatableSnippet;
 
 import java.util.function.Function;
@@ -19,13 +21,20 @@ public class BlobChatActionbarMessage extends BlobChatMessage {
     /**
      * Creates a new BlobChatActionbarMessage
      *
-     * @param chat      The chat message
-     * @param actionbar The actionbar message
-     * @param sound     The sound to play
+     * @param chat       The chat message
+     * @param hover      The hover message
+     * @param actionbar  The actionbar message
+     * @param sound      The sound to play
+     * @param locale     The locale to use
+     * @param clickEvent The click event to use
      */
-    public BlobChatActionbarMessage(String chat, String actionbar, BlobSound sound,
-                                    String locale) {
-        super(chat, sound, locale);
+    public BlobChatActionbarMessage(@NotNull String chat,
+                                    @Nullable String hover,
+                                    @NotNull String actionbar,
+                                    @Nullable BlobSound sound,
+                                    String locale,
+                                    @Nullable ClickEvent clickEvent) {
+        super(chat, hover, sound, locale, clickEvent);
         this.actionbar = BlobTranslatableSnippet.PARSE(actionbar, locale);
     }
 
@@ -36,6 +45,7 @@ public class BlobChatActionbarMessage extends BlobChatMessage {
      */
     @Override
     public void send(Player player) {
+        super.send(player);
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(actionbar));
     }
 
@@ -61,6 +71,17 @@ public class BlobChatActionbarMessage extends BlobChatMessage {
     @Override
     public @NotNull BlobChatActionbarMessage modify(Function<String, String> function) {
         return new BlobChatActionbarMessage(function.apply(chat),
-                function.apply(actionbar), getSound(), getLocale());
+                hover == null ? null : function.apply(hover),
+                function.apply(actionbar),
+                getSound(),
+                getLocale(),
+                getClickEvent());
+    }
+
+    @Override
+    @NotNull
+    public BlobChatActionbarMessage onClick(ClickEvent event) {
+        return new BlobChatActionbarMessage(chat, hover, actionbar, getSound(),
+                getLocale(), event);
     }
 }

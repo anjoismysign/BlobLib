@@ -1,8 +1,10 @@
 package us.mytheria.bloblib.entities.message;
 
+import net.md_5.bungee.api.chat.ClickEvent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
@@ -13,6 +15,11 @@ public class ReferenceBlobMessage implements BlobMessage {
     public ReferenceBlobMessage(SerialBlobMessage message, String reference) {
         this.message = message;
         this.reference = reference;
+    }
+
+    @Override
+    public @Nullable ClickEvent getClickEvent() {
+        return message.getClickEvent();
     }
 
     @Override
@@ -45,6 +52,11 @@ public class ReferenceBlobMessage implements BlobMessage {
     @Override
     public @NotNull ReferenceBlobMessage modify(Function<String, String> function) {
         return new ReferenceBlobMessage(message.modify(function), reference);
+    }
+
+    @Override
+    public @NotNull BlobMessage onClick(ClickEvent clickEvent) {
+        return message.onClick(clickEvent);
     }
 
     public String getReference() {

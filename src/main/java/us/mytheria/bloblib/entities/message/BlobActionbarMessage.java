@@ -21,7 +21,7 @@ public class BlobActionbarMessage extends SerialBlobMessage {
      */
     public BlobActionbarMessage(String message, BlobSound sound,
                                 String locale) {
-        super(sound, locale);
+        super(sound, locale, null);
         this.actionbar = BlobTranslatableSnippet.PARSE(message, locale);
     }
 

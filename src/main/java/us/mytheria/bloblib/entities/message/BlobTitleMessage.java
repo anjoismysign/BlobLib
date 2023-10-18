@@ -13,7 +13,7 @@ public class BlobTitleMessage extends SerialBlobMessage {
 
     public BlobTitleMessage(String title, String subtitle, int fadeIn, int stay, int fadeOut,
                             BlobSound sound, String locale) {
-        super(sound, locale);
+        super(sound, locale, null);
         this.title = BlobTranslatableSnippet.PARSE(title, locale);
         this.subtitle = BlobTranslatableSnippet.PARSE(subtitle, locale);
         this.fadeIn = fadeIn;

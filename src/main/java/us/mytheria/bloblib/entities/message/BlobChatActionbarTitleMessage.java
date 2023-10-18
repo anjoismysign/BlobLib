@@ -1,10 +1,12 @@
 package us.mytheria.bloblib.entities.message;
 
 import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.entities.translatable.BlobTranslatableSnippet;
 
 import java.util.function.Function;
@@ -21,18 +23,30 @@ public class BlobChatActionbarTitleMessage extends BlobChatMessage {
     /**
      * Creates a new BlobChatActionbarMessage
      *
-     * @param chat      The chat message
-     * @param actionbar The actionbar message
-     * @param fadeIn    The time in ticks for the title to fade in
-     * @param fadeOut   The time in ticks for the title to fade out
-     * @param stay      The time in ticks for the title to stay
-     * @param title     The title message
-     * @param subtitle  The subtitle message
-     * @param sound     The sound to play
+     * @param chat       The chat message
+     * @param hover      The hover message
+     * @param actionbar  The actionbar message
+     * @param fadeIn     The time in ticks for the title to fade in
+     * @param fadeOut    The time in ticks for the title to fade out
+     * @param stay       The time in ticks for the title to stay
+     * @param title      The title message
+     * @param subtitle   The subtitle message
+     * @param sound      The sound to play
+     * @param locale     The locale to use
+     * @param clickEvent The click event to use
      */
-    public BlobChatActionbarTitleMessage(String chat, String actionbar, String title, String subtitle, int fadeIn, int stay, int fadeOut,
-                                         BlobSound sound, String locale) {
-        super(chat, sound, locale);
+    public BlobChatActionbarTitleMessage(@NotNull String chat,
+                                         @Nullable String hover,
+                                         @NotNull String actionbar,
+                                         @NotNull String title,
+                                         @NotNull String subtitle,
+                                         int fadeIn,
+                                         int stay,
+                                         int fadeOut,
+                                         @Nullable BlobSound sound,
+                                         String locale,
+                                         @Nullable ClickEvent clickEvent) {
+        super(chat, hover, sound, locale, clickEvent);
         this.actionbar = BlobTranslatableSnippet.PARSE(actionbar, locale);
         this.title = BlobTranslatableSnippet.PARSE(title, locale);
         this.subtitle = subtitle;
@@ -76,8 +90,22 @@ public class BlobChatActionbarTitleMessage extends BlobChatMessage {
      */
     @Override
     public @NotNull BlobChatActionbarTitleMessage modify(Function<String, String> function) {
-        return new BlobChatActionbarTitleMessage(function.apply(chat), function.apply(actionbar), function.apply(title),
-                function.apply(subtitle), fadeIn, stay, fadeOut, getSound(),
-                getLocale());
+        return new BlobChatActionbarTitleMessage(function.apply(chat),
+                hover == null ? null : function.apply(hover),
+                function.apply(actionbar),
+                function.apply(title),
+                function.apply(subtitle),
+                fadeIn, stay, fadeOut,
+                getSound(),
+                getLocale(),
+                getClickEvent());
+    }
+
+    @Override
+    @NotNull
+    public BlobChatActionbarTitleMessage onClick(ClickEvent event) {
+        return new BlobChatActionbarTitleMessage(chat, hover, actionbar, title,
+                subtitle, fadeIn, stay, fadeOut, getSound(), getLocale(),
+                event);
     }
 }
