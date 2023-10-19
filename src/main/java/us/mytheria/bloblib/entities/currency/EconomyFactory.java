@@ -1,6 +1,9 @@
 package us.mytheria.bloblib.entities.currency;
 
 import org.bukkit.event.Event;
+import org.bukkit.event.EventPriority;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.entities.BlobCrudable;
 import us.mytheria.bloblib.entities.ObjectDirector;
 import us.mytheria.bloblib.entities.ObjectDirectorData;
@@ -51,6 +54,7 @@ public class EconomyFactory {
     /**
      * Creates a new WalletOwnerManager that will register and call custom join and quit events for players.
      * It also doesn't register any commands or tab completions.
+     * Allows you to set the priority of the join and quit events.
      *
      * @param managerDirector The ManagerDirector
      * @param newBorn         A function that by passing a UUID, it will fill a BlobCrudable
@@ -67,6 +71,8 @@ public class EconomyFactory {
      * @param quitEvent       A function that by passing a WalletOwner, it will return a quit event.
      *                        It's called SYNCHRONOUSLY.
      *                        It's called when a player quits/leaves the server.
+     * @param joinPriority    The priority of the join event.
+     * @param quitPriority    The priority of the quit event.
      * @param <T>             The type of WalletOwner.
      * @return A new WalletOwnerManager.
      */
@@ -74,8 +80,11 @@ public class EconomyFactory {
                                                                                      Function<BlobCrudable, BlobCrudable> newBorn,
                                                                                      Function<BlobCrudable, T> walletOwner,
                                                                                      String crudableName, boolean logActivity,
-                                                                                     Function<T, Event> joinEvent,
-                                                                                     Function<T, Event> quitEvent) {
-        return new <T>WalletOwnerManager<T>(managerDirector, newBorn, walletOwner, crudableName, logActivity, joinEvent, quitEvent);
+                                                                                     @Nullable Function<T, Event> joinEvent,
+                                                                                     @Nullable Function<T, Event> quitEvent,
+                                                                                     @NotNull EventPriority joinPriority,
+                                                                                     @NotNull EventPriority quitPriority) {
+        return new <T>WalletOwnerManager<T>(managerDirector, newBorn, walletOwner, crudableName, logActivity, joinEvent, quitEvent,
+                joinPriority, quitPriority);
     }
 }

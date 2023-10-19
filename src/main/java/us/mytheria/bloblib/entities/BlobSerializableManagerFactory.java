@@ -1,6 +1,8 @@
 package us.mytheria.bloblib.entities;
 
 import org.bukkit.event.Event;
+import org.bukkit.event.EventPriority;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.managers.ManagerDirector;
 
@@ -46,6 +48,7 @@ public class BlobSerializableManagerFactory {
      * Creates a simple BlobSerializableManager that allows
      * listening to custom events. Does not log activity in console
      * regarding the crud operations.
+     * Join and quit events are called with NORMAL priority.
      *
      * @param managerDirector The manager director
      * @param generator       The generator function
@@ -72,6 +75,7 @@ public class BlobSerializableManagerFactory {
     /**
      * Creates a simple BlobSerializableManager that allows
      * listening to custom events.
+     * Join and quit events are called with NORMAL priority.
      *
      * @param managerDirector The manager director
      * @param generator       The generator function
@@ -106,6 +110,7 @@ public class BlobSerializableManagerFactory {
      * It also allows passing a newBorn function which autofills
      * the BlobCrudable with default values whenever
      * a user is found as a new user (never joined before).
+     * Allows calling the join and quit events with custom priority.
      *
      * @param managerDirector The manager director
      * @param newBorn         The newborn function.
@@ -115,6 +120,8 @@ public class BlobSerializableManagerFactory {
      * @param joinEvent       The join event.
      *                        Function consumes the BlobSerializable
      *                        related in the event and needs to return
+     * @param joinPriority    The priority of the join event
+     * @param quitPriority    The priority of the quit event
      * @param quitEvent       The quit event.
      *                        Function consumes the BlobSerializable
      *                        related in the event and needs to return
@@ -127,7 +134,10 @@ public class BlobSerializableManagerFactory {
                                                                                   String crudableName,
                                                                                   boolean logActivity,
                                                                                   @Nullable Function<T, Event> joinEvent,
-                                                                                  @Nullable Function<T, Event> quitEvent) {
-        return new BlobSerializableManager<>(managerDirector, newBorn, generator, crudableName, logActivity, joinEvent, quitEvent);
+                                                                                  @Nullable Function<T, Event> quitEvent,
+                                                                                  @NotNull EventPriority joinPriority,
+                                                                                  @NotNull EventPriority quitPriority) {
+        return new BlobSerializableManager<>(managerDirector, newBorn, generator, crudableName, logActivity, joinEvent, quitEvent,
+                joinPriority, quitPriority);
     }
 }

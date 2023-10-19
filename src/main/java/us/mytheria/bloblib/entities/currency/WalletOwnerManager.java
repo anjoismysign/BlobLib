@@ -5,13 +5,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.entities.BlobCrudable;
+import us.mytheria.bloblib.entities.BlobSerializableHandler;
 import us.mytheria.bloblib.entities.ObjectDirector;
 import us.mytheria.bloblib.managers.BlobPlugin;
 import us.mytheria.bloblib.managers.Manager;
@@ -27,7 +29,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class WalletOwnerManager<T extends WalletOwner> extends Manager implements Listener {
+public class WalletOwnerManager<T extends WalletOwner> extends Manager implements BlobSerializableHandler {
     protected final HashMap<UUID, T> walletOwners;
     private final HashSet<UUID> saving;
     protected BlobCrudManager<BlobCrudable> crudManager;
@@ -47,9 +49,23 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
                                  String crudableName, boolean logActivity,
                                  @Nullable Function<T, Event> joinEvent,
                                  @Nullable Function<T, Event> quitEvent) {
+        this(managerDirector, newBorn, generator, crudableName, logActivity, joinEvent,
+                quitEvent, EventPriority.NORMAL, EventPriority.NORMAL);
+    }
+
+    protected WalletOwnerManager(ManagerDirector managerDirector, Function<BlobCrudable, BlobCrudable> newBorn,
+                                 Function<BlobCrudable, T> generator,
+                                 String crudableName, boolean logActivity,
+                                 @Nullable Function<T, Event> joinEvent,
+                                 @Nullable Function<T, Event> quitEvent,
+                                 @NotNull EventPriority joinPriority,
+                                 @NotNull EventPriority quitPriority) {
         super(managerDirector);
         plugin = managerDirector.getPlugin();
-        Bukkit.getPluginManager().registerEvents(this, plugin);
+        PluginManager pluginManager = Bukkit.getPluginManager();
+        pluginManager.registerEvents(this, plugin);
+        registerJoinListener(pluginManager, joinPriority);
+        registerQuitListener(pluginManager, quitPriority);
         walletOwners = new HashMap<>();
         this.generator = generator;
         this.joinEvent = joinEvent;
@@ -57,7 +73,6 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         this.registeredEconomy = false;
         saving = new HashSet<>();
         crudManager = BlobCrudManagerFactory.PLAYER(plugin, crudableName, newBorn, logActivity);
-        saveAll();
     }
 
     @Override
@@ -78,7 +93,6 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
             e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "You are already saving your data, please try again in a few seconds.");
     }
 
-    @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
         UUID uuid = player.getUniqueId();
@@ -102,7 +116,6 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         });
     }
 
-    @EventHandler
     public void onQuit(PlayerQuitEvent e) {
         Player player = e.getPlayer();
         UUID uuid = player.getUniqueId();
@@ -183,6 +196,10 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         T walletOwner = generator.apply(crudManager.read(key));
         consumer.accept(walletOwner);
         crudManager.update(walletOwner.serializeAllAttributes());
+    }
+
+    public void update(BlobCrudable crudable) {
+        crudManager.update(crudable);
     }
 
     public boolean exists(String key) {

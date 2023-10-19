@@ -4,10 +4,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.PluginManager;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.managers.BlobPlugin;
 import us.mytheria.bloblib.managers.Manager;
@@ -22,7 +24,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class BlobSerializableManager<T extends BlobSerializable> extends Manager implements Listener {
+public class BlobSerializableManager<T extends BlobSerializable> extends Manager implements BlobSerializableHandler {
     protected final HashMap<UUID, T> serializables;
     private final HashSet<UUID> saving;
     protected BlobCrudManager<BlobCrudable> crudManager;
@@ -36,16 +38,29 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
                                       String crudableName, boolean logActivity,
                                       @Nullable Function<T, Event> joinEvent,
                                       @Nullable Function<T, Event> quitEvent) {
+        this(managerDirector, newBorn, generator, crudableName, logActivity,
+                joinEvent, quitEvent, EventPriority.NORMAL, EventPriority.NORMAL);
+    }
+
+    protected BlobSerializableManager(ManagerDirector managerDirector, Function<BlobCrudable, BlobCrudable> newBorn,
+                                      Function<BlobCrudable, T> generator,
+                                      String crudableName, boolean logActivity,
+                                      @Nullable Function<T, Event> joinEvent,
+                                      @Nullable Function<T, Event> quitEvent,
+                                      @NotNull EventPriority joinPriority,
+                                      @NotNull EventPriority quitPriority) {
         super(managerDirector);
         plugin = managerDirector.getPlugin();
-        Bukkit.getPluginManager().registerEvents(this, plugin);
+        PluginManager pluginManager = Bukkit.getPluginManager();
+        pluginManager.registerEvents(this, plugin);
+        registerJoinListener(pluginManager, joinPriority);
+        registerQuitListener(pluginManager, quitPriority);
         serializables = new HashMap<>();
         this.generator = generator;
         this.joinEvent = joinEvent;
         this.quitEvent = quitEvent;
         saving = new HashSet<>();
         crudManager = BlobCrudManagerFactory.PLAYER(plugin, crudableName, newBorn, logActivity);
-        reload();
     }
 
     @Override
@@ -65,7 +80,6 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
             e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "You are already saving your data, please try again in a few seconds.");
     }
 
-    @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
         UUID uuid = player.getUniqueId();
@@ -85,7 +99,6 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
         });
     }
 
-    @EventHandler
     public void onQuit(PlayerQuitEvent e) {
         Player player = e.getPlayer();
         UUID uuid = player.getUniqueId();
@@ -170,6 +183,10 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
         T serializable = generator.apply(crudManager.read(key));
         consumer.accept(serializable);
         crudManager.update(serializable.serializeAllAttributes());
+    }
+
+    public void update(BlobCrudable crudable) {
+        crudManager.update(crudable);
     }
 
     public boolean exists(String key) {

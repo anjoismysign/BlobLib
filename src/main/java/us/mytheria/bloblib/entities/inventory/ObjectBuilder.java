@@ -119,7 +119,7 @@ public abstract class ObjectBuilder<T extends BlobObject> extends BlobInventory 
                                     Function<ItemStackModder, ItemStackModder> function) {
         Set<Integer> slots = getSlots(key);
         if (slots == null)
-            throw new NullPointerException("'" + key + "' is not a valid button key" +
+            throw new NullPointerException("'" + key + "' is not a valid button key " +
                     "inside '" + getTitle() + "' inventory");
         slots.forEach(i -> {
             ItemStack itemStack = cloneDefaultButton(key);
