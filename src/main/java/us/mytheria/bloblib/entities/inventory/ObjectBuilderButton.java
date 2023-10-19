@@ -44,6 +44,10 @@ public abstract class ObjectBuilderButton<T> {
         return value.orElse(null);
     }
 
+    public T orThrow() {
+        return value.orElseThrow();
+    }
+
     public void set(T newValue) {
         boolean success = function.apply(newValue);
         if (success)

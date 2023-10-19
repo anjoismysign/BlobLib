@@ -12,6 +12,7 @@ public class BlobSerializableManagerFactory {
     /**
      * Creates a simple BlobSerializableManager that does not listen to events
      * and doesn't log activity in console regarding the crud operations.
+     * Join and Quit events are called with NORMAL priority.
      *
      * @param managerDirector The manager director
      * @param generator       The generator function
@@ -27,6 +28,7 @@ public class BlobSerializableManagerFactory {
 
     /**
      * Creates a simple BlobSerializableManager that does not listen to events.
+     * Join and Quit events are called with NORMAL priority.
      *
      * @param managerDirector The manager director
      * @param generator       The generator function
@@ -69,7 +71,8 @@ public class BlobSerializableManagerFactory {
                                                                                    String crudableName,
                                                                                    @Nullable Function<T, Event> joinEvent,
                                                                                    @Nullable Function<T, Event> quitEvent) {
-        return LISTENER(managerDirector, generator, crudableName, false, joinEvent, quitEvent);
+        return LISTENER(managerDirector, generator, crudableName, false,
+                joinEvent, quitEvent, EventPriority.NORMAL, EventPriority.NORMAL);
     }
 
     /**
@@ -97,10 +100,12 @@ public class BlobSerializableManagerFactory {
                                                                                    String crudableName,
                                                                                    boolean logActivity,
                                                                                    @Nullable Function<T, Event> joinEvent,
-                                                                                   @Nullable Function<T, Event> quitEvent) {
+                                                                                   @Nullable Function<T, Event> quitEvent,
+                                                                                   @NotNull EventPriority joinPriority,
+                                                                                   @NotNull EventPriority quitPriority) {
         return new BlobSerializableManager<>(managerDirector,
                 crudable -> crudable, generator, crudableName,
-                logActivity, joinEvent, quitEvent);
+                logActivity, joinEvent, quitEvent, joinPriority, quitPriority);
     }
 
     /**

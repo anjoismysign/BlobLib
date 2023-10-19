@@ -5,6 +5,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.Event;
+import org.bukkit.event.EventPriority;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.*;
@@ -173,6 +175,7 @@ public abstract class ManagerDirector implements IManagerDirector {
     /**
      * Adds a BlobSerializableManager to the director
      * that does not listen to events.
+     * Uses NORMAL priority for join and quit listeners.
      *
      * @param key          The key of the manager
      * @param generator    The generator function
@@ -211,9 +214,40 @@ public abstract class ManagerDirector implements IManagerDirector {
                                                                                 String crudableName,
                                                                                 boolean logActivity,
                                                                                 @Nullable Function<T, Event> joinEvent,
-                                                                                @Nullable Function<T, Event> quitEvent) {
+                                                                                @Nullable Function<T, Event> quitEvent,
+                                                                                @NotNull EventPriority joinPriority,
+                                                                                @NotNull EventPriority quitPriority) {
         addManager(key, BlobSerializableManagerFactory.LISTENER(this,
-                generator, crudableName, logActivity, joinEvent, quitEvent));
+                generator, crudableName, logActivity, joinEvent, quitEvent, joinPriority, quitPriority));
+    }
+
+    /**
+     * Adds a BlobSerializableManager to the director
+     * that listens to events.
+     * Uses NORMAL priority for join and quit listeners.
+     *
+     * @param key          The key of the manager
+     * @param generator    The generator function
+     * @param crudableName The name of the crudable
+     * @param logActivity  Whether to log activity
+     * @param joinEvent    The join event.
+     *                     Function consumes the BlobSerializable
+     *                     related in the event and needs to return
+     *                     the event to be called.
+     * @param quitEvent    The quit event.
+     *                     Function consumes the BlobSerializable
+     *                     related in the event and needs to return
+     *                     the event to be called.
+     * @param <T>          The type of the blob serializable
+     */
+    public <T extends BlobSerializable> void addListenerBlobSerializableManager(String key,
+                                                                                Function<BlobCrudable, T> generator,
+                                                                                String crudableName,
+                                                                                boolean logActivity,
+                                                                                @Nullable Function<T, Event> joinEvent,
+                                                                                @Nullable Function<T, Event> quitEvent) {
+        addListenerBlobSerializableManager(key, generator, crudableName, logActivity,
+                joinEvent, quitEvent, EventPriority.NORMAL, EventPriority.NORMAL);
     }
 
     /**
@@ -250,23 +284,60 @@ public abstract class ManagerDirector implements IManagerDirector {
      * @param quitEvent    A function that by passing a WalletOwner, it will return a quit event.
      *                     It's called SYNCHRONOUSLY.
      *                     It's called when a player quits/leaves the server.
+     * @param joinPriority The priority of the join event.
+     * @param quitPriority The priority of the quit event.
      * @param <T>          The type of WalletOwner.
      */
     public <T extends WalletOwner> void addWalletOwnerManager(String key,
                                                               Function<BlobCrudable, BlobCrudable> newBorn,
                                                               Function<BlobCrudable, T> walletOwner,
                                                               String crudableName, boolean logActivity,
-                                                              Function<T, Event> joinEvent,
-                                                              Function<T, Event> quitEvent) {
+                                                              @Nullable Function<T, Event> joinEvent,
+                                                              @Nullable Function<T, Event> quitEvent,
+                                                              @NotNull EventPriority joinPriority,
+                                                              @NotNull EventPriority quitPriority) {
         addManager(key,
                 EconomyFactory.WALLET_OWNER_MANAGER(this,
-                        newBorn, walletOwner, crudableName, logActivity, joinEvent, quitEvent));
+                        newBorn, walletOwner, crudableName, logActivity, joinEvent, quitEvent,
+                        joinPriority, quitPriority));
+    }
+
+    /**
+     * Adds a wallet owner manager to the director.
+     * Uses NORMAL priority for join and quit listeners.
+     *
+     * @param key          The key of the manager
+     * @param newBorn      A function that by passing a UUID, it will fill a BlobCrudable
+     *                     with default key-value pairs.
+     *                     This is used to create new/fresh WalletOwners.
+     * @param walletOwner  A function that by passing a BlobCrudable, it will return a WalletOwner.
+     *                     WalletOwners use this to store their data inside databases.
+     * @param crudableName The name of the BlobCrudable. This will be used for
+     *                     as the column name in the database.
+     * @param logActivity  Whether to log activity in the console.
+     * @param joinEvent    A function that by passing a WalletOwner, it will return a join event.
+     *                     It's called SYNCHRONOUSLY.
+     *                     It's called when a player joins the server.
+     * @param quitEvent    A function that by passing a WalletOwner, it will return a quit event.
+     *                     It's called SYNCHRONOUSLY.
+     *                     It's called when a player quits/leaves the server.
+     * @param <T>          The type of WalletOwner.
+     */
+    public <T extends WalletOwner> void addWalletOwnerManager(String key,
+                                                              Function<BlobCrudable, BlobCrudable> newBorn,
+                                                              Function<BlobCrudable, T> walletOwner,
+                                                              String crudableName, boolean logActivity,
+                                                              @Nullable Function<T, Event> joinEvent,
+                                                              @Nullable Function<T, Event> quitEvent) {
+        addWalletOwnerManager(key, newBorn, walletOwner, crudableName, logActivity,
+                joinEvent, quitEvent, EventPriority.NORMAL, EventPriority.NORMAL);
     }
 
     /**
      * Adds a wallet owner manager to the director.
      * This is a simplified version {@link EconomyFactory#SIMPLE_WALLET_OWNER_MANAGER(ManagerDirector, Function, Function, String, boolean)}
      * No events are registered for join and quit actions.
+     * Uses NORMAL priority for join and quit listeners.
      *
      * @param key          The key of the manager
      * @param newBorn      A function that by passing a UUID, it will fill a BlobCrudable
