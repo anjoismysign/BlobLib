@@ -50,7 +50,7 @@ public class BlobDropListener extends DropListener {
                                          String timerMessageKey) {
         BlobLib main = BlobLib.getInstance();
         DropListenerManager dropManager = main.getDropListenerManager();
-        Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(timerMessageKey));
+        Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(timerMessageKey, owner));
         List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
         return new BlobDropListener(owner.getName(), listener -> {
             ItemStack input = listener.getInput();

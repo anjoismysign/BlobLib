@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.api.BlobLibMessageAPI;
 import us.mytheria.bloblib.entities.listeners.SelPosListener;
 
 import java.util.HashMap;
@@ -55,7 +56,8 @@ public class SelPosListenerManager implements Listener {
     public void addPositionListener(Player player, SelPosListener posListener) {
         String name = player.getName();
         if (positionListeners.containsKey(name)) {
-            main.getMessageManager().playAndSend(player, "System.Already-SelPos-Listening");
+            BlobLibMessageAPI.getInstance().getMessage("System.Already-SelPos-Listening", player)
+                    .handle(player);
             return;
         }
         posListener.runTasks();

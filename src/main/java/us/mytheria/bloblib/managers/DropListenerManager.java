@@ -8,6 +8,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.api.BlobLibMessageAPI;
 import us.mytheria.bloblib.entities.listeners.DropListener;
 
 import java.util.HashMap;
@@ -35,7 +36,8 @@ public class DropListenerManager implements Listener {
     public void addDropListener(Player player, DropListener listener) {
         String name = player.getName();
         if (dropListeners.containsKey(name)) {
-            main.getMessageManager().playAndSend(player, "System.Already-Drop-Listening");
+            BlobLibMessageAPI.getInstance().getMessage("System.Already-Drop-Listening", player)
+                    .handle(player);
             return;
         }
         listener.runTasks();

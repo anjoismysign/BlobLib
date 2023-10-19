@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.api.BlobLibMessageAPI;
 import us.mytheria.bloblib.entities.listeners.ChatListener;
 
 import java.util.HashMap;
@@ -34,7 +35,8 @@ public class ChatListenerManager implements Listener {
     public void addChatListener(Player player, ChatListener chatListener) {
         String name = player.getName();
         if (chatListeners.containsKey(name)) {
-            main.getMessageManager().playAndSend(player, "System.Already-Chat-Listening");
+            BlobLibMessageAPI.getInstance().getMessage("System.Already-Chat-Listening", player)
+                    .handle(player);
             return;
         }
         chatListener.runTasks();

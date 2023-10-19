@@ -3,6 +3,7 @@ package us.mytheria.bloblib.managers;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.api.BlobLibMessageAPI;
 import us.mytheria.bloblib.entities.listeners.EditorListener;
 import us.mytheria.bloblib.entities.listeners.SelectorListener;
 
@@ -22,7 +23,8 @@ public class SelectorListenerManager {
     public boolean addSelectorListener(Player player, SelectorListener<?> listener) {
         String name = player.getName();
         if (selectorListener.containsKey(name)) {
-            main.getMessageManager().playAndSend(player, "System.Already-Selector-Listening");
+            BlobLibMessageAPI.getInstance().getMessage("System.Already-Selector-Listening", player)
+                    .handle(player);
             return false;
         }
         listener.runTasks();
@@ -33,7 +35,8 @@ public class SelectorListenerManager {
     public boolean addEditorListener(Player player, EditorListener<?> listener) {
         String name = player.getName();
         if (editorListener.containsKey(name)) {
-            main.getMessageManager().playAndSend(player, "System.Already-Editor-Listening");
+            BlobLibMessageAPI.getInstance().getMessage("System.Already-Editor-Listening", player)
+                    .handle(player);
             return false;
         }
         listener.runTasks();

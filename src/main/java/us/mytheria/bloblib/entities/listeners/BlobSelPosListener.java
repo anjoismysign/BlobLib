@@ -49,8 +49,8 @@ public class BlobSelPosListener extends SelPosListener {
                                            String timeoutMessageKey, String timerMessageKey) {
         BlobLib main = BlobLib.getInstance();
         SelPosListenerManager selPosManager = main.getPositionManager();
-        Optional<BlobMessage> timeoutMessage = Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(timeoutMessageKey));
-        Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(timerMessageKey));
+        Optional<BlobMessage> timeoutMessage = Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(timeoutMessageKey, player));
+        Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(timerMessageKey, player));
         List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
         return new BlobSelPosListener(player.getName(), timeout,
                 inputListener -> {

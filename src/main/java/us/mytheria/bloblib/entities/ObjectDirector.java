@@ -5,9 +5,7 @@ import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.api.BlobLibMessageAPI;
@@ -29,7 +27,6 @@ import java.util.logging.Level;
 public class ObjectDirector<T extends BlobObject> extends Manager implements Listener {
     private final ObjectBuilderManager<T> objectBuilderManager;
     private final ObjectManager<T> objectManager;
-    private Consumer<InventoryClickEvent> clickEventConsumer;
     private final BlobExecutor executor;
     private final List<Function<ExecutorData, Boolean>> nonAdminChildCommands;
     private final List<Function<ExecutorData, Boolean>> adminChildCommands;
@@ -97,20 +94,6 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                     CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).thenAccept(v -> mainFuture.complete(null));
                 });
             }
-        };
-        clickEventConsumer = e -> {
-            String invname = e.getView().getTitle();
-            if (!invname.equals(objectBuilderManager.title)) {
-                return;
-            }
-            int slot = e.getRawSlot();
-            Player player = (Player) e.getWhoClicked();
-            ObjectBuilder<T> builder = objectBuilderManager.getOrDefault(player.getUniqueId());
-            if (slot >= builder.getSize()) {
-                return;
-            }
-            e.setCancelled(true);
-            builder.handle(slot, player);
         };
         Bukkit.getPluginManager().registerEvents(this, managerDirector.getPlugin());
         nonAdminChildCommands = new ArrayList<>();
@@ -285,13 +268,6 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
         return nonAdminChildTabCompleter;
     }
 
-    @EventHandler
-    public void onClick(InventoryClickEvent e) {
-        if (!this.hasObjectBuilderManager)
-            return;
-        clickEventConsumer.accept(e);
-    }
-
     public ObjectBuilderManager<T> getBuilderManager() {
         return objectBuilderManager;
     }
@@ -302,10 +278,6 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
 
     public ObjectManager<T> getObjectManager() {
         return objectManager;
-    }
-
-    public void onInventoryClickEvent(Consumer<InventoryClickEvent> clickEventConsumer) {
-        this.clickEventConsumer = clickEventConsumer;
     }
 
     private BlobExecutor getExecutor() {

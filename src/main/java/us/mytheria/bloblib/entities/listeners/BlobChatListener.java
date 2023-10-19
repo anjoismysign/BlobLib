@@ -58,8 +58,8 @@ public class BlobChatListener extends ChatListener {
                                          String timeoutMessageKey, String timerMessageKey) {
         BlobLib main = BlobLib.getInstance();
         ChatListenerManager chatManager = main.getChatManager();
-        Optional<BlobMessage> timeoutMessage = Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(timeoutMessageKey));
-        Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(timerMessageKey));
+        Optional<BlobMessage> timeoutMessage = Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(timeoutMessageKey, owner));
+        Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(timerMessageKey, owner));
         List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
         List<BlobMessage> timerMessages = new ArrayList<>();
         messages.forEach(message -> timerMessages.add(

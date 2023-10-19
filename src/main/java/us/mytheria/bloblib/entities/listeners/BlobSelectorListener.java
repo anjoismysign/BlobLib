@@ -88,7 +88,7 @@ public class BlobSelectorListener<T> extends SelectorListener<T> {
         SelectorListenerManager selectorManager = main.getSelectorManager();
         Optional<BlobMessage> timerMessage = Optional.empty();
         if (timerMessageKey != null)
-            timerMessage = Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(timerMessageKey));
+            timerMessage = Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(timerMessageKey, player));
         List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(new ArrayList<>());
         return new BlobSelectorListener<>(player.getName(), listener -> {
             T input = listener.getInput();

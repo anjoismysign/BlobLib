@@ -1,6 +1,13 @@
 package us.mytheria.bloblib.entities;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.api.BlobLibInventoryAPI;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
@@ -8,14 +15,16 @@ import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
 import us.mytheria.bloblib.managers.*;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.BiFunction;
 
-public class ObjectBuilderManager<T extends BlobObject> extends Manager {
+public class ObjectBuilderManager<T extends BlobObject> extends Manager implements Listener {
     protected String title;
 
-    private HashMap<UUID, ObjectBuilder<T>> builders;
+    private Map<UUID, ObjectBuilder<T>> builders;
+    private Map<Inventory, ObjectBuilder<T>> inventories;
     private ChatListenerManager chatManager;
     private DropListenerManager dropListenerManager;
     private SelectorListenerManager selectorListenerManager;
@@ -27,6 +36,7 @@ public class ObjectBuilderManager<T extends BlobObject> extends Manager {
     public ObjectBuilderManager(ManagerDirector managerDirector,
                                 String fileKey, ObjectDirector<T> objectDirector) {
         super(managerDirector);
+        Bukkit.getPluginManager().registerEvents(this, getPlugin());
         selPosListenerManager = getManagerDirector().getPositionListenerManager();
         chatManager = getManagerDirector().getChatListenerManager();
         dropListenerManager = getManagerDirector().getDropListenerManager();
@@ -34,6 +44,30 @@ public class ObjectBuilderManager<T extends BlobObject> extends Manager {
         this.objectDirector = Objects.requireNonNull(objectDirector, "Object director cannot be null.");
         this.fileKey = Objects.requireNonNull(fileKey, "File key cannot be null.");
         update();
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        removeBuilder(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onClick(InventoryClickEvent event) {
+        Inventory clicked = event.getClickedInventory();
+        if (clicked == null)
+            return;
+        if (clicked.getType() == InventoryType.PLAYER)
+            return;
+        if (!inventories.containsKey(clicked))
+            return;
+        int slot = event.getRawSlot();
+        Player player = (Player) event.getWhoClicked();
+        ObjectBuilder<T> builder = getOrDefault(player.getUniqueId());
+        if (slot >= builder.getSize()) {
+            return;
+        }
+        event.setCancelled(true);
+        builder.handle(slot, player);
     }
 
     @NotNull
@@ -48,6 +82,7 @@ public class ObjectBuilderManager<T extends BlobObject> extends Manager {
 
     public void update() {
         this.builders = new HashMap<>();
+        this.inventories = new HashMap<>();
         BlobInventory inventory = BlobLibInventoryAPI.getInstance().getBlobInventory(fileKey);
         if (inventory == null)
             throw new RuntimeException("Inventory file '" + fileKey + "' not found.");
@@ -60,6 +95,7 @@ public class ObjectBuilderManager<T extends BlobObject> extends Manager {
         if (objectBuilder == null) {
             objectBuilder = builderBiFunction.apply(uuid, getObjectDirector());
             builders.put(uuid, objectBuilder);
+            inventories.put(objectBuilder.getInventory(), objectBuilder);
         }
         return objectBuilder;
     }
@@ -72,6 +108,7 @@ public class ObjectBuilderManager<T extends BlobObject> extends Manager {
     @NotNull
     public ObjectBuilderManager<T> addBuilder(UUID uuid, ObjectBuilder<T> builder) {
         builders.put(uuid, builder);
+        inventories.put(builder.getInventory(), builder);
         return this;
     }
 
@@ -83,6 +120,11 @@ public class ObjectBuilderManager<T extends BlobObject> extends Manager {
 
     @NotNull
     public ObjectBuilderManager<T> removeBuilder(UUID uuid) {
+        ObjectBuilder<T> builder = builders.get(uuid);
+        if (builder == null)
+            return this;
+        Inventory key = builder.getInventory();
+        inventories.remove(key);
         builders.remove(uuid);
         return this;
     }
