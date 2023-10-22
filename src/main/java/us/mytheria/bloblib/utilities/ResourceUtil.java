@@ -45,12 +45,15 @@ public class ResourceUtil {
         Set<String> keys = updateYamlConfiguration.getConfigurationSection("").getKeys(true);
         keys.forEach(key -> {
             if (!updateYamlConfiguration.isConfigurationSection(key)) {
-                List<String> comments = updateYamlConfiguration.getComments(key);
-                List<String> inLine = updateYamlConfiguration.getInlineComments(key);
-                if (comments.size() > 0)
-                    existingYamlConfig.setComments(key, comments);
-                if (inLine.size() > 0)
-                    existingYamlConfig.setInlineComments(key, inLine);
+                try {
+                    List<String> comments = updateYamlConfiguration.getComments(key);
+                    List<String> inLine = updateYamlConfiguration.getInlineComments(key);
+                    if (comments.size() > 0)
+                        existingYamlConfig.setComments(key, comments);
+                    if (inLine.size() > 0)
+                        existingYamlConfig.setInlineComments(key, inLine);
+                } catch (NoSuchMethodError ignored) {
+                }
                 // if it's not a section, it's a value
                 if (existingYamlConfig.contains(key)) return;
             }

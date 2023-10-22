@@ -258,12 +258,21 @@ public abstract class ManagerDirector implements IManagerDirector {
      * @param consumer   The consumer that will consume the expansion
      */
     public void instantiateBlobPHExpansion(String identifier, Consumer<BlobPHExpansion> consumer) {
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
-            getPlugin().getAnjoLogger().log("PlaceholderAPI not found, not registering PlaceholderAPI expansion for " + getPlugin().getName());
+        if (!isPlaceholderAPIEnabled()) {
+            getPlugin().getAnjoLogger().log("PlaceholderAPI not found, not instantiating PlaceholderAPI expansion for " + getPlugin().getName());
             return;
         }
         BlobPHExpansion expansion = new BlobPHExpansion(getPlugin(), identifier);
         consumer.accept(expansion);
+    }
+
+    /**
+     * Checks whether PlaceholderAPI is enabled.
+     *
+     * @return Whether PlaceholderAPI is enabled.
+     */
+    public boolean isPlaceholderAPIEnabled() {
+        return Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
     }
 
     /**
