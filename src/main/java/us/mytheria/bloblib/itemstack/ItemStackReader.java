@@ -33,6 +33,9 @@ public class ItemStackReader {
         } else
             builder = ItemStackBuilder.build(SkullCreator.itemFromUrl(inputMaterial.substring(5)));
         if (section.isInt("Amount")) {
+            int amount = section.getInt("Amount");
+            if (amount < 1 || amount > 127)
+                throw new ConfigurationFieldException("'Amount' field is not a valid amount");
             builder = builder.amount(section.getInt("Amount"));
         }
         if (section.isString("DisplayName")) {
