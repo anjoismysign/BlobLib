@@ -6,12 +6,15 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.entities.BlobMessageModder;
+import us.mytheria.bloblib.entities.message.BlobMessage;
 import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
 import us.mytheria.bloblib.managers.BlobLibConfigManager;
 import us.mytheria.bloblib.managers.MessageManager;
 
 import java.io.File;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class BlobLibMessageAPI {
     private static BlobLibMessageAPI instance;
@@ -59,15 +62,30 @@ public class BlobLibMessageAPI {
 
     /**
      * Broadcasts a message to all players.
+     * Allows modifying the message before broadcasting.
+     *
+     * @param key      The key of the message
+     * @param consumer The consumer to modify the message
+     */
+    public void broadcast(String key, Consumer<BlobMessageModder<BlobMessage>> consumer) {
+        Bukkit.getOnlinePlayers().forEach(player -> {
+            BlobMessage message = getMessage(key, player);
+            if (message == null)
+                return;
+            BlobMessageModder<BlobMessage> modder = message.modder();
+            consumer.accept(modder);
+            message = modder.get();
+            message.handle(player);
+        });
+    }
+
+    /**
+     * Broadcasts a message to all players.
      *
      * @param key The key of the message
      */
     public void broadcast(String key) {
-        Bukkit.getOnlinePlayers().forEach(player -> {
-            ReferenceBlobMessage message = getMessage(key, player);
-            if (message == null)
-                return;
-            message.handle(player);
+        broadcast(key, modder -> {
         });
     }
 
