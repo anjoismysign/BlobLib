@@ -68,6 +68,18 @@ public class BlobLibInventoryAPI {
     }
 
     /**
+     * Uses player to get locale
+     *
+     * @param key    Key that points to the carrier
+     * @param player The player
+     * @return The carrier if found. null otherwise
+     */
+    @Nullable
+    public InventoryBuilderCarrier<InventoryButton> getInventoryBuilderCarrier(String key, Player player) {
+        return getInventoryManager().getInventoryBuilderCarrier(key, player.getLocale());
+    }
+
+    /**
      * @param key Key that points to the carrier
      * @return The carrier if found. null otherwise
      */
@@ -118,6 +130,18 @@ public class BlobLibInventoryAPI {
     @Nullable
     public InventoryBuilderCarrier<MetaInventoryButton> getMetaInventoryBuilderCarrier(String key) {
         return getInventoryManager().getMetaInventoryBuilderCarrier(key);
+    }
+
+    /**
+     * Uses player to get locale
+     *
+     * @param key    Key that points to the carrier
+     * @param player The player
+     * @return The carrier if found. null otherwise
+     */
+    @Nullable
+    public InventoryBuilderCarrier<MetaInventoryButton> getMetaInventoryBuilderCarrier(String key, Player player) {
+        return getInventoryManager().getMetaInventoryBuilderCarrier(key, player.getLocale());
     }
 
     /**
