@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.api;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -54,6 +55,20 @@ public class BlobLibMessageAPI {
     @NotNull
     public String getMessagesFilePath() {
         return plugin.getFileManager().messagesDirectory().getPath();
+    }
+
+    /**
+     * Broadcasts a message to all players.
+     *
+     * @param key The key of the message
+     */
+    public void broadcast(String key) {
+        Bukkit.getOnlinePlayers().forEach(player -> {
+            ReferenceBlobMessage message = getMessage(key, player);
+            if (message == null)
+                return;
+            message.handle(player);
+        });
     }
 
     /**

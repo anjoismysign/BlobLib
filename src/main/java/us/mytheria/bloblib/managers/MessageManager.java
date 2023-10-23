@@ -156,7 +156,11 @@ public class MessageManager {
 
     @Nullable
     public ReferenceBlobMessage getMessage(String key) {
-        return new ReferenceBlobMessage(locales.get("en_us").get(key), key);
+        Map<String, SerialBlobMessage> map = locales.get("en_us");
+        SerialBlobMessage message = map.get(key);
+        if (message == null)
+            return null;
+        return new ReferenceBlobMessage(message, key);
     }
 
     @Nullable

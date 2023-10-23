@@ -131,7 +131,10 @@ public interface BlobMessage extends Localizable {
 
     /**
      * Will handle the message to all online players.
+     *
+     * @deprecated Use @link {@link us.mytheria.bloblib.api.BlobLibMessageAPI#broadcast(String)} instead
      */
+    @Deprecated
     default void broadcast() {
         Bukkit.getOnlinePlayers().forEach(this::handle);
     }
