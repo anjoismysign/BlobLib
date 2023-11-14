@@ -7,7 +7,7 @@
     <parent>
         <groupId>us.mytheria</groupId>
         <artifactId>BlobLib</artifactId>
-        <version>1.697.24</version>
+        <version>1.697.25</version>
         <relativePath>pom.xml</relativePath>
     </parent>
     <artifactId>bloblib</artifactId>

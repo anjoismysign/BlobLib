@@ -7,6 +7,7 @@ import me.anjoismysign.manobukkit.entities.decorators.implementations.ManoratorF
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.structure.Mirror;
@@ -159,7 +160,36 @@ public class Structrador {
     public void simultaneousPlace(Location location, boolean includeEntities,
                                   StructureRotation structureRotation, Mirror mirror, int palette,
                                   float integrity, Random random) {
-        structure.place(location, includeEntities, structureRotation, mirror, palette, integrity, random);
+        structure.place(location, includeEntities,
+                structureRotation, mirror, palette, integrity, random);
+    }
+
+    /**
+     * Will place the structure at the given location in the same tick.
+     * A consumer will be called for each block placed.
+     * NOTE: AIR blocks are not ignored!
+     *
+     * @param location          - The location to place the structure at.
+     * @param includeEntities   - If the entities present in the structure should be spawned.
+     * @param structureRotation - The rotation of the structure.
+     * @param mirror            - The mirror settings of the structure.
+     * @param palette           - The palette index of the structure to use, starting at 0, or -1 to pick a random palette.
+     * @param integrity         - Determines how damaged the building should look by randomly skipping blocks to place. This value can range from 0 to 1. With 0 removing all blocks and 1 spawning the structure in pristine condition.
+     * @param random            - The randomizer used for setting the structure's LootTables and integrity.
+     * @param consumer          - The consumer that will be called when a block is placed.
+     */
+    public void simultaneousPlace(Location location, boolean includeEntities,
+                                  StructureRotation structureRotation, Mirror mirror, int palette,
+                                  float integrity, Random random,
+                                  Consumer<Block> consumer) {
+        simultaneousPlace(location, includeEntities, structureRotation, mirror, palette, integrity, random);
+        structure.getPalettes().stream().map(Palette::getBlocks).flatMap(List::stream).forEach(state -> {
+            int x = state.getX();
+            int y = state.getY();
+            int z = state.getZ();
+            Block block = location.clone().add(x, y, z).getBlock();
+            consumer.accept(block);
+        });
     }
 
     /**
