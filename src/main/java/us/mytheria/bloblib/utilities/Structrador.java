@@ -187,7 +187,7 @@ public class Structrador {
             int x = state.getX();
             int y = state.getY();
             int z = state.getZ();
-            Block block = location.clone().add(x, y, z).getBlock();
+            Block block = location.clone().add(Vectorator.of(x, y, z).rotate(structureRotation)).getBlock();
             consumer.accept(block);
         });
     }

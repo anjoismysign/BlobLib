@@ -238,4 +238,29 @@ public class Cuboid {
     public Vector getRelative(Location location) {
         return location.clone().subtract(getPoint1()).toVector();
     }
+
+    /**
+     * Will draw lines between connected edges.
+     * Each location represents a dot of a dotted line.
+     *
+     * @param distance The distance between each particle
+     * @return The list of locations
+     */
+    public List<Location> drawEdges(double distance) {
+        List<Location> result = new ArrayList<>();
+        for (double x = xMin; x <= xMax; x += distance) {
+            for (double y = yMin; y <= yMax; y += distance) {
+                for (double z = zMin; z <= zMax; z += distance) {
+                    int components = 0;
+                    if (x == xMin || x == xMax) components++;
+                    if (y == yMin || y == yMax) components++;
+                    if (z == zMin || z == zMax) components++;
+                    if (components >= 2) {
+                        result.add(new Location(world, x, y, z));
+                    }
+                }
+            }
+        }
+        return result;
+    }
 }
