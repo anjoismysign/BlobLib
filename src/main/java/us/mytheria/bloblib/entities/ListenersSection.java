@@ -32,7 +32,6 @@ public record ListenersSection(ConfigurationSection tinyListeners,
     @NotNull
     public static ListenersSection of(JavaPlugin plugin) {
         FileConfiguration configuration = plugin.getConfig();
-        configuration.options().copyDefaults(true);
         ConfigurationSection listeners = configuration.getConfigurationSection("Listeners");
         if (!listeners.isConfigurationSection("TinyListeners"))
             listeners.createSection("TinyListeners");
@@ -43,7 +42,6 @@ public record ListenersSection(ConfigurationSection tinyListeners,
         ConfigurationSection tinyListeners = listeners.getConfigurationSection("TinyListeners");
         ConfigurationSection complexListeners = listeners.getConfigurationSection("ComplexListeners");
         ConfigurationSection simpleListeners = listeners.getConfigurationSection("SimpleListeners");
-        plugin.saveConfig();
         return new ListenersSection(tinyListeners, complexListeners, simpleListeners, configuration);
     }
 

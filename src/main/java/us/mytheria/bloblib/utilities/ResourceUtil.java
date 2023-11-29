@@ -82,6 +82,18 @@ public class ResourceUtil {
         }
     }
 
+    /**
+     * Will update the existing file with the new values
+     *
+     * @param existingFile the file to update
+     * @param main         the plugin
+     */
+    public static void updateYml(File existingFile, Plugin main) {
+        String name = existingFile.getName();
+        File path = existingFile.getParentFile();
+        updateYml(path, "/temp" + name, name, existingFile, main);
+    }
+
     public static void updateYml(File path, String tempFileName, String fileName, File existingFile, Plugin main) {
         File tempFile = new File(path.getPath() + tempFileName);
         ResourceUtil.inputStreamToFile(tempFile, main.getResource(fileName)); // writes defaults to temp file

@@ -4,12 +4,24 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import us.mytheria.bloblib.utilities.ResourceUtil;
+
+import java.io.File;
 
 public class ConfigDecorator {
     private final JavaPlugin plugin;
+    private final ListenersSection listenersSection;
 
     public ConfigDecorator(JavaPlugin plugin) {
         this.plugin = plugin;
+        File file = new File(plugin.getDataFolder(), "config.yml");
+        ResourceUtil.updateYml(file, plugin);
+        plugin.reloadConfig();
+        this.listenersSection = ListenersSection.of(plugin);
+    }
+
+    private FileConfiguration getRoot() {
+        return plugin.getConfig();
     }
 
     /**
@@ -19,14 +31,12 @@ public class ConfigDecorator {
      * @return the section
      */
     public ConfigurationSection reloadAndGetSection(String path) {
-        FileConfiguration root = plugin.getConfig();
-        root.options().copyDefaults(true);
+        FileConfiguration root = getRoot();
         ConfigurationSection section;
         if (!root.isConfigurationSection(path))
             section = root.createSection(path);
         else
             section = root.getConfigurationSection(path);
-        plugin.saveConfig();
         return section;
     }
 
@@ -37,6 +47,6 @@ public class ConfigDecorator {
      */
     @NotNull
     public ListenersSection reloadAndGetListeners() {
-        return ListenersSection.of(plugin);
+        return listenersSection;
     }
 }

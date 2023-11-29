@@ -15,6 +15,16 @@ public class ElasticEconomy implements MultiEconomy {
     private final MultiEconomy economy;
     private final ElasticEconomyType type;
 
+    public static ElasticEconomy of(Object object) {
+        if (object instanceof Economy) {
+            return of((Economy) object);
+        } else if (object instanceof MultiEconomy) {
+            return of((MultiEconomy) object);
+        } else {
+            return absent();
+        }
+    }
+
     public static ElasticEconomy of(Economy economy) {
         return new ElasticEconomy(SingleEconomy.fromLegacy(economy), ElasticEconomyType.SINGLE);
     }

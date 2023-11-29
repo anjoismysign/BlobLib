@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 public class BlockFaceUtil {
 
     @NotNull
-    public static BlockFace rotate(BlockFace face, StructureRotation rotation) {
+    public static BlockFace rotateCardinalDirection(BlockFace face, StructureRotation rotation) {
         switch (rotation) {
             case NONE -> {
                 return face;
@@ -26,8 +26,20 @@ public class BlockFaceUtil {
                     case WEST -> {
                         return BlockFace.NORTH;
                     }
+                    case NORTH_EAST -> {
+                        return BlockFace.SOUTH_EAST;
+                    }
+                    case SOUTH_EAST -> {
+                        return BlockFace.SOUTH_WEST;
+                    }
+                    case SOUTH_WEST -> {
+                        return BlockFace.NORTH_WEST;
+                    }
+                    case NORTH_WEST -> {
+                        return BlockFace.NORTH_EAST;
+                    }
                     default -> {
-                        throw new IllegalArgumentException("Invalid BlockFace: " + face);
+                        return face;
                     }
                 }
             }
@@ -45,8 +57,20 @@ public class BlockFaceUtil {
                     case WEST -> {
                         return BlockFace.EAST;
                     }
+                    case NORTH_EAST -> {
+                        return BlockFace.SOUTH_WEST;
+                    }
+                    case SOUTH_EAST -> {
+                        return BlockFace.NORTH_WEST;
+                    }
+                    case SOUTH_WEST -> {
+                        return BlockFace.NORTH_EAST;
+                    }
+                    case NORTH_WEST -> {
+                        return BlockFace.SOUTH_EAST;
+                    }
                     default -> {
-                        throw new IllegalArgumentException("Invalid BlockFace: " + face);
+                        return face;
                     }
                 }
             }
@@ -64,8 +88,20 @@ public class BlockFaceUtil {
                     case WEST -> {
                         return BlockFace.SOUTH;
                     }
+                    case NORTH_EAST -> {
+                        return BlockFace.NORTH_WEST;
+                    }
+                    case SOUTH_EAST -> {
+                        return BlockFace.NORTH_EAST;
+                    }
+                    case SOUTH_WEST -> {
+                        return BlockFace.SOUTH_EAST;
+                    }
+                    case NORTH_WEST -> {
+                        return BlockFace.SOUTH_WEST;
+                    }
                     default -> {
-                        throw new IllegalArgumentException("Invalid BlockFace: " + face);
+                        return face;
                     }
                 }
             }

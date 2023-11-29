@@ -10,6 +10,8 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Directional;
 import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.entity.Entity;
@@ -233,7 +235,7 @@ public class Structrador {
         ChainedTask chainedTask = new ChainedTask(future, null,
                 (totalSize / maxPlacedPerPeriod) * period);
         ChainedTaskProgress progress = new ChainedTaskProgress(totalSize, chainedTask);
-        Iterator<BlockState> iterator = blocks.iterator();
+        Iterator<BlockState> blockIterator = blocks.iterator();
         World world = location.getWorld();
         if (world == null)
             throw new IllegalArgumentException("Location must have a world.");
@@ -278,8 +280,8 @@ public class Structrador {
                 @Override
                 public void run() {
                     Uber<Integer> placed = Uber.drive(0);
-                    while (iterator.hasNext() && placed.thanks() < maxPlacedPerPeriod) {
-                        BlockState next = iterator.next();
+                    while (blockIterator.hasNext() && placed.thanks() < maxPlacedPerPeriod) {
+                        BlockState next = blockIterator.next();
                         Vector nextVector = next.getLocation().toVector();
                         Vector result = VectorUtil.rotateVector(nextVector, degree);
                         Location blockLocation = location.clone()
@@ -289,11 +291,19 @@ public class Structrador {
                         ManoBlockState state = MANORATOR_FACTORY.of(next);
                         state.update(true, false, blockLocation);
                         BlockState current = blockLocation.getBlock().getState();
+                        BlockData data = current.getBlockData();
+                        if (data instanceof Directional directional) {
+                            directional.setFacing(BlockFaceUtil
+                                    .rotateCardinalDirection(directional.getFacing(),
+                                            structureRotation));
+                            current.setBlockData(directional);
+                            current.update(true, false);
+                        }
                         placedBlockConsumer.accept(current);
                         placed.talk(placed.thanks() + 1);
                         progress.run();
                     }
-                    if (!iterator.hasNext()) {
+                    if (!blockIterator.hasNext()) {
                         paletteFuture.complete(null);
                         this.cancel();
                     }
@@ -310,8 +320,8 @@ public class Structrador {
                 BukkitRunnable entityTask = new BukkitRunnable() {
                     @Override
                     public void run() {
-                        Uber<Integer> maxPlaced = Uber.drive(0);
-                        while (entityIterator.hasNext() && maxPlaced.thanks() < maxPlacedPerPeriod) {
+                        Uber<Integer> placed = Uber.drive(0);
+                        while (entityIterator.hasNext() && placed.thanks() < maxPlacedPerPeriod) {
                             Entity next = entityIterator.next();
                             Location nextLocation = next.getLocation();
                             Vector nextVector = nextLocation.toVector();
@@ -334,15 +344,15 @@ public class Structrador {
                             if (next instanceof Hanging hanging) {
                                 BlockFace facing = hanging.getFacing();
                                 hanging.setFacingDirection(
-                                        BlockFaceUtil.rotate(facing, structureRotation),
+                                        BlockFaceUtil.rotateCardinalDirection(facing, structureRotation),
                                         true);
                             }
                             next.setSilent(isSilent);
                             placedEntityConsumer.accept(next);
-                            maxPlaced.talk(maxPlaced.thanks() + 1);
+                            placed.talk(placed.thanks() + 1);
                             progress.run();
                         }
-                        if (!iterator.hasNext()) {
+                        if (!entityIterator.hasNext()) {
                             future.complete(null);
                             this.cancel();
                         }

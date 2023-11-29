@@ -49,6 +49,11 @@ public class CurrencyEconomy implements IdentityEconomy {
     }
 
     @Override
+    public boolean supportsUUIDOperations() {
+        return false;
+    }
+
+    @Override
     public boolean createAccount(UUID uuid, String s) {
         return true;
     }

@@ -5,7 +5,7 @@
     <parent>
         <groupId>us.mytheria</groupId>
         <artifactId>BlobLib</artifactId>
-        <version>1.697.27</version>
+        <version>1.697.28</version>
         <relativePath>pom.xml</relativePath>
     </parent>
     <artifactId>bloblib</artifactId>
@@ -76,8 +76,8 @@
                                     <shadedPattern>global.warming.commons</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>fr.skytasul.guardianbeam</pattern>
-                                    <shadedPattern>nuclear.winter.guardianbeam</shadedPattern>
+                                    <pattern>net.milkbowl.vault</pattern>
+                                    <shadedPattern>nuclear.winter.vault</shadedPattern>
                                 </relocation>
                                 <!-- doomsday.clock.NNNEEEXXXTTT -->
                             </relocations>

@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.vault;
 
+import net.milkbowl.vault.economy.AbstractEconomy;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.MultiEconomy;
 import net.milkbowl.vault.permission.Permission;
@@ -62,7 +63,8 @@ public class VaultManager implements Listener {
             }
             case "net.milkbowl.vault.economy.MultiEconomy" -> {
                 elasticEconomy = new us.mytheria.bloblib.vault.multieconomy.Absent();
-                RegisteredServiceProvider<MultiEconomy> provider = servicesManager.getRegistration(MultiEconomy.class);
+                Class<?> clazz = eventProvider.getProvider().getClass();
+                RegisteredServiceProvider<?> provider = servicesManager.getRegistration(clazz);
                 if (provider == null) {
                     vaultMultiEcoInstalled = false;
                     singleEconomy = false;
@@ -79,6 +81,12 @@ public class VaultManager implements Listener {
     public void onRegister(ServiceRegisterEvent event) {
         RegisteredServiceProvider<?> eventProvider = event.getProvider();
         switch (eventProvider.getService().getName()) {
+            case "net.milkbowl.vault.economy.AbstractEconomy" -> {
+                RegisteredServiceProvider<AbstractEconomy> provider = (RegisteredServiceProvider<AbstractEconomy>) eventProvider;
+                vaultEconomyWorker = new Found(provider.getProvider());
+                vaultEcoInstalled = true;
+                Bukkit.getLogger().fine("Vault AbstractEconomy override");
+            }
             case "net.milkbowl.vault.economy.Economy" -> {
                 RegisteredServiceProvider<Economy> provider = (RegisteredServiceProvider<Economy>) eventProvider;
                 vaultEconomyWorker = new Found(provider.getProvider());
@@ -92,15 +100,15 @@ public class VaultManager implements Listener {
                 Bukkit.getLogger().fine("Vault Permissions override");
             }
             case "net.milkbowl.vault.economy.MultiEconomy" -> {
-                RegisteredServiceProvider<MultiEconomy> provider = (RegisteredServiceProvider<MultiEconomy>) eventProvider;
-                elasticEconomy = ElasticEconomy.of(provider.getProvider());
+                elasticEconomy = ElasticEconomy.of(eventProvider.getProvider());
                 vaultMultiEcoInstalled = true;
                 Bukkit.getLogger().fine("Vault MultiEconomy override");
             }
         }
 
         if (eventProvider.getService() == Economy.class ||
-                eventProvider.getService() == MultiEconomy.class) {
+                eventProvider.getService().getName()
+                        .equals("net.milkbowl.vault.economy.MultiEconomy")) {
             setupEconomy();
         } else if (eventProvider.getService() == Permission.class) {
             setupPermissions();
@@ -179,7 +187,7 @@ public class VaultManager implements Listener {
             return false;
         }
         Bukkit.getLogger().info("Detected Vault2, enabling MultiEconomy features");
-        RegisteredServiceProvider<MultiEconomy> multieconomyServiceProvider = servicesManager.getRegistration(MultiEconomy.class);
+        RegisteredServiceProvider<?> multieconomyServiceProvider = servicesManager.getRegistration(MultiEconomy.class);
         if (multieconomyServiceProvider == null) {
             if (!vaultEcoInstalled)
                 return false;

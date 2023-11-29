@@ -18,15 +18,16 @@ public abstract class ListenerManager extends Manager {
         listeners.forEach(BlobListener::reload);
     }
 
+    @SuppressWarnings("ManualArrayToCollectionCopy")
     public void add(BlobListener... listeners) {
         for (BlobListener listener : listeners) {
-            add(listener);
+            this.listeners.add(listener);
         }
     }
 
     public void remove(BlobListener... listeners) {
         for (BlobListener listener : listeners) {
-            remove(listener);
+            this.listeners.remove(listener);
         }
     }
 }
