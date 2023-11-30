@@ -5,7 +5,7 @@
     <parent>
         <groupId>us.mytheria</groupId>
         <artifactId>BlobLib</artifactId>
-        <version>1.697.28</version>
+        <version>1.697.30</version>
         <relativePath>pom.xml</relativePath>
     </parent>
     <artifactId>bloblib</artifactId>
@@ -74,10 +74,6 @@
                                 <relocation>
                                     <pattern>org.apache.commons</pattern>
                                     <shadedPattern>global.warming.commons</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>net.milkbowl.vault</pattern>
-                                    <shadedPattern>nuclear.winter.vault</shadedPattern>
                                 </relocation>
                                 <!-- doomsday.clock.NNNEEEXXXTTT -->
                             </relocations>

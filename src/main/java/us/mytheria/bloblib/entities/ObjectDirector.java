@@ -83,10 +83,10 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                                         objectIsEditable = true;
                                     this.addObject(blobObject.getKey(), blobObject, file);
                                 }
-                            } catch (Exception exception) {
-                                Bukkit.getLogger().log(Level.SEVERE, exception.getMessage() + " \n " +
-                                        "At: " + file.getPath(), exception);
-                                mainFuture.completeExceptionally(exception);
+                            } catch (Throwable throwable) {
+                                Bukkit.getLogger().log(Level.SEVERE, throwable.getMessage() + " \n " +
+                                        "At: " + file.getPath(), throwable);
+                                mainFuture.completeExceptionally(throwable);
                             }
                         });
                         futures.add(fileFuture);

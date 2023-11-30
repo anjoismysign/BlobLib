@@ -76,7 +76,7 @@ public class InventoryTrackerManager implements Listener {
     }
 
     @EventHandler
-    public void onLocaleChange(PlayerLocaleChangeEvent event) {
+    private void onLocaleChange(PlayerLocaleChangeEvent event) {
         Player player = event.getPlayer();
         InventoryTracker<?, ?> result = this.playerTracker.get(player.getUniqueId());
         if (result == null)
@@ -88,7 +88,7 @@ public class InventoryTrackerManager implements Listener {
     }
 
     @EventHandler
-    public void onClick(InventoryClickEvent event) {
+    private void onClick(InventoryClickEvent event) {
         Inventory clickedInventory = event.getClickedInventory();
         if (clickedInventory == null)
             return;
