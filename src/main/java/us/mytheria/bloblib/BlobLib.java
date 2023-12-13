@@ -97,10 +97,8 @@ public class BlobLib extends JavaPlugin {
         tagSetManager = DataAssetManager.of(fileManager.tagSetsDirectory(),
                 TagSetReader::READ,
                 DataAssetType.TAG_SET,
-                section -> !section.getStringList("Inclusions").isEmpty() ||
-                        !section.getStringList("Exclusions").isEmpty() ||
-                        !section.getStringList("Include-Set").isEmpty() ||
-                        !section.getStringList("Exclude-Set").isEmpty());
+                section -> section.isList("Inclusions") ||
+                        !section.getStringList("Include-Set").isEmpty());
         translatableItemManager = LocalizableDataAssetManager
                 .of(fileManager.itemsDirectory(),
                         TranslatableReader::ITEM,
