@@ -23,6 +23,37 @@ public interface TranslatableItem extends Translatable<ItemStack> {
         return BlobLibTranslatableAPI.getInstance().getTranslatableItem(key);
     }
 
+    /**
+     * Will attempt to localize a specific ItemStack while preserving
+     * their NBTs.
+     *
+     * @param itemStack The ItemStack to process. If null, nothing happens.
+     * @param locale    The target locale.
+     */
+    static void localize(@Nullable ItemStack itemStack,
+                         @NotNull String locale) {
+        TranslatableItem translatableItem = TranslatableItem.isInstance(itemStack);
+        if (translatableItem == null)
+            return;
+        TranslatableItem localized = translatableItem.localize(locale);
+        ItemStack toStack = localized.getClone();
+        ItemMeta from = itemStack.getItemMeta();
+        Objects.requireNonNull(from);
+        ItemMeta to = toStack.getItemMeta();
+        Objects.requireNonNull(to);
+        if (to.hasDisplayName())
+            from.setDisplayName(to.getDisplayName());
+        else
+            from.setDisplayName(null);
+        if (to.hasLore())
+            from.setLore(to.getLore());
+        else
+            from.setLore(null);
+        PersistentDataContainer container = from.getPersistentDataContainer();
+        container.set(BlobTranslatableItem.localeKey, PersistentDataType.STRING, localized.getLocale());
+        itemStack.setItemMeta(from);
+    }
+
     @Nullable
     static TranslatableItem isInstance(@Nullable ItemStack item) {
         if (item == null)
