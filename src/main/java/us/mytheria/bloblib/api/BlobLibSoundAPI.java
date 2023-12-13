@@ -2,6 +2,7 @@ package us.mytheria.bloblib.api;
 
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.message.BlobSound;
 import us.mytheria.bloblib.managers.SoundManager;
@@ -40,6 +41,7 @@ public class BlobLibSoundAPI {
      * @param key The key of the sound
      * @return The sound
      */
+    @Nullable
     public BlobSound getSound(String key) {
         return getSoundManager().getSound(key);
     }
@@ -51,7 +53,7 @@ public class BlobLibSoundAPI {
     public void playSound(String key, Player player) {
         getSoundManager().play(player, key);
     }
-    
+
     /**
      * @return The sounds file
      */

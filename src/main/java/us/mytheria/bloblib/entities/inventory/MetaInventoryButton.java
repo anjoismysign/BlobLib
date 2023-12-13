@@ -50,6 +50,10 @@ public class MetaInventoryButton extends InventoryButton {
         return subMeta;
     }
 
+    public void accept(ButtonVisitor visitor) {
+        visitor.visit(this);
+    }
+
     /**
      * Will clone/copy the button to a new instance
      *

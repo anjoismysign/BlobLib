@@ -7,9 +7,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.api.BlobLibMessageAPI;
 import us.mytheria.bloblib.entities.BlobMessageModder;
+import us.mytheria.bloblib.entities.DataAsset;
 import us.mytheria.bloblib.entities.Localizable;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -28,7 +31,36 @@ import java.util.function.Function;
  * plugin and store them in the same way as the BlobMessages in BlobLib so other
  * plugins and even the same server administrator can use them.
  */
-public interface BlobMessage extends Localizable {
+public interface BlobMessage extends Localizable, DataAsset {
+
+    /**
+     * Gets a BlobMessage by the given key in en_us locale.
+     *
+     * @param key The key to get the message by
+     * @return The BlobMessage. Null if not found.
+     */
+    @Nullable
+    static BlobMessage by(@NotNull String key) {
+        Objects.requireNonNull(key);
+        return BlobLibMessageAPI.getInstance().getMessage(key, "en_us");
+    }
+
+    /**
+     * Will localize the message to the given locale.
+     * Should only return null if THIS BlobMessage was cached
+     * before being deleted.
+     *
+     * @param locale The locale to localize the message to
+     * @return The localized message. Null if the message is not localized
+     */
+    @Nullable
+    default BlobMessage localize(@NotNull String locale) {
+        Objects.requireNonNull(locale);
+        if (getLocale().equals(locale))
+            return this;
+        return BlobLibMessageAPI.getInstance().getMessage(getReference(), locale);
+    }
+
     /**
      * A click event that will be executed if BlobMessage has a chat message instance and is clicked.
      *

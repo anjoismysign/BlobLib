@@ -16,11 +16,13 @@ import java.util.function.Function;
  * An instance of BlobMessage that holds a Chat message and an Actionbar message.
  */
 public class BlobChatActionbarMessage extends BlobChatMessage {
+    @NotNull
     private final String actionbar;
 
     /**
      * Creates a new BlobChatActionbarMessage
      *
+     * @param reference  The reference to the message
      * @param chat       The chat message
      * @param hover      The hover message
      * @param actionbar  The actionbar message
@@ -28,13 +30,14 @@ public class BlobChatActionbarMessage extends BlobChatMessage {
      * @param locale     The locale to use
      * @param clickEvent The click event to use
      */
-    public BlobChatActionbarMessage(@NotNull String chat,
+    public BlobChatActionbarMessage(@NotNull String reference,
+                                    @NotNull String chat,
                                     @Nullable String hover,
                                     @NotNull String actionbar,
                                     @Nullable BlobSound sound,
-                                    String locale,
+                                    @NotNull String locale,
                                     @Nullable ClickEvent clickEvent) {
-        super(chat, hover, sound, locale, clickEvent);
+        super(reference, chat, hover, sound, locale, clickEvent);
         this.actionbar = BlobTranslatableSnippet.PARSE(actionbar, locale);
     }
 
@@ -70,7 +73,7 @@ public class BlobChatActionbarMessage extends BlobChatMessage {
      */
     @Override
     public @NotNull BlobChatActionbarMessage modify(Function<String, String> function) {
-        return new BlobChatActionbarMessage(function.apply(chat),
+        return new BlobChatActionbarMessage(getReference(), function.apply(chat),
                 hover == null ? null : function.apply(hover),
                 function.apply(actionbar),
                 getSound(),
@@ -81,7 +84,7 @@ public class BlobChatActionbarMessage extends BlobChatMessage {
     @Override
     @NotNull
     public BlobChatActionbarMessage onClick(ClickEvent event) {
-        return new BlobChatActionbarMessage(chat, hover, actionbar, getSound(),
+        return new BlobChatActionbarMessage(getReference(), chat, hover, actionbar, getSound(),
                 getLocale(), event);
     }
 }

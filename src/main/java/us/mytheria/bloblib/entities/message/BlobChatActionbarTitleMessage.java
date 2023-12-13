@@ -17,12 +17,14 @@ import java.util.function.Function;
  * and a Title/Subtitle message.
  */
 public class BlobChatActionbarTitleMessage extends BlobChatMessage {
+    @NotNull
     private final String title, subtitle, actionbar;
     private final int fadeIn, stay, fadeOut;
 
     /**
      * Creates a new BlobChatActionbarMessage
      *
+     * @param reference  The reference to the message
      * @param chat       The chat message
      * @param hover      The hover message
      * @param actionbar  The actionbar message
@@ -35,7 +37,8 @@ public class BlobChatActionbarTitleMessage extends BlobChatMessage {
      * @param locale     The locale to use
      * @param clickEvent The click event to use
      */
-    public BlobChatActionbarTitleMessage(@NotNull String chat,
+    public BlobChatActionbarTitleMessage(@NotNull String reference,
+                                         @NotNull String chat,
                                          @Nullable String hover,
                                          @NotNull String actionbar,
                                          @NotNull String title,
@@ -44,9 +47,9 @@ public class BlobChatActionbarTitleMessage extends BlobChatMessage {
                                          int stay,
                                          int fadeOut,
                                          @Nullable BlobSound sound,
-                                         String locale,
+                                         @NotNull String locale,
                                          @Nullable ClickEvent clickEvent) {
-        super(chat, hover, sound, locale, clickEvent);
+        super(reference, chat, hover, sound, locale, clickEvent);
         this.actionbar = BlobTranslatableSnippet.PARSE(actionbar, locale);
         this.title = BlobTranslatableSnippet.PARSE(title, locale);
         this.subtitle = subtitle;
@@ -90,7 +93,7 @@ public class BlobChatActionbarTitleMessage extends BlobChatMessage {
      */
     @Override
     public @NotNull BlobChatActionbarTitleMessage modify(Function<String, String> function) {
-        return new BlobChatActionbarTitleMessage(function.apply(chat),
+        return new BlobChatActionbarTitleMessage(getReference(), function.apply(chat),
                 hover == null ? null : function.apply(hover),
                 function.apply(actionbar),
                 function.apply(title),
@@ -104,7 +107,7 @@ public class BlobChatActionbarTitleMessage extends BlobChatMessage {
     @Override
     @NotNull
     public BlobChatActionbarTitleMessage onClick(ClickEvent event) {
-        return new BlobChatActionbarTitleMessage(chat, hover, actionbar, title,
+        return new BlobChatActionbarTitleMessage(getReference(), chat, hover, actionbar, title,
                 subtitle, fadeIn, stay, fadeOut, getSound(), getLocale(),
                 event);
     }

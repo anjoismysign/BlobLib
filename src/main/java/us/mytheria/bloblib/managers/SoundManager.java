@@ -103,7 +103,7 @@ public class SoundManager {
                 addDuplicate(reference);
                 return;
             }
-            sounds.put(reference, BlobSoundReader.read(section));
+            sounds.put(reference, BlobSoundReader.read(section, reference));
             pluginSounds.get(plugin.getName()).add(reference);
         });
     }
@@ -128,7 +128,7 @@ public class SoundManager {
                 addDuplicate(reference);
                 return;
             }
-            sounds.put(reference, BlobSoundReader.read(section));
+            sounds.put(reference, BlobSoundReader.read(section, reference));
         });
     }
 

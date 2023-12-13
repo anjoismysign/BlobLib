@@ -136,7 +136,8 @@ public class TranslatableManager {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         String locale = yamlConfiguration.getString("Locale", "en_us");
         if (yamlConfiguration.isString("Snippet")) {
-            addSnippet(fileName, TranslatableReader.SNIPPET(yamlConfiguration, locale));
+            addSnippet(fileName, TranslatableReader.SNIPPET(yamlConfiguration,
+                    locale, fileName));
             pluginSnippets.get(plugin.getName()).add(fileName);
             return;
         }
@@ -146,7 +147,7 @@ public class TranslatableManager {
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (!section.isString("Snippet"))
                 return;
-            addSnippet(reference, TranslatableReader.SNIPPET(section, locale));
+            addSnippet(reference, TranslatableReader.SNIPPET(section, locale, reference));
             pluginSnippets.get(plugin.getName()).add(reference);
         });
     }
@@ -156,7 +157,7 @@ public class TranslatableManager {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         String locale = yamlConfiguration.getString("Locale", "en_us");
         if (!yamlConfiguration.getStringList("Block").isEmpty()) {
-            addBlock(fileName, TranslatableReader.BLOCK(yamlConfiguration, locale));
+            addBlock(fileName, TranslatableReader.BLOCK(yamlConfiguration, locale, fileName));
             pluginBlocks.get(plugin.getName()).add(fileName);
             return;
         }
@@ -166,7 +167,7 @@ public class TranslatableManager {
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (section.getStringList("Block").isEmpty())
                 return;
-            addBlock(reference, TranslatableReader.BLOCK(section, locale));
+            addBlock(reference, TranslatableReader.BLOCK(section, locale, reference));
             pluginBlocks.get(plugin.getName()).add(reference);
         });
     }
@@ -215,7 +216,7 @@ public class TranslatableManager {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         String locale = yamlConfiguration.getString("Locale", "en_us");
         if (yamlConfiguration.isString("Snippet")) {
-            addSnippet(fileName, TranslatableReader.SNIPPET(yamlConfiguration, locale));
+            addSnippet(fileName, TranslatableReader.SNIPPET(yamlConfiguration, locale, fileName));
             return;
         }
         yamlConfiguration.getKeys(true).forEach(reference -> {
@@ -224,7 +225,7 @@ public class TranslatableManager {
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (!section.isString("Snippet"))
                 return;
-            addSnippet(reference, TranslatableReader.SNIPPET(section, locale));
+            addSnippet(reference, TranslatableReader.SNIPPET(section, locale, reference));
         });
     }
 
@@ -233,7 +234,7 @@ public class TranslatableManager {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         String locale = yamlConfiguration.getString("Locale", "en_us");
         if (!yamlConfiguration.getStringList("Block").isEmpty()) {
-            addBlock(fileName, TranslatableReader.BLOCK(yamlConfiguration, locale));
+            addBlock(fileName, TranslatableReader.BLOCK(yamlConfiguration, locale, fileName));
             return;
         }
         yamlConfiguration.getKeys(true).forEach(reference -> {
@@ -242,7 +243,7 @@ public class TranslatableManager {
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (section.getStringList("Block").isEmpty())
                 return;
-            addBlock(reference, TranslatableReader.BLOCK(section, locale));
+            addBlock(reference, TranslatableReader.BLOCK(section, locale, reference));
         });
     }
 

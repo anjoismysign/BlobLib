@@ -3,9 +3,11 @@ package us.mytheria.bloblib.entities.inventory;
 import me.anjoismysign.anjo.entities.Uber;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -27,9 +29,12 @@ public class MetaBlobButtonManager extends ButtonManager<MetaInventoryButton> {
      * @param section configuration section which contains all the buttons
      * @return a non abstract ButtonManager.
      */
-    public static MetaBlobButtonManager fromConfigurationSection(ConfigurationSection section) {
+    public static MetaBlobButtonManager fromConfigurationSection(@NotNull ConfigurationSection section,
+                                                                 @NotNull String locale) {
+        Objects.requireNonNull(section);
+        Objects.requireNonNull(locale);
         MetaBlobButtonManager blobButtonManager = new MetaBlobButtonManager();
-        blobButtonManager.add(section);
+        blobButtonManager.add(section, locale);
         return blobButtonManager;
     }
 
@@ -120,19 +125,31 @@ public class MetaBlobButtonManager extends ButtonManager<MetaInventoryButton> {
     }
 
     /**
+     * adds all buttons inside a configuration section through parsing.
+     * uses the default locale
+     *
+     * @param section configuration section which contains all the buttons
+     * @return true if at least one button was succesfully added.
+     * this is determined in case the being called after the first add call
+     */
+    public boolean add(ConfigurationSection section) {
+        return add(section, "en_us");
+    }
+
+    /**
      * adds all buttons inside a configuration section through parsing
      *
      * @param section configuration section which contains all the buttons
      * @return true if at least one button was succesfully added.
      * this is determined in case the being called after the first add call
      */
-    @Override
-    public boolean add(ConfigurationSection section) {
+    public boolean add(ConfigurationSection section, String locale) {
         Set<String> set = section.getKeys(false);
         Uber<Boolean> madeChanges = new Uber<>(false);
         set.stream().filter(key -> !contains(key)).forEach(key -> {
             madeChanges.talk(true);
-            MetaBlobMultiSlotable slotable = MetaBlobMultiSlotable.read(section.getConfigurationSection(key), key);
+            MetaBlobMultiSlotable slotable = MetaBlobMultiSlotable
+                    .read(section.getConfigurationSection(key), key, locale);
             slotable.setInButtonManager(this);
         });
         return madeChanges.thanks();

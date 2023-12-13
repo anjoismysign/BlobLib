@@ -2,6 +2,7 @@ package us.mytheria.bloblib.entities.translatable;
 
 import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
+import us.mytheria.bloblib.entities.DataAssetType;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -34,22 +35,24 @@ public class BlobTranslatableSnippet implements TranslatableSnippet {
     }
 
     @NotNull
-    private final String locale, snippet;
+    private final String locale, snippet, key;
 
-    public static BlobTranslatableSnippet of(@NotNull String locale,
+    public static BlobTranslatableSnippet of(@NotNull String key,
+                                             @NotNull String locale,
                                              @NotNull String snippet) {
         Objects.requireNonNull(locale, "Locale cannot be null");
         Objects.requireNonNull(snippet, "Snippet cannot be null");
-        return new BlobTranslatableSnippet(locale, snippet);
+        return new BlobTranslatableSnippet(key, locale, snippet);
     }
 
-    private BlobTranslatableSnippet(@NotNull String locale,
+    private BlobTranslatableSnippet(@NotNull String key,
+                                    @NotNull String locale,
                                     @NotNull String snippet) {
+        this.key = key;
         this.locale = locale;
         this.snippet = PARSE(snippet, locale);
     }
 
-    @Override
     @NotNull
     public String getLocale() {
         return locale;
@@ -60,9 +63,17 @@ public class BlobTranslatableSnippet implements TranslatableSnippet {
         return snippet;
     }
 
-    @Override
+    @NotNull
+    public String getReference() {
+        return key;
+    }
+
+    public DataAssetType getType() {
+        return DataAssetType.TRANSLATABLE_SNIPPET;
+    }
+
     @NotNull
     public TranslatableSnippet modify(Function<String, String> function) {
-        return new BlobTranslatableSnippet(locale, function.apply(snippet));
+        return new BlobTranslatableSnippet(key, locale, function.apply(snippet));
     }
 }

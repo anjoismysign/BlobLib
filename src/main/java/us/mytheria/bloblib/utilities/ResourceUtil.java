@@ -95,8 +95,13 @@ public class ResourceUtil {
     }
 
     public static void updateYml(File path, String tempFileName, String fileName, File existingFile, Plugin main) {
+        if (!existingFile.exists())
+            return;
         File tempFile = new File(path.getPath() + tempFileName);
-        ResourceUtil.inputStreamToFile(tempFile, main.getResource(fileName)); // writes defaults to temp file
+        InputStream inputStream = main.getResource(fileName);
+        if (inputStream == null)
+            return;
+        ResourceUtil.inputStreamToFile(tempFile, inputStream); // writes defaults to temp file
         YamlConfiguration tempYamlConfiguration = YamlConfiguration.loadConfiguration(tempFile);
         ResourceUtil.writeNewValues(existingFile,
                 tempYamlConfiguration); // attempts to write new values to existing file if they don't exist

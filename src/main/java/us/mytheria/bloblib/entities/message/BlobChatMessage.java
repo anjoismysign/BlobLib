@@ -16,7 +16,7 @@ import java.util.function.Function;
  * @author anjoismysign
  * An instance of BlobMessage that holds a Chat message.
  */
-public class BlobChatMessage extends SerialBlobMessage {
+public class BlobChatMessage extends AbstractMessage {
     /**
      * The chat message
      */
@@ -28,18 +28,20 @@ public class BlobChatMessage extends SerialBlobMessage {
     /**
      * Creates a new BlobChatMessage
      *
+     * @param reference  The reference of the message
      * @param message    The chat message
      * @param hover      The hover message
      * @param sound      The sound to play
      * @param locale     The locale to use
      * @param clickEvent The click event to use
      */
-    public BlobChatMessage(@NotNull String message,
+    public BlobChatMessage(@NotNull String reference,
+                           @NotNull String message,
                            @Nullable String hover,
-                           BlobSound sound,
-                           String locale,
+                           @Nullable BlobSound sound,
+                           @NotNull String locale,
                            @Nullable ClickEvent clickEvent) {
-        super(sound, locale, clickEvent);
+        super(reference, sound, locale, clickEvent);
         this.chat = BlobTranslatableSnippet.PARSE(message, locale);
         this.hover = hover == null ? null : BlobTranslatableSnippet.PARSE(hover, locale);
     }
@@ -92,7 +94,7 @@ public class BlobChatMessage extends SerialBlobMessage {
      */
     @Override
     public @NotNull BlobChatMessage modify(Function<String, String> function) {
-        return new BlobChatMessage(function.apply(chat),
+        return new BlobChatMessage(getReference(), function.apply(chat),
                 hover == null ? null : function.apply(hover),
                 getSound(),
                 getLocale(),
@@ -102,6 +104,6 @@ public class BlobChatMessage extends SerialBlobMessage {
     @Override
     @NotNull
     public BlobChatMessage onClick(ClickEvent event) {
-        return new BlobChatMessage(chat, hover, getSound(), getLocale(), event);
+        return new BlobChatMessage(getReference(), chat, hover, getSound(), getLocale(), event);
     }
 }

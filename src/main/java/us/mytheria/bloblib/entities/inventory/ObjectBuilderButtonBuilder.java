@@ -11,7 +11,7 @@ import us.mytheria.bloblib.api.BlobLibListenerAPI;
 import us.mytheria.bloblib.api.BlobLibMessageAPI;
 import us.mytheria.bloblib.entities.ArrayNavigator;
 import us.mytheria.bloblib.entities.BlobEditor;
-import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
+import us.mytheria.bloblib.entities.message.BlobMessage;
 import us.mytheria.bloblib.utilities.BukkitUtil;
 import us.mytheria.bloblib.utilities.ItemStackUtil;
 
@@ -1236,14 +1236,14 @@ public class ObjectBuilderButtonBuilder {
      * @param function          The function to apply
      * @return The button
      */
-    public static ObjectBuilderButton<ReferenceBlobMessage> MESSAGE(String buttonKey, long timeout,
-                                                                    String timeoutMessageKey,
-                                                                    String timerMessageKey,
-                                                                    Function<ReferenceBlobMessage, Boolean> function) {
-        ObjectBuilderButton<ReferenceBlobMessage> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
+    public static ObjectBuilderButton<BlobMessage> MESSAGE(String buttonKey, long timeout,
+                                                           String timeoutMessageKey,
+                                                           String timerMessageKey,
+                                                           Function<BlobMessage, Boolean> function) {
+        ObjectBuilderButton<BlobMessage> objectBuilderButton = new ObjectBuilderButton<>(buttonKey, Optional.empty(),
                 (button, player) -> api.addChatListener(player, timeout,
                         string -> {
-                            ReferenceBlobMessage message = BlobLibMessageAPI.getInstance().getMessage(string);
+                            BlobMessage message = BlobLibMessageAPI.getInstance().getMessage(string);
                             button.set(message);
                         },
                         timeoutMessageKey,
@@ -1262,9 +1262,9 @@ public class ObjectBuilderButtonBuilder {
      * @param timerMessageKey   The key of the timer message
      * @return The button
      */
-    public static ObjectBuilderButton<ReferenceBlobMessage> SIMPLE_MESSAGE(String buttonKey, long timeout,
-                                                                           String timeoutMessageKey,
-                                                                           String timerMessageKey) {
+    public static ObjectBuilderButton<BlobMessage> SIMPLE_MESSAGE(String buttonKey, long timeout,
+                                                                  String timeoutMessageKey,
+                                                                  String timerMessageKey) {
         return MESSAGE(buttonKey, timeout, timeoutMessageKey, timerMessageKey, s -> true);
     }
 
@@ -1284,9 +1284,9 @@ public class ObjectBuilderButtonBuilder {
      * @param objectBuilder The object builder
      * @return The button
      */
-    public static ObjectBuilderButton<ReferenceBlobMessage> QUICK_MESSAGE(String buttonKey,
-                                                                          long timeout,
-                                                                          ObjectBuilder<?> objectBuilder) {
+    public static ObjectBuilderButton<BlobMessage> QUICK_MESSAGE(String buttonKey,
+                                                                 long timeout,
+                                                                 ObjectBuilder<?> objectBuilder) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return MESSAGE(buttonKey, timeout, "Builder." + buttonKey + "-Timeout",
                 "Builder." + buttonKey, message -> {
@@ -1307,10 +1307,10 @@ public class ObjectBuilderButtonBuilder {
      * @param consumer      The consumer (which is a ReferenceBlobMessage)
      * @return The button
      */
-    public static ObjectBuilderButton<ReferenceBlobMessage> QUICK_ACTION_MESSAGE(String buttonKey,
-                                                                                 long timeout,
-                                                                                 ObjectBuilder<?> objectBuilder,
-                                                                                 Consumer<ReferenceBlobMessage> consumer) {
+    public static ObjectBuilderButton<BlobMessage> QUICK_ACTION_MESSAGE(String buttonKey,
+                                                                        long timeout,
+                                                                        ObjectBuilder<?> objectBuilder,
+                                                                        Consumer<BlobMessage> consumer) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return MESSAGE(buttonKey, timeout, "Builder." + buttonKey + "-Timeout",
                 "Builder." + buttonKey, message -> {

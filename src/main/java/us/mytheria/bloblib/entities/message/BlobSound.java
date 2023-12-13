@@ -10,10 +10,30 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.api.BlobLibSoundAPI;
+import us.mytheria.bloblib.entities.DataAsset;
+import us.mytheria.bloblib.entities.DataAssetType;
+
+import java.util.Objects;
 
 public record BlobSound(Sound sound, float volume, float pitch,
                         @Nullable SoundCategory soundCategory,
-                        @NotNull MessageAudience audience) {
+                        @NotNull MessageAudience audience,
+                        @NotNull String getReference)
+        implements DataAsset {
+
+    /**
+     * Gets a BlobSound by its key.
+     *
+     * @param key The key of the sound
+     * @return The sound. Null if not found
+     */
+    @Nullable
+    public static BlobSound by(@NotNull String key) {
+        Objects.requireNonNull(key);
+        return BlobLibSoundAPI.getInstance().getSound(key);
+    }
+
     /**
      * Plays the sound to the player at the given location
      *
@@ -104,5 +124,9 @@ public record BlobSound(Sound sound, float volume, float pitch,
      */
     public void broadcast() {
         Bukkit.getOnlinePlayers().forEach(this::handle);
+    }
+
+    public DataAssetType getType() {
+        return DataAssetType.BLOB_SOUND;
     }
 }

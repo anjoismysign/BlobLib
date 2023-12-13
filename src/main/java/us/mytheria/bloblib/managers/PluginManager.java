@@ -14,6 +14,10 @@ import java.util.Objects;
  * This class is used to manage all the plugins that use BlobLib
  */
 public class PluginManager {
+    private static BlobLib blobLib() {
+        return BlobLib.getInstance();
+    }
+
     private final HashMap<String, BlobPlugin> plugins;
 
     /**
@@ -99,6 +103,8 @@ public class PluginManager {
 
     public static void unloadAssets(BlobPlugin plugin) {
         TranslatableManager.unloadBlobPlugin(plugin);
+        blobLib().getTranslatableItemManager().unload(plugin);
+        blobLib().getTagSetManager().unload(plugin);
         InventoryManager.unloadBlobPlugin(plugin);
         ActionManager.unloadBlobPlugin(plugin);
         MessageManager.unloadBlobPlugin(plugin);
@@ -108,11 +114,13 @@ public class PluginManager {
     public static void loadAssets(BlobPlugin plugin, IManagerDirector director) {
         director = Objects.requireNonNull(director,
                 plugin.getName() + "'s ManagerDirector is null!");
+        TranslatableManager.loadBlobPlugin(plugin, director);
+        blobLib().getTagSetManager().reload(plugin, director);
+        blobLib().getTranslatableItemManager().reload(plugin, director);
         SoundManager.loadBlobPlugin(plugin, director);
         MessageManager.loadBlobPlugin(plugin, director);
         ActionManager.loadBlobPlugin(plugin, director);
         InventoryManager.loadBlobPlugin(plugin, director);
-        TranslatableManager.loadBlobPlugin(plugin, director);
     }
 
     public static void loadAssets(BlobPlugin plugin) {

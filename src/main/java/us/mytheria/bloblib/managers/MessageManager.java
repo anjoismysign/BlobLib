@@ -7,8 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
 import us.mytheria.bloblib.entities.BlobMessageReader;
-import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
-import us.mytheria.bloblib.entities.message.SerialBlobMessage;
+import us.mytheria.bloblib.entities.message.BlobMessage;
 
 import java.io.File;
 import java.util.*;
@@ -17,7 +16,7 @@ public class MessageManager {
     private final BlobLib main;
     private HashMap<String, Set<String>> pluginMessages;
     private HashMap<String, Integer> duplicates;
-    private HashMap<String, Map<String, SerialBlobMessage>> locales;
+    private HashMap<String, Map<String, BlobMessage>> locales;
 
     public MessageManager() {
         this.main = BlobLib.getInstance();
@@ -71,10 +70,6 @@ public class MessageManager {
         manager.load(plugin, director);
     }
 
-    public static void loadBlobPlugin(BlobPlugin plugin) {
-        loadBlobPlugin(plugin, plugin.getManagerDirector());
-    }
-
     private void loadFiles(File path) {
         File[] listOfFiles = path.listFiles();
         for (File file : listOfFiles) {
@@ -102,7 +97,7 @@ public class MessageManager {
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (!section.contains("Type") && !section.isString("Type"))
                 return;
-            SerialBlobMessage message = BlobMessageReader.read(section, locale);
+            BlobMessage message = BlobMessageReader.read(section, locale, reference);
             addOrCreateLocale(message, reference);
         });
     }
@@ -122,9 +117,9 @@ public class MessageManager {
         });
     }
 
-    private boolean addOrCreateLocale(SerialBlobMessage message, String reference) {
+    private boolean addOrCreateLocale(BlobMessage message, String reference) {
         String locale = message.getLocale();
-        Map<String, SerialBlobMessage> localeMap = locales.computeIfAbsent(locale, k -> new HashMap<>());
+        Map<String, BlobMessage> localeMap = locales.computeIfAbsent(locale, k -> new HashMap<>());
         if (localeMap.containsKey(reference)) {
             addDuplicate(reference);
             return false;
@@ -155,30 +150,24 @@ public class MessageManager {
     }
 
     @Nullable
-    public ReferenceBlobMessage getMessage(String key) {
-        Map<String, SerialBlobMessage> map = locales.get("en_us");
-        SerialBlobMessage message = map.get(key);
-        if (message == null)
-            return null;
-        return new ReferenceBlobMessage(message, key);
+    public BlobMessage getMessage(String key) {
+        Map<String, BlobMessage> map = locales.get("en_us");
+        return map.get(key);
     }
 
     @Nullable
-    public ReferenceBlobMessage getMessage(String key, String locale) {
+    public BlobMessage getMessage(String key, String locale) {
         locale = BlobLibTranslatableAPI.getInstance().getRealLocale(locale);
-        Map<String, SerialBlobMessage> localeMap = locales.get(locale);
+        Map<String, BlobMessage> localeMap = locales.get(locale);
         if (localeMap == null || !localeMap.containsKey(key))
             localeMap = locales.get("en_us");
-        SerialBlobMessage message = localeMap.get(key);
-        if (message == null)
-            return null;
-        return new ReferenceBlobMessage(message, key);
+        return localeMap.get(key);
     }
 
     public void playAndSend(Player player, String key) {
         String locale = player.getLocale();
         locale = BlobLibTranslatableAPI.getInstance().getRealLocale(locale);
-        ReferenceBlobMessage message = getMessage(key, locale);
+        BlobMessage message = getMessage(key, locale);
         if (message == null)
             throw new NullPointerException("Message '" + key + "' does not exist!");
         message.handle(player);
@@ -193,7 +182,7 @@ public class MessageManager {
     public void send(Player player, String key) {
         String locale = player.getLocale();
         locale = BlobLibTranslatableAPI.getInstance().getRealLocale(locale);
-        ReferenceBlobMessage message = getMessage(key, locale);
+        BlobMessage message = getMessage(key, locale);
         if (message == null)
             throw new NullPointerException("Message '" + key + "' does not exist!");
         message.send(player);

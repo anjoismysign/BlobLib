@@ -5,7 +5,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import us.mytheria.bloblib.command.BlobLibCmd;
 import us.mytheria.bloblib.disguises.DisguiseManager;
 import us.mytheria.bloblib.enginehub.EngineHubManager;
+import us.mytheria.bloblib.entities.DataAssetType;
 import us.mytheria.bloblib.entities.logger.BlobPluginLogger;
+import us.mytheria.bloblib.entities.tag.TagSet;
+import us.mytheria.bloblib.entities.tag.TagSetReader;
+import us.mytheria.bloblib.entities.translatable.TranslatableItem;
+import us.mytheria.bloblib.entities.translatable.TranslatableReader;
 import us.mytheria.bloblib.hologram.HologramManager;
 import us.mytheria.bloblib.managers.*;
 import us.mytheria.bloblib.managers.fillermanager.FillerManager;
@@ -47,6 +52,9 @@ public class BlobLib extends JavaPlugin {
     private TranslatableManager translatableManager;
     private TranslatablePH translatablePH;
 
+    private LocalizableDataAssetManager<TranslatableItem> translatableItemManager;
+    private DataAssetManager<TagSet> tagSetManager;
+
     private static BlobLib instance;
 
     /**
@@ -86,6 +94,18 @@ public class BlobLib extends JavaPlugin {
         inventoryManager = new InventoryManager();
         inventoryTrackerManager = new InventoryTrackerManager();
         translatableManager = new TranslatableManager();
+        tagSetManager = DataAssetManager.of(fileManager.tagSetsDirectory(),
+                TagSetReader::READ,
+                DataAssetType.TAG_SET,
+                section -> !section.getStringList("Inclusions").isEmpty() ||
+                        !section.getStringList("Exclusions").isEmpty() ||
+                        !section.getStringList("Include-Set").isEmpty() ||
+                        !section.getStringList("Exclude-Set").isEmpty());
+        translatableItemManager = LocalizableDataAssetManager
+                .of(fileManager.itemsDirectory(),
+                        TranslatableReader::ITEM,
+                        DataAssetType.TRANSLATABLE_ITEM,
+                        section -> section.isConfigurationSection("ItemStack"));
         messageManager = new MessageManager();
         actionManager = new ActionManager();
         soundManager = new SoundManager();
@@ -124,7 +144,9 @@ public class BlobLib extends JavaPlugin {
         configManager.reload();
         listenerManager.reload();
         soundManager.reload();
+        tagSetManager.reload();
         translatableManager.reload();
+        translatableItemManager.reload();
         messageManager.reload();
         actionManager.reload();
         inventoryManager.reload();
@@ -189,6 +211,14 @@ public class BlobLib extends JavaPlugin {
 
     public TranslatableManager getTranslatableManager() {
         return translatableManager;
+    }
+
+    public LocalizableDataAssetManager<TranslatableItem> getTranslatableItemManager() {
+        return translatableItemManager;
+    }
+
+    public DataAssetManager<TagSet> getTagSetManager() {
+        return tagSetManager;
     }
 
     /**

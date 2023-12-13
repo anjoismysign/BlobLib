@@ -15,6 +15,7 @@ import java.util.function.Function;
  * a Title/Subtitle message
  */
 public class BlobChatTitleMessage extends BlobChatMessage {
+    @NotNull
     private final String title, subtitle;
     private final int fadeIn, stay, fadeOut;
 
@@ -27,7 +28,8 @@ public class BlobChatTitleMessage extends BlobChatMessage {
      * @param fadeOut  the time in ticks for the title to fade out
      * @param sound    the sound to play
      */
-    public BlobChatTitleMessage(@NotNull String chat,
+    public BlobChatTitleMessage(@NotNull String reference,
+                                @NotNull String chat,
                                 @Nullable String hover,
                                 @NotNull String title,
                                 @NotNull String subtitle,
@@ -37,7 +39,7 @@ public class BlobChatTitleMessage extends BlobChatMessage {
                                 @Nullable BlobSound sound,
                                 @NotNull String locale,
                                 @Nullable ClickEvent clickEvent) {
-        super(chat, hover, sound, locale, clickEvent);
+        super(reference, chat, hover, sound, locale, clickEvent);
         this.title = BlobTranslatableSnippet.PARSE(title, locale);
         this.subtitle = BlobTranslatableSnippet.PARSE(subtitle, locale);
         this.fadeIn = fadeIn;
@@ -74,7 +76,7 @@ public class BlobChatTitleMessage extends BlobChatMessage {
      */
     @Override
     public @NotNull BlobChatTitleMessage modify(Function<String, String> function) {
-        return new BlobChatTitleMessage(function.apply(chat),
+        return new BlobChatTitleMessage(getReference(), function.apply(chat),
                 hover == null ? null : function.apply(hover),
                 function.apply(title),
                 function.apply(subtitle),
@@ -87,7 +89,7 @@ public class BlobChatTitleMessage extends BlobChatMessage {
     @Override
     @NotNull
     public BlobChatTitleMessage onClick(ClickEvent event) {
-        return new BlobChatTitleMessage(chat, hover, title, subtitle, fadeIn, stay,
+        return new BlobChatTitleMessage(getReference(), chat, hover, title, subtitle, fadeIn, stay,
                 fadeOut, getSound(), getLocale(), event);
     }
 }

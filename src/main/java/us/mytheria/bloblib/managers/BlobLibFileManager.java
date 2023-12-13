@@ -21,15 +21,19 @@ public class BlobLibFileManager {
     private final File inventories = new File(path.getPath() + "/BlobInventory");
     private final File metaInventories = new File(path.getPath() + "/MetaBlobInventory");
     private final File actions = new File(path.getPath() + "/Action");
+    private final File tagSets = new File(path.getPath() + "/TagSet");
     private final File snippets = new File(path.getPath() + "/TranslatableSnippet");
     private final File blocks = new File(path.getPath() + "/TranslatableBlock");
+    private final File items = new File(path.getPath() + "/TranslatableItem");
     private final File defaultSounds = new File(sounds.getPath() + "/bloblib_sounds.yml");
     private final File defaultMessages = new File(messages.getPath() + "/bloblib_lang.yml");
     private final File defaultInventories = new File(inventories.getPath() + "/bloblib_inventories.yml");
     private final File defaultMetaInventories = new File(metaInventories.getPath() + "/bloblib_meta_inventories.yml");
     private final File defaultActions = new File(actions.getPath() + "/bloblib_actions.yml");
+    private final File defaultTagSets = new File(tagSets.getPath() + "/bloblib_tag_sets.yml");
     private final File defaultSnippets = new File(snippets.getPath() + "/bloblib_translatable_snippets.yml");
     private final File defaultBlocks = new File(blocks.getPath() + "/bloblib_translatable_blocks.yml");
+    private final File defaultItems = new File(items.getPath() + "/bloblib_translatable_items.yml");
 
     /**
      * Will create a new BlobLibFileManager instance
@@ -50,23 +54,29 @@ public class BlobLibFileManager {
             if (!inventories.exists()) inventories.mkdir();
             if (!metaInventories.exists()) metaInventories.mkdir();
             if (!actions.exists()) actions.mkdir();
+            if (!tagSets.exists()) tagSets.mkdir();
             if (!snippets.exists()) snippets.mkdir();
             if (!blocks.exists()) blocks.mkdir();
+            if (!items.exists()) items.mkdir();
             ///////////////////////////////////////////
             if (!defaultSounds.exists()) defaultSounds.createNewFile();
             if (!defaultMessages.exists()) defaultMessages.createNewFile();
             if (!defaultInventories.exists()) defaultInventories.createNewFile();
             if (!defaultMetaInventories.exists()) defaultMetaInventories.createNewFile();
             if (!defaultActions.exists()) defaultActions.createNewFile();
+            if (!defaultTagSets.exists()) defaultTagSets.createNewFile();
             if (!defaultSnippets.exists()) defaultSnippets.createNewFile();
             if (!defaultBlocks.exists()) defaultBlocks.createNewFile();
+            if (!defaultItems.exists()) defaultItems.createNewFile();
             ResourceUtil.updateYml(sounds, "/tempbloblib_sounds.yml", "bloblib_sounds.yml", defaultSounds, plugin);
             ResourceUtil.updateYml(messages, "/tempbloblib_lang.yml", "bloblib_lang.yml", defaultMessages, plugin);
             ResourceUtil.updateYml(inventories, "/tempInventories.yml", "bloblib_inventories.yml", defaultInventories, plugin);
             ResourceUtil.updateYml(metaInventories, "/tempMetaInventories.yml", "bloblib_meta_inventories.yml", defaultMetaInventories, plugin);
             ResourceUtil.updateYml(actions, "/tempActions.yml", "bloblib_actions.yml", defaultActions, plugin);
+            ResourceUtil.updateYml(tagSets, "/tempTagSets.yml", "bloblib_tag_sets.yml", defaultTagSets, plugin);
             ResourceUtil.updateYml(snippets, "/tempTranslatableSnippets.yml", "bloblib_translatable_snippets.yml", defaultSnippets, plugin);
             ResourceUtil.updateYml(blocks, "/tempTranslatableBlocks.yml", "bloblib_translatable_blocks.yml", defaultBlocks, plugin);
+            ResourceUtil.updateYml(items, "/tempTranslatableItems.yml", "bloblib_translatable_items.yml", defaultItems, plugin);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -91,6 +101,14 @@ public class BlobLibFileManager {
     @Deprecated
     public File messagesFile() {
         return messages;
+    }
+
+    public File itemsDirectory() {
+        return items;
+    }
+
+    public File tagSetsDirectory() {
+        return tagSets;
     }
 
     /**

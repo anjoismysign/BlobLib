@@ -23,7 +23,8 @@ import java.util.*;
  */
 public class BlobFileManager extends Manager implements IFileManager {
     private final File pluginDirectory;
-    private final HashMap<String, File> files;
+    private final Map<String, File> files;
+    private final Map<DataAssetType, String> directories;
     private final String lowercased;
 
     /**
@@ -51,23 +52,37 @@ public class BlobFileManager extends Manager implements IFileManager {
                            String pluginDirectoryPathname,
                            JavaPlugin plugin) {
         super(managerDirector);
+        this.directories = new HashMap<>();
         this.lowercased = plugin.getName().toLowerCase();
         this.files = new HashMap<>();
         this.pluginDirectory = new File(pluginDirectoryPathname);
+        directories.put(DataAssetType.BLOB_MESSAGE, "messages");
+        directories.put(DataAssetType.BLOB_SOUND, "sounds");
+        directories.put(DataAssetType.BLOB_INVENTORY, "blobInventories");
+        directories.put(DataAssetType.META_BLOB_INVENTORY, "metaBlobInventories");
+        directories.put(DataAssetType.ACTION, "actions");
+        directories.put(DataAssetType.TRANSLATABLE_SNIPPET, "translatableSnippets");
+        directories.put(DataAssetType.TRANSLATABLE_BLOCK, "translatableBlocks");
+        directories.put(DataAssetType.TRANSLATABLE_ITEM, "translatableItems");
+        directories.put(DataAssetType.TAG_SET, "tagSets");
         addFile("messages", new File(pluginDirectory.getPath() + "/BlobMessage"));
         addFile("sounds", new File(pluginDirectory.getPath() + "/BlobSound"));
         addFile("blobInventories", new File(pluginDirectory.getPath() + "/BlobInventory"));
         addFile("metaBlobInventories", new File(pluginDirectory.getPath() + "/MetaBlobInventory"));
         addFile("actions", new File(pluginDirectory.getPath() + "/Action"));
+        addFile("tagSets", new File(pluginDirectory.getPath() + "/TagSet"));
         addFile("translatableSnippets", new File(pluginDirectory.getPath() + "/TranslatableSnippet"));
         addFile("translatableBlocks", new File(pluginDirectory.getPath() + "/TranslatableBlock"));
-        addFile("defaultSounds", new File(soundsDirectory().getPath() + "/" + lowercased + "_sounds.yml"));
-        addFile("defaultMessages", new File(messagesDirectory().getPath() + "/" + lowercased + "_lang.yml"));
-        addFile("defaultBlobInventories", new File(inventoriesDirectory().getPath() + "/" + lowercased + "_inventories.yml"));
-        addFile("defaultMetaBlobInventories", new File(metaInventoriesDirectory().getPath() + "/" + lowercased + "_meta_inventories.yml"));
-        addFile("defaultActions", new File(actionsDirectory().getPath() + "/" + lowercased + "_actions.yml"));
-        addFile("defaultTranslatableSnippets", new File(translatableSnippetsDirectory().getPath() + "/" + lowercased + "_translatable_snippets.yml"));
-        addFile("defaultTranslatableBlocks", new File(translatableBlocksDirectory().getPath() + "/" + lowercased + "_translatable_blocks.yml"));
+        addFile("translatableItems", new File(pluginDirectory.getPath() + "/TranslatableItem"));
+        addFile("defaultSounds", new File(getDirectory(DataAssetType.BLOB_SOUND).getPath() + "/" + lowercased + "_sounds.yml"));
+        addFile("defaultMessages", new File(getDirectory(DataAssetType.BLOB_MESSAGE).getPath() + "/" + lowercased + "_lang.yml"));
+        addFile("defaultBlobInventories", new File(getDirectory(DataAssetType.BLOB_INVENTORY).getPath() + "/" + lowercased + "_inventories.yml"));
+        addFile("defaultMetaBlobInventories", new File(getDirectory(DataAssetType.META_BLOB_INVENTORY).getPath() + "/" + lowercased + "_meta_inventories.yml"));
+        addFile("defaultActions", new File(getDirectory(DataAssetType.ACTION).getPath() + "/" + lowercased + "_actions.yml"));
+        addFile("defaultTagSets", new File(getDirectory(DataAssetType.TAG_SET).getPath() + "/" + lowercased + "_tag_sets.yml"));
+        addFile("defaultTranslatableSnippets", new File(getDirectory(DataAssetType.TRANSLATABLE_SNIPPET).getPath() + "/" + lowercased + "_translatable_snippets.yml"));
+        addFile("defaultTranslatableBlocks", new File(getDirectory(DataAssetType.TRANSLATABLE_BLOCK).getPath() + "/" + lowercased + "_translatable_blocks.yml"));
+        addFile("defaultTranslatableItems", new File(getDirectory(DataAssetType.TRANSLATABLE_ITEM).getPath() + "/" + lowercased + "_translatable_items.yml"));
         loadFiles(plugin);
     }
 
@@ -206,6 +221,10 @@ public class BlobFileManager extends Manager implements IFileManager {
             if (!actionsDirectory().exists()) actionsDirectory().mkdir();
             if (!translatableSnippetsDirectory().exists()) translatableSnippetsDirectory().mkdir();
             if (!translatableBlocksDirectory().exists()) translatableBlocksDirectory().mkdir();
+            if (!getDirectory(DataAssetType.TRANSLATABLE_ITEM).exists())
+                getDirectory(DataAssetType.TRANSLATABLE_ITEM).mkdir();
+            if (!getDirectory(DataAssetType.TAG_SET).exists())
+                getDirectory(DataAssetType.TAG_SET).mkdir();
             ///////////////////////////////////////////
             Optional<InputStream> soundsOptional = Optional.ofNullable(plugin.getResource(lowercased + "_sounds.yml"));
             if (soundsOptional.isPresent()) {
@@ -241,6 +260,18 @@ public class BlobFileManager extends Manager implements IFileManager {
             if (translatableBlocksOptional.isPresent()) {
                 getDefaultTranslatableBlocks().createNewFile();
                 ResourceUtil.updateYml(translatableBlocksDirectory(), "/temp" + lowercased + "_translatable_blocks.yml", lowercased + "_translatable_blocks.yml", getDefaultTranslatableBlocks(), plugin);
+            }
+            Optional<InputStream> translatableItemsOptional = Optional.ofNullable(plugin.getResource(lowercased + "_translatable_items.yml"));
+            if (translatableItemsOptional.isPresent()) {
+                File file = getFile("defaultTranslatableItems");
+                file.createNewFile();
+                ResourceUtil.updateYml(getDirectory(DataAssetType.TRANSLATABLE_ITEM), "/temp" + lowercased + "_translatable_items.yml", lowercased + "_translatable_items.yml", file, plugin);
+            }
+            Optional<InputStream> tagSetsOptional = Optional.ofNullable(plugin.getResource(lowercased + "_tag_sets.yml"));
+            if (tagSetsOptional.isPresent()) {
+                File file = getFile("defaultTagSets");
+                file.createNewFile();
+                ResourceUtil.updateYml(getDirectory(DataAssetType.TAG_SET), "/temp" + lowercased + "_tag_sets.yml", lowercased + "_tag_sets.yml", file, plugin);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -313,6 +344,11 @@ public class BlobFileManager extends Manager implements IFileManager {
      */
     public YamlConfiguration getYml(File f) {
         return YamlConfiguration.loadConfiguration(f);
+    }
+
+    @Nullable
+    public File getDirectory(DataAssetType type) {
+        return directories.get(type) == null ? null : getFile(directories.get(type));
     }
 
     /**

@@ -10,8 +10,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.entities.BlobObject;
 import us.mytheria.bloblib.entities.ObjectDirector;
+import us.mytheria.bloblib.entities.message.BlobMessage;
 import us.mytheria.bloblib.entities.message.BlobSound;
-import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
 import us.mytheria.bloblib.itemstack.ItemStackModder;
 
 import java.util.*;
@@ -434,7 +434,7 @@ public abstract class ObjectBuilder<T extends BlobObject> extends BlobInventory 
      * @param consumer  The consumer (which is a ReferenceBlobMessage)
      * @return The button
      */
-    public ObjectBuilder<T> addQuickActionMessageButton(String buttonKey, long timeout, Consumer<ReferenceBlobMessage> consumer) {
+    public ObjectBuilder<T> addQuickActionMessageButton(String buttonKey, long timeout, Consumer<BlobMessage> consumer) {
         return addObjectBuilderButton(ObjectBuilderButtonBuilder.QUICK_ACTION_MESSAGE(
                 buttonKey, timeout, this, consumer));
     }

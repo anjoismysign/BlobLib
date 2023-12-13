@@ -5,6 +5,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
+import us.mytheria.bloblib.entities.translatable.TranslatableItem;
 import us.mytheria.bloblib.itemstack.ItemStackReader;
 
 import java.util.HashSet;
@@ -33,7 +35,41 @@ public class BlobMultiSlotable extends MultiSlotable {
      * @param key     The key of the BlobMultiSlotable which was intended to read from.
      * @return The BlobMultiSlotable which was read from the ConfigurationSection.
      */
-    public static BlobMultiSlotable read(ConfigurationSection section, String key) {
+    public static BlobMultiSlotable read(ConfigurationSection section, String key,
+                                         String locale) {
+        if (section.isString("ItemStack")) {
+            String reference = section.getString("ItemStack");
+            TranslatableItem translatableItem = BlobLibTranslatableAPI.getInstance()
+                    .getTranslatableItem(reference,
+                            locale);
+            if (translatableItem == null)
+                throw new NullPointerException("TranslatableItem not found: " + reference);
+            HashSet<Integer> list = new HashSet<>();
+            String read = section.getString("Slot", "-1");
+            String[] slots = read.split(",");
+            if (slots.length != 1) {
+                for (String slot : slots) {
+                    add(list, slot, section.getName());
+                }
+            } else {
+                add(list, read, section.getName());
+            }
+            String permission = null;
+            if (section.isString("Permission"))
+                permission = section.getString("Permission");
+            double price = 0;
+            if (section.isDouble("Price")) {
+                price = section.getDouble("Price");
+            }
+            String priceCurrency = null;
+            if (section.isString("Price-Currency"))
+                priceCurrency = section.getString("Price-Currency");
+            String action = null;
+            if (section.isString("Action"))
+                action = section.getString("Action");
+            return new BlobMultiSlotable(list, translatableItem.getClone(), key, permission, price,
+                    priceCurrency, action);
+        }
         ConfigurationSection itemStackSection = section.getConfigurationSection("ItemStack");
         if (itemStackSection == null) {
             Bukkit.getLogger().severe("ItemStack section is null for " + key);

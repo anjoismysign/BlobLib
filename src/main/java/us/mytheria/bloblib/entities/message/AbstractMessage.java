@@ -5,10 +5,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.entities.DataAssetType;
 
 import java.util.function.Function;
 
-public abstract class SerialBlobMessage implements BlobMessage {
+public abstract class AbstractMessage implements BlobMessage {
+    @NotNull
+    private final String reference;
     @Nullable
     private final BlobSound sound;
     @NotNull
@@ -16,32 +19,33 @@ public abstract class SerialBlobMessage implements BlobMessage {
     @Nullable
     private final ClickEvent clickEvent;
 
-    public SerialBlobMessage(@Nullable BlobSound sound,
-                             @NotNull String locale,
-                             @Nullable ClickEvent clickEvent) {
+    public AbstractMessage(@NotNull String reference,
+                           @Nullable BlobSound sound,
+                           @NotNull String locale,
+                           @Nullable ClickEvent clickEvent) {
+        this.reference = reference;
         this.sound = sound;
         this.locale = locale;
         this.clickEvent = clickEvent;
     }
 
-    public SerialBlobMessage() {
-        sound = null;
-        locale = "en_us";
-        clickEvent = null;
-    }
-
-    @Override
     public abstract void send(Player player);
 
-    @Override
     public abstract void toCommandSender(CommandSender commandSender);
+
+    public String getReference() {
+        return reference;
+    }
+
+    public DataAssetType getType() {
+        return DataAssetType.BLOB_MESSAGE;
+    }
 
     /**
      * Will retrieve the BlobSound object.
      *
      * @return The sound to play
      */
-    @Override
     public BlobSound getSound() {
         return sound;
     }
@@ -51,23 +55,20 @@ public abstract class SerialBlobMessage implements BlobMessage {
      *
      * @return The locale of the message
      */
-    @Override
     @NotNull
     public String getLocale() {
         return locale;
     }
 
     @Nullable
-    @Override
     public ClickEvent getClickEvent() {
         return clickEvent;
     }
 
     @NotNull
-    public SerialBlobMessage onClick(ClickEvent event) {
+    public AbstractMessage onClick(ClickEvent event) {
         return this;
     }
 
-    @Override
-    public abstract @NotNull SerialBlobMessage modify(Function<String, String> function);
+    public abstract @NotNull AbstractMessage modify(Function<String, String> function);
 }

@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.BlobMessageModder;
 import us.mytheria.bloblib.entities.message.BlobMessage;
-import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
 import us.mytheria.bloblib.managers.BlobLibConfigManager;
 import us.mytheria.bloblib.managers.MessageManager;
 
@@ -98,7 +97,7 @@ public class BlobLibMessageAPI {
      */
     @Deprecated
     @Nullable
-    public ReferenceBlobMessage getMessage(@NotNull String key) {
+    public BlobMessage getMessage(@NotNull String key) {
         Objects.requireNonNull(key);
         return getMessageManager().getMessage(key);
     }
@@ -112,7 +111,7 @@ public class BlobLibMessageAPI {
      * @return The message
      */
     @Nullable
-    public ReferenceBlobMessage getMessage(@NotNull String key, @NotNull String locale) {
+    public BlobMessage getMessage(@NotNull String key, @NotNull String locale) {
         Objects.requireNonNull(key);
         Objects.requireNonNull(locale);
         return getMessageManager().getMessage(key, locale);
@@ -129,7 +128,7 @@ public class BlobLibMessageAPI {
      */
     @Deprecated
     @Nullable
-    public ReferenceBlobMessage getMessage(@NotNull String key, @NotNull Player player) {
+    public BlobMessage getMessage(@NotNull String key, @NotNull Player player) {
         Objects.requireNonNull(player);
         return getMessageManager().getMessage(key, player.getLocale());
     }
@@ -142,7 +141,7 @@ public class BlobLibMessageAPI {
      * @return The message
      */
     @Nullable
-    public ReferenceBlobMessage getMessage(@NotNull String key, @NotNull CommandSender sender) {
+    public BlobMessage getMessage(@NotNull String key, @NotNull CommandSender sender) {
         Objects.requireNonNull(sender);
         return getMessageManager().getMessage(key, sender instanceof Player ? ((Player) sender).getLocale() :
                 BlobLibConfigManager.getInstance().getConsoleLocale());
@@ -154,8 +153,8 @@ public class BlobLibMessageAPI {
      * @return The message, or the default message if not found
      */
     @Nullable
-    public ReferenceBlobMessage getLocaleMessageOrDefault(String key, String locale) {
-        ReferenceBlobMessage localeMessage = getMessageManager().getMessage(key, locale);
+    public BlobMessage getLocaleMessageOrDefault(String key, String locale) {
+        BlobMessage localeMessage = getMessageManager().getMessage(key, locale);
         if (localeMessage != null)
             return localeMessage;
         return getMessageManager().getMessage(key);
@@ -169,7 +168,7 @@ public class BlobLibMessageAPI {
      * @return The message, or the default message if not found
      */
     @Nullable
-    public ReferenceBlobMessage getLocaleMessageOrDefault(String key, Player player) {
+    public BlobMessage getLocaleMessageOrDefault(String key, Player player) {
         String locale = player.getLocale();
         return getLocaleMessageOrDefault(key, locale);
     }

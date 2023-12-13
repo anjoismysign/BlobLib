@@ -48,7 +48,9 @@ public record InventoryBuilderCarrier<T extends InventoryButton>(@Nullable Strin
             }
         }
         String locale = configurationSection.getString("Locale", "en_us");
-        BlobButtonManager buttonManager = BlobButtonManager.fromConfigurationSection(configurationSection.getConfigurationSection("Buttons"));
+        BlobButtonManager buttonManager = BlobButtonManager
+                .fromConfigurationSection(configurationSection
+                        .getConfigurationSection("Buttons"), locale);
         return new InventoryBuilderCarrier<>(title, size, buttonManager,
                 null, reference, locale);
     }
@@ -82,7 +84,9 @@ public record InventoryBuilderCarrier<T extends InventoryButton>(@Nullable Strin
         String type = configurationSection.isString("Type")
                 ? configurationSection.getString("Type") : "DEFAULT";
         String locale = configurationSection.getString("Locale", "en_us");
-        MetaBlobButtonManager buttonManager = MetaBlobButtonManager.fromConfigurationSection(configurationSection.getConfigurationSection("Buttons"));
+        MetaBlobButtonManager buttonManager = MetaBlobButtonManager
+                .fromConfigurationSection(configurationSection
+                        .getConfigurationSection("Buttons"), locale);
         return new InventoryBuilderCarrier<>(title, size, buttonManager,
                 type, reference, locale);
     }

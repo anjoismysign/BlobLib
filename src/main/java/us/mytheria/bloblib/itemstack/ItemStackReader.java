@@ -8,7 +8,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.SkullCreator;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
 import us.mytheria.bloblib.utilities.TextColor;
@@ -93,7 +93,7 @@ public class ItemStackReader {
         return builder;
     }
 
-    @Nullable
+    @NotNull
     public static ItemStackBuilder read(ConfigurationSection section) {
         ItemStackBuilder builder;
         try {

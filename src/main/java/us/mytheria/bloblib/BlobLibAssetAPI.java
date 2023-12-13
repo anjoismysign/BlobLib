@@ -7,7 +7,6 @@ import us.mytheria.bloblib.action.Action;
 import us.mytheria.bloblib.api.*;
 import us.mytheria.bloblib.entities.inventory.*;
 import us.mytheria.bloblib.entities.message.BlobSound;
-import us.mytheria.bloblib.entities.message.ReferenceBlobMessage;
 import us.mytheria.bloblib.managers.*;
 
 import java.io.File;
@@ -21,6 +20,7 @@ public class BlobLibAssetAPI {
     private final BlobLibSoundAPI soundAPI;
     private final BlobLibInventoryAPI inventoryAPI;
     private final BlobLibActionAPI actionAPI;
+    private final BlobLibTagAPI tagAPI;
     private final BlobLibMessageAPI messageAPI;
     private final BlobLibTranslatableAPI translatableAPI;
 
@@ -28,6 +28,7 @@ public class BlobLibAssetAPI {
         this.soundAPI = BlobLibSoundAPI.getInstance(plugin);
         this.inventoryAPI = BlobLibInventoryAPI.getInstance(plugin);
         this.actionAPI = BlobLibActionAPI.getInstance(plugin);
+        this.tagAPI = BlobLibTagAPI.getInstance(plugin);
         this.messageAPI = BlobLibMessageAPI.getInstance(plugin);
         this.translatableAPI = BlobLibTranslatableAPI.getInstance(plugin);
     }
@@ -55,6 +56,10 @@ public class BlobLibAssetAPI {
 
     public BlobLibActionAPI getActionAPI() {
         return actionAPI;
+    }
+
+    public BlobLibTagAPI getTagAPI() {
+        return tagAPI;
     }
 
     public BlobLibMessageAPI getMessageAPI() {
@@ -108,30 +113,6 @@ public class BlobLibAssetAPI {
     @Deprecated
     public static Optional<MetaInventoryShard> hasMetaInventoryShard(String type) {
         return Optional.ofNullable(getInventoryManager().getMetaInventoryShard(type));
-    }
-
-    @Deprecated
-    public static ReferenceBlobMessage getMessage(String key) {
-        return getMessageManager().getMessage(key);
-    }
-
-    @Deprecated
-    public static ReferenceBlobMessage getMessage(String key, String locale) {
-        return getMessageManager().getMessage(key, locale);
-    }
-
-    @Deprecated
-    public static ReferenceBlobMessage getLocaleMessageOrDefault(String key, String locale) {
-        ReferenceBlobMessage localeMessage = getMessageManager().getMessage(key, locale);
-        if (localeMessage != null)
-            return localeMessage;
-        return getMessageManager().getMessage(key);
-    }
-
-    @Deprecated
-    public static ReferenceBlobMessage getLocaleMessageOrDefault(String key, Player player) {
-        String locale = player.getLocale();
-        return getLocaleMessageOrDefault(key, locale);
     }
 
     @Deprecated

@@ -5,6 +5,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.entities.translatable.BlobTranslatableSnippet;
 
 import java.util.function.Function;
@@ -12,24 +13,21 @@ import java.util.function.Function;
 /**
  * A message that holds an Actionbar message
  */
-public class BlobActionbarMessage extends SerialBlobMessage {
+public class BlobActionbarMessage extends AbstractMessage {
     private final String actionbar;
 
     /**
-     * @param message The message to send
-     * @param sound   The sound to play
+     * @param reference The reference to the message
+     * @param message   The message to send
+     * @param sound     The sound to play
+     * @param locale    The locale of the message
      */
-    public BlobActionbarMessage(String message, BlobSound sound,
-                                String locale) {
-        super(sound, locale, null);
+    public BlobActionbarMessage(@NotNull String reference,
+                                @NotNull String message,
+                                @Nullable BlobSound sound,
+                                @NotNull String locale) {
+        super(reference, sound, locale, null);
         this.actionbar = BlobTranslatableSnippet.PARSE(message, locale);
-    }
-
-    /**
-     * @param message The message to send
-     */
-    public BlobActionbarMessage(String message) {
-        this(message, null, null);
     }
 
     /**
@@ -57,6 +55,6 @@ public class BlobActionbarMessage extends SerialBlobMessage {
      */
     @Override
     public @NotNull BlobActionbarMessage modify(Function<String, String> function) {
-        return new BlobActionbarMessage(function.apply(actionbar), getSound(), getLocale());
+        return new BlobActionbarMessage(getReference(), function.apply(actionbar), getSound(), getLocale());
     }
 }

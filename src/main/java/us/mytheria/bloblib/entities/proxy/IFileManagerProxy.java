@@ -1,5 +1,7 @@
 package us.mytheria.bloblib.entities.proxy;
 
+import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.entities.DataAssetType;
 import us.mytheria.bloblib.entities.IFileManager;
 
 import java.io.File;
@@ -9,6 +11,10 @@ public class IFileManagerProxy implements IFileManager {
 
     protected IFileManagerProxy(IFileManager fileManager) {
         this.fileManager = fileManager;
+    }
+
+    public @Nullable File getDirectory(DataAssetType type) {
+        return fileManager.getDirectory(type);
     }
 
     public File messagesDirectory() {

@@ -1,11 +1,12 @@
 package us.mytheria.bloblib.entities.translatable;
 
 import org.jetbrains.annotations.NotNull;
+import us.mytheria.bloblib.entities.DataAsset;
 import us.mytheria.bloblib.entities.Localizable;
 
 import java.util.function.Function;
 
-public interface Translatable<T> extends Localizable {
+public interface Translatable<T> extends Localizable, DataAsset {
     /**
      * Gets the translatable
      *

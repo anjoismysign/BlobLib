@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.translatable.TranslatableBlock;
+import us.mytheria.bloblib.entities.translatable.TranslatableItem;
 import us.mytheria.bloblib.entities.translatable.TranslatableSnippet;
 import us.mytheria.bloblib.managers.BlobLibConfigManager;
 import us.mytheria.bloblib.managers.TranslatableManager;
@@ -115,6 +116,44 @@ public class BlobLibTranslatableAPI {
                                                       @NotNull Player player) {
         Objects.requireNonNull(player);
         return getTranslatableManager().getSnippet(key, player.getLocale());
+    }
+
+    /**
+     * Will get a TranslatableItem by its key and locale.
+     *
+     * @param key    The key of the translatable
+     * @param locale The locale of the translatable
+     * @return The TranslatableItem
+     */
+    @Nullable
+    public TranslatableItem getTranslatableItem(@NotNull String key,
+                                                @NotNull String locale) {
+        return plugin.getTranslatableItemManager().getAsset(key, locale);
+    }
+
+    /**
+     * Will get a TranslatableKey by its key and the default locale.
+     *
+     * @param key The key of the translatable
+     * @return The TranslatableItem
+     */
+    @Nullable
+    public TranslatableItem getTranslatableItem(@NotNull String key) {
+        return plugin.getTranslatableItemManager().getAsset(key);
+    }
+
+    /**
+     * Will get a TranslatableItem by its key and the player's locale.
+     *
+     * @param key    The key of the translatable
+     * @param player The player to get the locale from
+     * @return The TranslatableItem
+     */
+    @Nullable
+    public TranslatableItem getTranslatableItem(@NotNull String key,
+                                                @NotNull Player player) {
+        Objects.requireNonNull(player);
+        return plugin.getTranslatableItemManager().getAsset(key, player.getLocale());
     }
 
     /**
