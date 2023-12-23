@@ -61,6 +61,6 @@ Buttons:
       CustomModelData: 0
       DisplayName: "&6Build"
       Lore:
-        - "&7Click to add reward"
+        - "&7Click to add currency"
         - "&7to the files."
     Slot: 22

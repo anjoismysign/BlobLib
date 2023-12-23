@@ -50,7 +50,6 @@ public class BlobLib extends JavaPlugin {
     private SerializationLib serializationLib;
     private InventoryTrackerManager inventoryTrackerManager;
     private TranslatableManager translatableManager;
-    private TranslatablePH translatablePH;
 
     private LocalizableDataAssetManager<TranslatableItem> translatableItemManager;
     private DataAssetManager<TagSet> tagSetManager;

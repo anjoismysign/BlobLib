@@ -27,16 +27,10 @@ import java.util.logging.Level;
 public class ObjectDirector<T extends BlobObject> extends Manager implements Listener {
     private final ObjectBuilderManager<T> objectBuilderManager;
     private final ObjectManager<T> objectManager;
-    private final BlobExecutor executor;
-    private final List<Function<ExecutorData, Boolean>> nonAdminChildCommands;
-    private final List<Function<ExecutorData, Boolean>> adminChildCommands;
-    private final List<Function<ExecutorData, List<String>>> nonAdminChildTabCompleter;
-    private final List<Function<ExecutorData, List<String>>> adminChildTabCompleter;
+    private final CommandDirector commandDirector;
     protected final String objectName;
     private final boolean hasObjectBuilderManager;
     private boolean objectIsEditable;
-    protected CompletableFuture<Void> loadFilesFuture;
-    private final Consumer<Player> addConsumer;
 
     public ObjectDirector(ManagerDirector managerDirector,
                           ObjectDirectorData objectDirectorData,
@@ -48,16 +42,14 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                           ObjectDirectorData objectDirectorData,
                           Function<File, T> readFunction, boolean hasObjectBuilderManager) {
         super(managerDirector);
+        this.commandDirector = new CommandDirector(managerDirector.getPlugin(), objectDirectorData.objectName());
         objectIsEditable = false;
         this.hasObjectBuilderManager = hasObjectBuilderManager;
         if (hasObjectBuilderManager) {
             this.objectBuilderManager = new ObjectBuilderManager<>(managerDirector,
                     objectDirectorData.objectBuilderKey(), this);
-            this.addConsumer = objectBuilderManager::getOrDefault;
         } else {
             this.objectBuilderManager = null;
-            this.addConsumer = player -> {
-            };
         }
         Optional<File> loadFilesDirectory = managerDirector.getRealFileManager().searchFile(objectDirectorData.objectDirectory());
         if (loadFilesDirectory.isEmpty()) {
@@ -96,11 +88,6 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
             }
         };
         Bukkit.getPluginManager().registerEvents(this, managerDirector.getPlugin());
-        nonAdminChildCommands = new ArrayList<>();
-        adminChildCommands = new ArrayList<>();
-        nonAdminChildTabCompleter = new ArrayList<>();
-        adminChildTabCompleter = new ArrayList<>();
-        executor = new BlobExecutor(getPlugin(), objectDirectorData.objectName());
         objectName = objectDirectorData.objectName();
         setDefaultCommands().setDefaultTabCompleter();
         if (hasObjectBuilderManager) {
@@ -119,7 +106,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                 Result<BlobChildCommand> result = data.executor()
                         .isChildCommand("add", data.args());
                 if (result.isValid()) {
-                    return getExecutor().ifInstanceOfPlayer(data.sender(), player -> {
+                    return commandDirector.getExecutor().ifInstanceOfPlayer(data.sender(), player -> {
                         ObjectBuilder<T> builder = objectBuilderManager.getOrDefault(player.getUniqueId());
                         builder.openInventory();
                     });
@@ -130,7 +117,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                 Result<BlobChildCommand> result = data.executor()
                         .isChildCommand("remove", data.args());
                 if (result.isValid()) {
-                    return getExecutor().ifInstanceOfPlayer(data.sender(), this::removeObject);
+                    return commandDirector.getExecutor().ifInstanceOfPlayer(data.sender(), this::removeObject);
                 }
                 return false;
             });
@@ -142,7 +129,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                     if (args.length != 2)
                         return false;
                     String input = args[1];
-                    return getExecutor().ifInstanceOfPlayer(data.sender(), player -> editObject(player, input));
+                    return commandDirector.getExecutor().ifInstanceOfPlayer(data.sender(), player -> editObject(player, input));
                 }
                 return false;
             });
@@ -186,7 +173,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
      * @param nonAdminChildCommand the BlobChildCommands that CAN BE EXECUTED WITHOUT 'YOURPLUGIN.admin' permission.
      */
     public void addNonAdminChildCommand(Function<ExecutorData, Boolean> nonAdminChildCommand) {
-        this.nonAdminChildCommands.add(nonAdminChildCommand);
+        this.commandDirector.addNonAdminChildCommand(nonAdminChildCommand);
     }
 
     /**
@@ -219,7 +206,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
      * @param adminChildCommand the BlobChildCommands that can ONLY be executed with 'YOURPLUGIN.admin' permission.
      */
     public void addAdminChildCommand(Function<ExecutorData, Boolean> adminChildCommand) {
-        this.adminChildCommands.add(adminChildCommand);
+        this.commandDirector.addAdminChildCommand(adminChildCommand);
     }
 
     /**
@@ -234,7 +221,7 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
      * @param nonAdminChildTabCompleter the BlobChildCommands that CAN BE EXECUTED WITHOUT 'YOURPLUGIN.admin' permission.
      */
     public void addNonAdminChildTabCompleter(Function<ExecutorData, List<String>> nonAdminChildTabCompleter) {
-        this.nonAdminChildTabCompleter.add(nonAdminChildTabCompleter);
+        this.commandDirector.addNonAdminChildTabCompleter(nonAdminChildTabCompleter);
     }
 
     /**
@@ -249,23 +236,23 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
      * @param adminChildTabCompleter the BlobChildCommands that can ONLY be executed with 'YOURPLUGIN.admin' permission.
      */
     public void addAdminChildTabCompleter(Function<ExecutorData, List<String>> adminChildTabCompleter) {
-        this.adminChildTabCompleter.add(adminChildTabCompleter);
+        this.commandDirector.addAdminChildTabCompleter(adminChildTabCompleter);
     }
 
     public List<Function<ExecutorData, Boolean>> getAdminChildCommands() {
-        return adminChildCommands;
+        return this.commandDirector.getAdminChildCommands();
     }
 
     public List<Function<ExecutorData, Boolean>> getNonAdminChildCommands() {
-        return nonAdminChildCommands;
+        return this.commandDirector.getNonAdminChildCommands();
     }
 
     public List<Function<ExecutorData, List<String>>> getAdminChildTabCompleter() {
-        return adminChildTabCompleter;
+        return this.commandDirector.getAdminChildTabCompleter();
     }
 
     public List<Function<ExecutorData, List<String>>> getNonAdminChildTabCompleter() {
-        return nonAdminChildTabCompleter;
+        return this.commandDirector.getNonAdminChildTabCompleter();
     }
 
     public ObjectBuilderManager<T> getBuilderManager() {
@@ -280,47 +267,13 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
         return objectManager;
     }
 
-    private BlobExecutor getExecutor() {
-        return executor;
-    }
-
     private ObjectDirector<T> setDefaultCommands() {
-        getExecutor().setCommand((sender, args) -> {
-                    if (executor.hasNoArguments(sender, args))
-                        return true;
-                    for (Function<ExecutorData, Boolean> childCommand : nonAdminChildCommands) {
-                        if (childCommand.apply(new ExecutorData(executor, args, sender)))
-                            return true;
-                    }
-                    if (!executor.hasAdminPermission(sender))
-                        return true;
-                    for (Function<ExecutorData, Boolean> childCommand : adminChildCommands) {
-                        if (childCommand.apply(new ExecutorData(executor, args, sender)))
-                            return true;
-                    }
-                    return false;
-                }
-        );
+        commandDirector.setDefaultCommands();
         return this;
     }
 
     private void setDefaultTabCompleter() {
-        getExecutor().setTabCompleter((sender, args) -> {
-            List<String> suggestions = new ArrayList<>();
-            for (Function<ExecutorData, List<String>> childTabCompleter : nonAdminChildTabCompleter) {
-                List<String> childTabCompletion = childTabCompleter.apply(new ExecutorData(executor, args, sender));
-                if (childTabCompletion != null && !childTabCompletion.isEmpty())
-                    suggestions.addAll(childTabCompletion);
-            }
-            if (!executor.hasAdminPermission(sender, null))
-                return suggestions;
-            for (Function<ExecutorData, List<String>> childTabCompleter : adminChildTabCompleter) {
-                List<String> childTabCompletion = childTabCompleter.apply(new ExecutorData(executor, args, sender));
-                if (childTabCompletion != null && !childTabCompletion.isEmpty())
-                    suggestions.addAll(childTabCompletion);
-            }
-            return suggestions;
-        });
+        commandDirector.setDefaultTabCompleter();
     }
 
     /**

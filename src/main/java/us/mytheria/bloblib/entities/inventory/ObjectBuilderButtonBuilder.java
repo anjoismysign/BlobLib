@@ -86,7 +86,7 @@ public class ObjectBuilderButtonBuilder {
      * @return The button
      */
     public static ObjectBuilderButton<String> QUICK_STRING(String buttonKey, long timeout,
-                                                           ObjectBuilder<?> objectBuilder) {
+                                                           BlobObjectBuilder<?> objectBuilder) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return STRING(buttonKey, timeout, "Builder." + buttonKey
                         + "-Timeout", "Builder." + buttonKey,
@@ -173,7 +173,7 @@ public class ObjectBuilderButtonBuilder {
      * @return The button
      */
     public static ObjectBuilderButton<Byte> QUICK_BYTE(String buttonKey, long timeout,
-                                                       ObjectBuilder<?> objectBuilder) {
+                                                       BlobObjectBuilder<?> objectBuilder) {
 
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return BYTE(buttonKey, timeout, "Builder." + buttonKey
@@ -206,7 +206,7 @@ public class ObjectBuilderButtonBuilder {
      * @return The button
      */
     public static ObjectBuilderButton<Byte> POSITIVE_BYTE(String buttonKey, long timeout,
-                                                          ObjectBuilder<?> objectBuilder) {
+                                                          BlobObjectBuilder<?> objectBuilder) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         Function<Byte, Boolean> function = value -> {
             objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
@@ -306,7 +306,7 @@ public class ObjectBuilderButtonBuilder {
      * @return The button
      */
     public static ObjectBuilderButton<Short> QUICK_SHORT(String buttonKey, long timeout,
-                                                         ObjectBuilder<?> objectBuilder) {
+                                                         BlobObjectBuilder<?> objectBuilder) {
 
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return SHORT(buttonKey, timeout, "Builder." + buttonKey
@@ -338,7 +338,7 @@ public class ObjectBuilderButtonBuilder {
      * @return The button
      */
     public static ObjectBuilderButton<Short> POSITIVE_SHORT(String buttonKey, long timeout,
-                                                            ObjectBuilder<?> objectBuilder) {
+                                                            BlobObjectBuilder<?> objectBuilder) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         Function<Short, Boolean> function = value -> {
             objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
@@ -438,7 +438,7 @@ public class ObjectBuilderButtonBuilder {
      * @return The button
      */
     public static ObjectBuilderButton<Integer> QUICK_INTEGER(String buttonKey, long timeout,
-                                                             ObjectBuilder<?> objectBuilder) {
+                                                             BlobObjectBuilder<?> objectBuilder) {
 
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return INTEGER(buttonKey, timeout, "Builder." + buttonKey
@@ -470,7 +470,7 @@ public class ObjectBuilderButtonBuilder {
      * @return The button
      */
     public static ObjectBuilderButton<Integer> POSITIVE_INTEGER(String buttonKey, long timeout,
-                                                                ObjectBuilder<?> objectBuilder) {
+                                                                BlobObjectBuilder<?> objectBuilder) {
 
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         Function<Integer, Boolean> function = value -> {
@@ -571,7 +571,7 @@ public class ObjectBuilderButtonBuilder {
      * @return The button
      */
     public static ObjectBuilderButton<Long> QUICK_LONG(String buttonKey, long timeout,
-                                                       ObjectBuilder<?> objectBuilder) {
+                                                       BlobObjectBuilder<?> objectBuilder) {
 
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return LONG(buttonKey, timeout, "Builder." + buttonKey
@@ -603,7 +603,7 @@ public class ObjectBuilderButtonBuilder {
      * @return The button
      */
     public static ObjectBuilderButton<Long> POSITIVE_LONG(String buttonKey, long timeout,
-                                                          ObjectBuilder<?> objectBuilder) {
+                                                          BlobObjectBuilder<?> objectBuilder) {
 
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         Function<Long, Boolean> function = value -> {
@@ -704,7 +704,7 @@ public class ObjectBuilderButtonBuilder {
      * @return The button
      */
     public static ObjectBuilderButton<Float> QUICK_FLOAT(String buttonKey, long timeout,
-                                                         ObjectBuilder<?> objectBuilder) {
+                                                         BlobObjectBuilder<?> objectBuilder) {
 
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return FLOAT(buttonKey, timeout, "Builder." + buttonKey
@@ -736,7 +736,7 @@ public class ObjectBuilderButtonBuilder {
      * @return The button
      */
     public static ObjectBuilderButton<Float> POSITIVE_FLOAT(String buttonKey, long timeout,
-                                                            ObjectBuilder<?> objectBuilder) {
+                                                            BlobObjectBuilder<?> objectBuilder) {
 
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         Function<Float, Boolean> function = value -> {
@@ -837,7 +837,7 @@ public class ObjectBuilderButtonBuilder {
      * @return The button
      */
     public static ObjectBuilderButton<Double> QUICK_DOUBLE(String buttonKey, long timeout,
-                                                           ObjectBuilder<?> objectBuilder) {
+                                                           BlobObjectBuilder<?> objectBuilder) {
 
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return DOUBLE(buttonKey, timeout, "Builder." + buttonKey
@@ -869,7 +869,7 @@ public class ObjectBuilderButtonBuilder {
      * @return The button
      */
     public static ObjectBuilderButton<Double> POSITIVE_DOUBLE(String buttonKey, long timeout,
-                                                              ObjectBuilder<?> objectBuilder) {
+                                                              BlobObjectBuilder<?> objectBuilder) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         Function<Double, Boolean> function = value -> {
             objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
@@ -977,7 +977,7 @@ public class ObjectBuilderButtonBuilder {
      * @return The button
      */
     public static ObjectBuilderButton<Block> QUICK_BLOCK(String buttonKey, long timeout,
-                                                         ObjectBuilder<?> objectBuilder) {
+                                                         BlobObjectBuilder<?> objectBuilder) {
 
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return BLOCK(buttonKey, timeout, "Builder." + buttonKey
@@ -1011,7 +1011,7 @@ public class ObjectBuilderButtonBuilder {
      * @return The button
      */
     public static ObjectBuilderButton<Block> QUICK_ABOVE_BLOCK(String buttonKey, long timeout,
-                                                               ObjectBuilder<?> objectBuilder) {
+                                                               BlobObjectBuilder<?> objectBuilder) {
 
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return ABOVE_BLOCK(buttonKey, timeout, "Builder." + buttonKey
@@ -1036,7 +1036,7 @@ public class ObjectBuilderButtonBuilder {
      */
     public static ObjectBuilderButton<Block> QUICK_ACTION_BLOCK(String buttonKey,
                                                                 long timeout,
-                                                                ObjectBuilder<?> objectBuilder,
+                                                                BlobObjectBuilder<?> objectBuilder,
                                                                 Consumer<Block> consumer) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return BLOCK(buttonKey, timeout, "Builder." + buttonKey
@@ -1097,7 +1097,7 @@ public class ObjectBuilderButtonBuilder {
      * @return The button
      */
     public static ObjectBuilderButton<ItemStack> QUICK_ITEM(String buttonKey,
-                                                            ObjectBuilder<?> objectBuilder) {
+                                                            BlobObjectBuilder<?> objectBuilder) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return ITEM(buttonKey, "Builder.ItemStack", itemStack -> {
             objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
@@ -1117,7 +1117,7 @@ public class ObjectBuilderButtonBuilder {
      * @return The button
      */
     public static ObjectBuilderButton<ItemStack> QUICK_ACTION_ITEM(String buttonKey,
-                                                                   ObjectBuilder<?> objectBuilder,
+                                                                   BlobObjectBuilder<?> objectBuilder,
                                                                    Consumer<ItemStack> consumer) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return ITEM(buttonKey, "Builder.ItemStack", itemStack -> {
@@ -1189,7 +1189,7 @@ public class ObjectBuilderButtonBuilder {
     public static <T> ObjectBuilderButton<T> QUICK_SELECTOR(String buttonKey,
                                                             VariableSelector<T> selector,
                                                             Function<T, String> ifAvailable,
-                                                            ObjectBuilder<?> objectBuilder) {
+                                                            BlobObjectBuilder<?> objectBuilder) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return SELECTOR(buttonKey, "Builder." + buttonKey, t -> {
             objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
@@ -1214,7 +1214,7 @@ public class ObjectBuilderButtonBuilder {
     public static <T> ObjectBuilderButton<T> QUICK_ACTION_SELECTOR(String buttonKey,
                                                                    VariableSelector<T> selector,
                                                                    Function<T, String> ifAvailable,
-                                                                   ObjectBuilder<?> objectBuilder,
+                                                                   BlobObjectBuilder<?> objectBuilder,
                                                                    Consumer<T> consumer) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return SELECTOR(buttonKey, "Builder." + buttonKey, t -> {
@@ -1286,7 +1286,7 @@ public class ObjectBuilderButtonBuilder {
      */
     public static ObjectBuilderButton<BlobMessage> QUICK_MESSAGE(String buttonKey,
                                                                  long timeout,
-                                                                 ObjectBuilder<?> objectBuilder) {
+                                                                 BlobObjectBuilder<?> objectBuilder) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return MESSAGE(buttonKey, timeout, "Builder." + buttonKey + "-Timeout",
                 "Builder." + buttonKey, message -> {
@@ -1309,7 +1309,7 @@ public class ObjectBuilderButtonBuilder {
      */
     public static ObjectBuilderButton<BlobMessage> QUICK_ACTION_MESSAGE(String buttonKey,
                                                                         long timeout,
-                                                                        ObjectBuilder<?> objectBuilder,
+                                                                        BlobObjectBuilder<?> objectBuilder,
                                                                         Consumer<BlobMessage> consumer) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return MESSAGE(buttonKey, timeout, "Builder." + buttonKey + "-Timeout",
@@ -1382,7 +1382,7 @@ public class ObjectBuilderButtonBuilder {
      */
     public static ObjectBuilderButton<World> QUICK_WORLD(String buttonKey,
                                                          long timeout,
-                                                         ObjectBuilder<?> objectBuilder) {
+                                                         BlobObjectBuilder<?> objectBuilder) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return WORLD(buttonKey, timeout, "Builder." + buttonKey + "-Timeout",
                 "Builder." + buttonKey, world -> {
@@ -1405,7 +1405,7 @@ public class ObjectBuilderButtonBuilder {
      */
     public static ObjectBuilderButton<World> QUICK_ACTION_WORLD(String buttonKey,
                                                                 long timeout,
-                                                                ObjectBuilder<?> objectBuilder,
+                                                                BlobObjectBuilder<?> objectBuilder,
                                                                 Consumer<World> consumer) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return WORLD(buttonKey, timeout, "Builder." + buttonKey + "-Timeout",
@@ -1428,7 +1428,7 @@ public class ObjectBuilderButtonBuilder {
      * @return The button
      */
     public static ObjectBuilderButton<Boolean> BOOLEAN(String buttonKey,
-                                                       ObjectBuilder<?> objectBuilder) {
+                                                       BlobObjectBuilder<?> objectBuilder) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return NAVIGATOR(buttonKey, new Boolean[]{false, true}, value -> {
             objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
@@ -1448,7 +1448,7 @@ public class ObjectBuilderButtonBuilder {
      * @return The button
      */
     public static ObjectBuilderButton<Boolean> BOOLEAN_DEFAULT_TRUE(String buttonKey,
-                                                                    ObjectBuilder<?> objectBuilder) {
+                                                                    BlobObjectBuilder<?> objectBuilder) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         return NAVIGATOR(buttonKey, new Boolean[]{true, false}, value -> {
             objectBuilder.updateDefaultButton(buttonKey, "%" + placeholderRegex + "%",
@@ -1498,7 +1498,7 @@ public class ObjectBuilderButtonBuilder {
      */
     public static <T extends Enum<T>> ObjectBuilderButton<T> ENUM_NAVIGATOR(String buttonKey,
                                                                             Class<T> enumClass,
-                                                                            ObjectBuilder<?> objectBuilder) {
+                                                                            BlobObjectBuilder<?> objectBuilder) {
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
         T[] array = enumClass.getEnumConstants();
         return NAVIGATOR(buttonKey, array, value -> {
@@ -1520,7 +1520,7 @@ public class ObjectBuilderButtonBuilder {
      */
     public static <T> ObjectBuilderButton<T> BLOB_EDITOR(String buttonKey,
                                                          BlobEditor<T> blobEditor,
-                                                         ObjectBuilder<?> objectBuilder) {
+                                                         BlobObjectBuilder<?> objectBuilder) {
 
 
         String placeholderRegex = NamingConventions.toCamelCase(buttonKey);
