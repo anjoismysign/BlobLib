@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.utilities.ResourceUtil;
 
 import java.io.File;
+import java.io.IOException;
 
 public class ConfigDecorator {
     private final JavaPlugin plugin;
@@ -15,6 +16,13 @@ public class ConfigDecorator {
     public ConfigDecorator(JavaPlugin plugin) {
         this.plugin = plugin;
         File file = new File(plugin.getDataFolder(), "config.yml");
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         ResourceUtil.updateYml(file, plugin);
         plugin.reloadConfig();
         this.listenersSection = ListenersSection.of(plugin);
