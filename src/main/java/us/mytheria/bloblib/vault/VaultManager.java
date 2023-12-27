@@ -95,9 +95,12 @@ public class VaultManager implements Listener {
             }
             case "net.milkbowl.vault.permission.Permission" -> {
                 RegisteredServiceProvider<Permission> provider = (RegisteredServiceProvider<Permission>) eventProvider;
-                vaultPermissionsWorker = new FoundPerms(provider.getProvider());
-                vaultPermsInstalled = true;
-                Bukkit.getLogger().fine("Vault Permissions override");
+                try {
+                    vaultPermissionsWorker = new FoundPerms(provider.getProvider());
+                    vaultPermsInstalled = true;
+                    Bukkit.getLogger().fine("Vault Permissions override");
+                } catch (ClassCastException ignored) {
+                }
             }
             case "net.milkbowl.vault.economy.MultiEconomy" -> {
                 elasticEconomy = ElasticEconomy.of(eventProvider.getProvider());
