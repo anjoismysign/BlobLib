@@ -16,7 +16,7 @@ public interface IManagerDirector {
     /**
      * Will do reload logic (asynchronously).
      */
-    void reload();
+    void reloadAll();
 
     /**
      * Will get the file manager that's required by BlobLib.

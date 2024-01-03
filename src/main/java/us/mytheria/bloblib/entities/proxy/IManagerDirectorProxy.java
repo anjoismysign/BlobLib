@@ -18,8 +18,8 @@ public class IManagerDirectorProxy implements IManagerDirector {
         managerDirector.postWorld();
     }
 
-    public void reload() {
-        managerDirector.reload();
+    public void reloadAll() {
+        managerDirector.reloadAll();
     }
 
     public IFileManager getFileManager() {

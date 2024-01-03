@@ -15,6 +15,7 @@ import us.mytheria.bloblib.entities.currency.EconomyFactory;
 import us.mytheria.bloblib.entities.currency.WalletOwner;
 import us.mytheria.bloblib.entities.currency.WalletOwnerManager;
 import us.mytheria.bloblib.entities.proxy.BlobProxifier;
+import us.mytheria.bloblib.exception.KeySharingException;
 import us.mytheria.bloblib.utilities.ResourceUtil;
 
 import java.io.File;
@@ -41,9 +42,8 @@ public abstract class ManagerDirector implements IManagerDirector {
      */
     public ManagerDirector(BlobPlugin plugin) {
         this.namespacedKeys = new HashMap<>();
-        namespacedKeys.put("tangibleCurrencyKey", new NamespacedKey(plugin, "tangibleCurrencyKey"));
-        namespacedKeys.put("tangibleCurrencyDenomination", new NamespacedKey(plugin, "tangibleCurrencyDenomination"));
         this.plugin = plugin;
+        reloadNamespacedKeys();
         this.pluginOperator = () -> plugin;
         this.blobFileManager = new BlobFileManager(this,
                 "plugins/" + plugin.getName(),
@@ -75,9 +75,8 @@ public abstract class ManagerDirector implements IManagerDirector {
     @Deprecated
     public ManagerDirector(BlobPlugin plugin, String fileManagerPathname) {
         this.namespacedKeys = new HashMap<>();
-        namespacedKeys.put("tangibleCurrencyKey", new NamespacedKey(plugin, "tangibleCurrencyKey"));
-        namespacedKeys.put("tangibleCurrencyDenomination", new NamespacedKey(plugin, "tangibleCurrencyDenomination"));
         this.plugin = plugin;
+        reloadNamespacedKeys();
         this.pluginOperator = () -> plugin;
         this.blobFileManager = new BlobFileManager(this,
                 fileManagerPathname, plugin);
@@ -98,9 +97,8 @@ public abstract class ManagerDirector implements IManagerDirector {
      */
     public ManagerDirector(BlobPlugin plugin, BlobFileManager fileManager) {
         this.namespacedKeys = new HashMap<>();
-        namespacedKeys.put("tangibleCurrencyKey", new NamespacedKey(plugin, "tangibleCurrencyKey"));
-        namespacedKeys.put("tangibleCurrencyDenomination", new NamespacedKey(plugin, "tangibleCurrencyDenomination"));
         this.plugin = plugin;
+        reloadNamespacedKeys();
         this.pluginOperator = () -> plugin;
         this.blobFileManager = Objects.requireNonNull(fileManager, "BlobFileManager cannot be null!");
         this.proxiedFileManager = BlobProxifier.PROXY(blobFileManager);
@@ -385,6 +383,14 @@ public abstract class ManagerDirector implements IManagerDirector {
      * Logic that should run whenever reloading the plugin.
      */
     public void reload() {
+    }
+
+    /**
+     * Will reload ManagerDirector's defaults and do reload logic.
+     */
+    public void reloadAll() {
+        reloadNamespacedKeys();
+        reload();
     }
 
     /**
@@ -749,6 +755,29 @@ public abstract class ManagerDirector implements IManagerDirector {
      */
     public ManagerDirector registerTranslatableSnippet(String... fileNames) {
         return registerTranslatableSnippet(false, fileNames);
+    }
+
+    /**
+     * Creates a new NamespacedKey.
+     *
+     * @param key The key
+     * @return The NamespacedKey
+     */
+    public NamespacedKey createNamespacedKey(String key) {
+        if (namespacedKeys.containsKey(key))
+            throw KeySharingException.DEFAULT(key);
+        NamespacedKey namespacedKey = new NamespacedKey(plugin, key);
+        namespacedKeys.put(key, namespacedKey);
+        return namespacedKey;
+    }
+
+    /**
+     * Reloads all namespaced keys.
+     */
+    public void reloadNamespacedKeys() {
+        namespacedKeys.clear();
+        createNamespacedKey("tangibleCurrencyKey");
+        createNamespacedKey("tangibleCurrencyDenomination");
     }
 
     protected Set<Map.Entry<String, Manager>> getManagerEntry() {

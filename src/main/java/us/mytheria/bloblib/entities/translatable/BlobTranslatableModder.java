@@ -5,6 +5,8 @@ import us.mytheria.bloblib.utilities.TextColor;
 
 import java.util.Locale;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @param <T, R> The type of the translatable
@@ -34,6 +36,51 @@ public class BlobTranslatableModder<T extends Translatable<R>, R> {
      */
     public BlobTranslatableModder<T, R> replace(String old, String replacement) {
         return modify(s -> s.replace(old, replacement));
+    }
+
+    private BlobTranslatableModder<T, R> regexReplace(String match, Function<String, String> function) {
+        Pattern pattern = Pattern.compile(match);
+        return modify(s -> {
+            Matcher matcher = pattern.matcher(s);
+            StringBuilder sb = new StringBuilder();
+            while (matcher.find()) {
+                matcher.appendReplacement(sb, function.apply(matcher.group(1)));
+            }
+            matcher.appendTail(sb);
+            return sb.toString();
+        });
+    }
+
+    /**
+     * Will match all occurrences of the given regex and replace them with the
+     * result of the function by using a wildcard.
+     * <p>
+     * Example:
+     * matchReplace("%flag@%", "@", s -> s); //Will set all flag placeholders as
+     * //whatever the flag is.
+     * <p>
+     *
+     * @param match    The regex to match
+     * @param wildcard The wildcard to use
+     * @param function The function to use
+     * @return The modified translatable
+     */
+    public BlobTranslatableModder<T, R> matchReplace(String match, String wildcard, Function<String, String> function) {
+        String regex = match.replace(wildcard, "(.*?)");
+        return regexReplace(regex, function);
+    }
+
+    /**
+     * Will match all occurrences of the given regex and replace them with the
+     * result of the function.
+     * Will use '@' as the wildcard.
+     *
+     * @param match    The regex to match
+     * @param function The function to use
+     * @return The modified translatable
+     */
+    public BlobTranslatableModder<T, R> matchReplace(String match, Function<String, String> function) {
+        return matchReplace(match, "@", function);
     }
 
     /**

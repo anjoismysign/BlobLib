@@ -41,7 +41,7 @@ public abstract class BlobPlugin extends JavaPlugin {
         PluginManager.unloadAssets(this);
         //Loads assets
         PluginManager.loadAssets(this);
-        getManagerDirector().reload();
+        getManagerDirector().reloadAll();
     }
 
     /**
