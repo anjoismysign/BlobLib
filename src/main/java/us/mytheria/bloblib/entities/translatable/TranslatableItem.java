@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.entities.translatable;
 
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -7,6 +8,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
+import us.mytheria.bloblib.events.TranslatableItemCloneEvent;
 
 import java.util.Objects;
 
@@ -85,6 +87,9 @@ public interface TranslatableItem extends Translatable<ItemStack> {
     }
 
     default ItemStack getClone() {
-        return new ItemStack(get());
+        ItemStack clone = new ItemStack(get());
+        TranslatableItemCloneEvent event = new TranslatableItemCloneEvent(this, clone);
+        Bukkit.getPluginManager().callEvent(event);
+        return event.getClone();
     }
 }
