@@ -86,10 +86,30 @@ public interface TranslatableItem extends Translatable<ItemStack> {
         return TranslatableItemModder.mod(this);
     }
 
-    default ItemStack getClone() {
+    /**
+     * Will get a clone of the TranslatableItem, allowing
+     * other plugins to modify the ItemStack.
+     *
+     * @param callEvent If the event should be called.
+     * @return The clone.
+     */
+    default ItemStack getClone(boolean callEvent) {
         ItemStack clone = new ItemStack(get());
+        if (!callEvent)
+            return clone;
         TranslatableItemCloneEvent event = new TranslatableItemCloneEvent(this, clone);
         Bukkit.getPluginManager().callEvent(event);
         return event.getClone();
+    }
+
+    /**
+     * Will get a clone of the TranslatableItem, allowing
+     * other plugins to modify the ItemStack.
+     * Event will be called.
+     *
+     * @return The clone.
+     */
+    default ItemStack getClone() {
+        return getClone(true);
     }
 }

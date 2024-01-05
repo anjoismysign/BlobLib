@@ -17,15 +17,11 @@ public class TranslatableItemCloneEvent extends TranslatableItemEvent {
      * @param clone            The clone.
      */
     public TranslatableItemCloneEvent(TranslatableItem translatableItem, ItemStack clone) {
-        super(translatableItem);
+        super(translatableItem, false);
         this.clone = clone;
     }
 
     private static final HandlerList HANDLERS_LIST = new HandlerList();
-
-    public TranslatableItemCloneEvent(TranslatableItem translatableItem) {
-        super(translatableItem);
-    }
 
     @Override
     public HandlerList getHandlers() {

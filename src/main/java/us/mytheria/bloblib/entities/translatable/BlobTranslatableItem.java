@@ -68,7 +68,7 @@ public class BlobTranslatableItem implements TranslatableItem {
     @Override
     @NotNull
     public TranslatableItem modify(Function<String, String> function) {
-        ItemStack clone = getClone();
+        ItemStack clone = getClone(false);
         ItemMeta meta = clone.getItemMeta();
         Objects.requireNonNull(meta, "ItemMeta cannot be null");
         ItemStackModder modder = ItemStackModder.mod(clone);
