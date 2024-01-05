@@ -17,10 +17,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
+import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -43,7 +40,7 @@ public class BlobLibUpdater implements PluginUpdater {
      */
     public void reload() {
         getLatestUrl();
-        updateAvailable = !isLatestVersion();
+        updateAvailable = latestVersion != null && !isLatestVersion();
         listener.reload(updateAvailable);
     }
 
@@ -126,6 +123,8 @@ public class BlobLibUpdater implements PluginUpdater {
         BufferedReader reader;
         try {
             reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        } catch (UnknownHostException ignored) {
+            return null;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
