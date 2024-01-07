@@ -31,13 +31,8 @@ public class BlockDisplayFloatingPet extends DisplayFloatingPet<BlockDisplay, Bl
         BlobLib plugin = BlobLib.getInstance();
         entity = (BlockDisplay) location.getWorld().spawnEntity(location,
                 EntityType.BLOCK_DISPLAY);
-        vehicle = (BlockDisplay) location.getWorld().spawnEntity(location,
-                EntityType.BLOCK_DISPLAY);
         entity.setPersistent(false);
-        vehicle.setPersistent(false);
-        if (!vehicle.addPassenger(entity)) {
-            throw new RuntimeException("Failed to add passenger to vehicle");
-        }
+        entity.setTeleportDuration(1);
         setCustomName(getCustomName());
         entity.setBlock(getDisplay());
         initAnimations(plugin);

@@ -32,13 +32,8 @@ public class ItemDisplayFloatingPet extends DisplayFloatingPet<ItemDisplay, Item
         BlobLib plugin = BlobLib.getInstance();
         entity = (ItemDisplay) location.getWorld().spawnEntity(location,
                 EntityType.ITEM_DISPLAY);
-        vehicle = (ItemDisplay) location.getWorld().spawnEntity(location,
-                EntityType.ITEM_DISPLAY);
         entity.setPersistent(false);
-        vehicle.setPersistent(false);
-        if (!vehicle.addPassenger(entity)) {
-            throw new RuntimeException("Failed to add passenger to vehicle");
-        }
+        entity.setTeleportDuration(1);
         setCustomName(getCustomName());
         entity.setItemStack(getDisplay());
         Transformation transformation = entity.getTransformation();

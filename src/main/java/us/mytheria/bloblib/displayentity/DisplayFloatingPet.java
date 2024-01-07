@@ -1,6 +1,5 @@
 package us.mytheria.bloblib.displayentity;
 
-import me.anjoismysign.manobukkit.entities.decorators.implementations.ManoratorFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -10,18 +9,23 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.mytheria.bloblib.BlobLibAPI;
 
 import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 
+/**
+ * Represents a FloatingPet.
+ * Uses 1.20.2+ Bukkit API
+ *
+ * @param <T> - the Display entity
+ * @param <R> - (BlockData/ItemStack)
+ */
 public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
         implements DisplayPet<Display, R> {
-    private static final ManoratorFactory MANORATOR_FACTORY = BlobLibAPI.getInstance().getManoBukkit().getManoratorFactory();
 
     private Particle particle;
-    protected T entity, vehicle;
+    protected T entity;
     private Location location;
     private UUID owner;
     private boolean activated, pauseLogic;
@@ -209,12 +213,9 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
      * @param loc the new location
      */
     public void teleport(Location loc) {
-        if (vehicle != null) {
-            loadChunks(location);
-            loadChunks(loc);
-            MANORATOR_FACTORY.of(vehicle).vehicleTeleport(loc);
-        } else
-            throw new NullPointerException("Expected vehicle is null");
+        loadChunks(location);
+        loadChunks(loc);
+        entity.teleport(loc);
         setLocation(loc);
     }
 
