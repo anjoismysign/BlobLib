@@ -8,7 +8,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 /**
- * The idea behind DisplayMeasures is being able to resize Display entities
+ * The idea behind DisplayMeasurements is being able to resize Display entities
  * while automatically adjusting their translation so the Display entity
  * is centered.
  *
@@ -17,65 +17,65 @@ import org.joml.Vector3f;
  * @param scaleZ  The scale on the Z axis.
  * @param yOffset The Y offset.
  */
-public record DisplayMeasures(float scaleX, float scaleY, float scaleZ,
-                              float yOffset) {
-    private static final DisplayMeasures DEFAULT_MEASURES =
-            new DisplayMeasures(1, 1, 1, 0);
+public record DisplayMeasurements(float scaleX, float scaleY, float scaleZ,
+                                  float yOffset) {
+    private static final DisplayMeasurements DEFAULT_MEASUREMENTS =
+            new DisplayMeasurements(1, 1, 1, 0);
 
     /**
-     * Will return a new DisplayMeasures with the given values
+     * Will return a new DisplayMeasurements with the given values
      * with no Y-Offset.
      *
      * @param scaleX The scale on the X axis.
      * @param scaleY The scale on the Y axis.
      * @param scaleZ The scale on the Z axis.
-     * @return A new DisplayMeasures with the given values.
+     * @return A new DisplayMeasurements with the given values.
      */
-    public static DisplayMeasures of(float scaleX, float scaleY, float scaleZ) {
-        return new DisplayMeasures(scaleX, scaleY, scaleZ, 0);
+    public static DisplayMeasurements of(float scaleX, float scaleY, float scaleZ) {
+        return new DisplayMeasurements(scaleX, scaleY, scaleZ, 0);
     }
 
     /**
-     * Will return the default DisplayMeasures.
+     * Will return the default DisplayMeasurements.
      * Scale-X: 1.0
      * Scale-Y: 1.0
      * Scale-Z: 1.0
      * Y-Offset: 0.0
      *
-     * @return The default DisplayMeasures.
+     * @return The default DisplayMeasurements.
      */
-    public static DisplayMeasures DEFAULT() {
-        return DEFAULT_MEASURES;
+    public static DisplayMeasurements DEFAULT() {
+        return DEFAULT_MEASUREMENTS;
     }
 
     /**
-     * Will read the DisplayMeasures from the given ConfigurationSection.
+     * Will read the DisplayMeasurements from the given ConfigurationSection.
      *
      * @param section The ConfigurationSection to read from.
-     * @return The DisplayMeasures read from the ConfigurationSection.
+     * @return The DisplayMeasurements read from the ConfigurationSection.
      */
     @NotNull
-    public static DisplayMeasures READ_OR_FAIL_FAST(ConfigurationSection section) {
-        return new DisplayMeasures((float) section.getDouble("Scale-X", 1),
+    public static DisplayMeasurements READ_OR_FAIL_FAST(ConfigurationSection section) {
+        return new DisplayMeasurements((float) section.getDouble("Scale-X", 1),
                 (float) section.getDouble("Scale-Y", 1),
                 (float) section.getDouble("Scale-Z", 1),
                 (float) section.getDouble("Y-Offset", 0));
     }
 
     /**
-     * Will read the DisplayMeasures from the given ConfigurationSection.
+     * Will read the DisplayMeasurements from the given ConfigurationSection.
      * If any exception is thrown, null will be returned.
      *
      * @param section The ConfigurationSection to read from.
-     * @return The DisplayMeasures read from the ConfigurationSection,
+     * @return The DisplayMeasurements read from the ConfigurationSection,
      * null if any exception is thrown.
      */
     @Nullable
-    public static DisplayMeasures READ_OR_NULL(ConfigurationSection section) {
-        DisplayMeasures displayMeasures;
+    public static DisplayMeasurements READ_OR_NULL(ConfigurationSection section) {
+        DisplayMeasurements displayMeasurements;
         try {
-            displayMeasures = READ_OR_FAIL_FAST(section);
-            return displayMeasures;
+            displayMeasurements = READ_OR_FAIL_FAST(section);
+            return displayMeasurements;
         } catch (Exception e) {
             return null;
         }
@@ -90,7 +90,7 @@ public record DisplayMeasures(float scaleX, float scaleY, float scaleZ,
     }
 
     /**
-     * Will merge the given Transformation with this DisplayMeasures.
+     * Will merge the given Transformation with this DisplayMeasurements.
      * This allows using existing LeftRotation & RightRotation Quaternions
      *
      * @param transformation The Transformation to merge with.
@@ -104,9 +104,9 @@ public record DisplayMeasures(float scaleX, float scaleY, float scaleZ,
     }
 
     /**
-     * Will return a new Transformation with the values of this DisplayMeasures.
+     * Will return a new Transformation with the values of this DisplayMeasurements.
      *
-     * @return A new Transformation with the values of this DisplayMeasures.
+     * @return A new Transformation with the values of this DisplayMeasurements.
      */
     public Transformation toTransformation() {
         return new Transformation(getTranslation(),
@@ -116,7 +116,7 @@ public record DisplayMeasures(float scaleX, float scaleY, float scaleZ,
     }
 
     /**
-     * Will serialize this DisplayMeasures to the given ConfigurationSection.
+     * Will serialize this DisplayMeasurements to the given ConfigurationSection.
      *
      * @param section The ConfigurationSection to serialize to.
      */

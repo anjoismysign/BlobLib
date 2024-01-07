@@ -5,9 +5,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public record DisplayFloatingPetSettings(EntityAnimationsCarrier animationsCarrier,
-                                         DisplayMeasures displayMeasures) {
+                                         DisplayMeasurements displayMeasurements) {
     private static final DisplayFloatingPetSettings DEFAULT = new DisplayFloatingPetSettings(
-            EntityAnimationsCarrier.DEFAULT(), DisplayMeasures.DEFAULT());
+            EntityAnimationsCarrier.DEFAULT(), DisplayMeasurements.DEFAULT());
 
     public static DisplayFloatingPetSettings DEFAULT() {
         return DEFAULT;
@@ -27,13 +27,13 @@ public record DisplayFloatingPetSettings(EntityAnimationsCarrier animationsCarri
             animationsCarrier = EntityAnimationsCarrier.DEFAULT();
         else
             animationsCarrier = EntityAnimationsCarrier.READ_OR_FAIL_FAST(animations);
-        DisplayMeasures displayMeasures;
+        DisplayMeasurements displayMeasurements;
         ConfigurationSection measurements = section.getConfigurationSection("Measurements");
         if (measurements == null)
-            displayMeasures = DisplayMeasures.DEFAULT();
+            displayMeasurements = DisplayMeasurements.DEFAULT();
         else
-            displayMeasures = DisplayMeasures.READ_OR_FAIL_FAST(measurements);
-        return new DisplayFloatingPetSettings(animationsCarrier, displayMeasures);
+            displayMeasurements = DisplayMeasurements.READ_OR_FAIL_FAST(measurements);
+        return new DisplayFloatingPetSettings(animationsCarrier, displayMeasurements);
     }
 
     /**
@@ -62,6 +62,6 @@ public record DisplayFloatingPetSettings(EntityAnimationsCarrier animationsCarri
      */
     public void serialize(ConfigurationSection section) {
         animationsCarrier.serialize(section.createSection("Animations"));
-        displayMeasures.serialize(section.createSection("Measurements"));
+        displayMeasurements.serialize(section.createSection("Measurements"));
     }
 }

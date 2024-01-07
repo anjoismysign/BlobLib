@@ -72,7 +72,7 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
         loc.setY(loc.getY() + 0.85);
         setLocation(loc);
         spawnEntity(loc);
-        entity.setTransformation(settings.displayMeasures().toTransformation());
+        entity.setTransformation(settings.displayMeasurements().toTransformation());
     }
 
     /**
