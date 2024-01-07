@@ -5,6 +5,7 @@ import org.bukkit.Particle;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.itemstack.ItemStackBuilder;
 import us.mytheria.bloblib.itemstack.ItemStackReader;
@@ -22,7 +23,10 @@ import us.mytheria.bloblib.utilities.TextColor;
  * @param particle   the particle to display
  * @param customName the custom name to display
  */
-public record DisplayPetRecord(ItemStack itemStack, BlockData blockData, Particle particle, String customName) {
+public record DisplayPetRecord(@Nullable ItemStack itemStack,
+                               @Nullable BlockData blockData,
+                               @Nullable Particle particle,
+                               @Nullable String customName) {
 
     public static DisplayPetRecord read(ConfigurationSection section) {
         ItemStack itemStack = null;
@@ -48,16 +52,16 @@ public record DisplayPetRecord(ItemStack itemStack, BlockData blockData, Particl
         return new DisplayPetRecord(itemStack, blockData, particle, customName);
     }
 
-    public void serialize(ConfigurationSection configurationSection, String path) {
+    public void serialize(ConfigurationSection configurationSection) {
         if (itemStack == null && blockData == null)
             throw new IllegalArgumentException("ItemStack and BlockData cannot both be null");
         if (itemStack != null)
-            configurationSection.set(path + ".ItemStack", itemStack);
+            configurationSection.set("ItemStack", itemStack);
         if (blockData != null)
-            configurationSection.set(path + ".BlockData", blockData.getAsString(true));
+            configurationSection.set("BlockData", blockData.getAsString(true));
         if (particle != null)
-            configurationSection.set(path + ".Particle", particle);
+            configurationSection.set("Particle", particle);
         if (customName != null)
-            configurationSection.set(path + ".CustomName", customName);
+            configurationSection.set("CustomName", customName);
     }
 }

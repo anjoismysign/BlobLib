@@ -150,24 +150,21 @@ public class DisplayPetData {
 
     /**
      * Will serialize the FloatingPetData in a configuration section
-     * under the patch name.
      * Example:
      * ConfigurationSection section = YamlConfiguration.loadConfiguration(file);
      * FloatingPetData data = new FloatingPetData(new ItemStack(Material.DIAMOND),
      * Particle.FLAME, "%owner%'s Pet");
-     * data.serialize(section, "FloatingPetRecord");
+     * data.serialize(section);
      * // YAML file would look like:
-     * // FloatingPetRecord:
-     * //   ItemStack:
-     * //     #blablabla
-     * //   Particle: FLAME
-     * //   CustomName: "%owner%'s Pet"
+     * // ItemStack:
+     * //   #blablabla
+     * // Particle: FLAME
+     * // CustomName: "%owner%'s Pet"
      *
      * @param configurationSection the configuration section to serialize in
-     * @param path                 the path to serialize in
      */
-    public void serialize(ConfigurationSection configurationSection, String path) {
+    public void serialize(ConfigurationSection configurationSection) {
         DisplayPetRecord record = new DisplayPetRecord(itemStack, blockData, particle, customName);
-        record.serialize(configurationSection, path);
+        record.serialize(configurationSection);
     }
 }
