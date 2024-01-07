@@ -91,12 +91,11 @@ public record EntityAnimationsCarrier(double followSpeed,
      *
      * @param section The ConfigurationSection to serialize to.
      */
-    public void serialize(ConfigurationSection section, String name) {
-        ConfigurationSection animations = section.createSection(name);
-        animations.set("Hover-Speed", hoverSpeed);
-        animations.set("Hover-Height-Ceiling", hoverHeightCeiling);
-        animations.set("Hover-Height-Floor", hoverHeightFloor);
-        animations.set("Y-Offset", yOffset);
-        animations.set("Particles-Offset", particlesOffset);
+    public void serialize(ConfigurationSection section) {
+        section.set("Hover-Speed", hoverSpeed);
+        section.set("Hover-Height-Ceiling", hoverHeightCeiling);
+        section.set("Hover-Height-Floor", hoverHeightFloor);
+        section.set("Y-Offset", yOffset);
+        section.set("Particles-Offset", particlesOffset);
     }
 }
