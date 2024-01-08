@@ -7,6 +7,7 @@ import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.NumberConversions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -70,6 +71,7 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
         loc.setX(loc.getX() + random.nextInt(3) - 1);
         loc.setZ(loc.getZ() + random.nextInt(3) - 1);
         loc.setY(loc.getY() + 0.85);
+        loc.setPitch(1);
         setLocation(loc);
         spawnEntity(loc);
         entity.setTransformation(settings.displayMeasurements().toTransformation());
@@ -91,7 +93,6 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
 
     /**
      * Will set pet's custom name.
-     * If passing null, will be used 'owner's Pet'
      *
      * @param customName - the custom name
      */
@@ -99,7 +100,7 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
         this.customName = customName;
         if (entity == null)
             return;
-        entity.setCustomNameVisible(true);
+        entity.setCustomNameVisible(customName != null);
         entity.setCustomName(customName);
     }
 
@@ -120,9 +121,11 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
             spawnParticles(animationsCarrier.particlesOffset(), 0);
             if (!isPauseLogic()) {
                 double distance = Math.sqrt(Math.pow(getLocation().getX() - owner.getLocation().getX(), 2) + Math.pow(getLocation().getZ() - owner.getLocation().getZ(), 2));
-                if (distance >= animationsCarrier.teleportDistanceThreshold())
-                    teleport(owner.getLocation());
-                else if (distance >= animationsCarrier.approachDistanceThreshold() || Math.abs(owner.getLocation().getY() + animationsCarrier.yOffset() - getLocation().getY()) > 1D)
+                if (distance >= animationsCarrier.teleportDistanceThreshold()) {
+                    Location loc = owner.getLocation().clone();
+                    loc.setPitch(getLocation().getPitch());
+                    teleport(loc);
+                } else if (distance >= animationsCarrier.approachDistanceThreshold() || Math.abs(owner.getLocation().getY() + animationsCarrier.yOffset() - getLocation().getY()) > 1D)
                     move();
                 else if (distance <= animationsCarrier.minimumDistance()) {
                     moveAway();
@@ -201,7 +204,7 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
      * @return if customName is null, returns 'owner's Pet', else returns customName
      */
     public String getCustomName() {
-        String name = findOwnerOrFail().getName() + "'s Pet";
+        String name = null;
         if (this.customName != null)
             name = this.customName;
         return name;
@@ -215,6 +218,10 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
     public void teleport(Location loc) {
         loadChunks(location);
         loadChunks(loc);
+        if (!NumberConversions.isFinite(loc.getYaw()))
+            loc.setYaw(1.0f);
+        if (!NumberConversions.isFinite(loc.getPitch()))
+            loc.setPitch(1.0f);
         entity.teleport(loc);
         setLocation(loc);
     }

@@ -49,16 +49,15 @@ public class SyncDisplayEntityAnimations {
         Vector direction = normalize(goal.subtract(start));
         Location newLoc = loc.clone();
         newLoc.add(direction.multiply(followSpeed));
-        //Rotation
-//        double a = player.getLocation().getX() - newLoc.getX();
-//        double b = player.getLocation().getZ() - newLoc.getZ();
-//        double angle = Math.atan(b / a);
-//        angle = angle * (180 / Math.PI);
-//        if (player.getLocation().getX() - newLoc.getX() >= 0) {
-//            angle += 180;
-//        }
-//        angle += 90;
-//        newLoc.setYaw((float) angle);
+        double a = player.getLocation().getX() - newLoc.getX();
+        double b = player.getLocation().getZ() - newLoc.getZ();
+        double angle = Math.atan(b / a);
+        angle = angle * (180 / Math.PI);
+        if (player.getLocation().getX() - newLoc.getX() >= 0) {
+            angle += 180;
+        }
+        angle += 270;
+        newLoc.setYaw((float) angle);
         pet.teleport(newLoc);
         return newLoc;
     }
@@ -80,7 +79,7 @@ public class SyncDisplayEntityAnimations {
         if (player.getLocation().getX() - newLoc.getX() >= 0) {
             angle += 180;
         }
-        angle += 90;
+        angle += 270;
         newLoc.setYaw((float) angle);
         pet.teleport(newLoc);
         return newLoc;
@@ -101,7 +100,7 @@ public class SyncDisplayEntityAnimations {
         if (player.getLocation().getX() - newLoc.getX() >= 0) {
             angle += 180;
         }
-        angle += 90;
+        angle += 270;
         newLoc.setYaw((float) angle);
         pet.teleport(newLoc);
         return newLoc;

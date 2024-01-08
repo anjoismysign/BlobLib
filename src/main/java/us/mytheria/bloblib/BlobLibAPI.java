@@ -28,6 +28,7 @@ public class BlobLibAPI {
     private final BlobLibPermissionAPI permissionAPI;
     private final BlobLibDisguiseAPI disguiseAPI;
     private final BlobLibAssetAPI assetAPI;
+    private final BlobLibPetAPI petAPI;
     private final ManoBukkit manoBukkit;
 
     private BlobLibAPI(BlobLib plugin) {
@@ -38,6 +39,7 @@ public class BlobLibAPI {
         this.permissionAPI = BlobLibPermissionAPI.getInstance(plugin);
         this.disguiseAPI = BlobLibDisguiseAPI.getInstance(plugin);
         this.assetAPI = BlobLibAssetAPI.getInstance(plugin);
+        this.petAPI = BlobLibPetAPI.getInstance(plugin);
     }
 
     public static BlobLibAPI getInstance(BlobLib plugin) {
@@ -75,6 +77,10 @@ public class BlobLibAPI {
 
     public BlobLibAssetAPI getAssetAPI() {
         return assetAPI;
+    }
+
+    public BlobLibPetAPI getPetAPI() {
+        return petAPI;
     }
 
     public ManoBukkit getManoBukkit() {
