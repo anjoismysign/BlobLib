@@ -105,8 +105,8 @@ public class InventoryManager {
                     continue;
                 try {
                     loadBlobInventory(file);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch (Throwable throwable) {
+                    throwable.printStackTrace();
                     continue;
                 }
             }

@@ -78,8 +78,8 @@ public class MessageManager {
                     continue;
                 try {
                     loadYamlConfiguration(file);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch (Throwable throwable) {
+                    throwable.printStackTrace();
                     continue;
                 }
             }
@@ -97,8 +97,14 @@ public class MessageManager {
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (!section.contains("Type") && !section.isString("Type"))
                 return;
-            BlobMessage message = BlobMessageReader.read(section, locale, reference);
-            addOrCreateLocale(message, reference);
+            try {
+                BlobMessage message = BlobMessageReader.read(section, locale, reference);
+                addOrCreateLocale(message, reference);
+            } catch (NoClassDefFoundError e) {
+                BlobLib.getAnjoLogger().singleError("Not loading '" + reference + "' in file '" + file.getPath() + "' due to deprecated server software: " +
+                        e.getMessage());
+                return;
+            }
         });
     }
 

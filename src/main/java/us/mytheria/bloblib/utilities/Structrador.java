@@ -2,7 +2,6 @@ package us.mytheria.bloblib.utilities;
 
 import me.anjoismysign.anjo.entities.Uber;
 import me.anjoismysign.manobukkit.entities.decorators.ManoBlockState;
-import me.anjoismysign.manobukkit.entities.decorators.ManoWorld;
 import me.anjoismysign.manobukkit.entities.decorators.implementations.ManoratorFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -333,22 +332,21 @@ public class Structrador {
                             entityLocation.setYaw(nextLocation.getYaw() + extraYaw);
                             boolean isSilent = next.isSilent();
                             next.setSilent(true);
+                            Entity added = world.addEntity(next);
+                            added.teleport(entityLocation);
                             /*
                              * Intermediate level of API-NMS
                              * Known to work in 1.20.1
                              * Might break in future versions
                              */
-                            ManoWorld manoWorld = MANORATOR_FACTORY.of(world);
-                            manoWorld.tryAddFreshEntityWithPassengers(next);
-                            next.teleport(entityLocation);
-                            if (next instanceof Hanging hanging) {
+                            if (added instanceof Hanging hanging) {
                                 BlockFace facing = hanging.getFacing();
                                 hanging.setFacingDirection(
                                         BlockFaceUtil.rotateCardinalDirection(facing, structureRotation),
                                         true);
                             }
-                            next.setSilent(isSilent);
-                            placedEntityConsumer.accept(next);
+                            added.setSilent(isSilent);
+                            placedEntityConsumer.accept(added);
                             placed.talk(placed.thanks() + 1);
                             progress.run();
                         }
@@ -360,8 +358,9 @@ public class Structrador {
                 };
                 chainedTask.setTask(entityTask.runTaskTimer(plugin, 1L, period));
             });
-        } catch (Exception e) {
+        } catch (Throwable e) {
             future.completeExceptionally(e);
+            e.printStackTrace();
         }
         return chainedTask;
     }

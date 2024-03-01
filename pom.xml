@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>us.mytheria</groupId>
     <artifactId>BlobLib</artifactId>
-    <version>1.697.62</version>
+    <version>1.697.69</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -131,7 +131,7 @@
         <dependency>
             <groupId>me.anjoismysign</groupId>
             <artifactId>skeramidcommands</artifactId>
-            <version>1.0</version>
+            <version>1.0.4</version>
         </dependency>
     </dependencies>
     <distributionManagement>

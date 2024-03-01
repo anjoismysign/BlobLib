@@ -76,8 +76,8 @@ public class ActionManager {
                     continue;
                 try {
                     loadYamlConfiguration(file);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch (Throwable throwable) {
+                    throwable.printStackTrace();
                     continue;
                 }
             }

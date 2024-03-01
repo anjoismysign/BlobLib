@@ -1,8 +1,8 @@
 package us.mytheria.bloblib.entities.logger;
 
 import me.anjoismysign.anjo.logger.Logger;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import us.mytheria.bloblib.managers.ColorManager;
 
 /**

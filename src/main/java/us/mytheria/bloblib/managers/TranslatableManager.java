@@ -103,8 +103,8 @@ public class TranslatableManager {
                     continue;
                 try {
                     loadSnippet(file);
-                } catch (Throwable e) {
-                    e.printStackTrace();
+                } catch (Throwable throwable) {
+                    throwable.printStackTrace();
                     continue;
                 }
             }

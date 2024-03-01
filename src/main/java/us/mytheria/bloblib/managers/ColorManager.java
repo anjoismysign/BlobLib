@@ -1,6 +1,6 @@
 package us.mytheria.bloblib.managers;
 
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.ChatColor;
 import us.mytheria.bloblib.BlobLib;
 
 import java.util.ArrayList;

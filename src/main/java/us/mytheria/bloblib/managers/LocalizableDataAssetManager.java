@@ -109,8 +109,8 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
                     continue;
                 try {
                     loadYamlConfiguration(file);
-                } catch (Throwable e) {
-                    e.printStackTrace();
+                } catch (Throwable throwable) {
+                    throwable.printStackTrace();
                     continue;
                 }
             }

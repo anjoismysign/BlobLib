@@ -105,8 +105,8 @@ public class DataAssetManager<T extends DataAsset> {
                     continue;
                 try {
                     loadYamlConfiguration(file);
-                } catch (Throwable e) {
-                    e.printStackTrace();
+                } catch (Throwable throwable) {
+                    throwable.printStackTrace();
                     continue;
                 }
             }

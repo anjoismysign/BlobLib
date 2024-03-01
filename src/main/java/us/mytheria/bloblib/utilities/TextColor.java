@@ -1,6 +1,7 @@
 package us.mytheria.bloblib.utilities;
 
-import net.md_5.bungee.api.ChatColor;
+
+import org.bukkit.ChatColor;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,7 +34,20 @@ public class TextColor {
      */
     public static String CUSTOM_PARSE(char alternateColorChar, String textToTranslate) {
         TextColor textColor = new TextColor();
-        return ChatColor.translateAlternateColorCodes(alternateColorChar, textColor.translateHexColorCodes(alternateColorChar, textToTranslate));
+        return translateAlternateColorCodes(alternateColorChar, textColor.translateHexColorCodes(alternateColorChar, textToTranslate));
+    }
+
+    private static String translateAlternateColorCodes(char alternateColorChar, String textToTranslate) {
+        char[] b = textToTranslate.toCharArray();
+
+        for (int i = 0; i < b.length - 1; ++i) {
+            if (b[i] == alternateColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRrXx".indexOf(b[i + 1]) > -1) {
+                b[i] = 167;
+                b[i + 1] = Character.toLowerCase(b[i + 1]);
+            }
+        }
+
+        return new String(b);
     }
 
     /**
