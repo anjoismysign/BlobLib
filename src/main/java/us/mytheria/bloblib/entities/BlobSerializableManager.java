@@ -9,6 +9,8 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.managers.BlobPlugin;
@@ -25,8 +27,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class BlobSerializableManager<T extends BlobSerializable> extends Manager implements BlobSerializableHandler {
-    protected final HashMap<UUID, T> serializables;
-    private final HashSet<UUID> saving;
+    protected final Map<UUID, T> serializables;
+    private final Map<UUID, BukkitTask> autoSave;
+    private final Set<UUID> saving;
     protected BlobCrudManager<BlobCrudable> crudManager;
     private final BlobPlugin plugin;
     private final Function<BlobCrudable, T> generator;
@@ -56,6 +59,7 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
         registerJoinListener(pluginManager, joinPriority);
         registerQuitListener(pluginManager, quitPriority);
         serializables = new HashMap<>();
+        autoSave = new HashMap<>();
         this.generator = generator;
         this.joinEvent = joinEvent;
         this.quitEvent = quitEvent;
@@ -91,10 +95,26 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
                 if (player == null || !player.isOnline())
                     return;
                 T applied = generator.apply(crudable);
+                BlobCrudable serialized = applied.serializeAllAttributes();
+                Bukkit.getScheduler().runTaskAsynchronously(getPlugin(),
+                        () -> crudManager.update(serialized));
                 serializables.put(uuid, applied);
                 if (joinEvent == null)
                     return;
                 Bukkit.getPluginManager().callEvent(joinEvent.apply(applied));
+                autoSave.put(uuid, new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        if (player == null || !player.isOnline()) {
+                            cancel();
+                            return;
+                        }
+                        BlobCrudable serialized = applied.serializeAllAttributes();
+                        Bukkit.getScheduler().runTaskAsynchronously(getPlugin(),
+                                () -> crudManager.update(serialized));
+                    }
+                }.runTaskTimer(getPlugin(), 20 * 60 * 5,
+                        20 * 60 * 5));
             });
         });
     }
@@ -109,6 +129,7 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
         if (quitEvent != null)
             Bukkit.getPluginManager().callEvent(quitEvent.apply(serializable));
         saving.add(uuid);
+        autoSave.remove(uuid);
         BlobCrudable crudable = serializable.serializeAllAttributes();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             crudManager.update(crudable);

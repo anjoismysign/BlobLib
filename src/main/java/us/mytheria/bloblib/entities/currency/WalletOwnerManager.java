@@ -10,6 +10,8 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.entities.BlobCrudable;
@@ -30,8 +32,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class WalletOwnerManager<T extends WalletOwner> extends Manager implements BlobSerializableHandler {
-    protected final HashMap<UUID, T> walletOwners;
-    private final HashSet<UUID> saving;
+    protected final Map<UUID, T> walletOwners;
+    private final Map<UUID, BukkitTask> autoSave;
+    private final Set<UUID> saving;
     protected BlobCrudManager<BlobCrudable> crudManager;
     private final BlobPlugin plugin;
     private final Function<BlobCrudable, T> generator;
@@ -42,7 +45,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
     protected ObjectDirector<Currency> currencyDirector;
     @Nullable
     private EconomyPHExpansion<T> economyPHExpansion;
-    private HashMap<String, CurrencyEconomy> implementations;
+    private Map<String, CurrencyEconomy> implementations;
 
     protected WalletOwnerManager(ManagerDirector managerDirector, Function<BlobCrudable, BlobCrudable> newBorn,
                                  Function<BlobCrudable, T> generator,
@@ -67,6 +70,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         registerJoinListener(pluginManager, joinPriority);
         registerQuitListener(pluginManager, quitPriority);
         walletOwners = new HashMap<>();
+        autoSave = new HashMap<>();
         this.generator = generator;
         this.joinEvent = joinEvent;
         this.quitEvent = quitEvent;
@@ -109,10 +113,26 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
             if (player == null || !player.isOnline())
                 return;
             T applied = generator.apply(crudable);
+            BlobCrudable serialized = applied.serializeAllAttributes();
+            Bukkit.getScheduler().runTaskAsynchronously(getPlugin(),
+                    () -> crudManager.update(serialized));
             walletOwners.put(uuid, applied);
             if (joinEvent == null)
                 return;
             Bukkit.getPluginManager().callEvent(joinEvent.apply(applied));
+            autoSave.put(uuid, new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (player == null || !player.isOnline()) {
+                        cancel();
+                        return;
+                    }
+                    BlobCrudable serialized = applied.serializeAllAttributes();
+                    Bukkit.getScheduler().runTaskAsynchronously(getPlugin(),
+                            () -> crudManager.update(serialized));
+                }
+            }.runTaskTimer(getPlugin(), 20 * 60 * 5,
+                    20 * 60 * 5));
         });
     }
 
@@ -126,6 +146,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         if (quitEvent != null)
             Bukkit.getPluginManager().callEvent(quitEvent.apply(walletOwner));
         saving.add(uuid);
+        autoSave.remove(uuid);
         BlobCrudable crudable = walletOwner.serializeAllAttributes();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             crudManager.update(crudable);

@@ -21,6 +21,7 @@ import us.mytheria.bloblib.utilities.BlobCrudManagerFactory;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -28,7 +29,7 @@ import java.util.function.Function;
 
 public class ProxiedSharedSerializableManager<T extends SharedSerializable<?>>
         extends Manager implements Listener, PluginMessageListener {
-    protected final HashMap<String, T> cache;
+    protected final Map<String, T> cache;
     protected BlobCrudManager<BlobCrudable> crudManager;
     private final BlobPlugin plugin;
     private final String tag;
