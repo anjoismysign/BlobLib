@@ -14,6 +14,7 @@ import us.mytheria.bloblib.entities.VariableValue;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * @param <T> type of the variable
@@ -30,6 +31,12 @@ public abstract class VariableSelector<T> extends BlobInventory {
     private final UUID builderId;
     private final VariableFiller<T> filler;
     private final Consumer<Player> returnAction;
+    @Nullable
+    private Function<T, ItemStack> loadFunction;
+    @Nullable
+    private Supplier<Collection<T>> collectionSupplier;
+    @Nullable
+    private String whiteBackgroundName;
     private int page;
     private int itemsPerPage;
 
@@ -60,12 +67,35 @@ public abstract class VariableSelector<T> extends BlobInventory {
      * @param builderId     the id of the builder
      * @param dataType      the data type
      * @param filler        the filler to use
+     * @param returnAction  the action to run when the return button is clicked
      */
     public VariableSelector(BlobInventory blobInventory, UUID builderId,
                             String dataType, VariableFiller<T> filler,
                             @Nullable Consumer<Player> returnAction) {
+        this(blobInventory, builderId, dataType, filler, returnAction, null, null, null);
+    }
+
+    /**
+     * creates a new VariableSelector
+     *
+     * @param blobInventory the inventory to use
+     * @param builderId     the id of the builder
+     * @param dataType      the data type
+     * @param filler        the filler to use
+     * @param returnAction  the action to run when the return button is clicked
+     * @param loadFunction  the function to use to convert the list to an itemstack
+     */
+    public VariableSelector(BlobInventory blobInventory, UUID builderId,
+                            String dataType, VariableFiller<T> filler,
+                            @Nullable Consumer<Player> returnAction,
+                            @Nullable Function<T, ItemStack> loadFunction,
+                            @Nullable Supplier<Collection<T>> collectionSupplier,
+                            @Nullable String whiteBackgroundName) {
         super(blobInventory.getTitle(), blobInventory.getSize(), blobInventory.getButtonManager());
         this.returnAction = returnAction == null ? HumanEntity::closeInventory : returnAction;
+        this.loadFunction = loadFunction;
+        this.collectionSupplier = collectionSupplier;
+        this.whiteBackgroundName = whiteBackgroundName;
         this.filler = filler;
         this.builderId = builderId;
         this.values = new HashMap<>();
@@ -75,7 +105,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
         buildInventory();
         this.page = 1;
         this.itemsPerPage = 1;
-        Set<Integer> slots = getSlots("White-Background");
+        Set<Integer> slots = getSlots(getWhiteBackgroundName());
         if (slots != null)
             setItemsPerPage(slots.size());
         loadFirstPage();
@@ -101,7 +131,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
             return;
         }
         if (whiteBackgroundRefill)
-            refillButton("White-Background");
+            refillButton(getWhiteBackgroundName());
         values.clear();
         List<VariableValue<T>> values = filler.page(page, itemsPerPage);
         for (int i = 0; i < values.size(); i++) {
@@ -124,9 +154,32 @@ public abstract class VariableSelector<T> extends BlobInventory {
             return;
         }
         if (refill)
-            refillButton("White-Background");
+            refillButton(getWhiteBackgroundName());
         values.clear();
         List<VariableValue<T>> values = filler.customPage(page, itemsPerPage, list, function);
+        for (int i = 0; i < values.size(); i++) {
+            setValue(i, values.get(i));
+        }
+    }
+
+    /**
+     * loads the page with the given page number
+     *
+     * @param page     the page number
+     * @param refill   if the background should be refilled
+     * @param function the function to apply
+     */
+    public void loadCustomPage(int page, boolean refill, Function<T, ItemStack> function) {
+        if (page < 1) {
+            return;
+        }
+        if (getTotalPages() < page) {
+            return;
+        }
+        if (refill)
+            refillButton(getWhiteBackgroundName());
+        clearValues();
+        List<VariableValue<T>> values = this.customPage(page, getItemsPerPage(), function);
         for (int i = 0; i < values.size(); i++) {
             setValue(i, values.get(i));
         }
@@ -138,7 +191,10 @@ public abstract class VariableSelector<T> extends BlobInventory {
      * @param page the page to load
      */
     public void loadPage(int page) {
-        loadPage(page, true);
+        if (loadFunction != null && collectionSupplier != null)
+            loadCustomPage(page, true, loadFunction);
+        else
+            loadPage(page, true);
     }
 
     /**
@@ -355,5 +411,61 @@ public abstract class VariableSelector<T> extends BlobInventory {
 
     public void setItemsPerPage(int itemsPerPage) {
         this.itemsPerPage = itemsPerPage;
+    }
+
+    /**
+     * @return the list
+     */
+    public List<T> getList() {
+        if (collectionSupplier == null)
+            return new ArrayList<>();
+        return collectionSupplier.get().stream().toList();
+    }
+
+    /**
+     * returns specific page with provided function without loading
+     *
+     * @param page         the page
+     * @param itemsPerPage the items per page
+     * @param function     the function to apply
+     * @return the list of values
+     */
+    public List<VariableValue<T>> customPage(int page, int itemsPerPage, Function<T, ItemStack> function) {
+        int start = (page - 1) * itemsPerPage;
+        int end = start + (itemsPerPage);
+        ArrayList<VariableValue<T>> values = new ArrayList<>();
+        for (int i = start; i < end; i++) {
+            T get;
+            try {
+                get = getList().get(i);
+                ItemStack itemStack = function.apply(get);
+                if (itemStack == null)
+                    continue;
+                values.add(new VariableValue<>(itemStack, get));
+            } catch (IndexOutOfBoundsException e) {
+                break;
+            }
+        }
+        return values;
+    }
+
+    public void setLoadFunction(@NotNull Function<T, ItemStack> loadFunction) {
+        Objects.requireNonNull(loadFunction, "loadFunction cannot be null");
+        this.loadFunction = loadFunction;
+    }
+
+    public void setCollectionSupplier(@NotNull Supplier<Collection<T>> collectionSupplier) {
+        Objects.requireNonNull(collectionSupplier, "listSupplier cannot be null");
+        this.collectionSupplier = collectionSupplier;
+    }
+
+    public void setWhiteBackgroundName(@NotNull String whiteBackgroundName) {
+        Objects.requireNonNull(whiteBackgroundName, "whiteBackgroundName cannot be null");
+        this.whiteBackgroundName = whiteBackgroundName;
+    }
+
+    @NotNull
+    private String getWhiteBackgroundName() {
+        return whiteBackgroundName == null ? "White-Background" : whiteBackgroundName;
     }
 }

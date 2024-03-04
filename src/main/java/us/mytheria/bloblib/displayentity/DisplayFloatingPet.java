@@ -31,10 +31,10 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
     private UUID owner;
     private boolean activated, pauseLogic;
     private String customName;
-    private SyncDisplayEntityAnimations animations;
-    private BukkitTask logicTask;
+    protected SyncDisplayEntityAnimations animations;
+    protected BukkitTask logicTask;
     protected R display;
-    private final DisplayFloatingPetSettings settings;
+    protected final DisplayFloatingPetSettings settings;
 
     /**
      * Creates a pet
@@ -45,6 +45,7 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
      * @param particle   - the Particle to itemStack
      * @param customName - the CustomName of the pet
      *                   (if null will be used 'owner's Pet')
+     * @param settings   - the settings of the pet
      */
     public DisplayFloatingPet(@NotNull Player owner,
                               @NotNull R display,
@@ -110,7 +111,7 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
         initLogic(plugin);
     }
 
-    private void initLogic(JavaPlugin plugin) {
+    protected void initLogic(JavaPlugin plugin) {
         EntityAnimationsCarrier animationsCarrier = settings.animationsCarrier();
         logicTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             Player owner = findOwner();
@@ -140,11 +141,11 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
         this.location = animations.moveAway(findOwnerOrFail(), location);
     }
 
-    private void move() {
+    protected void move() {
         this.location = animations.move(findOwnerOrFail(), location);
     }
 
-    private void idle() {
+    protected void idle() {
         this.location = animations.idle(findOwnerOrFail(), location);
     }
 
@@ -265,7 +266,7 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
         return location;
     }
 
-    private void setLocation(Location location) {
+    protected void setLocation(Location location) {
         this.location = location;
     }
 
@@ -281,7 +282,7 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
         return activated;
     }
 
-    private void setActive(boolean activated) {
+    protected void setActive(boolean activated) {
         this.activated = activated;
     }
 

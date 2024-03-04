@@ -6,10 +6,10 @@ import org.bukkit.util.Vector;
 
 public class SyncDisplayEntityAnimations {
 
-    private final double followSpeed, walkAwaySpeed, hoverSpeed, hoverHeightCeiling,
+    protected final double followSpeed, walkAwaySpeed, hoverSpeed, hoverHeightCeiling,
             hoverHeightFloor, yOffset;
-    private double hoverVelocity, hoverHeight;
-    private final DisplayEntity<?, ?> pet;
+    protected double hoverVelocity, hoverHeight;
+    protected final DisplayEntity<?, ?> pet;
 
     public SyncDisplayEntityAnimations(DisplayEntity<?, ?> pet,
                                        double followSpeed,
@@ -37,11 +37,15 @@ public class SyncDisplayEntityAnimations {
     }
 
     public Location move(Player player, Location loc) {
-        Vector goal = vectorFromLocation(player.getLocation());
+        Location playerLocation = player.getLocation();
+        double playerX = playerLocation.getX();
+        double playerZ = playerLocation.getZ();
+        Vector goal = vectorFromLocation(playerLocation);
         goal.setY(goal.getY() + yOffset);
-        double distance = Math.sqrt(Math.pow(loc.getX() - player.getLocation().getX(), 2) + Math.pow(loc.getZ() - player.getLocation().getZ(), 2));
+        double distance = Math.sqrt(Math.pow(loc.getX() - playerX, 2) +
+                Math.pow(loc.getZ() - playerZ, 2));
         if (distance < 2.5D) {
-            goal.setY(goal.getY() + player.getLocation().getY() - loc.getY());
+            goal.setY(goal.getY() + playerLocation.getY() - loc.getY());
             goal.setX(loc.getX());
             goal.setZ(loc.getZ());
         }
@@ -49,11 +53,11 @@ public class SyncDisplayEntityAnimations {
         Vector direction = normalize(goal.subtract(start));
         Location newLoc = loc.clone();
         newLoc.add(direction.multiply(followSpeed));
-        double a = player.getLocation().getX() - newLoc.getX();
-        double b = player.getLocation().getZ() - newLoc.getZ();
+        double a = playerX - newLoc.getX();
+        double b = playerZ - newLoc.getZ();
         double angle = Math.atan(b / a);
         angle = angle * (180 / Math.PI);
-        if (player.getLocation().getX() - newLoc.getX() >= 0) {
+        if (playerX - newLoc.getX() >= 0) {
             angle += 180;
         }
         angle += 270;

@@ -419,11 +419,13 @@ public class BlobLibInventoryAPI {
                 dataType, selectorList.get(), onReturn);
         selector.setItemsPerPage(selector.getSlots(buttonRangeKey)
                 == null ? 1 : selector.getSlots(buttonRangeKey).size());
+        selector.setWhiteBackgroundName(buttonRangeKey);
         if (display != null)
             selector.selectElement(player,
                     onSelect,
                     null,
-                    display);
+                    display,
+                    selectorList::get);
         else
             selector.selectElement(player,
                     onSelect,
@@ -556,7 +558,8 @@ public class BlobLibInventoryAPI {
                     playerSelector.selectElement(player,
                             onAdd,
                             null,
-                            addDisplay);
+                            addDisplay,
+                            viewCollection);
                 }, viewCollection.get(), onReturn));
         BlobEditor<T> editor = uber.thanks();
         editor.setItemsPerPage(editor.getSlots(buttonRangeKey) == null

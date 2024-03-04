@@ -218,29 +218,6 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     }
 
     /**
-     * loads the page with the given page number
-     *
-     * @param page     the page number
-     * @param refill   if the background should be refilled
-     * @param function the function to apply
-     */
-    public void loadCustomPage(int page, boolean refill, Function<T, ItemStack> function) {
-        if (page < 1) {
-            return;
-        }
-        if (getTotalPages() < page) {
-            return;
-        }
-        if (refill)
-            refillButton("White-Background");
-        clearValues();
-        List<VariableValue<T>> values = this.customPage(page, getItemsPerPage(), function);
-        for (int i = 0; i < values.size(); i++) {
-            setValue(i, values.get(i));
-        }
-    }
-
-    /**
      * returns the page with the given page number without loading
      *
      * @param page         the page number
@@ -259,33 +236,6 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
                 ItemMeta itemMeta = itemStack.getItemMeta();
                 itemMeta.setDisplayName(ChatColor.GOLD + get.toString());
                 itemStack.setItemMeta(itemMeta);
-                values.add(new VariableValue<>(itemStack, get));
-            } catch (IndexOutOfBoundsException e) {
-                break;
-            }
-        }
-        return values;
-    }
-
-    /**
-     * returns specific page with provided function without loading
-     *
-     * @param page         the page
-     * @param itemsPerPage the items per page
-     * @param function     the function to apply
-     * @return the list of values
-     */
-    public List<VariableValue<T>> customPage(int page, int itemsPerPage, Function<T, ItemStack> function) {
-        int start = (page - 1) * itemsPerPage;
-        int end = start + (itemsPerPage);
-        ArrayList<VariableValue<T>> values = new ArrayList<>();
-        for (int i = start; i < end; i++) {
-            T get;
-            try {
-                get = getList().get(i);
-                ItemStack itemStack = function.apply(get);
-                if (itemStack == null)
-                    continue;
                 values.add(new VariableValue<>(itemStack, get));
             } catch (IndexOutOfBoundsException e) {
                 break;
@@ -389,6 +339,7 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
     /**
      * @return the list
      */
+    @Override
     public List<T> getList() {
         if (collection != null) {
             return new ArrayList<>(collection);
