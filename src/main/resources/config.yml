@@ -11,3 +11,5 @@ Locale:
       - es_mx
       - es_uy
       - es_ve
+    pt_pt:
+      - pt_br
