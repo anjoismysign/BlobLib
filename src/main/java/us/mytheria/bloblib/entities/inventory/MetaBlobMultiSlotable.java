@@ -76,7 +76,10 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
             String action = null;
             if (section.isString("Action"))
                 action = section.getString("Action");
-            return new MetaBlobMultiSlotable(set, translatableItem.getClone(), key, meta, subMeta,
+            ItemStack clone = translatableItem.getClone();
+            int amount = section.getInt("Amount", 1);
+            clone.setAmount(amount);
+            return new MetaBlobMultiSlotable(set, clone, key, meta, subMeta,
                     permission, price, priceCurrency, action);
         }
         ConfigurationSection itemStackSection = section.getConfigurationSection("ItemStack");

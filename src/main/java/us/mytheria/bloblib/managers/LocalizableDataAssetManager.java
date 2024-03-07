@@ -190,6 +190,18 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
         return map.get(key);
     }
 
+    public List<T> getAssets(@NotNull String locale) {
+        Objects.requireNonNull(locale);
+        Map<String, T> map = locales.get(locale);
+        if (map == null)
+            return new ArrayList<>();
+        return new ArrayList<>(map.values());
+    }
+
+    public List<T> getAssets() {
+        return getAssets("en_us");
+    }
+
     @Nullable
     public T getAsset(@NotNull String key,
                       @NotNull String locale) {

@@ -10,6 +10,7 @@ import us.mytheria.bloblib.entities.translatable.TranslatableSnippet;
 import us.mytheria.bloblib.managers.BlobLibConfigManager;
 import us.mytheria.bloblib.managers.TranslatableManager;
 
+import java.util.List;
 import java.util.Objects;
 
 
@@ -154,6 +155,17 @@ public class BlobLibTranslatableAPI {
                                                 @NotNull Player player) {
         Objects.requireNonNull(player);
         return plugin.getTranslatableItemManager().getAsset(key, player.getLocale());
+    }
+
+    /**
+     * Get all the translatable items by their key.
+     *
+     * @param key The key of the translatable
+     * @return The list of translatable items
+     */
+    @NotNull
+    public List<TranslatableItem> getTranslatableItems(@NotNull String key) {
+        return plugin.getTranslatableItemManager().getAssets(key);
     }
 
     /**

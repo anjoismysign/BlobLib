@@ -8,14 +8,19 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginBase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.api.BlobLibMessageAPI;
+import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
 import us.mytheria.bloblib.entities.PluginUpdater;
 import us.mytheria.bloblib.entities.message.BlobMessage;
+import us.mytheria.bloblib.entities.translatable.TranslatableItem;
 import us.mytheria.bloblib.managers.BlobPlugin;
+import us.mytheria.bloblib.utilities.PlayerUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -80,6 +85,74 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                             .getMessage("System.Reload", sender)
                             .toCommandSender(sender);
                     return true;
+                }
+                case "translatableitem" -> {
+                    if (length < 3) {
+                        BlobLibMessageAPI.getInstance()
+                                .getMessage("TranslatableItem.Usage", sender)
+                                .toCommandSender(sender);
+                        return true;
+                    }
+                    String arg2 = args[1].toLowerCase();
+                    String key = args[2];
+                    switch (arg2) {
+                        case "get" -> {
+                            if (!(sender instanceof Player player)) {
+                                BlobLibMessageAPI.getInstance()
+                                        .getMessage("System.Console-Not-Allowed-Command", sender)
+                                        .toCommandSender(sender);
+                                return true;
+                            }
+                            TranslatableItem item = TranslatableItem.by(key);
+                            if (item == null) {
+                                BlobLibMessageAPI.getInstance()
+                                        .getMessage("TranslatableItem.Not-Found", player)
+                                        .modder()
+                                        .replace("%key%", key)
+                                        .get()
+                                        .handle(player);
+                                return true;
+                            }
+                            ItemStack clone = item.localize(player).getClone();
+                            PlayerUtil.giveItemToInventoryOrDrop(player, clone);
+                            return true;
+                        }
+                        case "give" -> {
+                            if (length < 4) {
+                                BlobLibMessageAPI.getInstance()
+                                        .getMessage("TranslatableItem.Usage", sender)
+                                        .toCommandSender(sender);
+                                return true;
+                            }
+                            String playerName = args[3];
+                            Player player = main.getServer().getPlayer(playerName);
+                            if (player == null) {
+                                BlobLibMessageAPI.getInstance()
+                                        .getMessage("Player.Not-Found", sender)
+                                        .toCommandSender(sender);
+                                return true;
+                            }
+                            TranslatableItem item = TranslatableItem.by(key);
+                            if (item == null) {
+                                BlobLibMessageAPI.getInstance()
+                                        .getMessage("TranslatableItem.Not-Found", sender)
+                                        .modder()
+                                        .replace("%key%", key)
+                                        .get()
+                                        .toCommandSender(sender);
+                                return true;
+                            }
+                            ItemStack clone = item.localize(player).getClone();
+                            PlayerUtil.giveItemToInventoryOrDrop(player, clone);
+                            return true;
+                        }
+                        default -> {
+                            BlobLibMessageAPI.getInstance()
+                                    .getMessage("TranslatableItem.Usage", sender)
+                                    .toCommandSender(sender);
+                            return true;
+                        }
+                    }
                 }
                 case "update" -> {
                     PluginUpdater updater;
@@ -202,19 +275,20 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (command.getName().equalsIgnoreCase("bloblib")) {
             if (sender.hasPermission("blobblib.admin")) {
-                List<String> l = new ArrayList<>();
+                List<String> list = new ArrayList<>();
                 int length = args.length;
                 switch (length) {
                     case 1 -> {
-                        l.add("reload");
-                        l.add("update");
-                        l.add("download");
+                        list.add("reload");
+                        list.add("update");
+                        list.add("download");
+                        list.add("translatableitem");
                     }
                     case 2 -> {
                         String arg = args[0].toLowerCase();
                         switch (arg) {
                             case "update" -> {
-                                l.addAll(main.getPluginManager().values().stream()
+                                list.addAll(main.getPluginManager().values().stream()
                                         .map(BlobPlugin::getPluginUpdater)
                                         .filter(Objects::nonNull)
                                         .filter(PluginUpdater::hasAvailableUpdate)
@@ -223,16 +297,46 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                                         .toList());
                             }
                             case "download" -> {
-                                l.add("GitHub");
+                                list.add("GitHub");
+                            }
+                            case "translatableitem" -> {
+                                list.add("get");
+                                list.add("give");
                             }
                             default -> {
                             }
                         }
                     }
+                    case 3 -> {
+                        String arg = args[0].toLowerCase();
+                        if (!arg.equals("translatableitem"))
+                            return list;
+                        String sub = args[1].toLowerCase();
+                        if (sub.equals("get") || sub.equals("give")) {
+                            BlobLibTranslatableAPI.getInstance()
+                                    .getTranslatableItems("en_us")
+                                    .stream()
+                                    .map(TranslatableItem::getReference)
+                                    .forEach(list::add);
+                            return list;
+                        }
+                    }
+                    case 4 -> {
+                        String arg = args[0].toLowerCase();
+                        if (!arg.equals("translatableitem"))
+                            return list;
+                        String sub = args[1].toLowerCase();
+                        if (!sub.equals("give"))
+                            return list;
+                        list.addAll(main.getServer().getOnlinePlayers().stream()
+                                .map(Player::getName)
+                                .toList());
+                        return list;
+                    }
                     default -> {
                     }
                 }
-                return l;
+                return list;
             }
         }
         return null;

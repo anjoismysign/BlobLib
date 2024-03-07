@@ -30,6 +30,8 @@ public abstract class DisplayPackFloatingPet<T extends Display, R extends Clonea
      * @param customName - the CustomName of the pet
      *                   (if null will be used 'owner's Pet')
      * @param settings   - the settings of the pet
+     * @param packMaster - the pack master
+     * @param realIndex  - the real index of the pet
      */
     public DisplayPackFloatingPet(@NotNull Player owner,
                                   @NotNull R display,
@@ -37,11 +39,11 @@ public abstract class DisplayPackFloatingPet<T extends Display, R extends Clonea
                                   @Nullable String customName,
                                   @NotNull DisplayFloatingPetSettings settings,
                                   @NotNull PackMaster<DisplayPackFloatingPet<T, R>> packMaster,
-                                  int index) {
+                                  int realIndex) {
         super(owner, display, particle, customName, settings);
         this.packMaster = packMaster;
-        this.index = index;
-        this.holdIndex = packMaster.addComponent(this, index);
+        this.index = realIndex;
+        this.holdIndex = packMaster.addComponent(this, realIndex);
     }
 
     @Override

@@ -58,7 +58,7 @@ public class SquareMaster<T> {
      * Adds a component to the master at the specified index (real index)
      *
      * @param component - the component
-     * @param realIndex - the index
+     * @param realIndex - the real index
      * @return the index the component was added at
      */
     public int addComponent(T component, int realIndex) {

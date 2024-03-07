@@ -67,7 +67,10 @@ public class BlobMultiSlotable extends MultiSlotable {
             String action = null;
             if (section.isString("Action"))
                 action = section.getString("Action");
-            return new BlobMultiSlotable(list, translatableItem.getClone(), key, permission, price,
+            ItemStack clone = translatableItem.getClone();
+            int amount = section.getInt("Amount", 1);
+            clone.setAmount(amount);
+            return new BlobMultiSlotable(list, clone, key, permission, price,
                     priceCurrency, action);
         }
         ConfigurationSection itemStackSection = section.getConfigurationSection("ItemStack");

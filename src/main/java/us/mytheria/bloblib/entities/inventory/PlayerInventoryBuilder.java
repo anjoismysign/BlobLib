@@ -198,6 +198,10 @@ public class PlayerInventoryBuilder<T extends InventoryButton> extends Inventory
      * @param itemStack The ItemStack to set the button to
      */
     public void setButton(int slot, ItemStack itemStack) {
+        if (!Bukkit.isPrimaryThread()) {
+            Bukkit.getScheduler().runTask(Bukkit.getPluginManager().getPlugin("BlobLib"), () -> getInventory().setItem(slot, itemStack));
+            return;
+        }
         getInventory().setItem(slot, itemStack);
     }
 

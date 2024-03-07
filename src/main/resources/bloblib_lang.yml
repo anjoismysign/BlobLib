@@ -318,3 +318,11 @@ Deposit:
   Successful:
     Type: CHAT
     Message: 'You have deposited %display%'
+TranslatableItem:
+  Usage:
+    Type: CHAT
+    Message: '&7Usage: &8/bloblib translatableitem <give/get> <key> [player]'
+  Not-Found:
+    Type: CHAT
+    Message: '&cTranslatableItem not found: &f%key%'
+    BlobSound: System.Alert

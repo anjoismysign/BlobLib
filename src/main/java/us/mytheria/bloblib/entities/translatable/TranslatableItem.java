@@ -1,6 +1,7 @@
 package us.mytheria.bloblib.entities.translatable;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -10,9 +11,72 @@ import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
 import us.mytheria.bloblib.events.TranslatableItemCloneEvent;
 
+import java.util.List;
 import java.util.Objects;
 
 public interface TranslatableItem extends Translatable<ItemStack> {
+
+    /**
+     * Gets a TranslatableItem by its Material and CustomModelData.
+     *
+     * @param itemStack The ItemStack to get the TranslatableItem by.
+     * @param locale    The locale to get the TranslatableItem by.
+     * @return The TranslatableItem, or null if it doesn't exist.
+     */
+    @Nullable
+    static TranslatableItem byMaterialAndCustomModelData(@NotNull ItemStack itemStack,
+                                                         @NotNull String locale) {
+        Objects.requireNonNull(itemStack, "'itemStack' cannot be null");
+        ItemMeta meta = itemStack.getItemMeta();
+        if (meta == null)
+            return null;
+        List<TranslatableItem> translatableItems = BlobLibTranslatableAPI.getInstance()
+                .getTranslatableItems(locale);
+        translatableItems.forEach(translatableItem -> {
+            ItemStack stack = translatableItem.get();
+            ItemMeta stackMeta = stack.getItemMeta();
+            if (stackMeta == null)
+                return;
+            if (stack.getType() != itemStack.getType())
+                return;
+            if (stackMeta.getCustomModelData() != meta.getCustomModelData())
+                return;
+        });
+        return translatableItems.stream()
+                .filter(translatableItem -> translatableItem.get().getType() == itemStack.getType())
+                .filter(translatableItem -> {
+                    ItemMeta stackMeta = translatableItem.get().getItemMeta();
+                    if (stackMeta == null)
+                        return false;
+                    if (!stackMeta.hasCustomModelData())
+                        return false;
+                    return stackMeta.getCustomModelData() == meta.getCustomModelData();
+                })
+                .findFirst().orElse(null);
+    }
+
+    /**
+     * Gets a TranslatableItem by its Material and CustomModelData in the default locale [en_us]
+     *
+     * @param itemStack The ItemStack to get the TranslatableItem by.
+     * @return The TranslatableItem, or null if it doesn't exist.
+     */
+    static TranslatableItem byMaterialAndCustomModelData(@NotNull ItemStack itemStack) {
+        return byMaterialAndCustomModelData(itemStack, "en_us");
+    }
+
+    /**
+     * Gets a TranslatableItem by its Material and CustomModelData.
+     *
+     * @param itemStack The ItemStack to get the TranslatableItem by.
+     * @param player    The player to get the TranslatableItem's locale by.
+     * @return The TranslatableItem, or null if it doesn't exist.
+     */
+    static TranslatableItem byMaterialAndCustomModelData(@NotNull ItemStack itemStack,
+                                                         @NotNull Player player) {
+        return byMaterialAndCustomModelData(itemStack, player.getLocale());
+    }
+
     /**
      * Gets a TranslatableItem by its key. Key is the same as getReference.
      *
@@ -56,6 +120,12 @@ public interface TranslatableItem extends Translatable<ItemStack> {
         itemStack.setItemMeta(from);
     }
 
+    /**
+     * Checks whether an ItemStack is a TranslatableItem instance.
+     *
+     * @param item The ItemStack to check.
+     * @return The TranslatableItem, or null if it isn't one.
+     */
     @Nullable
     static TranslatableItem isInstance(@Nullable ItemStack item) {
         if (item == null)
@@ -73,8 +143,15 @@ public interface TranslatableItem extends Translatable<ItemStack> {
         return BlobLibTranslatableAPI.getInstance().getTranslatableItem(key, locale);
     }
 
+    /**
+     * Localizes the TranslatableItem to a specific locale.
+     *
+     * @param locale The locale to localize to.
+     * @return The localized TranslatableItem.
+     */
     @Nullable
-    default TranslatableItem localize(String locale) {
+    default TranslatableItem localize(@NotNull String locale) {
+        Objects.requireNonNull(locale, "'locale' cannot be null");
         if (getLocale().equals(locale))
             return this;
         return BlobLibTranslatableAPI.getInstance()
@@ -82,6 +159,22 @@ public interface TranslatableItem extends Translatable<ItemStack> {
                         locale);
     }
 
+    /**
+     * Localizes the TranslatableItem to a specific player's locale.
+     *
+     * @param player The player to localize to.
+     * @return The localized TranslatableItem.
+     */
+    default TranslatableItem localize(@NotNull Player player) {
+        Objects.requireNonNull(player, "'player' cannot be null");
+        return localize(player.getLocale());
+    }
+
+    /**
+     * Will get the TranslatableItemModder for this TranslatableItem.
+     *
+     * @return The TranslatableItemModder.
+     */
     default TranslatableItemModder modder() {
         return TranslatableItemModder.mod(this);
     }
@@ -111,5 +204,46 @@ public interface TranslatableItem extends Translatable<ItemStack> {
      */
     default ItemStack getClone() {
         return getClone(true);
+    }
+
+    /**
+     * Applies the TranslatableItem to an existing ItemStack without overwriting its data.
+     * It only applies the displayname and lore!
+     *
+     * @param itemStack The ItemStack to apply the TranslatableItem to.
+     * @param locale    The locale to apply.
+     */
+    default void apply(@NotNull ItemStack itemStack, @NotNull String locale) {
+        Objects.requireNonNull(itemStack, "'hand' cannot be null");
+        Objects.requireNonNull(locale, "'locale' cannot be null");
+        TranslatableItem localized = localize(locale);
+        locale = localized.getLocale();
+        ItemStack translatedItem = localized.getClone();
+        ItemMeta translatedMeta = translatedItem.getItemMeta();
+        String name = translatedMeta.hasDisplayName() ? translatedMeta.getDisplayName() : null;
+        List<String> lore = translatedMeta.hasLore() ? translatedMeta.getLore() : null;
+        ItemMeta handMeta = itemStack.getItemMeta();
+        if (name != null)
+            handMeta.setDisplayName(name);
+        if (lore != null)
+            handMeta.setLore(lore);
+        PersistentDataContainer container = handMeta.getPersistentDataContainer();
+        if (!container.has(BlobTranslatableItem.keyKey, PersistentDataType.STRING))
+            container.set(BlobTranslatableItem.keyKey, PersistentDataType.STRING, localized.getReference());
+        if (!container.has(BlobTranslatableItem.localeKey, PersistentDataType.STRING))
+            container.set(BlobTranslatableItem.localeKey, PersistentDataType.STRING, locale);
+        itemStack.setItemMeta(handMeta);
+    }
+
+    /**
+     * Applies the TranslatableItem to an existing ItemStack without overwriting its data.
+     * It only applies the displayname and lore!
+     *
+     * @param itemStack The ItemStack to apply the TranslatableItem to.
+     * @param player    The player to apply the TranslatableItem to.
+     */
+    default void apply(@NotNull ItemStack itemStack, @NotNull Player player) {
+        Objects.requireNonNull(player, "'player' cannot be null");
+        apply(itemStack, player.getLocale());
     }
 }
