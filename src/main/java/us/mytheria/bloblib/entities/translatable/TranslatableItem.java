@@ -208,7 +208,10 @@ public interface TranslatableItem extends Translatable<ItemStack> {
 
     /**
      * Applies the TranslatableItem to an existing ItemStack without overwriting its data.
-     * It only applies the displayname and lore!
+     * This doesn't translate an already valid TranslatableItem instance!
+     * It only applies the display name and lore.
+     * It also sets the locale and reference in the ItemStack's NBT, making it a valid TranslatableItem instance.
+     * This method is useful in cases of which another plugin manages ItemStacks.
      *
      * @param itemStack The ItemStack to apply the TranslatableItem to.
      * @param locale    The locale to apply.
@@ -237,7 +240,10 @@ public interface TranslatableItem extends Translatable<ItemStack> {
 
     /**
      * Applies the TranslatableItem to an existing ItemStack without overwriting its data.
-     * It only applies the displayname and lore!
+     * This doesn't translate an already valid TranslatableItem instance!
+     * It only applies the display name and lore.
+     * It also sets the locale and reference in the ItemStack's NBT, making it a valid TranslatableItem instance.
+     * This method is useful in cases of which another plugin manages ItemStacks.
      *
      * @param itemStack The ItemStack to apply the TranslatableItem to.
      * @param player    The player to apply the TranslatableItem to.
