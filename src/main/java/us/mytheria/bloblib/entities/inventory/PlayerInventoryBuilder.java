@@ -199,7 +199,12 @@ public class PlayerInventoryBuilder<T extends InventoryButton> extends Inventory
      */
     public void setButton(int slot, ItemStack itemStack) {
         if (!Bukkit.isPrimaryThread()) {
-            Bukkit.getScheduler().runTask(Bukkit.getPluginManager().getPlugin("BlobLib"), () -> getInventory().setItem(slot, itemStack));
+            Bukkit.getScheduler().runTask(Bukkit.getPluginManager().getPlugin("BlobLib"), () -> {
+                try {
+                    getInventory().setItem(slot, itemStack);
+                } catch (ArrayIndexOutOfBoundsException ignored) {
+                }
+            });
             return;
         }
         getInventory().setItem(slot, itemStack);

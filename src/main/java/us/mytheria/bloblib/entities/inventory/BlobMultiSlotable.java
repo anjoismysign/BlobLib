@@ -8,8 +8,8 @@ import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
 import us.mytheria.bloblib.entities.translatable.TranslatableItem;
 import us.mytheria.bloblib.itemstack.ItemStackReader;
+import us.mytheria.bloblib.utilities.IntegerRange;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -44,16 +44,8 @@ public class BlobMultiSlotable extends MultiSlotable {
                             locale);
             if (translatableItem == null)
                 throw new NullPointerException("TranslatableItem not found: " + reference);
-            HashSet<Integer> list = new HashSet<>();
             String read = section.getString("Slot", "-1");
-            String[] slots = read.split(",");
-            if (slots.length != 1) {
-                for (String slot : slots) {
-                    add(list, slot, section.getName());
-                }
-            } else {
-                add(list, read, section.getName());
-            }
+            Set<Integer> list = IntegerRange.getInstance().parse(read);
             String permission = null;
             if (section.isString("Permission"))
                 permission = section.getString("Permission");
@@ -79,16 +71,8 @@ public class BlobMultiSlotable extends MultiSlotable {
             return null;
         }
         ItemStack itemStack = ItemStackReader.READ_OR_FAIL_FAST(itemStackSection).build();
-        HashSet<Integer> list = new HashSet<>();
         String read = section.getString("Slot", "-1");
-        String[] slots = read.split(",");
-        if (slots.length != 1) {
-            for (String slot : slots) {
-                add(list, slot, section.getName());
-            }
-        } else {
-            add(list, read, section.getName());
-        }
+        Set<Integer> list = IntegerRange.getInstance().parse(read);
         String permission = null;
         if (section.isString("Permission"))
             permission = section.getString("Permission");

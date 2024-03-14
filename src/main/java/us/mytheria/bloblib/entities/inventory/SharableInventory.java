@@ -177,7 +177,10 @@ public class SharableInventory<T extends InventoryButton> extends InventoryBuild
      * @param itemStack The ItemStack to set the button to
      */
     public SharableInventory<T> setButton(int slot, ItemStack itemStack) {
-        inventory.setItem(slot, itemStack);
+        try {
+            inventory.setItem(slot, itemStack);
+        } catch (ArrayIndexOutOfBoundsException ignored) {
+        }
         return this;
     }
 

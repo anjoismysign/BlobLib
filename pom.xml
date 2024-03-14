@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>us.mytheria</groupId>
     <artifactId>BlobLib</artifactId>
-    <version>1.698.08</version>
+    <version>1.698.09</version>
     <packaging>pom</packaging>
 
     <properties>

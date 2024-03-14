@@ -187,7 +187,10 @@ public class InventoryHolderBuilder<T extends InventoryButton> extends Inventory
      * @param itemStack The ItemStack to set the button to
      */
     public void setButton(int slot, ItemStack itemStack) {
-        getInventory().setItem(slot, itemStack);
+        try {
+            getInventory().setItem(slot, itemStack);
+        } catch (ArrayIndexOutOfBoundsException ignored) {
+        }
     }
 
     /**

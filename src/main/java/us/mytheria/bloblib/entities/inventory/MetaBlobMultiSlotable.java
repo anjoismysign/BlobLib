@@ -8,8 +8,8 @@ import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
 import us.mytheria.bloblib.entities.translatable.TranslatableItem;
 import us.mytheria.bloblib.itemstack.ItemStackReader;
+import us.mytheria.bloblib.utilities.IntegerRange;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -46,16 +46,8 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
                             locale);
             if (translatableItem == null)
                 throw new NullPointerException("TranslatableItem not found: " + reference);
-            HashSet<Integer> set = new HashSet<>();
             String read = section.getString("Slot", "-1");
-            String[] slots = read.split(",");
-            if (slots.length != 1) {
-                for (String slot : slots) {
-                    add(set, slot, section.getName());
-                }
-            } else {
-                add(set, read, section.getName());
-            }
+            Set<Integer> set = IntegerRange.getInstance().parse(read);
             String meta = section.getString("Meta", "NONE");
             String subMeta = null;
             if (section.isString("SubMeta")) {
@@ -88,16 +80,8 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
             return null;
         }
         ItemStack itemStack = ItemStackReader.READ_OR_FAIL_FAST(itemStackSection).build();
-        HashSet<Integer> set = new HashSet<>();
         String read = section.getString("Slot", "-1");
-        String[] slots = read.split(",");
-        if (slots.length != 1) {
-            for (String slot : slots) {
-                add(set, slot, section.getName());
-            }
-        } else {
-            add(set, read, section.getName());
-        }
+        Set<Integer> set = IntegerRange.getInstance().parse(read);
         String meta = section.getString("Meta", "NONE");
         String subMeta = null;
         if (section.isString("SubMeta")) {
@@ -170,60 +154,6 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
         buttonManager.getStringKeys().put(key, toMetaInventoryButton());
         for (Integer slot : getSlots()) {
             buttonManager.getIntegerKeys().put(slot, getItemStack());
-        }
-    }
-
-    /**
-     * Adds slots to an existing set. Used in parsing
-     * from ConfigurationSection.
-     *
-     * @param set         the set to add
-     * @param raw         the raw string to parse. should be a range or a single number, i.e. 1-7 or 8
-     * @param sectionName the name of the section, used for logging/debugging
-     */
-    private static void add(Set<Integer> set, String raw, String sectionName) {
-        String[] split = raw.split("-");
-        switch (split.length) {
-            /*
-            if String.split(regex) has no match will return String itself
-            which is a length of "1".
-            Example for this case would be if 'raw' is "4" instead of "1-7"
-             */
-            case 1 -> {
-                int slot = Integer.parseInt(split[0]);
-                if (slot < 0) {
-                    Bukkit.getLogger().info(sectionName + " got a slot that's is smaller than 0.");
-                    Bukkit.getLogger().info("This is not possible in an inventory so it was set");
-                    Bukkit.getLogger().info("to '0' which is default.");
-                    slot = 0;
-                }
-                set.add(slot);
-            }
-            case 2 -> {
-                int start = 0;
-                try {
-                    start = Integer.parseInt(split[0]);
-                } catch (NumberFormatException e) {
-                    Bukkit.getLogger().info(sectionName + " got a slot that's not a number");
-                    Bukkit.getLogger().info("This is not possible in an inventory so it was set");
-                    Bukkit.getLogger().info("to '0' which is default.");
-                }
-                int end = 0;
-                try {
-                    end = Integer.parseInt(split[1]);
-                } catch (NumberFormatException e) {
-                    Bukkit.getLogger().info(sectionName + " got a slot that's not a number");
-                    Bukkit.getLogger().info("This is not possible in an inventory so it was set");
-                    Bukkit.getLogger().info("to '0' which is default.");
-                }
-                for (int i = start; i <= end; i++) {
-                    set.add(i);
-                }
-            }
-            default -> {
-                Bukkit.getLogger().info("Invalid range inside inside " + sectionName);
-                Bukkit.getLogger().info("The range must be in the format of 'start-end' or 'number'");
-            }
         }
     }
 
