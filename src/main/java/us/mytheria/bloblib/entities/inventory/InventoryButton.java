@@ -5,8 +5,12 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permissible;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.action.Action;
+import us.mytheria.bloblib.action.ActionType;
+import us.mytheria.bloblib.action.CommandAction;
+import us.mytheria.bloblib.action.ConsoleCommandAction;
 import us.mytheria.bloblib.api.BlobLibActionAPI;
 import us.mytheria.bloblib.api.BlobLibEconomyAPI;
 import us.mytheria.bloblib.vault.multieconomy.ElasticEconomy;
@@ -21,18 +25,25 @@ public class InventoryButton {
     private final String permission;
     private final double price;
     private final String priceCurrency;
+    @Nullable
     private final String action;
+    @Nullable
+    private final ActionType actionType;
 
-    public InventoryButton(String key, Set<Integer> slots,
+    public InventoryButton(String key,
+                           @NotNull Set<Integer> slots,
                            @Nullable String permission,
-                           double price, @Nullable String priceCurrency,
-                           @Nullable String action) {
+                           double price,
+                           @Nullable String priceCurrency,
+                           @Nullable String action,
+                           @Nullable ActionType actionType) {
         this.key = key;
         this.slots = slots;
         this.permission = permission;
         this.price = price;
         this.priceCurrency = priceCurrency;
         this.action = action;
+        this.actionType = actionType;
     }
 
     public String getKey() {
@@ -143,6 +154,13 @@ public class InventoryButton {
     }
 
     /**
+     * @return The action type of the button. Null if there is no action type.
+     */
+    @Nullable ActionType getActionType() {
+        return actionType;
+    }
+
+    /**
      * Will handle the action of the button.
      *
      * @param entity The entity to handle the action for.
@@ -150,6 +168,20 @@ public class InventoryButton {
     public void handleAction(Entity entity) {
         if (action == null)
             return;
+        if (actionType != null) {
+            Action<Entity> build;
+            switch (actionType) {
+                case ACTOR_COMMAND -> {
+                    build = CommandAction.build(action);
+                }
+                case CONSOLE_COMMAND -> {
+                    build = ConsoleCommandAction.build(action);
+                }
+                default -> throw new IllegalStateException("Unexpected value: " + actionType);
+            }
+            build.perform(entity);
+            return;
+        }
         Action<Entity> fetch = BlobLibActionAPI.getInstance().getAction(action);
         fetch.perform(entity);
     }
@@ -165,6 +197,6 @@ public class InventoryButton {
      */
     public InventoryButton copy() {
         return new InventoryButton(key, new HashSet<>(slots),
-                permission, price, priceCurrency, action);
+                permission, price, priceCurrency, action, actionType);
     }
 }

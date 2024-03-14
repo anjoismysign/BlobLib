@@ -2,6 +2,7 @@ package us.mytheria.bloblib.entities.inventory;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.action.ActionType;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,14 +15,14 @@ public class MetaInventoryButton extends InventoryButton {
                                                           String subMeta) {
         return new MetaInventoryButton(button.getKey(), button.getSlots(), meta,
                 subMeta, button.getPermission(), button.getPrice(),
-                button.getPriceCurrency(), button.getAction());
+                button.getPriceCurrency(), button.getAction(), button.getActionType());
     }
 
     public MetaInventoryButton(String key, Set<Integer> slots, String meta,
                                @Nullable String subMeta, @Nullable String permission,
                                double price, @Nullable String priceCurrency,
-                               @Nullable String action) {
-        super(key, slots, permission, price, priceCurrency, action);
+                               @Nullable String action, @Nullable ActionType actionType) {
+        super(key, slots, permission, price, priceCurrency, action, actionType);
         this.meta = meta;
         this.subMeta = subMeta;
     }
@@ -62,6 +63,6 @@ public class MetaInventoryButton extends InventoryButton {
     @Override
     public MetaInventoryButton copy() {
         return new MetaInventoryButton(getKey(), new HashSet<>(getSlots()), getMeta(), getSubMeta(),
-                getPermission(), getPrice(), getPriceCurrency(), getAction());
+                getPermission(), getPrice(), getPriceCurrency(), getAction(), getActionType());
     }
 }

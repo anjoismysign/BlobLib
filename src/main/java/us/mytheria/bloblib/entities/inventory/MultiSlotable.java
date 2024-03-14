@@ -2,6 +2,7 @@ package us.mytheria.bloblib.entities.inventory;
 
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.action.ActionType;
 
 import java.util.Collection;
 
@@ -18,7 +19,10 @@ public abstract class MultiSlotable {
     private final String permission;
     private final double price;
     private final String priceCurrency;
+    @Nullable
     private final String action;
+    @Nullable
+    private final ActionType actionType;
 
     /**
      * @param slots         The slots to be used.
@@ -27,18 +31,21 @@ public abstract class MultiSlotable {
      * @param price         The price to be used.
      * @param priceCurrency The price currency to be used.
      * @param action        The action to be used.
+     * @param actionType    The action type to be used.
      */
     public MultiSlotable(Collection<Integer> slots, ItemStack itemStack,
                          @Nullable String permission,
                          double price,
                          @Nullable String priceCurrency,
-                         @Nullable String action) {
+                         @Nullable String action,
+                         @Nullable ActionType actionType) {
         this.slots = slots;
         this.itemStack = itemStack;
         this.permission = permission;
         this.price = price;
         this.priceCurrency = priceCurrency;
         this.action = action;
+        this.actionType = actionType;
     }
 
     /**
@@ -74,5 +81,10 @@ public abstract class MultiSlotable {
     @Nullable
     public String getAction() {
         return action;
+    }
+
+    @Nullable
+    public ActionType getActionType() {
+        return actionType;
     }
 }

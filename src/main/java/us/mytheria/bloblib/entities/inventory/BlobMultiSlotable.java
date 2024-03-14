@@ -5,6 +5,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.action.ActionType;
 import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
 import us.mytheria.bloblib.entities.translatable.TranslatableItem;
 import us.mytheria.bloblib.itemstack.ItemStackReader;
@@ -59,11 +61,25 @@ public class BlobMultiSlotable extends MultiSlotable {
             String action = null;
             if (section.isString("Action"))
                 action = section.getString("Action");
+            ActionType actionType = null;
+            ConfigurationSection actionSection = section.getConfigurationSection("Action");
+            if (actionSection != null) {
+                if (!actionSection.isString("Action"))
+                    Bukkit.getLogger().info("'Action' field is missing in 'Action' ConfigurationSection (" + key + ".Action.Action)");
+                if (!actionSection.isString("Action-Type"))
+                    Bukkit.getLogger().info("'Action-Type' field is missing in 'Action' ConfigurationSection (" + key + ".Action.Action-Type)");
+                action = actionSection.getString("Action");
+                try {
+                    actionType = ActionType.valueOf(actionSection.getString("Action-Type"));
+                } catch (IllegalArgumentException e) {
+                    BlobLib.getAnjoLogger().singleError("Invalid 'ActionType' for " + key + ".Action.Action-Type");
+                }
+            }
             ItemStack clone = translatableItem.getClone();
             int amount = section.getInt("Amount", 1);
             clone.setAmount(amount);
             return new BlobMultiSlotable(list, clone, key, permission, price,
-                    priceCurrency, action);
+                    priceCurrency, action, actionType);
         }
         ConfigurationSection itemStackSection = section.getConfigurationSection("ItemStack");
         if (itemStackSection == null) {
@@ -86,8 +102,22 @@ public class BlobMultiSlotable extends MultiSlotable {
         String action = null;
         if (section.isString("Action"))
             action = section.getString("Action");
+        ActionType actionType = null;
+        ConfigurationSection actionSection = section.getConfigurationSection("Action");
+        if (actionSection != null) {
+            if (!actionSection.isString("Action"))
+                Bukkit.getLogger().info("'Action' field is missing in 'Action' ConfigurationSection (" + key + ".Action.Action)");
+            if (!actionSection.isString("Action-Type"))
+                Bukkit.getLogger().info("'Action-Type' field is missing in 'Action' ConfigurationSection (" + key + ".Action.Action-Type)");
+            action = actionSection.getString("Action");
+            try {
+                actionType = ActionType.valueOf(actionSection.getString("Action-Type"));
+            } catch (IllegalArgumentException e) {
+                BlobLib.getAnjoLogger().singleError("Invalid 'ActionType' for " + key + ".Action.Action-Type");
+            }
+        }
         return new BlobMultiSlotable(list, itemStack, key, permission, price,
-                priceCurrency, action);
+                priceCurrency, action, actionType);
     }
 
     /**
@@ -106,8 +136,9 @@ public class BlobMultiSlotable extends MultiSlotable {
                              @Nullable String permission,
                              double price,
                              @Nullable String priceCurrency,
-                             @Nullable String action) {
-        super(slots, itemStack, permission, price, priceCurrency, action);
+                             @Nullable String action,
+                             @Nullable ActionType actionType) {
+        super(slots, itemStack, permission, price, priceCurrency, action, actionType);
         this.key = key;
     }
 
@@ -126,7 +157,7 @@ public class BlobMultiSlotable extends MultiSlotable {
 
     public InventoryButton toInventoryButton() {
         return new InventoryButton(key, getSlots(), getPermission(), getPrice(),
-                getPriceCurrency(), getAction());
+                getPriceCurrency(), getAction(), getActionType());
     }
 
     /**
