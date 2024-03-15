@@ -4,6 +4,7 @@ import us.mytheria.bloblib.exception.InterpretationException;
 
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -12,6 +13,41 @@ import java.util.stream.Stream;
  * Interpreter for enum values.
  */
 public class Enumaterpretrer {
+
+    /**
+     * Decodes a set of enum values from an integer.
+     *
+     * @param intValue  The integer to decode.
+     * @param enumClass The enum class to decode the values from.
+     * @param <E>       The enum type.
+     * @return A set of enum values.
+     */
+    public static <E extends Enum<E>> Set<E> decodeEnumSet(int intValue, Class<E> enumClass) {
+        Set<E> flags = new HashSet<>();
+        E[] enumConstants = enumClass.getEnumConstants();
+        for (E constant : enumConstants) {
+            int ordinalValue = 1 << constant.ordinal();
+            if ((intValue & ordinalValue) == ordinalValue) {
+                flags.add(constant);
+            }
+        }
+        return flags;
+    }
+
+    /**
+     * Encodes a set of enum values to an integer.
+     *
+     * @param enumSet The set of enum values to encode.
+     * @param <E>     The enum type.
+     * @return The integer value.
+     */
+    public static <E extends Enum<E>> int encodeEnumSet(Set<E> enumSet) {
+        int intValue = 0;
+        for (E constant : enumSet) {
+            intValue |= 1 << constant.ordinal();
+        }
+        return intValue;
+    }
 
     public static <E extends Enum<E>> Set<E> PARSE(Class<E> enumClass, String... strings) {
         return new Enumaterpretrer().parse(Stream.of(strings), enumClass);
