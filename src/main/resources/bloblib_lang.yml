@@ -326,3 +326,11 @@ TranslatableItem:
     Type: CHAT
     Message: '&cTranslatableItem not found: &f%key%'
     BlobSound: System.Alert
+BlobInventory:
+  Usage:
+    Type: CHAT
+    Message: '&7Usage: &8/bloblib blobinventory open <key> [player]'
+  Not-Found:
+    Type: CHAT
+    Message: '&cBlobInventory not found: &f%key%'
+    BlobSound: System.Alert

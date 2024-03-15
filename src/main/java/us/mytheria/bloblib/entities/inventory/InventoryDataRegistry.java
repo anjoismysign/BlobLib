@@ -1,6 +1,5 @@
 package us.mytheria.bloblib.entities.inventory;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.jetbrains.annotations.NotNull;
@@ -138,8 +137,6 @@ public class InventoryDataRegistry<T extends InventoryButton> {
     public void processClickEvent(InventoryClickEvent event, T button) {
         clickEvents.values().forEach(clickEvent -> {
             if (clickEvent == null)
-                return;
-            if (!button.handleAll((Player) event.getWhoClicked()))
                 return;
             clickEvent.accept(event, button);
         });

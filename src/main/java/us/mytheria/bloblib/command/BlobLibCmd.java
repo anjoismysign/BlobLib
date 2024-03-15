@@ -3,6 +3,7 @@ package us.mytheria.bloblib.command;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,9 +15,11 @@ import org.bukkit.plugin.PluginBase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.api.BlobLibInventoryAPI;
 import us.mytheria.bloblib.api.BlobLibMessageAPI;
 import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
 import us.mytheria.bloblib.entities.PluginUpdater;
+import us.mytheria.bloblib.entities.inventory.BlobInventoryTracker;
 import us.mytheria.bloblib.entities.message.BlobMessage;
 import us.mytheria.bloblib.entities.translatable.TranslatableItem;
 import us.mytheria.bloblib.managers.BlobPlugin;
@@ -84,6 +87,54 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                     BlobLibMessageAPI.getInstance()
                             .getMessage("System.Reload", sender)
                             .toCommandSender(sender);
+                    return true;
+                }
+                case "blobinventory" -> {
+                    if (length < 3) {
+                        BlobLibMessageAPI.getInstance()
+                                .getMessage("BlobInventory.Usage", sender)
+                                .toCommandSender(sender);
+                        return true;
+                    }
+                    String arg2 = args[1].toLowerCase();
+                    if (!arg2.equals("open")) {
+                        BlobLibMessageAPI.getInstance()
+                                .getMessage("BlobInventory.Usage", sender)
+                                .toCommandSender(sender);
+                        return true;
+                    }
+                    String key = args[2];
+                    Player player;
+                    if (length < 4) {
+                        if (!(sender instanceof Player)) {
+                            BlobLibMessageAPI.getInstance()
+                                    .getMessage("System.Console-Not-Allowed-Command", sender)
+                                    .toCommandSender(sender);
+                            return true;
+                        }
+                        player = (Player) sender;
+                    } else {
+                        String playerName = args[3];
+                        player = Bukkit.getPlayer(playerName);
+                        if (player == null) {
+                            BlobLibMessageAPI.getInstance()
+                                    .getMessage("Player.Not-Found", sender)
+                                    .toCommandSender(sender);
+                            return true;
+                        }
+                    }
+                    BlobInventoryTracker tracker = BlobLibInventoryAPI.getInstance()
+                            .trackInventory(player, key);
+                    if (tracker == null) {
+                        BlobLibMessageAPI.getInstance()
+                                .getMessage("BlobInventory.Not-Found", sender)
+                                .modder()
+                                .replace("%key%", key)
+                                .get()
+                                .toCommandSender(sender);
+                        return true;
+                    }
+                    tracker.getInventory().open(player);
                     return true;
                 }
                 case "translatableitem" -> {
@@ -283,6 +334,7 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                         list.add("update");
                         list.add("download");
                         list.add("translatableitem");
+                        list.add("blobinventory");
                     }
                     case 2 -> {
                         String arg = args[0].toLowerCase();
@@ -303,35 +355,60 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                                 list.add("get");
                                 list.add("give");
                             }
+                            case "blobinventory" -> {
+                                list.add("open");
+                            }
                             default -> {
                             }
                         }
                     }
                     case 3 -> {
                         String arg = args[0].toLowerCase();
-                        if (!arg.equals("translatableitem"))
-                            return list;
-                        String sub = args[1].toLowerCase();
-                        if (sub.equals("get") || sub.equals("give")) {
-                            BlobLibTranslatableAPI.getInstance()
-                                    .getTranslatableItems("en_us")
-                                    .stream()
-                                    .map(TranslatableItem::getReference)
-                                    .forEach(list::add);
-                            return list;
+                        switch (arg) {
+                            case "translatableitem" -> {
+                                String sub = args[1].toLowerCase();
+                                if (sub.equals("get") || sub.equals("give")) {
+                                    BlobLibTranslatableAPI.getInstance()
+                                            .getTranslatableItems("en_us")
+                                            .stream()
+                                            .map(TranslatableItem::getReference)
+                                            .forEach(list::add);
+                                    return list;
+                                }
+                            }
+                            case "blobinventory" -> {
+                                String sub = args[1].toLowerCase();
+                                if (sub.equals("open")) {
+                                    BlobLibInventoryAPI.getInstance()
+                                            .getBlobInventories().keySet()
+                                            .forEach(list::add);
+                                    return list;
+                                }
+                            }
                         }
                     }
                     case 4 -> {
                         String arg = args[0].toLowerCase();
-                        if (!arg.equals("translatableitem"))
-                            return list;
-                        String sub = args[1].toLowerCase();
-                        if (!sub.equals("give"))
-                            return list;
-                        list.addAll(main.getServer().getOnlinePlayers().stream()
-                                .map(Player::getName)
-                                .toList());
-                        return list;
+                        switch (arg) {
+                            case "translatableitem" -> {
+                                String sub = args[1].toLowerCase();
+                                if (sub.equals("give")) {
+                                    list.addAll(main.getServer().getOnlinePlayers().stream()
+                                            .map(Player::getName)
+                                            .toList());
+                                    return list;
+                                }
+                            }
+                            case "blobinventory" -> {
+                                String sub = args[1].toLowerCase();
+                                if (sub.equals("open")) {
+                                    list.addAll(main.getServer().getOnlinePlayers().stream()
+                                            .map(Player::getName)
+                                            .toList());
+                                    return list;
+                                }
+                            }
+                        }
                     }
                     default -> {
                     }

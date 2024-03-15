@@ -3,6 +3,7 @@ package us.mytheria.bloblib.managers;
 import org.apache.commons.io.FilenameUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
@@ -10,10 +11,7 @@ import us.mytheria.bloblib.entities.IFileManager;
 import us.mytheria.bloblib.entities.inventory.*;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 public class InventoryManager {
     private final BlobLib main;
@@ -249,6 +247,22 @@ public class InventoryManager {
             duplicates.put(key, duplicates.get(key) + 1);
         else
             duplicates.put(key, 2);
+    }
+
+    /**
+     * @return An unmodifiable map of all blob inventories.
+     */
+    @NotNull
+    public Map<String, InventoryDataRegistry<InventoryButton>> getBlobInventories() {
+        return Collections.unmodifiableMap(blobInventories);
+    }
+
+    /**
+     * @return An unmodifiable map of all meta inventories.
+     */
+    @NotNull
+    public Map<String, InventoryDataRegistry<MetaInventoryButton>> getMetaInventories() {
+        return Collections.unmodifiableMap(metaInventories);
     }
 
     @Nullable

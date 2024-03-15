@@ -104,6 +104,8 @@ public class InventoryTrackerManager implements Listener {
             var button = sharableInventory.getButton(key);
             if (!button.containsSlot(slot))
                 return;
+            if (!button.handleAll((Player) event.getWhoClicked()))
+                return;
             registry.processSingleClickEvent(key, event);
             button.accept(ClickEventProcessor.of(event, registry));
         });

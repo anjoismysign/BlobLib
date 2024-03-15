@@ -14,10 +14,7 @@ import us.mytheria.bloblib.managers.InventoryTrackerManager;
 import us.mytheria.bloblib.managers.MetaInventoryShard;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -48,6 +45,22 @@ public class BlobLibInventoryAPI {
      */
     public InventoryManager getInventoryManager() {
         return plugin.getInventoryManager();
+    }
+
+    /**
+     * @return An unmodifiable map of all BlobInventories.
+     */
+    @NotNull
+    public Map<String, InventoryDataRegistry<InventoryButton>> getBlobInventories() {
+        return getInventoryManager().getBlobInventories();
+    }
+
+    /**
+     * @return An unmodifiable map of all MetaBlobInventories.
+     */
+    @NotNull
+    public Map<String, InventoryDataRegistry<MetaInventoryButton>> getMetaBlobInventories() {
+        return getInventoryManager().getMetaInventories();
     }
 
     /**
