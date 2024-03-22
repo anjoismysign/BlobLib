@@ -1,6 +1,7 @@
 package us.mytheria.bloblib.entities;
 
 import me.anjoismysign.anjo.entities.Result;
+import me.anjoismysign.skeramidcommands.command.CommandTarget;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.entities.logger.BlobPluginLogger;
@@ -8,10 +9,7 @@ import us.mytheria.bloblib.managers.Manager;
 import us.mytheria.bloblib.managers.ManagerDirector;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
@@ -22,7 +20,8 @@ import java.util.function.Supplier;
  * @author An ObjectManager will handle objects that are loaded in
  * random access memory and tracked by a key.
  */
-public abstract class ObjectManager<T extends BlobObject> extends Manager {
+public abstract class ObjectManager<T extends BlobObject> extends Manager
+        implements CommandTarget<T> {
     private final File loadFilesDirectory;
     private final Supplier<Map<String, T>> objectsSupplier;
     private final Supplier<Map<String, File>> fileSupplier;
@@ -222,5 +221,14 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager {
             }
             consumer.accept(this);
         });
+    }
+
+    public List<String> get() {
+        return new ArrayList<>(objects.keySet());
+    }
+
+    @Nullable
+    public T parse(String key) {
+        return getObject(key);
     }
 }

@@ -26,12 +26,16 @@ public record DisplayData(Display.Brightness brightness,
                           float displayWidth,
                           float displayHeight,
                           @Nullable Color glowColorOverride,
-                          boolean applyBrightness) {
+                          boolean applyBrightness,
+                          int interpolationDuration,
+                          int interpolationDelay,
+                          int teleportDuration) {
 
     public static DisplayData DEFAULT = new DisplayData(new Display.Brightness(15, 15),
             Display.Billboard.FIXED, 0.0f, 1.0f,
             1.0f, 0.0f, 0.0f,
-            null, false);
+            null, false,
+            1, 0, 1);
 
     /**
      * Will apply the DisplayData to the given Display.
@@ -48,6 +52,12 @@ public record DisplayData(Display.Brightness brightness,
         display.setDisplayWidth(displayWidth);
         display.setDisplayHeight(displayHeight);
         display.setGlowColorOverride(glowColorOverride);
+        display.setInterpolationDuration(interpolationDuration);
+        display.setInterpolationDelay(interpolationDelay);
+        try {
+            display.setTeleportDuration(teleportDuration);
+        } catch (Throwable ignored) {
+        }
     }
 
     /**
@@ -79,8 +89,12 @@ public record DisplayData(Display.Brightness brightness,
             int b = Integer.parseInt(split[2]);
             color = Color.fromRGB(r, g, b);
         }
+        int interpolationDuration = section.getInt("Interpolation-Duration", 1);
+        int interpolationDelay = section.getInt("Interpolation-Delay", 0);
+        int teleportDuration = section.getInt("Teleport-Duration", 1);
         return new DisplayData(brightness, billboard, shadowRadius, shadowStrength,
-                viewRange, displayWidth, displayHeight, color, applyBrightness);
+                viewRange, displayWidth, displayHeight, color, applyBrightness,
+                interpolationDuration, interpolationDelay, teleportDuration);
     }
 
     /**
