@@ -100,39 +100,35 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
     public void onJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
         UUID uuid = player.getUniqueId();
-        CompletableFuture<BlobCrudable> future = new CompletableFuture<>();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            if (player == null || !player.isOnline()) {
-                future.completeExceptionally(new NullPointerException("Player is null"));
-                return;
-            }
-            BlobCrudable crudable = crudManager.read(uuid.toString());
-            future.complete(crudable);
-        });
-        future.thenAccept(crudable -> {
             if (player == null || !player.isOnline())
                 return;
-            T applied = generator.apply(crudable);
-            BlobCrudable serialized = applied.serializeAllAttributes();
-            Bukkit.getScheduler().runTaskAsynchronously(getPlugin(),
-                    () -> crudManager.update(serialized));
-            walletOwners.put(uuid, applied);
-            if (joinEvent == null)
-                return;
-            Bukkit.getPluginManager().callEvent(joinEvent.apply(applied));
-            autoSave.put(uuid, new BukkitRunnable() {
-                @Override
-                public void run() {
-                    if (player == null || !player.isOnline()) {
-                        cancel();
-                        return;
+            BlobCrudable crudable = crudManager.read(uuid.toString());
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                if (player == null || !player.isOnline())
+                    return;
+                T applied = generator.apply(crudable);
+                BlobCrudable serialized = applied.serializeAllAttributes();
+                Bukkit.getScheduler().runTaskAsynchronously(getPlugin(),
+                        () -> crudManager.update(serialized));
+                walletOwners.put(uuid, applied);
+                if (joinEvent == null)
+                    return;
+                Bukkit.getPluginManager().callEvent(joinEvent.apply(applied));
+                autoSave.put(uuid, new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        if (player == null || !player.isOnline()) {
+                            cancel();
+                            return;
+                        }
+                        BlobCrudable serialized = applied.serializeAllAttributes();
+                        Bukkit.getScheduler().runTaskAsynchronously(getPlugin(),
+                                () -> crudManager.update(serialized));
                     }
-                    BlobCrudable serialized = applied.serializeAllAttributes();
-                    Bukkit.getScheduler().runTaskAsynchronously(getPlugin(),
-                            () -> crudManager.update(serialized));
-                }
-            }.runTaskTimer(getPlugin(), 20 * 60 * 5,
-                    20 * 60 * 5));
+                }.runTaskTimer(getPlugin(), 20 * 60 * 5,
+                        20 * 60 * 5));
+            });
         });
     }
 

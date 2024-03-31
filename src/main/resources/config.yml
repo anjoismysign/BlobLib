@@ -1,6 +1,6 @@
 Listeners:
   TinyListeners:
-    Display-Unriding: true
+    Display-Unriding: false
 Locale:
   Console: en_us
   Default-To:

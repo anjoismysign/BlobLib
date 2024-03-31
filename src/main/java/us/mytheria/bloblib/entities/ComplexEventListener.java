@@ -57,11 +57,19 @@ public class ComplexEventListener {
     }
 
     public double getDouble(String key) {
-        return (double) getValue(key);
+        try {
+            return (double) getValue(key);
+        } catch (ClassCastException e) {
+            return Double.valueOf((Float) getValue(key));
+        }
     }
 
     public long getLong(String key) {
-        return (long) getValue(key);
+        try {
+            return (long) getValue(key);
+        } catch (ClassCastException e) {
+            return Long.valueOf((Integer) getValue(key));
+        }
     }
 
     public float getFloat(String key) {

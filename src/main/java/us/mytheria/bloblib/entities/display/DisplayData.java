@@ -5,9 +5,11 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Display;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.Objects;
 
 /**
  * Holds all data that DisplayEntities hold except
@@ -36,6 +38,22 @@ public record DisplayData(Display.Brightness brightness,
             1.0f, 0.0f, 0.0f,
             null, false,
             1, 0, 1);
+
+    /**
+     * Gets a DisplayData instance from the given Display.
+     *
+     * @param display the Display to get the DisplayData from
+     * @return the DisplayData from the given Display
+     */
+    public static DisplayData of(@NotNull Display display) {
+        Objects.requireNonNull(display, "'display' cannot be null");
+        return new DisplayData(display.getBrightness(), display.getBillboard(),
+                display.getShadowRadius(), display.getShadowStrength(),
+                display.getViewRange(), display.getDisplayWidth(), display.getDisplayHeight(),
+                display.getGlowColorOverride(), true,
+                display.getInterpolationDuration(), display.getInterpolationDelay(),
+                display.getTeleportDuration());
+    }
 
     /**
      * Will apply the DisplayData to the given Display.
