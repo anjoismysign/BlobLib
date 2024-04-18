@@ -119,8 +119,13 @@ public class DataAssetManager<T extends DataAsset> {
         String fileName = FilenameUtils.removeExtension(file.getName());
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         if (filter.test(yamlConfiguration)) {
-            T asset = readFunction.apply(yamlConfiguration, fileName);
-            addOrCreate(asset, fileName);
+            try {
+                T asset = readFunction.apply(yamlConfiguration, fileName);
+                addOrCreate(asset, fileName);
+            } catch (Throwable throwable) {
+                BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
+                throwable.printStackTrace();
+            }
             return;
         }
         yamlConfiguration.getKeys(true).forEach(reference -> {
@@ -129,22 +134,44 @@ public class DataAssetManager<T extends DataAsset> {
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (!filter.test(section))
                 return;
-            T asset = readFunction.apply(section, reference);
-            addOrCreate(asset, reference);
+            try {
+                T asset = readFunction.apply(section, reference);
+                addOrCreate(asset, reference);
+            } catch (Throwable throwable) {
+                BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
+                throwable.printStackTrace();
+            }
         });
     }
 
     private void loadYamlConfiguration(File file, BlobPlugin plugin) {
+        String fileName = FilenameUtils.removeExtension(file.getName());
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
+        if (filter.test(yamlConfiguration)) {
+            try {
+                T asset = readFunction.apply(yamlConfiguration, fileName);
+                addOrCreate(asset, fileName);
+                pluginAssets.get(plugin.getName()).add(fileName);
+            } catch (Throwable throwable) {
+                BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
+                throwable.printStackTrace();
+            }
+            return;
+        }
         yamlConfiguration.getKeys(true).forEach(reference -> {
             if (!yamlConfiguration.isConfigurationSection(reference))
                 return;
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
-            if (filter.test(section))
+            if (!filter.test(section))
                 return;
-            if (!addOrCreate(readFunction.apply(section, reference), reference))
-                return;
-            pluginAssets.get(plugin.getName()).add(reference);
+            try {
+                T asset = readFunction.apply(section, reference);
+                addOrCreate(asset, reference);
+                pluginAssets.get(plugin.getName()).add(reference);
+            } catch (Throwable throwable) {
+                BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
+                throwable.printStackTrace();
+            }
         });
     }
 

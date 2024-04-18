@@ -1,7 +1,6 @@
 package us.mytheria.bloblib.entities;
 
 import me.anjoismysign.anjo.entities.Result;
-import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -14,6 +13,7 @@ import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
 import us.mytheria.bloblib.itemstack.ItemStackBuilder;
 import us.mytheria.bloblib.managers.Manager;
 import us.mytheria.bloblib.managers.ManagerDirector;
+import us.mytheria.bloblib.utilities.HandyDirectory;
 import us.mytheria.bloblib.utilities.ItemStackUtil;
 
 import java.io.File;
@@ -62,29 +62,35 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
                 if (!path.exists())
                     path.mkdir();
                 Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () -> {
-                    String[] extensions = {"yml"};
-                    Collection<File> files = FileUtils.listFiles(path, extensions, true);
+                    HandyDirectory handyDirectory = HandyDirectory.of(path);
+                    Collection<File> files = handyDirectory.listRecursively("yml");
                     List<CompletableFuture<Void>> futures = new ArrayList<>();
                     files.forEach(file -> {
                         CompletableFuture<Void> fileFuture = CompletableFuture.runAsync(() -> {
-                            T blobObject;
-                            try {
-                                blobObject = readFunction.apply(file);
-                                if (blobObject != null) {
-                                    if (blobObject.edit() != null)
-                                        objectIsEditable = true;
-                                    this.addObject(blobObject.getKey(), blobObject, file);
-                                }
-                            } catch (Throwable throwable) {
-                                Bukkit.getLogger().log(Level.SEVERE, throwable.getMessage() + " \n " +
-                                        "At: " + file.getPath(), throwable);
-                                mainFuture.completeExceptionally(throwable);
-                            }
+                            loadFile(file, mainFuture::completeExceptionally);
                         });
                         futures.add(fileFuture);
                     });
                     CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).thenAccept(v -> mainFuture.complete(null));
                 });
+            }
+
+            @Override
+            public void loadFile(@NotNull File file,
+                                 Consumer<Throwable> ifFail) {
+                T blobObject;
+                try {
+                    blobObject = readFunction.apply(file);
+                    if (blobObject != null) {
+                        if (blobObject.edit() != null)
+                            objectIsEditable = true;
+                        this.addObject(blobObject.getKey(), blobObject, file);
+                    }
+                } catch (Throwable throwable) {
+                    Bukkit.getLogger().log(Level.SEVERE, throwable.getMessage() + " \n " +
+                            "At: " + file.getPath(), throwable);
+                    ifFail.accept(throwable);
+                }
             }
         };
         Bukkit.getPluginManager().registerEvents(this, managerDirector.getPlugin());

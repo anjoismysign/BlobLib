@@ -3,6 +3,7 @@ package us.mytheria.bloblib.entities;
 import me.anjoismysign.anjo.entities.Result;
 import me.anjoismysign.skeramidcommands.command.CommandTarget;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.entities.logger.BlobPluginLogger;
 import us.mytheria.bloblib.managers.Manager;
@@ -67,6 +68,14 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager
      * @param path The directory to load files from
      */
     public abstract void loadFiles(File path, CompletableFuture<Void> mainFuture);
+
+    /**
+     * Loads a file into the ObjectManager.
+     * If fails, prints the error to the console.
+     *
+     * @param file The file to load
+     */
+    public abstract void loadFile(@NotNull File file, Consumer<Throwable> ifFail);
 
     /**
      * Adds an object to the manager and

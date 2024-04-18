@@ -110,6 +110,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
                 try {
                     loadYamlConfiguration(file);
                 } catch (Throwable throwable) {
+                    BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
                     throwable.printStackTrace();
                     continue;
                 }
@@ -124,8 +125,13 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         String locale = yamlConfiguration.getString("Locale", "en_us");
         if (filter.test(yamlConfiguration)) {
-            T asset = readFunction.apply(yamlConfiguration, locale, fileName);
-            addOrCreateLocale(asset, fileName);
+            try {
+                T asset = readFunction.apply(yamlConfiguration, locale, fileName);
+                addOrCreateLocale(asset, fileName);
+            } catch (Throwable throwable) {
+                BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
+                throwable.printStackTrace();
+            }
             return;
         }
         yamlConfiguration.getKeys(true).forEach(reference -> {
@@ -134,23 +140,45 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (!filter.test(section))
                 return;
-            T asset = readFunction.apply(section, locale, reference);
-            addOrCreateLocale(asset, reference);
+            try {
+                T asset = readFunction.apply(section, locale, reference);
+                addOrCreateLocale(asset, reference);
+            } catch (Throwable throwable) {
+                BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
+                throwable.printStackTrace();
+            }
         });
     }
 
     private void loadYamlConfiguration(File file, BlobPlugin plugin) {
+        String fileName = FilenameUtils.removeExtension(file.getName());
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         String locale = yamlConfiguration.getString("Locale", "en_us");
+        if (filter.test(yamlConfiguration)) {
+            try {
+                T asset = readFunction.apply(yamlConfiguration, locale, fileName);
+                addOrCreateLocale(asset, fileName);
+                assets.get(plugin.getName()).add(fileName);
+            } catch (Throwable throwable) {
+                BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
+                throwable.printStackTrace();
+            }
+            return;
+        }
         yamlConfiguration.getKeys(true).forEach(reference -> {
             if (!yamlConfiguration.isConfigurationSection(reference))
                 return;
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
-            if (filter.test(section))
+            if (!filter.test(section))
                 return;
-            if (!addOrCreateLocale(readFunction.apply(section, locale, reference), reference))
-                return;
-            assets.get(plugin.getName()).add(reference);
+            try {
+                T asset = readFunction.apply(section, locale, reference);
+                addOrCreateLocale(asset, reference);
+                assets.get(plugin.getName()).add(reference);
+            } catch (Throwable throwable) {
+                BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
+                throwable.printStackTrace();
+            }
         });
     }
 

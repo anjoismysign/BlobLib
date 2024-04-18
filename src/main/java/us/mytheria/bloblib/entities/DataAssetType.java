@@ -10,4 +10,8 @@ public enum DataAssetType {
     TRANSLATABLE_SNIPPET,
     TRANSLATABLE_ITEM,
     TAG_SET;
+
+    public String getObjectName() {
+        return name().replace("_", "");
+    }
 }
