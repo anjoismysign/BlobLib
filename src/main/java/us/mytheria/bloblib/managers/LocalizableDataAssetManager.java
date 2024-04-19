@@ -89,15 +89,6 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
 
     public void unload(BlobPlugin plugin) {
         String pluginName = plugin.getName();
-        Set<String> assets = this.assets.get(pluginName);
-        if (assets == null)
-            return;
-        Iterator<String> iterator = assets.iterator();
-        while (iterator.hasNext()) {
-            String key = iterator.next();
-            this.locales.forEach((locale, map) -> map.remove(key));
-            iterator.remove();
-        }
         this.assets.remove(pluginName);
     }
 

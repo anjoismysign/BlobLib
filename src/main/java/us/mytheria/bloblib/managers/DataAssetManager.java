@@ -10,7 +10,10 @@ import us.mytheria.bloblib.entities.DataAsset;
 import us.mytheria.bloblib.entities.DataAssetType;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
@@ -87,13 +90,6 @@ public class DataAssetManager<T extends DataAsset> {
 
     public void unload(BlobPlugin plugin) {
         String pluginName = plugin.getName();
-        Set<String> assets = this.pluginAssets.get(pluginName);
-        if (assets == null)
-            return;
-        Iterator<String> iterator = assets.iterator();
-        while (iterator.hasNext()) {
-            iterator.remove();
-        }
         this.pluginAssets.remove(pluginName);
     }
 
