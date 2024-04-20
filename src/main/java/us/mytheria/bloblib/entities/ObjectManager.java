@@ -22,18 +22,22 @@ import java.util.function.Supplier;
  * random access memory and tracked by a key.
  */
 public abstract class ObjectManager<T extends BlobObject> extends Manager
-        implements CommandTarget<T> {
+        implements CommandTarget<T>,
+        RunnableReloadable {
     private final File loadFilesDirectory;
     private final Supplier<Map<String, T>> objectsSupplier;
     private final Supplier<Map<String, File>> fileSupplier;
     private CompletableFuture<Void> loadFiles;
     private final ObjectDirector<T> parent;
+    private final List<Runnable> runnableReloadables;
     /**
      * The objects that are loaded in random access memory.
      * Should be initialized in loadInConstructor() method.
      */
     private Map<String, T> objects;
     private Map<String, File> objectFiles;
+
+    private boolean isReloading;
 
     /**
      * Constructor for ObjectManager
@@ -46,6 +50,7 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager
                          Supplier<Map<String, File>> fileSupplier,
                          ObjectDirector<T> parent) {
         super(managerDirector);
+        this.runnableReloadables = new ArrayList<>();
         this.loadFilesDirectory = loadFilesDirectory;
         this.objectsSupplier = supplier;
         this.fileSupplier = fileSupplier;
@@ -219,6 +224,10 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager
     public void updateLoadFiles(File path) {
         this.loadFiles = new CompletableFuture<>();
         loadFiles(path, loadFiles);
+        this.loadFiles.thenRun(() -> {
+            isReloading = false;
+            runnableReloadables.forEach(Runnable::run);
+        });
     }
 
     public void whenFilesLoad(Consumer<ObjectManager<T>> consumer) {
@@ -239,5 +248,14 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager
     @Nullable
     public T parse(String key) {
         return getObject(key);
+    }
+
+    @Override
+    public boolean isReloading() {
+        return isReloading;
+    }
+
+    public void whenReloaded(Runnable runnable) {
+        runnableReloadables.add(runnable);
     }
 }

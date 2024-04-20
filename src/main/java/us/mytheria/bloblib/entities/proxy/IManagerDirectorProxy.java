@@ -22,6 +22,10 @@ public class IManagerDirectorProxy implements IManagerDirector {
         managerDirector.reloadAll();
     }
 
+    public boolean isReloading() {
+        return managerDirector.isReloading();
+    }
+
     public IFileManager getFileManager() {
         return managerDirector.getFileManager();
     }

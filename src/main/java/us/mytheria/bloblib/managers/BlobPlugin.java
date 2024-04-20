@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.managers;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,6 +34,11 @@ public abstract class BlobPlugin extends JavaPlugin {
      * NEVER call this method yourself, it SHOULD be called by BlobLib.
      */
     protected void blobLibReload() {
+        IManagerDirector director = getManagerDirector();
+        if (director.isReloading()) {
+            Bukkit.getLogger().severe("BlobLib tried to reload " + getName() + " while it was reloading!");
+            return;
+        }
         /*
         In case of being loaded, it will unload
         them backwards since some assets can depend
@@ -41,7 +47,7 @@ public abstract class BlobPlugin extends JavaPlugin {
         PluginManager.unloadAssets(this);
         //Loads assets
         PluginManager.loadAssets(this);
-        getManagerDirector().reloadAll();
+        director.reloadAll();
     }
 
     /**

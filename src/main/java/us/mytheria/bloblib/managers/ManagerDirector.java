@@ -967,6 +967,11 @@ public abstract class ManagerDirector implements IManagerDirector {
         return true;
     }
 
+    // a ManagerDirector can override this method and do their own logic
+    public boolean isReloading() {
+        return false;
+    }
+
     protected Set<Map.Entry<String, Manager>> getManagerEntry() {
         return managers.entrySet();
     }

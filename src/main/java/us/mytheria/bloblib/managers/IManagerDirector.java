@@ -28,4 +28,11 @@ public interface IManagerDirector {
      * @return the file manager.
      */
     IFileManager getFileManager();
+
+    /**
+     * Whether the manager director is reloading.
+     *
+     * @return {@code true} if reloading, {@code false} otherwise.
+     */
+    boolean isReloading();
 }

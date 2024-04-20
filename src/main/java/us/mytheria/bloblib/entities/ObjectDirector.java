@@ -24,7 +24,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Level;
 
-public class ObjectDirector<T extends BlobObject> extends Manager implements Listener {
+public class ObjectDirector<T extends BlobObject> extends Manager
+        implements Listener, RunnableReloadable {
     private final ObjectBuilderManager<T> objectBuilderManager;
     private final ObjectManager<T> objectManager;
     private final CommandDirector commandDirector;
@@ -364,5 +365,15 @@ public class ObjectDirector<T extends BlobObject> extends Manager implements Lis
             throw new IllegalStateException("ObjectBuilderManager is not enabled. " +
                     "Implement it in constructor.");
         return getObjectBuilderManager().getOrDefault(uuid);
+    }
+
+    @Override
+    public boolean isReloading() {
+        return getObjectManager().isReloading();
+    }
+
+    @Override
+    public void whenReloaded(Runnable runnable) {
+        getObjectManager().whenReloaded(runnable);
     }
 }
