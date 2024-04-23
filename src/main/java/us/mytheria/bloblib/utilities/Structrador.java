@@ -43,8 +43,8 @@ import java.util.function.Consumer;
 public class Structrador {
     private static final ManoratorFactory MANORATOR_FACTORY = BlobLibAPI.getInstance().getManoBukkit().getManoratorFactory();
 
-    private final Structure structure;
-    private final JavaPlugin plugin;
+    protected final Structure structure;
+    protected final JavaPlugin plugin;
 
     /**
      * Will create a structure from the given location and radius.
@@ -334,11 +334,6 @@ public class Structrador {
                             next.setSilent(true);
                             Entity added = world.addEntity(next);
                             added.teleport(entityLocation);
-                            /*
-                             * Intermediate level of API-NMS
-                             * Known to work in 1.20.1
-                             * Might break in future versions
-                             */
                             if (added instanceof Hanging hanging) {
                                 BlockFace facing = hanging.getFacing();
                                 hanging.setFacingDirection(
