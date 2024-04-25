@@ -20,7 +20,7 @@ public class TranslatableReader {
         Objects.requireNonNull(key, "Key cannot be null");
         if (!section.isConfigurationSection("ItemStack"))
             throw new ConfigurationFieldException("'ItemStack' is missing or not set");
-        ItemStack itemStack = ItemStackReader.READ_OR_FAIL_FAST(section.getConfigurationSection("ItemStack")).build();
+        ItemStack itemStack = ItemStackReader.getInstance().readOrFailFast(section.getConfigurationSection("ItemStack"));
         return BlobTranslatableItem.of(key, locale, itemStack);
     }
 

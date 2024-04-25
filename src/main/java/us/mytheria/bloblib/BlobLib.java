@@ -15,6 +15,7 @@ import us.mytheria.bloblib.hologram.HologramManager;
 import us.mytheria.bloblib.managers.*;
 import us.mytheria.bloblib.managers.fillermanager.FillerManager;
 import us.mytheria.bloblib.placeholderapi.TranslatablePH;
+import us.mytheria.bloblib.utilities.MinecraftVersion;
 import us.mytheria.bloblib.utilities.SerializationLib;
 import us.mytheria.bloblib.vault.VaultManager;
 
@@ -54,6 +55,8 @@ public class BlobLib extends JavaPlugin {
     private LocalizableDataAssetManager<TranslatableItem> translatableItemManager;
     private DataAssetManager<TagSet> tagSetManager;
 
+    private MinecraftVersion running;
+
     private static BlobLib instance;
 
     /**
@@ -80,6 +83,7 @@ public class BlobLib extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        running = MinecraftVersion.getRunning();
         api = BlobLibAPI.getInstance(this);
         bloblibupdater = new BlobLibUpdater(this);
         serializationLib = SerializationLib.getInstance(this);

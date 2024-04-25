@@ -3,12 +3,15 @@ package us.mytheria.bloblib.utilities;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class ResourceUtil {
@@ -43,6 +46,7 @@ public class ResourceUtil {
     public static void writeNewValues(File existingFile, YamlConfiguration updateYamlConfiguration) {
         FileConfiguration existingYamlConfig = YamlConfiguration.loadConfiguration(existingFile);
         Set<String> keys = updateYamlConfiguration.getConfigurationSection("").getKeys(true);
+        Set<String> existing = new HashSet<>();
         keys.forEach(key -> {
             if (!updateYamlConfiguration.isConfigurationSection(key)) {
                 try {
@@ -57,7 +61,15 @@ public class ResourceUtil {
                 // if it's not a section, it's a value
                 if (existingYamlConfig.contains(key)) return;
             }
-            if (existingYamlConfig.isConfigurationSection(key)) return; //if it exists, skip
+            if (existingYamlConfig.contains(key)) {
+                existing.add(key);
+                return; //if it exists, skip
+            }
+            String parent = getParent(key);
+            List<String> match = existing.stream()
+                    .filter(s -> s.startsWith(parent))
+                    .toList();
+            if (!match.isEmpty()) return; // if the parent exists, skip
             existingYamlConfig.set(key, updateYamlConfiguration.get(key)); // write
         });
         try {
@@ -106,5 +118,20 @@ public class ResourceUtil {
         ResourceUtil.writeNewValues(existingFile,
                 tempYamlConfiguration); // attempts to write new values to existing file if they don't exist
         tempFile.delete();
+    }
+
+    @NotNull
+    private static String getParent(@NotNull String key) {
+        Objects.requireNonNull(key, "'key' cannot be null");
+        String[] split = key.split("\\.");
+        if (split.length == 1)
+            return key;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < split.length - 1; i++) {
+            sb.append(split[i]);
+            if (i != split.length - 2)
+                sb.append(".");
+        }
+        return sb.toString();
     }
 }

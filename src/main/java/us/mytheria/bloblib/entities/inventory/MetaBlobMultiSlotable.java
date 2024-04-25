@@ -95,7 +95,7 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
             Bukkit.getLogger().severe("ItemStack section is null for " + key);
             return null;
         }
-        ItemStack itemStack = ItemStackReader.READ_OR_FAIL_FAST(itemStackSection).build();
+        ItemStack itemStack = ItemStackReader.getInstance().readOrFailFast(itemStackSection);
         String read = section.getString("Slot", "-1");
         Set<Integer> set = IntegerRange.getInstance().parse(read);
         String meta = section.getString("Meta", "NONE");

@@ -86,7 +86,7 @@ public class BlobMultiSlotable extends MultiSlotable {
             Bukkit.getLogger().severe("ItemStack section is null for " + key);
             return null;
         }
-        ItemStack itemStack = ItemStackReader.READ_OR_FAIL_FAST(itemStackSection).build();
+        ItemStack itemStack = ItemStackReader.getInstance().readOrFailFast(itemStackSection);
         String read = section.getString("Slot", "-1");
         Set<Integer> list = IntegerRange.getInstance().parse(read);
         String permission = null;

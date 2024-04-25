@@ -7,7 +7,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.itemstack.ItemStackBuilder;
 import us.mytheria.bloblib.itemstack.ItemStackReader;
 import us.mytheria.bloblib.utilities.SerializationLib;
 import us.mytheria.bloblib.utilities.TextColor;
@@ -31,9 +30,7 @@ public record DisplayPetRecord(@Nullable ItemStack itemStack,
     public static DisplayPetRecord read(ConfigurationSection section) {
         ItemStack itemStack = null;
         if (section.isConfigurationSection("ItemStack")) {
-            ItemStackBuilder builder = ItemStackReader
-                    .READ_OR_FAIL_FAST(section.getConfigurationSection("ItemStack"));
-            itemStack = builder.build();
+            itemStack = ItemStackReader.getInstance().readOrFailFast(section.getConfigurationSection("ItemStack"));
         }
         BlockData blockData = null;
         if (section.isString("BlockData")) {

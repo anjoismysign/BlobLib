@@ -138,6 +138,11 @@
             <artifactId>zip4j</artifactId>
             <version>2.11.5</version>
         </dependency>
+        <dependency>
+            <groupId>me.anjoismysign</groupId>
+            <artifactId>BlobLib_1_20_5</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
     <distributionManagement>
         <repository>

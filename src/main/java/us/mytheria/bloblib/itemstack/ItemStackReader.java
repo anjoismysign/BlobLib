@@ -8,9 +8,12 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.SkullCreator;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
+import us.mytheria.bloblib.utilities.MinecraftVersion;
 import us.mytheria.bloblib.utilities.TextColor;
 
 import java.io.File;
@@ -18,8 +21,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class ItemStackReader {
+public class ItemStackReader implements ItemStackReaderMiddleman {
+    private static ItemStackReaderMiddleman instance;
 
+    public static ItemStackReaderMiddleman getInstance() {
+        if (instance == null) {
+            MinecraftVersion supported = MinecraftVersion.of("1.20.5");
+            MinecraftVersion running = MinecraftVersion.getRunning();
+            if (running.compareTo(supported) >= 0)
+                instance = new Reader1_20_5();
+            else
+                instance = new ItemStackReader();
+        }
+        return instance;
+    }
+
+    /**
+     * @deprecated Use {@link #readOrFailFast(ConfigurationSection)}
+     */
+    @Deprecated
     public static ItemStackBuilder READ_OR_FAIL_FAST(ConfigurationSection section) {
         if (!section.isString("Material"))
             throw new ConfigurationFieldException("'Material' field is missing or not a String");
@@ -93,6 +113,24 @@ public class ItemStackReader {
         return builder;
     }
 
+    @Override
+    public @NotNull ItemStack readOrFailFast(@NotNull ConfigurationSection section) {
+        return READ_OR_FAIL_FAST(section).build();
+    }
+
+    @Override
+    public @Nullable ItemStack attempRead(@NotNull ConfigurationSection section) {
+        try {
+            return readOrFailFast(section);
+        } catch (Throwable e) {
+            return null;
+        }
+    }
+
+    /**
+     * @deprecated Use {@link #attempRead(ConfigurationSection)}
+     */
+    @Deprecated
     @NotNull
     public static ItemStackBuilder read(ConfigurationSection section) {
         ItemStackBuilder builder;
@@ -105,23 +143,43 @@ public class ItemStackReader {
         }
     }
 
+    /**
+     * @deprecated Use {@link #readOrFailFast(ConfigurationSection)} (ConfigurationSection)}
+     */
+    @Deprecated
     public static ItemStackBuilder read(File file, String path) {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         return READ_OR_FAIL_FAST(Objects.requireNonNull(config.getConfigurationSection(path)));
     }
 
+    /**
+     * @deprecated Use {@link #readOrFailFast(ConfigurationSection)}
+     */
+    @Deprecated
     public static ItemStackBuilder read(File file) {
         return read(file, "ItemStack");
     }
 
+    /**
+     * @deprecated Use {@link #readOrFailFast(ConfigurationSection)}
+     */
+    @Deprecated
     public static ItemStackBuilder read(YamlConfiguration config, String path) {
         return READ_OR_FAIL_FAST(Objects.requireNonNull(config.getConfigurationSection(path)));
     }
 
+    /**
+     * @deprecated Use {@link #readOrFailFast(ConfigurationSection)}
+     */
+    @Deprecated
     public static ItemStackBuilder read(YamlConfiguration config) {
         return read(config, "ItemStack");
     }
 
+    /**
+     * @deprecated will be inside singleton
+     */
+    @Deprecated
     public static Color parseColor(String color) {
         String[] input = color.split(",");
         if (input.length != 3) {
@@ -137,6 +195,10 @@ public class ItemStackReader {
         }
     }
 
+    /**
+     * @deprecated marked for removal
+     */
+    @Deprecated
     public static String parse(Color color) {
         return color.getRed() + "," + color.getGreen() + "," + color.getBlue();
     }

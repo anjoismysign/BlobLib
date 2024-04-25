@@ -319,7 +319,7 @@ public class Currency implements BlobObject {
                 if (!shape.isDouble("Denomination"))
                     throw new ConfigurationFieldException("'" + a + ".Denomination' is missing or not valid (DECIMAL NUMBER)");
                 BigDecimal denomination = BigDecimal.valueOf(shape.getDouble("Denomination"));
-                ItemStack builder = ItemStackReader.READ_OR_FAIL_FAST(itemSection).build();
+                ItemStack builder = ItemStackReader.getInstance().readOrFailFast(itemSection);
                 ItemMeta itemMeta = builder.getItemMeta();
                 PersistentDataContainer pdc = itemMeta.getPersistentDataContainer();
                 pdc.set(director.getNamespacedKey("tangibleCurrencyKey"), PersistentDataType.STRING, key);
