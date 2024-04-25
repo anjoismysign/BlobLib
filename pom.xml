@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>us.mytheria</groupId>
     <artifactId>BlobLib</artifactId>
-    <version>1.698.17</version>
+    <version>1.698.18</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -140,7 +140,7 @@
         </dependency>
         <dependency>
             <groupId>me.anjoismysign</groupId>
-            <artifactId>BlobLib_1_20_5</artifactId>
+            <artifactId>blis</artifactId>
             <version>1.0</version>
         </dependency>
     </dependencies>
