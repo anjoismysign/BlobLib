@@ -36,7 +36,10 @@ public class PluginManager {
         });
     }
 
-    private void put(BlobPlugin plugin) {
+    private void put(@NotNull BlobPlugin plugin,
+                     @NotNull IManagerDirector managerDirector) {
+        Objects.requireNonNull(plugin, "BlobPlugin is null!");
+        Objects.requireNonNull(managerDirector, "ManagerDirector is null!");
         String name = plugin.getName();
         if (plugins.containsKey(name))
             throw new IllegalArgumentException("BlobPlugin " + name + " is already registered!");
@@ -44,7 +47,7 @@ public class PluginManager {
                 + ColorManager.getRandomColor() + name);
         plugins.put(name, plugin);
         order.add(name);
-        postWorld.put(name, () -> plugin.getManagerDirector().postWorld());
+        postWorld.put(name, managerDirector::postWorld);
     }
 
     private void remove(BlobPlugin plugin) {
@@ -112,11 +115,25 @@ public class PluginManager {
      *
      * @param plugin The plugin that is being enabled.
      */
-    public static void registerPlugin(BlobPlugin plugin) {
+    protected static void registerPlugin(@NotNull BlobPlugin plugin,
+                                         @NotNull IManagerDirector managerDirector) {
         PluginManager manager = BlobLib.getInstance().getPluginManager();
-        manager.put(plugin);
-        loadAssets(plugin);
+        manager.put(plugin, managerDirector);
+        loadAssets(plugin, managerDirector);
     }
+
+    /**
+     * This method should be called whenever a BlobPlugin is enabled.
+     * It inserts it inside a HashMap which will be used to call
+     * the 'blobLibReload()' method. Will also load all assets
+     * that can be used by BlobLib.
+     *
+     * @param plugin The plugin that is being enabled.
+     */
+    public static void registerPlugin(@NotNull BlobPlugin plugin) {
+        registerPlugin(plugin, plugin.getManagerDirector());
+    }
+
 
     /**
      * This method should be called whenever a BlobPlugin is disabled.
@@ -146,13 +163,8 @@ public class PluginManager {
         SoundManager.unloadBlobPlugin(plugin);
     }
 
-    /**
-     * Loads all assets that can be used by BlobLib.
-     *
-     * @param plugin The plugin that is being enabled.
-     */
-    public static void loadAssets(BlobPlugin plugin) {
-        IManagerDirector director = plugin.getManagerDirector();
+    private static void loadAssets(@NotNull BlobPlugin plugin,
+                                   @NotNull IManagerDirector director) {
         Objects.requireNonNull(director,
                 plugin.getName() + "'s ManagerDirector is null!");
         TranslatableManager.loadBlobPlugin(plugin, director);
@@ -162,6 +174,15 @@ public class PluginManager {
         MessageManager.loadBlobPlugin(plugin, director);
         ActionManager.loadBlobPlugin(plugin, director);
         InventoryManager.loadBlobPlugin(plugin, director);
+    }
+
+    /**
+     * Loads all assets that can be used by BlobLib.
+     *
+     * @param plugin The plugin that is being enabled.
+     */
+    public static void loadAssets(BlobPlugin plugin) {
+        loadAssets(plugin, plugin.getManagerDirector());
     }
 
 }

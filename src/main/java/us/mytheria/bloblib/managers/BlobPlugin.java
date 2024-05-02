@@ -59,8 +59,8 @@ public abstract class BlobPlugin extends JavaPlugin {
      * Currently, it is called inside ManagerDirector
      * initialization.
      */
-    protected void registerToBlobLib(ManagerDirector director) {
-        PluginManager.registerPlugin(this);
+    protected void registerToBlobLib(@NotNull IManagerDirector director) {
+        PluginManager.registerPlugin(this, director);
     }
 
     /**
