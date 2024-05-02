@@ -1,12 +1,12 @@
 package us.mytheria.bloblib.managers;
 
+import org.bukkit.Bukkit;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.utilities.Debug;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author anjoismysign
@@ -18,7 +18,10 @@ public class PluginManager {
         return BlobLib.getInstance();
     }
 
-    private final HashMap<String, BlobPlugin> plugins;
+    private final Map<String, BlobPlugin> plugins;
+    private final List<String> order;
+
+    private final Map<String, Runnable> postWorld;
 
     /**
      * This constructor is used to initialize the HashMap that will
@@ -26,6 +29,11 @@ public class PluginManager {
      */
     public PluginManager() {
         plugins = new HashMap<>();
+        order = new ArrayList<>();
+        postWorld = new HashMap<>();
+        Bukkit.getScheduler().runTask(BlobLib.getInstance(), () -> {
+            postWorld.values().forEach(Runnable::run);
+        });
     }
 
     private void put(BlobPlugin plugin) {
@@ -35,6 +43,8 @@ public class PluginManager {
         Debug.log(ColorManager.getRandomColor() + "<{BlobLib}> --> successfully registered "
                 + ColorManager.getRandomColor() + name);
         plugins.put(name, plugin);
+        order.add(name);
+        postWorld.put(name, () -> plugin.getManagerDirector().postWorld());
     }
 
     private void remove(BlobPlugin plugin) {
@@ -43,7 +53,9 @@ public class PluginManager {
             throw new IllegalArgumentException("BlobPlugin " + name + " was not registered!");
         Debug.log(ColorManager.getRandomColor() + "<{BlobLib}> --> successfully unregistered "
                 + ColorManager.getRandomColor() + name);
-        plugins.remove(plugin.getName());
+        plugins.remove(name);
+        order.remove(name);
+        postWorld.remove(name);
     }
 
     /**
@@ -60,8 +72,9 @@ public class PluginManager {
      *
      * @return A Collection of all the BlobPlugins.
      */
+    @NotNull
     public Collection<BlobPlugin> values() {
-        return plugins.values();
+        return Objects.requireNonNull(Collections.unmodifiableCollection(plugins.values()));
     }
 
     /**
@@ -77,15 +90,32 @@ public class PluginManager {
     }
 
     /**
+     * Gets all BlobPlugins in the order they were registered.
+     *
+     * @return A list of all BlobPlugins in the order they were registered.
+     */
+    @NotNull
+    public List<BlobPlugin> getPlugins() {
+        List<BlobPlugin> list = new ArrayList<>();
+        order.forEach(name -> {
+            BlobPlugin plugin = plugins.get(name);
+            if (plugin != null) list.add(plugin);
+        });
+        return list;
+    }
+
+    /**
      * This method should be called whenever a BlobPlugin is enabled.
      * It inserts it inside a HashMap which will be used to call
      * the 'blobLibReload()' method. Will also load all assets
      * that can be used by BlobLib.
+     *
+     * @param plugin The plugin that is being enabled.
      */
-    public static void registerPlugin(BlobPlugin plugin, IManagerDirector director) {
+    public static void registerPlugin(BlobPlugin plugin) {
         PluginManager manager = BlobLib.getInstance().getPluginManager();
         manager.put(plugin);
-        loadAssets(plugin, director);
+        loadAssets(plugin);
     }
 
     /**
@@ -101,6 +131,11 @@ public class PluginManager {
         manager.remove(plugin);
     }
 
+    /**
+     * Unloads all assets that were loaded by BlobLib.
+     *
+     * @param plugin The plugin that is being disabled.
+     */
     public static void unloadAssets(BlobPlugin plugin) {
         TranslatableManager.unloadBlobPlugin(plugin);
         blobLib().getTranslatableItemManager().unload(plugin);
@@ -111,8 +146,14 @@ public class PluginManager {
         SoundManager.unloadBlobPlugin(plugin);
     }
 
-    public static void loadAssets(BlobPlugin plugin, IManagerDirector director) {
-        director = Objects.requireNonNull(director,
+    /**
+     * Loads all assets that can be used by BlobLib.
+     *
+     * @param plugin The plugin that is being enabled.
+     */
+    public static void loadAssets(BlobPlugin plugin) {
+        IManagerDirector director = plugin.getManagerDirector();
+        Objects.requireNonNull(director,
                 plugin.getName() + "'s ManagerDirector is null!");
         TranslatableManager.loadBlobPlugin(plugin, director);
         blobLib().getTagSetManager().reload(plugin, director);
@@ -121,10 +162,6 @@ public class PluginManager {
         MessageManager.loadBlobPlugin(plugin, director);
         ActionManager.loadBlobPlugin(plugin, director);
         InventoryManager.loadBlobPlugin(plugin, director);
-    }
-
-    public static void loadAssets(BlobPlugin plugin) {
-        loadAssets(plugin, plugin.getManagerDirector());
     }
 
 }

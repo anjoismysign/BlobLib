@@ -448,6 +448,7 @@ public abstract class ManagerDirector implements IManagerDirector {
 
     /**
      * Logic that should run after the world has been loaded.
+     * Called synchronously.
      */
     public void postWorld() {
     }

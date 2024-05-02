@@ -60,7 +60,7 @@ public abstract class BlobPlugin extends JavaPlugin {
      * initialization.
      */
     protected void registerToBlobLib(ManagerDirector director) {
-        PluginManager.registerPlugin(this, director);
+        PluginManager.registerPlugin(this);
     }
 
     /**
@@ -81,6 +81,7 @@ public abstract class BlobPlugin extends JavaPlugin {
      *
      * @return The ManagerDirector of the plugin.
      */
+    @NotNull
     public abstract IManagerDirector getManagerDirector();
 
     /**
@@ -106,6 +107,7 @@ public abstract class BlobPlugin extends JavaPlugin {
      * @param repository      The repository name
      * @return The updater
      */
+    @NotNull
     public GitHubPluginUpdater generateGitHubUpdater(String repositoryOwner, String repository) {
         return new GitHubPluginUpdater(this, repositoryOwner, repository);
     }
@@ -115,6 +117,7 @@ public abstract class BlobPlugin extends JavaPlugin {
      *
      * @return The ConfigDecorator
      */
+    @NotNull
     public ConfigDecorator getConfigDecorator() {
         return new ConfigDecorator(this);
     }
