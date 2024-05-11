@@ -8,63 +8,92 @@ import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.action.Action;
+import us.mytheria.bloblib.action.ActionMemo;
 import us.mytheria.bloblib.action.ActionType;
-import us.mytheria.bloblib.action.CommandAction;
-import us.mytheria.bloblib.action.ConsoleCommandAction;
 import us.mytheria.bloblib.api.BlobLibActionAPI;
 import us.mytheria.bloblib.api.BlobLibEconomyAPI;
+import us.mytheria.bloblib.entities.translatable.TranslatableItem;
 import us.mytheria.bloblib.vault.multieconomy.ElasticEconomy;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 public class InventoryButton {
+    @NotNull
     private final String key;
+    @NotNull
     private final Set<Integer> slots;
-    private final String permission;
-    private final double price;
+    private final boolean isPermissionInverted;
+    @Nullable
+    private final String hasPermission;
+    private final boolean isMoneyInverted;
+    private final double hasMoney;
+    private final boolean isTranslatableItemInverted;
+    @Nullable
+    private final String hasTranslatableItem;
+    @Nullable
     private final String priceCurrency;
-    @Nullable
-    private final String action;
-    @Nullable
-    private final ActionType actionType;
+    @NotNull
+    private final List<ActionMemo> actions;
 
-    public InventoryButton(String key,
+    public InventoryButton(@NotNull String key,
                            @NotNull Set<Integer> slots,
-                           @Nullable String permission,
-                           double price,
+                           @Nullable String hasPermission,
+                           double hasMoney,
                            @Nullable String priceCurrency,
-                           @Nullable String action,
-                           @Nullable ActionType actionType) {
+                           @NotNull List<ActionMemo> actions,
+                           @Nullable String hasTranslatableItem,
+                           boolean isPermissionInverted,
+                           boolean isMoneyInverted,
+                           boolean isTranslatableItemInverted) {
         this.key = key;
         this.slots = slots;
-        this.permission = permission;
-        this.price = price;
+        this.hasPermission = hasPermission;
+        this.hasMoney = hasMoney;
         this.priceCurrency = priceCurrency;
-        this.action = action;
-        this.actionType = actionType;
+        this.actions = actions;
+        this.hasTranslatableItem = hasTranslatableItem;
+        this.isPermissionInverted = isPermissionInverted;
+        this.isMoneyInverted = isMoneyInverted;
+        this.isTranslatableItemInverted = isTranslatableItemInverted;
     }
 
+    @NotNull
     public String getKey() {
         return key;
     }
 
+    @NotNull
     public Set<Integer> getSlots() {
         return slots;
     }
 
     @Nullable
-    public String getPermission() {
-        return permission;
+    public String getHasPermission() {
+        return hasPermission;
     }
 
-    public boolean requiresPermission() {
-        return permission != null;
+    public double getHasMoney() {
+        return hasMoney;
     }
 
-    public double getPrice() {
-        return price;
+    @Nullable
+    public String getHasTranslatableItem() {
+        return hasTranslatableItem;
+    }
+
+    public boolean isPermissionInverted() {
+        return isPermissionInverted;
+    }
+
+    public boolean isMoneyInverted() {
+        return isMoneyInverted;
+    }
+
+    public boolean isTranslatableItemInverted() {
+        return isTranslatableItemInverted;
     }
 
     @Nullable
@@ -99,10 +128,11 @@ public class InventoryButton {
      * @param permissible The permissible to handle the permission for.
      * @return Whether the permission was handled successfully.
      */
-    public boolean handlePermission(Permissible permissible) {
-        if (!requiresPermission())
+    public boolean handlePermission(@NotNull Permissible permissible) {
+        String permission = getHasPermission();
+        if (permission == null)
             return true;
-        return permissible.hasPermission(getPermission());
+        return isPermissionInverted() != permissible.hasPermission(permission);
     }
 
     /**
@@ -116,29 +146,54 @@ public class InventoryButton {
      * @param player The player to handle the payment for.
      * @return Whether the payment was handled successfully.
      */
-    public boolean handlePayment(Player player) {
-        double price = getPrice();
-        if (Double.compare(price, 0D) <= 0)
+    public boolean handleMoney(@NotNull Player player) {
+        double price = getHasMoney();
+        if (Double.compare(price, 0D) <= 0 && !isMoneyInverted())
             return true;
         ElasticEconomy elasticEconomy = BlobLibEconomyAPI.getInstance().getElasticEconomy();
         IdentityEconomy economy = elasticEconomy
                 .map(Optional.ofNullable(getPriceCurrency()));
         boolean hasAmount = economy.has(player.getUniqueId(), price);
-        if (!hasAmount)
+        boolean proceed = isMoneyInverted() != hasAmount;
+        if (!proceed)
             return false;
         economy.withdraw(player.getUniqueId(), price);
         return true;
     }
 
+    public boolean handleTranslatableItem(@NotNull Player player) {
+        String key = getHasTranslatableItem();
+        if (key == null)
+            return true;
+        TranslatableItem item = TranslatableItem.by(key);
+        if (item == null)
+            return false;
+        boolean hasItem = false;
+        for (ItemStack itemStack : player.getInventory().getContents()) {
+            if (itemStack == null)
+                continue;
+            TranslatableItem match = TranslatableItem.isInstance(itemStack);
+            if (match == null)
+                continue;
+            if (match.getReference().equals(item.getReference())) {
+                hasItem = true;
+                break;
+            }
+        }
+        return isTranslatableItemInverted() != hasItem;
+    }
+
     /**
-     * Will handle permission and payment of the button.
-     * If both permission and payment is handled successfully, it will handle the action.
+     * Will handle permission, money and TranslatableItem of the button.
+     * If handled successfully, it will handle the action.
      *
-     * @param player The player to handle the permission and payment for.
-     * @return Whether the permission and payment was handled successfully.
+     * @param player The player to handle for.
+     * @return Whether it was handled successfully.
      */
     public boolean handleAll(Player player) {
-        boolean proceed = handlePermission(player) && handlePayment(player);
+        boolean proceed = handlePermission(player) &&
+                handleMoney(player) &&
+                handleTranslatableItem(player);
         if (!proceed)
             return false;
         handleAction(player);
@@ -146,18 +201,11 @@ public class InventoryButton {
     }
 
     /**
-     * @return The action of the button. Null if there is no action.
+     * @return The actions of the button.
      */
-    @Nullable
-    public String getAction() {
-        return action;
-    }
-
-    /**
-     * @return The action type of the button. Null if there is no action type.
-     */
-    @Nullable ActionType getActionType() {
-        return actionType;
+    @NotNull
+    public List<ActionMemo> getActions() {
+        return actions;
     }
 
     /**
@@ -166,24 +214,18 @@ public class InventoryButton {
      * @param entity The entity to handle the action for.
      */
     public void handleAction(Entity entity) {
-        if (action == null)
+        if (actions.isEmpty())
             return;
-        if (actionType != null) {
-            Action<Entity> build;
-            switch (actionType) {
-                case ACTOR_COMMAND -> {
-                    build = CommandAction.build(action);
-                }
-                case CONSOLE_COMMAND -> {
-                    build = ConsoleCommandAction.build(action);
-                }
-                default -> throw new IllegalStateException("Unexpected value: " + actionType);
+        actions.forEach(memo -> {
+            ActionType actionType = memo.getActionType();
+            if (actionType != null)
+                memo.getAction().perform(entity);
+            else {
+                String reference = memo.getReference();
+                Action<Entity> fetch = BlobLibActionAPI.getInstance().getAction(reference);
+                fetch.perform(entity);
             }
-            build.perform(entity);
-            return;
-        }
-        Action<Entity> fetch = BlobLibActionAPI.getInstance().getAction(action);
-        fetch.perform(entity);
+        });
     }
 
     public void accept(ButtonVisitor visitor) {
@@ -197,6 +239,7 @@ public class InventoryButton {
      */
     public InventoryButton copy() {
         return new InventoryButton(key, new HashSet<>(slots),
-                permission, price, priceCurrency, action, actionType);
+                hasPermission, hasMoney, priceCurrency, actions,
+                hasTranslatableItem, isPermissionInverted, isMoneyInverted, isTranslatableItemInverted);
     }
 }

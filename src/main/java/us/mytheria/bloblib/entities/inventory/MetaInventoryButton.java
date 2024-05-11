@@ -2,27 +2,42 @@ package us.mytheria.bloblib.entities.inventory;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.mytheria.bloblib.action.ActionType;
+import us.mytheria.bloblib.action.ActionMemo;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class MetaInventoryButton extends InventoryButton {
+    @NotNull
     private final String meta;
+    @Nullable
     private final String subMeta;
 
-    public static MetaInventoryButton fromInventoryButton(InventoryButton button, String meta,
+    public static MetaInventoryButton fromInventoryButton(InventoryButton button,
+                                                          String meta,
                                                           String subMeta) {
         return new MetaInventoryButton(button.getKey(), button.getSlots(), meta,
-                subMeta, button.getPermission(), button.getPrice(),
-                button.getPriceCurrency(), button.getAction(), button.getActionType());
+                subMeta, button.getHasPermission(), button.getHasMoney(),
+                button.getPriceCurrency(), button.getActions(),
+                button.getHasTranslatableItem(), button.isPermissionInverted(),
+                button.isMoneyInverted(), button.isTranslatableItemInverted());
     }
 
-    public MetaInventoryButton(String key, Set<Integer> slots, String meta,
-                               @Nullable String subMeta, @Nullable String permission,
-                               double price, @Nullable String priceCurrency,
-                               @Nullable String action, @Nullable ActionType actionType) {
-        super(key, slots, permission, price, priceCurrency, action, actionType);
+    public MetaInventoryButton(@NotNull String key,
+                               @NotNull Set<Integer> slots,
+                               @NotNull String meta,
+                               @Nullable String subMeta,
+                               @Nullable String hasPermission,
+                               double hasMoney,
+                               @Nullable String priceCurrency,
+                               @NotNull List<ActionMemo> actions,
+                               @Nullable String hasTranslatableItem,
+                               boolean isPermissionInverted,
+                               boolean isMoneyInverted,
+                               boolean isTranslatableItemInverted) {
+        super(key, slots, hasPermission, hasMoney, priceCurrency, actions,
+                hasTranslatableItem, isPermissionInverted, isMoneyInverted, isTranslatableItemInverted);
         this.meta = meta;
         this.subMeta = subMeta;
     }
@@ -63,6 +78,8 @@ public class MetaInventoryButton extends InventoryButton {
     @Override
     public MetaInventoryButton copy() {
         return new MetaInventoryButton(getKey(), new HashSet<>(getSlots()), getMeta(), getSubMeta(),
-                getPermission(), getPrice(), getPriceCurrency(), getAction(), getActionType());
+                getHasPermission(), getHasMoney(), getPriceCurrency(), getActions(),
+                getHasTranslatableItem(), isPermissionInverted(),
+                isMoneyInverted(), isTranslatableItemInverted());
     }
 }
