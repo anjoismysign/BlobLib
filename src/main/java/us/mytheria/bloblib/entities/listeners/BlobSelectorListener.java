@@ -27,7 +27,7 @@ public class BlobSelectorListener<T> extends SelectorListener<T> {
      * @param owner         The owner of the SelectorListener
      * @param inputRunnable The runnable to run when the SelectorListener receives input
      * @param messages      The messages to send to the player
-     * @deprecated Use {@link #wise(Player, Consumer, String, VariableSelector)} instead.
+     * @deprecated Use {@link #wise(Player, Consumer, String, VariableSelector, Consumer)} instead.
      */
     @Deprecated
     public static <T> BlobSelectorListener<T> build(Player owner, Runnable inputRunnable
@@ -45,7 +45,7 @@ public class BlobSelectorListener<T> extends SelectorListener<T> {
      * @param selector        The selector to use
      * @param <T>             The type of the input
      * @return The SelectorListener
-     * @deprecated Use {@link #wise(Player, Consumer, String, VariableSelector)} instead.
+     * @deprecated Use {@link #wise(Player, Consumer, String, VariableSelector, Consumer)} instead.
      */
     @Deprecated
     public static <T> BlobSelectorListener<T> smart(Player player, Consumer<T> consumer,
@@ -81,9 +81,33 @@ public class BlobSelectorListener<T> extends SelectorListener<T> {
      * @param <T>             The type of the input
      * @return The SelectorListener
      */
-    public static <T> BlobSelectorListener<T> wise(Player player, Consumer<T> consumer,
+    public static <T> BlobSelectorListener<T> wise(Player player,
+                                                   Consumer<T> consumer,
                                                    @Nullable String timerMessageKey,
                                                    VariableSelector<T> selector) {
+        return wise(player, consumer, timerMessageKey, selector, null);
+    }
+
+    /**
+     * Will run a SelectorListener which will send messages to player every 10 ticks asynchronously.
+     * Will check if input is null. If so, will close player's inventory preventing
+     * dupe exploits and will also return, not running the consumer.
+     * Note that if not null, player's inventory won't be closed, so you need to make sure
+     * to close it if you need to, preferably in the consumer.
+     *
+     * @param player          The player to send messages to
+     * @param consumer        The consumer to run when the SelectorListener receives input
+     * @param timerMessageKey The key of the message to send to the player
+     * @param selector        The selector to use
+     * @param onClose         The consumer to run when the SelectorListener closes
+     * @param <T>             The type of the input
+     * @return The SelectorListener
+     */
+    public static <T> BlobSelectorListener<T> wise(Player player,
+                                                   Consumer<T> consumer,
+                                                   @Nullable String timerMessageKey,
+                                                   VariableSelector<T> selector,
+                                                   @Nullable Consumer<Player> onClose) {
         BlobLib main = BlobLib.getInstance();
         SelectorListenerManager selectorManager = main.getSelectorManager();
         Optional<BlobMessage> timerMessage = Optional.empty();
@@ -95,6 +119,8 @@ public class BlobSelectorListener<T> extends SelectorListener<T> {
             selectorManager.removeSelectorListener(player);
             if (input == null) {
                 player.closeInventory();
+                if (onClose != null)
+                    onClose.accept(player);
                 return;
             }
             Bukkit.getScheduler().runTask(main, () -> {

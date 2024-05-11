@@ -176,17 +176,33 @@ public class BlobSelector<T> extends VariableSelector<T> implements VariableFill
         loadPage(getPage(), true);
         selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
                 consumer, timerMessageKey,
-                this));
+                this, null));
     }
 
-    public void selectElement(Player player, Consumer<T> consumer, String timerMessageKey, Function<T, ItemStack> function,
+    /**
+     * @deprecated use {@link #selectElement(Player, Consumer, String, Function, Supplier, Consumer)}
+     */
+    @Deprecated
+    public void selectElement(Player player,
+                              Consumer<T> consumer,
+                              String timerMessageKey,
+                              Function<T, ItemStack> function,
                               Supplier<Collection<T>> selectorList) {
+        selectElement(player, consumer, timerMessageKey, function, selectorList, null);
+    }
+
+    public void selectElement(Player player,
+                              Consumer<T> consumer,
+                              String timerMessageKey,
+                              Function<T, ItemStack> function,
+                              Supplier<Collection<T>> selectorList,
+                              @Nullable Consumer<Player> onClose) {
         loadCustomPage(getPage(), true, function);
         setLoadFunction(function);
         setCollectionSupplier(selectorList);
         selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
                 consumer, timerMessageKey,
-                this));
+                this, onClose));
     }
 
     /**

@@ -372,21 +372,10 @@ public class BlobLibInventoryAPI {
     }
 
     /**
-     * Will make Player to select from a list of elements.
-     * The selector will be placed in the inventory at the specified buttonRangeKey.
-     * The inventory will open automatically.
-     * Clicking the return button will close the selector inventory.
-     *
-     * @param blobInventoryKey the key of the BlobInventory
-     * @param player           the player
-     * @param buttonRangeKey   the button from the BlobInventory which contains the slots (per page) into which the selector will place the elements
-     * @param dataType         the data type of the selector
-     * @param selectorList     the list of elements to select from
-     * @param onSelect         what's consumed when an element is selected
-     * @param display          the function to display an element, needs to return the ItemStack to display
-     * @param <T>              the type of the selector
-     * @return the selector
+     * @deprecated Use {@link #customSelector(String, Player, String, String, Supplier, Consumer, Function, Consumer, Consumer)} instead.
      */
+    @Deprecated
+    @Nullable
     public <T> BlobSelector<T> customSelector(@NotNull String blobInventoryKey,
                                               @NotNull Player player,
                                               @NotNull String buttonRangeKey,
@@ -404,6 +393,29 @@ public class BlobLibInventoryAPI {
     }
 
     /**
+     * @deprecated Use {@link #customSelector(String, Player, String, String, Supplier, Consumer, Function, Consumer, Consumer)} instead.
+     */
+    @Deprecated
+    @Nullable
+    public <T> BlobSelector<T> customSelector(@NotNull String blobInventoryKey,
+                                              @NotNull Player player,
+                                              @NotNull String buttonRangeKey,
+                                              @NotNull String dataType,
+                                              @NotNull Supplier<List<T>> selectorList,
+                                              @NotNull Consumer<T> onSelect,
+                                              @Nullable Function<T, ItemStack> display,
+                                              @Nullable Consumer<Player> onReturn) {
+        return customSelector(blobInventoryKey,
+                player,
+                buttonRangeKey,
+                dataType,
+                selectorList,
+                onSelect,
+                display,
+                onReturn, null);
+    }
+
+    /**
      * Will make Player to select from a list of elements.
      * The selector will be placed in the inventory at the specified buttonRangeKey.
      * The inventory will open automatically.
@@ -416,9 +428,11 @@ public class BlobLibInventoryAPI {
      * @param onSelect         what's consumed when an element is selected
      * @param display          the function to display an element, needs to return the ItemStack to display
      * @param onReturn         what's consumed when the player returns the selector
+     * @param onClose          what's consumed when the player closes the selector
      * @param <T>              the type of the selector
      * @return the selector
      */
+    @Nullable
     public <T> BlobSelector<T> customSelector(@NotNull String blobInventoryKey,
                                               @NotNull Player player,
                                               @NotNull String buttonRangeKey,
@@ -426,7 +440,8 @@ public class BlobLibInventoryAPI {
                                               @NotNull Supplier<List<T>> selectorList,
                                               @NotNull Consumer<T> onSelect,
                                               @Nullable Function<T, ItemStack> display,
-                                              @Nullable Consumer<Player> onReturn) {
+                                              @Nullable Consumer<Player> onReturn,
+                                              @Nullable Consumer<Player> onClose) {
         BlobInventory inventory = buildInventory(blobInventoryKey, player);
         BlobSelector<T> selector = BlobSelector.build(inventory, player.getUniqueId(),
                 dataType, selectorList.get(), onReturn);
@@ -438,7 +453,8 @@ public class BlobLibInventoryAPI {
                     onSelect,
                     null,
                     display,
-                    selectorList::get);
+                    selectorList::get,
+                    onClose);
         else
             selector.selectElement(player,
                     onSelect,
@@ -476,24 +492,9 @@ public class BlobLibInventoryAPI {
     }
 
     /**
-     * Will allow player to edit a collection of elements.
-     * The editor will be placed in the inventory at the specified buttonRangeKey.
-     * The inventory will open automatically.
-     * Clicking the return button will close the editor inventory.
-     *
-     * @param blobInventoryKey the key of the BlobInventory
-     * @param player           the player
-     * @param buttonRangeKey   the button from the BlobInventory which contains the slots (per page) into which the editor will place the elements
-     * @param dataType         the data type of the editor
-     * @param addCollection    the collection of elements to add to
-     * @param onAdd            what's consumed when an element is added
-     * @param addDisplay       the function to display an element, needs to return the ItemStack to display
-     * @param viewCollection   the collection of elements to view
-     * @param removeDisplay    the function to display an element, needs to return the ItemStack to display
-     * @param onRemove         what's consumed when an element is removed
-     * @param <T>              the type of the editor
-     * @return the editor
+     * @deprecated Use {@link #customEditor(String, Player, String, String, Supplier, Consumer, Function, Supplier, Function, Consumer, Consumer, Consumer)} instead.
      */
+    @Deprecated
     @Nullable
     public <T> BlobEditor<T> customEditor(@NotNull String blobInventoryKey,
                                           @NotNull Player player,
@@ -514,7 +515,9 @@ public class BlobLibInventoryAPI {
                 addDisplay,
                 viewCollection,
                 removeDisplay,
-                onRemove, null);
+                onRemove,
+                null,
+                null);
     }
 
     /**
@@ -533,6 +536,7 @@ public class BlobLibInventoryAPI {
      * @param removeDisplay    the function to display an element, needs to return the ItemStack to display
      * @param onRemove         what's consumed when an element is removed
      * @param onReturn         what's consumed when the player returns the editor
+     * @param onClose          what's consumed when the player closes the editor
      * @param <T>              the type of the editor
      * @return the editor
      */
@@ -547,7 +551,8 @@ public class BlobLibInventoryAPI {
                                           @NotNull Supplier<Collection<T>> viewCollection,
                                           @NotNull Function<T, ItemStack> removeDisplay,
                                           @NotNull Consumer<T> onRemove,
-                                          @Nullable Consumer<Player> onReturn) {
+                                          @Nullable Consumer<Player> onReturn,
+                                          @Nullable Consumer<Player> onClose) {
         BlobInventory inventory = buildInventory(blobInventoryKey, player);
         Uber<BlobEditor<T>> uber = Uber.fly();
         uber.talk(BlobEditor.build(inventory, player.getUniqueId(),
@@ -564,7 +569,8 @@ public class BlobLibInventoryAPI {
                                         viewCollection,
                                         removeDisplay,
                                         onRemove,
-                                        onReturn);
+                                        onReturn,
+                                        onClose);
                             });
                     playerSelector.setItemsPerPage(playerSelector.getSlots(buttonRangeKey)
                             == null ? 1 : playerSelector.getSlots(buttonRangeKey).size());
@@ -572,7 +578,8 @@ public class BlobLibInventoryAPI {
                             onAdd,
                             null,
                             addDisplay,
-                            viewCollection);
+                            viewCollection,
+                            onClose);
                 }, viewCollection.get(), onReturn));
         BlobEditor<T> editor = uber.thanks();
         editor.setItemsPerPage(editor.getSlots(buttonRangeKey) == null
@@ -618,6 +625,8 @@ public class BlobLibInventoryAPI {
                 addDisplay,
                 viewCollection,
                 removeDisplay,
-                onRemove, null);
+                onRemove,
+                null,
+                null);
     }
 }
