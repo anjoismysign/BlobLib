@@ -89,6 +89,24 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                             .toCommandSender(sender);
                     return true;
                 }
+                case "closeinventory" -> {
+                    if (length < 2) {
+                        BlobLibMessageAPI.getInstance()
+                                .getMessage("CloseInventory.Usage", sender)
+                                .toCommandSender(sender);
+                        return true;
+                    }
+                    String playerName = args[1];
+                    Player player = Bukkit.getPlayer(playerName);
+                    if (player == null) {
+                        BlobLibMessageAPI.getInstance()
+                                .getMessage("Player.Not-Found", sender)
+                                .toCommandSender(sender);
+                        return true;
+                    }
+                    player.closeInventory();
+                    return true;
+                }
                 case "blobinventory" -> {
                     if (length < 3) {
                         BlobLibMessageAPI.getInstance()
@@ -335,6 +353,7 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                         list.add("download");
                         list.add("translatableitem");
                         list.add("blobinventory");
+                        list.add("closeinventory");
                     }
                     case 2 -> {
                         String arg = args[0].toLowerCase();
@@ -357,6 +376,11 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                             }
                             case "blobinventory" -> {
                                 list.add("open");
+                            }
+                            case "closeinventory" -> {
+                                list.addAll(main.getServer().getOnlinePlayers().stream()
+                                        .map(Player::getName)
+                                        .toList());
                             }
                             default -> {
                             }

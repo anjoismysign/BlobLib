@@ -334,3 +334,7 @@ BlobInventory:
     Type: CHAT
     Message: '&cBlobInventory not found: &f%key%'
     BlobSound: System.Alert
+CloseInventory:
+  Usage:
+    Type: CHAT
+    Message: '&7Usage: &8/bloblib closeinventory <player>'
