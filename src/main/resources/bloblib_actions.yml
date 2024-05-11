@@ -8,3 +8,7 @@ Gamemode:
   Adventure:
     Type: CONSOLE_COMMAND
     Command: 'gamemode survival %actor%'
+Inventory:
+  Close:
+    Type: CONSOLE_COMMAND
+    Command: 'bloblib closeinventory %actor%'
