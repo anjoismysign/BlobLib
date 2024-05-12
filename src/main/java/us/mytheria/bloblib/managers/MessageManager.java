@@ -3,6 +3,7 @@ package us.mytheria.bloblib.managers;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
@@ -177,6 +178,11 @@ public class MessageManager {
         if (message == null)
             throw new NullPointerException("Message '" + key + "' does not exist!");
         message.handle(player);
+    }
+
+    @NotNull
+    public Set<String> getDefaultReferences() {
+        return locales.get("en_us").keySet();
     }
 
     /**

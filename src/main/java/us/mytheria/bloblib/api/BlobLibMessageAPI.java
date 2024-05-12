@@ -13,6 +13,7 @@ import us.mytheria.bloblib.managers.MessageManager;
 
 import java.io.File;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class BlobLibMessageAPI {
@@ -124,9 +125,7 @@ public class BlobLibMessageAPI {
      * @param key    The key of the message
      * @param player The player to get the locale from
      * @return The message
-     * @deprecated Use {@link #getMessage(String, CommandSender)} instead
      */
-    @Deprecated
     @Nullable
     public BlobMessage getMessage(@NotNull String key, @NotNull Player player) {
         Objects.requireNonNull(player);
@@ -179,6 +178,16 @@ public class BlobLibMessageAPI {
      */
     public void sendMessage(String key, Player player) {
         getMessageManager().send(player, key);
+    }
+
+    /**
+     * Gets all BlobMessages' reference from the default locale.
+     *
+     * @return The references
+     */
+    @NotNull
+    public Set<String> getDefaultReferences() {
+        return getMessageManager().getDefaultReferences();
     }
 
 }

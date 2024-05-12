@@ -89,6 +89,54 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                             .toCommandSender(sender);
                     return true;
                 }
+                case "blobmessage" -> {
+                    if (length < 3) {
+                        BlobLibMessageAPI.getInstance()
+                                .getMessage("BlobMessage.Usage", sender)
+                                .toCommandSender(sender);
+                        return true;
+                    }
+                    String arg2 = args[1].toLowerCase();
+                    if (!arg2.equals("send")) {
+                        BlobLibMessageAPI.getInstance()
+                                .getMessage("BlobMessage.Usage", sender)
+                                .toCommandSender(sender);
+                        return true;
+                    }
+                    String key = args[2];
+                    Player player;
+                    if (length < 4) {
+                        if (!(sender instanceof Player)) {
+                            BlobLibMessageAPI.getInstance()
+                                    .getMessage("System.Console-Not-Allowed-Command", sender)
+                                    .toCommandSender(sender);
+                            return true;
+                        }
+                        player = (Player) sender;
+                    } else {
+                        String playerName = args[3];
+                        player = Bukkit.getPlayer(playerName);
+                        if (player == null) {
+                            BlobLibMessageAPI.getInstance()
+                                    .getMessage("Player.Not-Found", sender)
+                                    .toCommandSender(sender);
+                            return true;
+                        }
+                    }
+                    BlobMessage message = BlobLibMessageAPI.getInstance()
+                            .getMessage(key, player);
+                    if (message == null) {
+                        BlobLibMessageAPI.getInstance()
+                                .getMessage("BlobMessage.Not-Found", sender)
+                                .modder()
+                                .replace("%key%", key)
+                                .get()
+                                .toCommandSender(sender);
+                        return true;
+                    }
+                    message.handle(player);
+                    return true;
+                }
                 case "closeinventory" -> {
                     if (length < 2) {
                         BlobLibMessageAPI.getInstance()
@@ -354,6 +402,7 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                         list.add("translatableitem");
                         list.add("blobinventory");
                         list.add("closeinventory");
+                        list.add("blobmessage");
                     }
                     case 2 -> {
                         String arg = args[0].toLowerCase();
@@ -376,6 +425,9 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                             }
                             case "blobinventory" -> {
                                 list.add("open");
+                            }
+                            case "blobmessage" -> {
+                                list.add("send");
                             }
                             case "closeinventory" -> {
                                 list.addAll(main.getServer().getOnlinePlayers().stream()
@@ -409,6 +461,15 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                                     return list;
                                 }
                             }
+                            case "blobmessage" -> {
+                                String sub = args[1].toLowerCase();
+                                if (sub.equals("send")) {
+                                    BlobLibMessageAPI.getInstance()
+                                            .getDefaultReferences()
+                                            .forEach(list::add);
+                                    return list;
+                                }
+                            }
                         }
                     }
                     case 4 -> {
@@ -426,6 +487,15 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                             case "blobinventory" -> {
                                 String sub = args[1].toLowerCase();
                                 if (sub.equals("open")) {
+                                    list.addAll(main.getServer().getOnlinePlayers().stream()
+                                            .map(Player::getName)
+                                            .toList());
+                                    return list;
+                                }
+                            }
+                            case "blobmessage" -> {
+                                String sub = args[1].toLowerCase();
+                                if (sub.equals("send")) {
                                     list.addAll(main.getServer().getOnlinePlayers().stream()
                                             .map(Player::getName)
                                             .toList());
