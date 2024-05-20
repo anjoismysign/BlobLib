@@ -4,4 +4,4 @@ BlobLib:
   Boolean-False:
     Snippet: 'false'
   Player-Not-Online:
-    Snippet: 'not online'
+    Snippet: not online

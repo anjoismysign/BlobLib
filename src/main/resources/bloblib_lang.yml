@@ -1,11 +1,13 @@
 BlobLib:
   Updater-Available:
     Type: CHAT
-    Message: '&7A new version &8(%version%) &7of %randomColor%%plugin% &7is available. You may type %randomColor%''/bloblib update %plugin%'''
+    Message: '&7A new version &8(%version%) &7of %randomColor%%plugin% &7is available.
+      You may type %randomColor%''/bloblib update %plugin%'''
     BlobSound: System.Alert
   Updater-Successful:
     Type: CHAT
-    Message: '%randomColor%%plugin% &7has been updated to %randomColor%%version%&7. You may restart the server now'
+    Message: '%randomColor%%plugin% &7has been updated to %randomColor%%version%&7.
+      You may restart the server now'
     BlobSound: System.Done
   Download-Usage:
     Type: CHAT
@@ -15,7 +17,8 @@ BlobLib:
     Message: '&7Usage: &8/bloblib download GitHub <owner/repository>'
   Download-GitHub-Successful:
     Type: CHAT
-    Message: '&7Successfully downloaded %randomColor%%fileName%&7. You may restart the server now'
+    Message: '&7Successfully downloaded %randomColor%%fileName%&7. You may restart
+      the server now'
   Repository-Not-Found:
     Type: CHAT
     Message: '&cRepository not found'
@@ -32,17 +35,19 @@ System:
   No-Permission:
     Type: CHAT
     Message: '&cI''m sorry, but you do not have permission to perform this command.
-    Please contact the server administrators if you believe that this is in error.'
+      Please contact the server administrators if you believe that this is in error.'
   Console-Not-Allowed-Command:
     Type: CHAT
     Message: '&cYou must be a player to perform this command'
   Already-Chat-Listening:
     Type: CHAT
-    Message: '&cCannot proceed. We are expecting you to type related to something else.'
+    Message: '&cCannot proceed. We are expecting you to type related to something
+      else.'
     BlobSound: System.Alert
   Already-SelPos-Listening:
     Type: CHAT
-    Message: '&cCannot proceed. We are expecting you to select a block for something else.'
+    Message: '&cCannot proceed. We are expecting you to select a block for something
+      else.'
     BlobSound: System.Alert
   Already-Selector-Listening:
     Type: CHAT
@@ -66,7 +71,7 @@ Algorithm:
     Type: ACTIONBAR_TITLE
     Title: '&c&lERROR'
     Subtitle: '&7Cannot proceed'
-    Actionbar: "&cCouldn't find adyacent block"
+    Actionbar: '&cCouldn''t find adyacent block'
     BlobSound: System.Alert
 Object:
   Not-Found:
@@ -101,16 +106,16 @@ Builder:
     BlobSound: Builder.Timeout
   World-Not-Found:
     Type: CHAT
-    Message: "&cWorld '%world%' not found"
+    Message: '&cWorld ''%world%'' not found'
     BlobSound: System.Alert
   Material-Not-Found:
     Type: CHAT
-    Message: "&cMaterial '%material%' not found"
+    Message: '&cMaterial ''%material%'' not found'
     BlobSound: System.Alert
   World:
     Type: TITLE
-    Title: "&f&lWORLD"
-    Subtitle: "&7You are currently in '%world%'"
+    Title: '&f&lWORLD'
+    Subtitle: '&7You are currently in ''%world%'''
   World-Timeout:
     Type: TITLE
     Title: '&c&lTIMEOUT'
@@ -224,7 +229,7 @@ Player:
     BlobSound: System.Alert
   Not-Inside-Plugin-Cache:
     Type: CHAT
-    Message: "&cPlayer not found in plugin's cache"
+    Message: '&cPlayer not found in plugin''s cache'
     BlobSound: System.Alert
 Currency:
   Not-Found:
@@ -242,13 +247,13 @@ Economy:
     BlobSound: Economy.Received-Withdrawal
   Deposit:
     Type: CHAT
-    Message: '&7Gave %display% %currency% &7to %player%'
+    Message: '&7Gave %display% &7to %player%'
   Withdraw:
     Type: CHAT
-    Message: '&7Took %display% %currency% &7from %player%'
+    Message: '&7Took %display% &7from %player%'
   Set:
     Type: CHAT
-    Message: '&7Set %display% %currency% &7to %player%'
+    Message: '&7Set %display% &7to %player%'
   Reset:
     Type: CHAT
     Message: '&7Reset %currency% to %player%'
@@ -266,7 +271,8 @@ Economy:
     BlobSound: System.Alert
   Cannot-Bankrupt-Others:
     Type: CHAT
-    Message: '&cNot proceeding. %player% would go bankrupt since they are missing %display%'
+    Message: '&cNot proceeding. %player% would go bankrupt since they are missing
+      %display%'
     BlobSound: System.Alert
   Number-Exception:
     Type: CHAT
@@ -294,7 +300,7 @@ Withdraw:
     BlobSound: System.Alert
   Successful:
     Type: CHAT
-    Message: 'You have withdrawn %display%'
+    Message: You have withdrawn %display%
 Deposit:
   Amount:
     Type: TITLE
@@ -317,7 +323,7 @@ Deposit:
     BlobSound: System.Alert
   Successful:
     Type: CHAT
-    Message: 'You have deposited %display%'
+    Message: You have deposited %display%
 TranslatableItem:
   Usage:
     Type: CHAT
@@ -334,6 +340,10 @@ BlobInventory:
     Type: CHAT
     Message: '&cBlobInventory not found: &f%key%'
     BlobSound: System.Alert
+CloseInventory:
+  Usage:
+    Type: CHAT
+    Message: '&7Usage: &8/bloblib closeinventory <player>'
 BlobMessage:
   Usage:
     Type: CHAT
@@ -342,7 +352,3 @@ BlobMessage:
     Type: CHAT
     Message: '&cBlobMessage not found: &f%key%'
     BlobSound: System.Alert
-CloseInventory:
-  Usage:
-    Type: CHAT
-    Message: '&7Usage: &8/bloblib closeinventory <player>'
