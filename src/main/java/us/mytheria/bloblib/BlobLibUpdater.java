@@ -163,7 +163,7 @@ public class BlobLibUpdater implements PluginUpdater {
             Player player = event.getPlayer();
             if (!player.hasPermission("bloblib.admin"))
                 return;
-            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 if (player == null || !player.isOnline())
                     return;
                 BlobLibMessageAPI.getInstance()

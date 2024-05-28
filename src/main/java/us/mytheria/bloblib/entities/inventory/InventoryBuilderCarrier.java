@@ -96,4 +96,9 @@ public record InventoryBuilderCarrier<T extends InventoryButton>(@Nullable Strin
         return new InventoryBuilderCarrier<>(title, size, buttonManager,
                 type, reference, locale);
     }
+
+    public InventoryBuilderCarrier<T> setLocale(@NotNull String locale) {
+        Objects.requireNonNull(locale, "'locale' cannot be null!");
+        return new InventoryBuilderCarrier<>(title, size, buttonManager, type, reference, locale);
+    }
 }

@@ -13,6 +13,8 @@ import us.mytheria.bloblib.entities.inventory.*;
 import java.io.File;
 import java.util.*;
 
+import static us.mytheria.bloblib.entities.inventory.InventoryBuilderCarrier.BLOB_FROM_CONFIGURATION_SECTION;
+
 public class InventoryManager {
     private final BlobLib main;
     private HashMap<String, InventoryDataRegistry<InventoryButton>> blobInventories;
@@ -135,19 +137,20 @@ public class InventoryManager {
         String fileName = FilenameUtils.removeExtension(file.getName());
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
-            addBlobInventory(fileName, InventoryBuilderCarrier.
-                    BLOB_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName));
+            addBlobInventory(fileName, BLOB_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName));
             pluginBlobInventories.get(plugin.getName()).add(fileName);
             return;
         }
+        String locale = yamlConfiguration.getString("Locale", "en_us");
         yamlConfiguration.getKeys(true).forEach(reference -> {
             if (!yamlConfiguration.isConfigurationSection(reference))
                 return;
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (!section.contains("Size") && !section.isInt("Size"))
                 return;
-            addBlobInventory(reference, InventoryBuilderCarrier.
-                    BLOB_FROM_CONFIGURATION_SECTION(section, reference));
+            InventoryBuilderCarrier<InventoryButton> carrier = BLOB_FROM_CONFIGURATION_SECTION(section, reference);
+            carrier = carrier.setLocale(locale);
+            addBlobInventory(reference, carrier);
             pluginBlobInventories.get(plugin.getName()).add(reference);
         });
     }
@@ -161,14 +164,17 @@ public class InventoryManager {
             pluginMetaInventories.get(plugin.getName()).add(fileName);
             return;
         }
+        String locale = yamlConfiguration.getString("Locale", "en_us");
         yamlConfiguration.getKeys(true).forEach(reference -> {
             if (!yamlConfiguration.isConfigurationSection(reference))
                 return;
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (!section.contains("Size") && !section.isInt("Size"))
                 return;
-            addMetaInventory(reference, InventoryBuilderCarrier.
-                    META_FROM_CONFIGURATION_SECTION(section, reference));
+            InventoryBuilderCarrier<MetaInventoryButton> carrier = InventoryBuilderCarrier.
+                    META_FROM_CONFIGURATION_SECTION(section, reference);
+            carrier = carrier.setLocale(locale);
+            addMetaInventory(reference, carrier);
             pluginMetaInventories.get(plugin.getName()).add(reference);
         });
     }
@@ -205,19 +211,19 @@ public class InventoryManager {
         String fileName = FilenameUtils.removeExtension(file.getName());
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
-            InventoryBuilderCarrier<InventoryButton> carrier = InventoryBuilderCarrier.
-                    BLOB_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName);
+            InventoryBuilderCarrier<InventoryButton> carrier = BLOB_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName);
             addBlobInventory(fileName, carrier);
             return;
         }
+        String locale = yamlConfiguration.getString("Locale", "en_us");
         yamlConfiguration.getKeys(true).forEach(reference -> {
             if (!yamlConfiguration.isConfigurationSection(reference))
                 return;
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (!section.contains("Size") && !section.isInt("Size"))
                 return;
-            InventoryBuilderCarrier<InventoryButton> carrier = InventoryBuilderCarrier.
-                    BLOB_FROM_CONFIGURATION_SECTION(section, reference);
+            InventoryBuilderCarrier<InventoryButton> carrier = BLOB_FROM_CONFIGURATION_SECTION(section, reference);
+            carrier = carrier.setLocale(locale);
             addBlobInventory(reference, carrier);
         });
     }
@@ -230,14 +236,17 @@ public class InventoryManager {
                     META_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName));
             return;
         }
+        String locale = yamlConfiguration.getString("Locale", "en_us");
         yamlConfiguration.getKeys(true).forEach(reference -> {
             if (!yamlConfiguration.isConfigurationSection(reference))
                 return;
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (!section.contains("Size") && !section.isInt("Size"))
                 return;
-            addMetaInventory(reference, InventoryBuilderCarrier.
-                    META_FROM_CONFIGURATION_SECTION(section, reference));
+            InventoryBuilderCarrier<MetaInventoryButton> carrier = InventoryBuilderCarrier.
+                    META_FROM_CONFIGURATION_SECTION(section, reference);
+            carrier = carrier.setLocale(locale);
+            addMetaInventory(reference, carrier);
         });
     }
 
