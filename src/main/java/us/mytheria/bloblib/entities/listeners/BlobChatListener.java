@@ -117,7 +117,7 @@ public class BlobChatListener extends ChatListener {
                 messages.forEach(message -> message.handle(player));
             }
         };
-        this.messageTask = bukkitRunnable.runTaskTimerAsynchronously(BlobLib.getInstance(), 0, 10);
+        this.messageTask = bukkitRunnable.runTaskTimerAsynchronously(BlobLib.getInstance(), 0, 100);
     }
 
     /**
