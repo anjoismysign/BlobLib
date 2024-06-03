@@ -524,6 +524,52 @@ public class BlobLibInventoryAPI {
      * Will allow player to edit a collection of elements.
      * The editor will be placed in the inventory at the specified buttonRangeKey.
      * The inventory will open automatically.
+     * Does nothing when the player closes the editor.
+     *
+     * @param blobInventoryKey the key of the BlobInventory
+     * @param player           the player
+     * @param buttonRangeKey   the button from the BlobInventory which contains the slots (per page) into which the editor will place the elements
+     * @param dataType         the data type of the editor
+     * @param addCollection    the collection of elements to add to
+     * @param onAdd            what's consumed when an element is added
+     * @param addDisplay       the function to display an element, needs to return the ItemStack to display
+     * @param viewCollection   the collection of elements to view
+     * @param removeDisplay    the function to display an element, needs to return the ItemStack to display
+     * @param onRemove         what's consumed when an element is removed
+     * @param onReturn         what's consumed when the player returns the editor
+     * @param <T>              the type of the editor
+     * @return the editor
+     */
+    @Nullable
+    public <T> BlobEditor<T> customEditor(@NotNull String blobInventoryKey,
+                                          @NotNull Player player,
+                                          @NotNull String buttonRangeKey,
+                                          @NotNull String dataType,
+                                          @NotNull Supplier<Collection<T>> addCollection,
+                                          @NotNull Consumer<T> onAdd,
+                                          @Nullable Function<T, ItemStack> addDisplay,
+                                          @NotNull Supplier<Collection<T>> viewCollection,
+                                          @NotNull Function<T, ItemStack> removeDisplay,
+                                          @NotNull Consumer<T> onRemove,
+                                          @Nullable Consumer<Player> onReturn) {
+        return customEditor(blobInventoryKey,
+                player,
+                buttonRangeKey,
+                dataType,
+                addCollection,
+                onAdd,
+                addDisplay,
+                viewCollection,
+                removeDisplay,
+                onRemove,
+                onReturn,
+                null);
+    }
+
+    /**
+     * Will allow player to edit a collection of elements.
+     * The editor will be placed in the inventory at the specified buttonRangeKey.
+     * The inventory will open automatically.
      *
      * @param blobInventoryKey the key of the BlobInventory
      * @param player           the player
