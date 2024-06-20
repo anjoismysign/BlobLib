@@ -24,7 +24,7 @@ public class BlockMaterialFiller implements VariableFiller<Material> {
                 continue;
             if (!material.isBlock())
                 continue;
-            if (new ItemStack(material).getItemMeta() == null)
+            if (!material.isItem())
                 continue;
             materials.add(material);
         }

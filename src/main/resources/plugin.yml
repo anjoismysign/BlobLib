@@ -4,7 +4,7 @@ main: us.mytheria.bloblib.BlobLib
 api-version: 1.17
 load: STARTUP
 loadbefore: [ Vault, WorldGuard, WorldEdit, LibsDisguises, ProtocolLib ]
-authors: [ promorrom, j0ach1mmall3, Dean B, FourteenBrush, SmallCode ]
+authors: [ promorrom, j0ach1mmall3, Dean B, SmallCode ]
 commands:
   bloblib:
     usage: "/bloblib reload"

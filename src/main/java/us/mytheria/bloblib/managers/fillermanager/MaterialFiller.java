@@ -22,7 +22,7 @@ public class MaterialFiller implements VariableFiller<Material> {
         for (Material material : Material.values()) {
             if (material.name().contains("LEGACY"))
                 continue;
-            if (new ItemStack(material).getItemMeta() == null)
+            if (!material.isItem())
                 continue;
             materials.add(material);
         }
