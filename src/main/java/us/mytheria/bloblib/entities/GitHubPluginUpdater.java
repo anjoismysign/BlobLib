@@ -174,7 +174,7 @@ public class GitHubPluginUpdater implements PluginUpdater {
             Player player = event.getPlayer();
             if (!player.hasPermission(pluginName.toLowerCase() + ".admin"))
                 return;
-            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 if (player == null || !player.isOnline())
                     return;
                 BlobLibMessageAPI.getInstance()
