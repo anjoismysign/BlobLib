@@ -60,6 +60,11 @@ public class ResourceUtil {
                 }
                 // if it's not a section, it's a value
                 if (existingYamlConfig.contains(key)) return;
+                String parent = getParent(key);
+                // if the parent is not a section, it means server admin has changed the file
+                if (!existingYamlConfig.isConfigurationSection(parent))
+                    return;
+                existingYamlConfig.set(key, updateYamlConfiguration.get(key));
             }
             if (existingYamlConfig.contains(key)) {
                 existing.add(key);
