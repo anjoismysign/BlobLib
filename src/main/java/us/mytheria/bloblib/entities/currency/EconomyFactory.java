@@ -79,12 +79,26 @@ public class EconomyFactory {
     public static <T extends WalletOwner> WalletOwnerManager<T> WALLET_OWNER_MANAGER(ManagerDirector managerDirector,
                                                                                      Function<BlobCrudable, BlobCrudable> newBorn,
                                                                                      Function<BlobCrudable, T> walletOwner,
-                                                                                     String crudableName, boolean logActivity,
+                                                                                     String crudableName,
+                                                                                     boolean logActivity,
                                                                                      @Nullable Function<T, Event> joinEvent,
                                                                                      @Nullable Function<T, Event> quitEvent,
                                                                                      @NotNull EventPriority joinPriority,
                                                                                      @NotNull EventPriority quitPriority) {
         return new <T>WalletOwnerManager<T>(managerDirector, newBorn, walletOwner, crudableName, logActivity, joinEvent, quitEvent,
+                joinPriority, quitPriority);
+    }
+
+    public static <T extends WalletOwner> WalletOwnerManager<T> TRANSIENT_WALLET_OWNER_MANAGER(ManagerDirector managerDirector,
+                                                                                               Function<BlobCrudable, BlobCrudable> newBorn,
+                                                                                               Function<BlobCrudable, T> walletOwner,
+                                                                                               String crudableName,
+                                                                                               boolean logActivity,
+                                                                                               @Nullable Function<T, Event> joinEvent,
+                                                                                               @Nullable Function<T, Event> quitEvent,
+                                                                                               @NotNull EventPriority joinPriority,
+                                                                                               @NotNull EventPriority quitPriority) {
+        return new <T>TransientWalletOwnerManager<T>(managerDirector, newBorn, walletOwner, crudableName, logActivity, joinEvent, quitEvent,
                 joinPriority, quitPriority);
     }
 }

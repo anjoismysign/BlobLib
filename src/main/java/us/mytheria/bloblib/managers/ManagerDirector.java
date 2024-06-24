@@ -283,6 +283,43 @@ public abstract class ManagerDirector implements IManagerDirector {
 
     /**
      * Adds a wallet owner manager to the director.
+     * This wallet owner manager doesn't save nor store data.
+     *
+     * @param key          The key of the manager
+     * @param newBorn      A function that by passing a UUID, it will fill a BlobCrudable
+     *                     with default key-value pairs.
+     *                     This is used to create new/fresh WalletOwners.
+     * @param walletOwner  A function that by passing a BlobCrudable, it will return a WalletOwner.
+     *                     WalletOwners use this to store their data inside databases.
+     * @param crudableName The name of the BlobCrudable. This will be used for
+     *                     as the column name in the database.
+     * @param logActivity  Whether to log activity in the console.
+     * @param joinEvent    A function that by passing a WalletOwner, it will return a join event.
+     *                     It's called SYNCHRONOUSLY.
+     *                     It's called when a player joins the server.
+     * @param quitEvent    A function that by passing a WalletOwner, it will return a quit event.
+     *                     It's called SYNCHRONOUSLY.
+     *                     It's called when a player quits/leaves the server.
+     * @param joinPriority The priority of the join event.
+     * @param quitPriority The priority of the quit event.
+     * @param <T>          The type of WalletOwner.
+     */
+    public <T extends WalletOwner> void addTransientWalletOwnerManager(String key,
+                                                                       Function<BlobCrudable, BlobCrudable> newBorn,
+                                                                       Function<BlobCrudable, T> walletOwner,
+                                                                       String crudableName, boolean logActivity,
+                                                                       @Nullable Function<T, Event> joinEvent,
+                                                                       @Nullable Function<T, Event> quitEvent,
+                                                                       @NotNull EventPriority joinPriority,
+                                                                       @NotNull EventPriority quitPriority) {
+        addManager(key,
+                EconomyFactory.TRANSIENT_WALLET_OWNER_MANAGER(this,
+                        newBorn, walletOwner, crudableName, logActivity, joinEvent, quitEvent,
+                        joinPriority, quitPriority));
+    }
+
+    /**
+     * Adds a wallet owner manager to the director.
      * Uses NORMAL priority for join and quit listeners.
      *
      * @param key          The key of the manager

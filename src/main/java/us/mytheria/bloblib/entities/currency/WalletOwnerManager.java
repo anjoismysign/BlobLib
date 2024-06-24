@@ -103,14 +103,14 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             if (player == null || !player.isOnline())
                 return;
-            BlobCrudable crudable = crudManager.read(uuid.toString());
+            BlobCrudable crudable = read(uuid.toString());
             Bukkit.getScheduler().runTask(plugin, () -> {
                 if (player == null || !player.isOnline())
                     return;
                 T applied = generator.apply(crudable);
                 BlobCrudable serialized = applied.serializeAllAttributes();
                 Bukkit.getScheduler().runTaskAsynchronously(getPlugin(),
-                        () -> crudManager.update(serialized));
+                        () -> update(serialized));
                 walletOwners.put(uuid, applied);
                 if (joinEvent == null)
                     return;
@@ -124,7 +124,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
                         }
                         BlobCrudable serialized = applied.serializeAllAttributes();
                         Bukkit.getScheduler().runTaskAsynchronously(getPlugin(),
-                                () -> crudManager.update(serialized));
+                                () -> update(serialized));
                     }
                 }.runTaskTimer(getPlugin(), 20 * 60 * 5,
                         20 * 60 * 5));
@@ -145,7 +145,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         autoSave.remove(uuid);
         BlobCrudable crudable = walletOwner.serializeAllAttributes();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            crudManager.update(crudable);
+            update(crudable);
             removeObject(uuid);
             saving.remove(uuid);
         });
@@ -187,7 +187,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         if (isPresent) {
             T walletOwner = optional.get();
             consumer.accept(walletOwner);
-            crudManager.update(walletOwner.serializeAllAttributes());
+            update(walletOwner.serializeAllAttributes());
         } else {
             runnable.run();
         }
@@ -199,20 +199,24 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
     }
 
     private void saveAll() {
-        walletOwners.values().forEach(walletOwner -> crudManager.update(walletOwner.serializeAllAttributes()));
+        walletOwners.values().forEach(walletOwner -> update(walletOwner.serializeAllAttributes()));
     }
 
     public CompletableFuture<T> readAsynchronously(String key) {
         CompletableFuture<T> future = new CompletableFuture<>();
         Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () ->
-                future.complete(generator.apply(crudManager.read(key))));
+                future.complete(generator.apply(read(key))));
         return future;
     }
 
     public void readThenUpdate(String key, Consumer<T> consumer) {
-        T walletOwner = generator.apply(crudManager.read(key));
+        T walletOwner = generator.apply(read(key));
         consumer.accept(walletOwner);
-        crudManager.update(walletOwner.serializeAllAttributes());
+        update(walletOwner.serializeAllAttributes());
+    }
+
+    public BlobCrudable read(String key) {
+        return crudManager.read(key);
     }
 
     public void update(BlobCrudable crudable) {
