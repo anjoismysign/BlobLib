@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -45,8 +44,15 @@ public class ResourceUtil {
      */
     public static void writeNewValues(File existingFile, YamlConfiguration updateYamlConfiguration) {
         FileConfiguration existingYamlConfig = YamlConfiguration.loadConfiguration(existingFile);
-        Set<String> keys = updateYamlConfiguration.getConfigurationSection("").getKeys(true);
-        Set<String> existing = new HashSet<>();
+        if (existingYamlConfig.getKeys(true).isEmpty()) {
+            try {
+                updateYamlConfiguration.save(existingFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+        Set<String> keys = updateYamlConfiguration.getKeys(true);
         keys.forEach(key -> {
             if (!updateYamlConfiguration.isConfigurationSection(key)) {
                 try {
@@ -65,10 +71,6 @@ public class ResourceUtil {
                 if (!existingYamlConfig.isConfigurationSection(parent))
                     return;
                 existingYamlConfig.set(key, updateYamlConfiguration.get(key)); // write
-            }
-            if (existingYamlConfig.contains(key)) {
-                existing.add(key);
-                return; //if it exists, skip
             }
             String parent = getParent(key);
             // if the parent is not a section, it means server admin has changed the file
