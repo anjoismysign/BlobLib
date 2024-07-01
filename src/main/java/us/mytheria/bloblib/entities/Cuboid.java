@@ -272,6 +272,8 @@ public class Cuboid {
      */
     public List<Entity> getEntities() {
         double distance = getDistance();
+        if (distance < 3)
+            distance = 3;
         Location center = getCenter();
         return center.getWorld().getNearbyEntities(center, distance, distance, distance)
                 .stream()
