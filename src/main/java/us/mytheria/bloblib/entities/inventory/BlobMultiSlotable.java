@@ -61,6 +61,10 @@ public class BlobMultiSlotable extends MultiSlotable {
             }
             itemStack = ItemStackReader.getInstance().readOrFailFast(itemStackSection);
         }
+        if (section.isInt("Amount")) {
+            int amount = section.getInt("Amount");
+            itemStack.setAmount(amount);
+        }
         String read = section.getString("Slot", "-1");
         Set<Integer> set = IntegerRange.getInstance().parse(read);
         String hasPermission = null;
