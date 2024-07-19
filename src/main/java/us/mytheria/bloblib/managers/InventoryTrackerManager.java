@@ -89,6 +89,22 @@ public class InventoryTrackerManager implements Listener {
     }
 
     @EventHandler
+    public void onPlayerInventoryClick(InventoryClickEvent event) {
+        Inventory clickedInventory = event.getClickedInventory();
+        if (clickedInventory == null)
+            return;
+        Inventory topInventory = event.getView().getTopInventory();
+        if (clickedInventory.equals(topInventory))
+            return;
+        InventoryTracker<?, ?> inventoryTracker = this.tracker.get(topInventory);
+        if (inventoryTracker == null)
+            return;
+        SharableInventory<?> sharableInventory = inventoryTracker.getInventory();
+        InventoryDataRegistry<?> registry = inventoryTracker.getRegistry();
+        registry.processPlayerInventoryClickEvent(event, sharableInventory);
+    }
+
+    @EventHandler
     private void onClick(InventoryClickEvent event) {
         Inventory clickedInventory = event.getClickedInventory();
         if (clickedInventory == null)

@@ -24,6 +24,7 @@ public class InventoryDataRegistry<T extends InventoryButton> {
     private final Map<String, Consumer<InventoryClickEvent>> singleClickEvents;
     private final Map<String, BiConsumer<InventoryCloseEvent, SharableInventory<?>>> closeEvents;
     private final Map<String, BiConsumer<InventoryClickEvent, T>> clickEvents;
+    private final Map<String, BiConsumer<InventoryClickEvent, SharableInventory<?>>> playerInventoryClickEvents;
 
     /**
      * Will instantiate a new InventoryDataRegistry with the specified default locale.
@@ -46,6 +47,7 @@ public class InventoryDataRegistry<T extends InventoryButton> {
         this.singleClickEvents = new HashMap<>();
         this.closeEvents = new HashMap<>();
         this.clickEvents = new HashMap<>();
+        this.playerInventoryClickEvents = new HashMap<>();
     }
 
     /**
@@ -162,6 +164,30 @@ public class InventoryDataRegistry<T extends InventoryButton> {
             if (closeEvent == null)
                 return;
             closeEvent.accept(event, inventory);
+        });
+    }
+
+    /**
+     * Will set the click event whenever clicking on the player's inventory.
+     *
+     * @param key   the key to add the click event for
+     * @param event the click event
+     */
+    public void onPlayerInventoryClick(String key, BiConsumer<InventoryClickEvent, SharableInventory<?>> event) {
+        this.playerInventoryClickEvents.put(key, event);
+    }
+
+    /**
+     * Will process the click event whenever clicking on the player's inventory.
+     *
+     * @param event     the click event
+     * @param inventory the inventory
+     */
+    public void processPlayerInventoryClickEvent(InventoryClickEvent event, SharableInventory<?> inventory) {
+        playerInventoryClickEvents.values().forEach(playerInventoryClickEvent -> {
+            if (playerInventoryClickEvent == null)
+                return;
+            playerInventoryClickEvent.accept(event, inventory);
         });
     }
 }
