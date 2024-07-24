@@ -7,14 +7,16 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.itemstack.Util1_20_5;
+import us.mytheria.bloblib.itemstack.UtilLegacy;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.List;
 
 public class ItemStackUtil {
+    private static final ItemStackUtilMiddleman middleman = (MinecraftVersion.of("1.20.5").compareTo(MinecraftVersion.getRunning()) >= 0) ?
+            new Util1_20_5() : new UtilLegacy();
 
     /**
      * Will display an ItemStack by either their ItemMeta's displayname or their Material's name
@@ -23,11 +25,7 @@ public class ItemStackUtil {
      * @return The displayname of the ItemStack
      */
     public static String display(ItemStack itemStack) {
-        if (itemStack == null)
-            return "null";
-        if (itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName())
-            return itemStack.getItemMeta().getDisplayName();
-        return itemStack.getType().name();
+        return middleman.display(itemStack);
     }
 
     /**
@@ -38,24 +36,7 @@ public class ItemStackUtil {
      * @param replacement The string to replace with
      */
     public static void replace(ItemStack itemStack, String target, String replacement) {
-        if (itemStack == null)
-            return;
-        if (!itemStack.hasItemMeta())
-            return;
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta.hasDisplayName()) {
-            String displayname = itemMeta.getDisplayName().replace(target, replacement);
-            itemMeta.setDisplayName(displayname);
-        }
-        if (itemMeta.hasLore()) {
-            List<String> lore = new ArrayList<>();
-            List<String> current = itemMeta.getLore();
-            for (String s : current) {
-                lore.add(s.replace(target, replacement));
-            }
-            itemMeta.setLore(lore);
-        }
-        itemStack.setItemMeta(itemMeta);
+        middleman.replace(itemStack, target, replacement);
     }
 
     /**

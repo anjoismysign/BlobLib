@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import us.mytheria.bloblib.utilities.ItemStackUtil;
 import us.mytheria.bloblib.utilities.TextColor;
 
 import java.util.*;
@@ -234,24 +235,11 @@ public final class ItemStackModder {
      *
      * @param regex       the regex to replace
      * @param replacement the replacement
-     * @return
+     * @return the modified ItemStackModder
      */
     public ItemStackModder replace(String regex, String replacement) {
-        return itemMeta(itemMeta -> {
-            if (itemMeta.hasDisplayName()) {
-                String name = itemMeta.getDisplayName();
-                itemMeta.setDisplayName(name.replace(regex, replacement));
-            }
-            if (itemMeta.hasLore()) {
-                List<String> current = itemMeta.getLore();
-                List<String> toBeSet = new ArrayList<>();
-                current.forEach(string -> {
-                    string = string.replace(regex, replacement);
-                    toBeSet.add(string);
-                });
-                itemMeta.setLore(toBeSet);
-            }
-        });
+        ItemStackUtil.replace(itemStack, regex, replacement);
+        return this;
     }
 
     /**
