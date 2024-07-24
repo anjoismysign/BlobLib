@@ -436,7 +436,7 @@ public class BlobLibInventoryAPI {
     public <T> BlobSelector<T> customSelector(@NotNull String blobInventoryKey,
                                               @NotNull Player player,
                                               @NotNull String buttonRangeKey,
-                                              @NotNull String dataType,
+                                              @Nullable String dataType,
                                               @NotNull Supplier<List<T>> selectorList,
                                               @NotNull Consumer<T> onSelect,
                                               @Nullable Function<T, ItemStack> display,
@@ -445,9 +445,9 @@ public class BlobLibInventoryAPI {
         BlobInventory inventory = buildInventory(blobInventoryKey, player);
         BlobSelector<T> selector = BlobSelector.build(inventory, player.getUniqueId(),
                 dataType, selectorList.get(), onReturn);
+        selector.setButtonRangeKey(buttonRangeKey);
         selector.setItemsPerPage(selector.getSlots(buttonRangeKey)
                 == null ? 1 : selector.getSlots(buttonRangeKey).size());
-        selector.setWhiteBackgroundName(buttonRangeKey);
         if (display != null)
             selector.selectElement(player,
                     onSelect,

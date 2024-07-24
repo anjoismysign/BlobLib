@@ -36,7 +36,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
     @Nullable
     private Supplier<Collection<T>> collectionSupplier;
     @Nullable
-    private String whiteBackgroundName;
+    private String buttonRangeKey;
     private int page;
     private int itemsPerPage;
 
@@ -78,34 +78,38 @@ public abstract class VariableSelector<T> extends BlobInventory {
     /**
      * creates a new VariableSelector
      *
-     * @param blobInventory the inventory to use
-     * @param builderId     the id of the builder
-     * @param dataType      the data type
-     * @param filler        the filler to use
-     * @param returnAction  the action to run when the return button is clicked
-     * @param loadFunction  the function to use to convert the list to an itemstack
+     * @param blobInventory      the inventory to use
+     * @param builderId          the id of the builder
+     * @param dataType           the data type
+     * @param filler             the filler to use
+     * @param returnAction       the action to run when the return button is clicked
+     * @param loadFunction       the function to use to convert the list to an itemstack
+     * @param collectionSupplier the collection supplier
+     * @param buttonRangeKey     the button range key
      */
-    public VariableSelector(BlobInventory blobInventory, UUID builderId,
-                            String dataType, VariableFiller<T> filler,
+    public VariableSelector(BlobInventory blobInventory,
+                            UUID builderId,
+                            @Nullable String dataType,
+                            VariableFiller<T> filler,
                             @Nullable Consumer<Player> returnAction,
                             @Nullable Function<T, ItemStack> loadFunction,
                             @Nullable Supplier<Collection<T>> collectionSupplier,
-                            @Nullable String whiteBackgroundName) {
+                            @Nullable String buttonRangeKey) {
         super(blobInventory.getTitle(), blobInventory.getSize(), blobInventory.getButtonManager());
         this.returnAction = returnAction == null ? HumanEntity::closeInventory : returnAction;
         this.loadFunction = loadFunction;
         this.collectionSupplier = collectionSupplier;
-        this.whiteBackgroundName = whiteBackgroundName;
+        this.buttonRangeKey = buttonRangeKey;
         this.filler = filler;
         this.builderId = builderId;
         this.values = new HashMap<>();
-        this.dataType = dataType.toUpperCase();
+        this.dataType = dataType;
         if (dataType != null)
             setTitle(blobInventory.getTitle().replace("%variable%", dataType));
         buildInventory();
         this.page = 1;
         this.itemsPerPage = 1;
-        Set<Integer> slots = getSlots(getWhiteBackgroundName());
+        Set<Integer> slots = getSlots(getButtonRangeKey());
         if (slots != null)
             setItemsPerPage(slots.size());
         loadFirstPage();
@@ -131,7 +135,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
             return;
         }
         if (whiteBackgroundRefill)
-            refillButton(getWhiteBackgroundName());
+            refillButton(getButtonRangeKey());
         values.clear();
         List<VariableValue<T>> values = filler.page(page, itemsPerPage);
         for (int i = 0; i < values.size(); i++) {
@@ -154,7 +158,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
             return;
         }
         if (refill)
-            refillButton(getWhiteBackgroundName());
+            refillButton(getButtonRangeKey());
         values.clear();
         List<VariableValue<T>> values = filler.customPage(page, itemsPerPage, list, function);
         for (int i = 0; i < values.size(); i++) {
@@ -177,11 +181,19 @@ public abstract class VariableSelector<T> extends BlobInventory {
             return;
         }
         if (refill)
-            refillButton(getWhiteBackgroundName());
+            refillButton(getButtonRangeKey());
         clearValues();
+        InventoryButton inventoryButton = Objects.requireNonNull(getButton(buttonRangeKey), "buttonRangeKey is not an InventoryButton");
+        List<Integer> slots = inventoryButton.getSlots().stream()
+                .sorted(Comparator.comparingInt(Integer::intValue))
+                .toList();
         List<VariableValue<T>> values = this.customPage(page, getItemsPerPage(), function);
-        for (int i = 0; i < values.size(); i++) {
-            setValue(i, values.get(i));
+        Iterator<Integer> iterator = slots.iterator();
+        for (VariableValue<T> value : values) {
+            if (!iterator.hasNext())
+                break;
+            int next = iterator.next();
+            setValue(next, value);
         }
     }
 
@@ -295,6 +307,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
     /**
      * @return the datatype that was specified in the constructor
      */
+    @Nullable
     public String getDataType() {
         return dataType;
     }
@@ -459,13 +472,13 @@ public abstract class VariableSelector<T> extends BlobInventory {
         this.collectionSupplier = collectionSupplier;
     }
 
-    public void setWhiteBackgroundName(@NotNull String whiteBackgroundName) {
-        Objects.requireNonNull(whiteBackgroundName, "whiteBackgroundName cannot be null");
-        this.whiteBackgroundName = whiteBackgroundName;
+    public void setButtonRangeKey(@NotNull String buttonRangeKey) {
+        Objects.requireNonNull(buttonRangeKey, "whiteBackgroundName cannot be null");
+        this.buttonRangeKey = buttonRangeKey;
     }
 
     @NotNull
-    private String getWhiteBackgroundName() {
-        return whiteBackgroundName == null ? "White-Background" : whiteBackgroundName;
+    private String getButtonRangeKey() {
+        return buttonRangeKey == null ? "White-Background" : buttonRangeKey;
     }
 }
