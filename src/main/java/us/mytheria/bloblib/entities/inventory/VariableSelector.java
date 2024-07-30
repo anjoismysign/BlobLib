@@ -7,7 +7,6 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.api.BlobLibInventoryAPI;
-import us.mytheria.bloblib.api.BlobLibSoundAPI;
 import us.mytheria.bloblib.entities.VariableFiller;
 import us.mytheria.bloblib.entities.VariableValue;
 
@@ -248,6 +247,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
      * @param slot the slot that was clicked
      * @return the value that was stored in the slot
      */
+    @Nullable
     public T getValue(int slot) {
         return values.get(slot);
     }
@@ -370,8 +370,6 @@ public abstract class VariableSelector<T> extends BlobInventory {
      */
     public void nextPage() {
         setPage(page + 1);
-        Player player = getPlayer();
-        BlobLibSoundAPI.getInstance().getSound("Builder.Button-Click").handle(player);
     }
 
     /**
@@ -379,8 +377,6 @@ public abstract class VariableSelector<T> extends BlobInventory {
      */
     public void previousPage() {
         setPage(page - 1);
-        Player player = getPlayer();
-        BlobLibSoundAPI.getInstance().getSound("Builder.Button-Click").handle(player);
     }
 
     /**
@@ -389,7 +385,6 @@ public abstract class VariableSelector<T> extends BlobInventory {
     public void processReturn() {
         Player player = getPlayer();
         returnAction.accept(player);
-        BlobLibSoundAPI.getInstance().getSound("Builder.Button-Click").handle(player);
     }
 
     /**

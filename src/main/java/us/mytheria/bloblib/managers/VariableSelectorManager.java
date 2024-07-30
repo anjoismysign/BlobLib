@@ -43,32 +43,30 @@ public class VariableSelectorManager implements Listener {
         event.setCancelled(true);
         int slot = event.getRawSlot();
         BlobSound clickSound = BlobLibSoundAPI.getInstance().getSound("Builder.Button-Click");
-        if (slot > blobEditor.valuesSize() - 1) {
-            if (blobEditor.isNextPageButton(slot)) {
-                blobEditor.nextPage();
-                return;
-            }
-            if (blobEditor.isPreviousPageButton(slot)) {
-                blobEditor.previousPage();
-                return;
-            }
-            if (blobEditor.isAddElementButton(slot)) {
-                clickSound.handle(player);
-                blobEditor.addElement(player);
-                return;
-            }
-            if (blobEditor.isRemoveElementButton(slot)) {
-                clickSound.handle(player);
-                blobEditor.removeElement(player);
-                return;
-            }
-            if (blobEditor.isReturnButton(slot)) {
-                blobEditor.processReturn();
-                return;
-            }
+        if (blobEditor.isNextPageButton(slot)) {
+            blobEditor.nextPage();
             return;
         }
-        listener.setInputFromSlot(blobEditor, event.getRawSlot());
+        if (blobEditor.isPreviousPageButton(slot)) {
+            blobEditor.previousPage();
+            return;
+        }
+        if (blobEditor.isAddElementButton(slot)) {
+            clickSound.handle(player);
+            blobEditor.addElement(player);
+            return;
+        }
+        if (blobEditor.isRemoveElementButton(slot)) {
+            clickSound.handle(player);
+            blobEditor.removeElement(player);
+            return;
+        }
+        if (blobEditor.isReturnButton(slot)) {
+            blobEditor.processReturn();
+            return;
+        }
+        if (!listener.setInputFromSlot(blobEditor, event.getRawSlot()))
+            return;
         clickSound.handle(player);
     }
 
@@ -79,27 +77,29 @@ public class VariableSelectorManager implements Listener {
         if (variableSelector == null)
             return;
         SelectorListener<?> listener = main.getSelectorManager().getSelectorListener(player);
+        BlobSound clickSound = BlobLibSoundAPI.getInstance().getSound("Builder.Button-Click");
         if (listener == null)
             return;
         e.setCancelled(true);
         int slot = e.getRawSlot();
-        if (slot > variableSelector.valuesSize() - 1) {
-            if (variableSelector.isNextPageButton(slot)) {
-                variableSelector.nextPage();
-                return;
-            }
-            if (variableSelector.isPreviousPageButton(slot)) {
-                variableSelector.previousPage();
-                return;
-            }
-            if (variableSelector.isReturnButton(slot)) {
-                variableSelector.processReturn();
-                return;
-            }
+        if (variableSelector.isNextPageButton(slot)) {
+            variableSelector.nextPage();
+            clickSound.handle(player);
             return;
         }
-        listener.setInputFromSlot(variableSelector, slot);
-        BlobLibSoundAPI.getInstance().getSound("Builder.Button-Click").handle(player);
+        if (variableSelector.isPreviousPageButton(slot)) {
+            variableSelector.previousPage();
+            clickSound.handle(player);
+            return;
+        }
+        if (variableSelector.isReturnButton(slot)) {
+            variableSelector.processReturn();
+            clickSound.handle(player);
+            return;
+        }
+        if (!listener.setInputFromSlot(variableSelector, slot))
+            return;
+        listener.getClickSound().handle(player);
     }
 
     @EventHandler

@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.entities.inventory;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.jetbrains.annotations.NotNull;
@@ -21,10 +22,10 @@ public class InventoryDataRegistry<T extends InventoryButton> {
     @NotNull
     private final String defaultLocale, key;
     private final Map<String, InventoryBuilderCarrier<T>> carriers;
-    private final Map<String, Consumer<InventoryClickEvent>> singleClickEvents;
+    private final Map<String, Consumer<BlobInventoryClickEvent>> singleClickEvents;
     private final Map<String, BiConsumer<InventoryCloseEvent, SharableInventory<?>>> closeEvents;
     private final Map<String, BiConsumer<InventoryClickEvent, T>> clickEvents;
-    private final Map<String, BiConsumer<InventoryClickEvent, SharableInventory<?>>> playerInventoryClickEvents;
+    private final Map<String, BiConsumer<BlobInventoryClickEvent, SharableInventory<?>>> playerInventoryClickEvents;
 
     /**
      * Will instantiate a new InventoryDataRegistry with the specified default locale.
@@ -100,7 +101,7 @@ public class InventoryDataRegistry<T extends InventoryButton> {
      * @param button the button to add the click event for
      * @param event  the click event
      */
-    public void onClick(String button, Consumer<InventoryClickEvent> event) {
+    public void onClick(String button, Consumer<BlobInventoryClickEvent> event) {
         this.singleClickEvents.put(button, event);
     }
 
@@ -123,10 +124,14 @@ public class InventoryDataRegistry<T extends InventoryButton> {
      * @param event  the click event
      */
     public void processSingleClickEvent(String button, InventoryClickEvent event) {
-        Consumer<InventoryClickEvent> clickEvent = this.singleClickEvents.get(button);
+        Consumer<BlobInventoryClickEvent> clickEvent = this.singleClickEvents.get(button);
         if (clickEvent == null)
             return;
-        clickEvent.accept(event);
+        BlobInventoryClickEvent blobInventoryClickEvent = BlobInventoryClickEvent.of(event);
+        clickEvent.accept(blobInventoryClickEvent);
+        if (blobInventoryClickEvent.playClickSound() &&
+                blobInventoryClickEvent.getWhoClicked() instanceof Player player)
+            blobInventoryClickEvent.getClickBlobSound().handle(player);
     }
 
     /**
@@ -173,7 +178,7 @@ public class InventoryDataRegistry<T extends InventoryButton> {
      * @param key   the key to add the click event for
      * @param event the click event
      */
-    public void onPlayerInventoryClick(String key, BiConsumer<InventoryClickEvent, SharableInventory<?>> event) {
+    public void onPlayerInventoryClick(String key, BiConsumer<BlobInventoryClickEvent, SharableInventory<?>> event) {
         this.playerInventoryClickEvents.put(key, event);
     }
 
@@ -184,10 +189,15 @@ public class InventoryDataRegistry<T extends InventoryButton> {
      * @param inventory the inventory
      */
     public void processPlayerInventoryClickEvent(InventoryClickEvent event, SharableInventory<?> inventory) {
+        BlobInventoryClickEvent blobInventoryClickEvent = BlobInventoryClickEvent.of(event);
+        blobInventoryClickEvent.setPlayClickSound(false);
         playerInventoryClickEvents.values().forEach(playerInventoryClickEvent -> {
             if (playerInventoryClickEvent == null)
                 return;
-            playerInventoryClickEvent.accept(event, inventory);
+            playerInventoryClickEvent.accept(blobInventoryClickEvent, inventory);
         });
+        if (blobInventoryClickEvent.playClickSound() &&
+                blobInventoryClickEvent.getWhoClicked() instanceof Player player)
+            blobInventoryClickEvent.getClickBlobSound().handle(player);
     }
 }

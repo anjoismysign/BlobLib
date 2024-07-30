@@ -11,7 +11,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.managers.BlobPlugin;
 import us.mytheria.bloblib.managers.Manager;
@@ -50,14 +49,16 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
                                       String crudableName, boolean logActivity,
                                       @Nullable Function<T, Event> joinEvent,
                                       @Nullable Function<T, Event> quitEvent,
-                                      @NotNull EventPriority joinPriority,
-                                      @NotNull EventPriority quitPriority) {
+                                      @Nullable EventPriority joinPriority,
+                                      @Nullable EventPriority quitPriority) {
         super(managerDirector);
         plugin = managerDirector.getPlugin();
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(this, plugin);
-        registerJoinListener(pluginManager, joinPriority);
-        registerQuitListener(pluginManager, quitPriority);
+        if (joinPriority != null)
+            registerJoinListener(pluginManager, joinPriority);
+        if (quitPriority != null)
+            registerQuitListener(pluginManager, quitPriority);
         serializables = new HashMap<>();
         autoSave = new HashMap<>();
         this.generator = generator;

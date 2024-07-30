@@ -371,9 +371,6 @@ public class BlobLibInventoryAPI {
         return buildMetaInventory(key, player.getLocale());
     }
 
-    /**
-     * @deprecated Use {@link #customSelector(String, Player, String, String, Supplier, Consumer, Function, Consumer, Consumer)} instead.
-     */
     @Deprecated
     @Nullable
     public <T> BlobSelector<T> customSelector(@NotNull String blobInventoryKey,
@@ -389,12 +386,10 @@ public class BlobLibInventoryAPI {
                 dataType,
                 selectorList,
                 onSelect,
-                display, null);
+                display,
+                null);
     }
 
-    /**
-     * @deprecated Use {@link #customSelector(String, Player, String, String, Supplier, Consumer, Function, Consumer, Consumer)} instead.
-     */
     @Deprecated
     @Nullable
     public <T> BlobSelector<T> customSelector(@NotNull String blobInventoryKey,
@@ -412,7 +407,32 @@ public class BlobLibInventoryAPI {
                 selectorList,
                 onSelect,
                 display,
-                onReturn, null);
+                onReturn,
+                null,
+                null);
+    }
+
+    @Deprecated
+    @Nullable
+    public <T> BlobSelector<T> customSelector(@NotNull String blobInventoryKey,
+                                              @NotNull Player player,
+                                              @NotNull String buttonRangeKey,
+                                              @Nullable String dataType,
+                                              @NotNull Supplier<List<T>> selectorList,
+                                              @NotNull Consumer<T> onSelect,
+                                              @Nullable Function<T, ItemStack> display,
+                                              @Nullable Consumer<Player> onReturn,
+                                              @Nullable Consumer<Player> onClose) {
+        return customSelector(blobInventoryKey,
+                player,
+                buttonRangeKey,
+                dataType,
+                selectorList,
+                onSelect,
+                display,
+                onReturn,
+                onClose,
+                null);
     }
 
     /**
@@ -441,7 +461,8 @@ public class BlobLibInventoryAPI {
                                               @NotNull Consumer<T> onSelect,
                                               @Nullable Function<T, ItemStack> display,
                                               @Nullable Consumer<Player> onReturn,
-                                              @Nullable Consumer<Player> onClose) {
+                                              @Nullable Consumer<Player> onClose,
+                                              @Nullable String clickSound) {
         BlobInventory inventory = buildInventory(blobInventoryKey, player);
         BlobSelector<T> selector = BlobSelector.build(inventory, player.getUniqueId(),
                 dataType, selectorList.get(), onReturn);
@@ -454,7 +475,8 @@ public class BlobLibInventoryAPI {
                     null,
                     display,
                     selectorList::get,
-                    onClose);
+                    onClose,
+                    clickSound);
         else
             selector.selectElement(player,
                     onSelect,
@@ -491,9 +513,6 @@ public class BlobLibInventoryAPI {
                 display, null);
     }
 
-    /**
-     * @deprecated Use {@link #customEditor(String, Player, String, String, Supplier, Consumer, Function, Supplier, Function, Consumer, Consumer, Consumer)} instead.
-     */
     @Deprecated
     @Nullable
     public <T> BlobEditor<T> customEditor(@NotNull String blobInventoryKey,
@@ -516,7 +535,6 @@ public class BlobLibInventoryAPI {
                 viewCollection,
                 removeDisplay,
                 onRemove,
-                null,
                 null);
     }
 
@@ -566,6 +584,34 @@ public class BlobLibInventoryAPI {
                 null);
     }
 
+    @Nullable
+    public <T> BlobEditor<T> customEditor(@NotNull String blobInventoryKey,
+                                          @NotNull Player player,
+                                          @NotNull String buttonRangeKey,
+                                          @NotNull String dataType,
+                                          @NotNull Supplier<Collection<T>> addCollection,
+                                          @NotNull Consumer<T> onAdd,
+                                          @Nullable Function<T, ItemStack> addDisplay,
+                                          @NotNull Supplier<Collection<T>> viewCollection,
+                                          @NotNull Function<T, ItemStack> removeDisplay,
+                                          @NotNull Consumer<T> onRemove,
+                                          @Nullable Consumer<Player> onReturn,
+                                          @Nullable Consumer<Player> onClose) {
+        return customEditor(blobInventoryKey,
+                player,
+                buttonRangeKey,
+                dataType,
+                addCollection,
+                onAdd,
+                addDisplay,
+                viewCollection,
+                removeDisplay,
+                onRemove,
+                onReturn,
+                onClose,
+                null);
+    }
+
     /**
      * Will allow player to edit a collection of elements.
      * The editor will be placed in the inventory at the specified buttonRangeKey.
@@ -598,7 +644,8 @@ public class BlobLibInventoryAPI {
                                           @NotNull Function<T, ItemStack> removeDisplay,
                                           @NotNull Consumer<T> onRemove,
                                           @Nullable Consumer<Player> onReturn,
-                                          @Nullable Consumer<Player> onClose) {
+                                          @Nullable Consumer<Player> onClose,
+                                          @Nullable String clickSound) {
         BlobInventory inventory = buildInventory(blobInventoryKey, player);
         Uber<BlobEditor<T>> uber = Uber.fly();
         uber.talk(BlobEditor.build(inventory, player.getUniqueId(),
@@ -616,7 +663,8 @@ public class BlobLibInventoryAPI {
                                         removeDisplay,
                                         onRemove,
                                         onReturn,
-                                        onClose);
+                                        onClose,
+                                        clickSound);
                             });
                     playerSelector.setItemsPerPage(playerSelector.getSlots(buttonRangeKey)
                             == null ? 1 : playerSelector.getSlots(buttonRangeKey).size());
@@ -625,7 +673,8 @@ public class BlobLibInventoryAPI {
                             null,
                             addDisplay,
                             viewCollection,
-                            onClose);
+                            onClose,
+                            clickSound);
                 }, viewCollection.get(), onReturn));
         BlobEditor<T> editor = uber.thanks();
         editor.setItemsPerPage(editor.getSlots(buttonRangeKey) == null

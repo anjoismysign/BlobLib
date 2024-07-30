@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.entities.listeners;
 
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.BlobEditor;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
@@ -45,11 +46,24 @@ public class EditorListener<T> extends InputListener {
         inputConsumer.accept(this);
     }
 
+    /**
+     * Sets the input from the editor slot
+     *
+     * @param selector the selector
+     * @param slot     the slot
+     * @return true if successful, false otherwise
+     */
     @SuppressWarnings("unchecked")
-    public void setInputFromSlot(VariableSelector<?> selector, int slot) {
+    public boolean setInputFromSlot(VariableSelector<?> selector, int slot) {
         if (!getEditor().equals(this.editor))
-            return;
-        setInput((T) selector.getValue(slot));
+            return false;
+        @Nullable T input = (T) selector.getValue(slot);
+        if (input == null) {
+            setInput(null);
+            return false;
+        }
+        setInput(input);
+        return true;
     }
 
     public BlobEditor<T> getEditor() {

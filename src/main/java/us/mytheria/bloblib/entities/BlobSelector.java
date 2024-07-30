@@ -180,7 +180,7 @@ public class BlobSelector<T> extends VariableSelector<T> implements VariableFill
     }
 
     /**
-     * @deprecated use {@link #selectElement(Player, Consumer, String, Function, Supplier, Consumer)}
+     * @deprecated use {@link #selectElement(Player, Consumer, String, Function, Supplier, Consumer, String)}
      */
     @Deprecated
     public void selectElement(Player player,
@@ -188,7 +188,7 @@ public class BlobSelector<T> extends VariableSelector<T> implements VariableFill
                               String timerMessageKey,
                               Function<T, ItemStack> function,
                               Supplier<Collection<T>> selectorList) {
-        selectElement(player, consumer, timerMessageKey, function, selectorList, null);
+        selectElement(player, consumer, timerMessageKey, function, selectorList, null, null);
     }
 
     public void selectElement(Player player,
@@ -196,13 +196,17 @@ public class BlobSelector<T> extends VariableSelector<T> implements VariableFill
                               String timerMessageKey,
                               Function<T, ItemStack> function,
                               Supplier<Collection<T>> selectorList,
-                              @Nullable Consumer<Player> onClose) {
+                              @Nullable Consumer<Player> onClose,
+                              @Nullable String clickSound) {
         loadCustomPage(getPage(), true, function);
         setLoadFunction(function);
         setCollectionSupplier(selectorList);
-        selectorManager.addSelectorListener(player, BlobSelectorListener.wise(player,
+        BlobSelectorListener<T> listener = BlobSelectorListener.wise(player,
                 consumer, timerMessageKey,
-                this, onClose));
+                this, onClose);
+        if (clickSound != null)
+            listener.setClickSoundReference(clickSound);
+        selectorManager.addSelectorListener(player, listener);
     }
 
     /**
