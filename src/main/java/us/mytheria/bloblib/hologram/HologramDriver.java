@@ -1,13 +1,14 @@
 package us.mytheria.bloblib.hologram;
 
 import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 public interface HologramDriver {
 
     /**
-     * Creates an Hologram with the given arguments.
+     * Creates a Hologram with the given arguments.
      *
      * @param name     Hologram ID
      * @param location Location of the Hologram
@@ -16,7 +17,7 @@ public interface HologramDriver {
     void create(String name, Location location, List<String> lines);
 
     /**
-     * Creates an Hologram with the given arguments.
+     * Creates a Hologram with the given arguments.
      *
      * @param name         Hologram ID
      * @param location     Location of the Hologram
@@ -26,24 +27,32 @@ public interface HologramDriver {
     void create(String name, Location location, List<String> lines, boolean saveToConfig);
 
     /**
-     * Updates an Hologram which ID equals 'name' argument.
+     * Updates a Hologram which ID equals 'name' argument.
      *
      * @param name Hologram ID
      */
     void update(String name);
 
     /**
-     * Removes an Hologram which ID equals 'name' argument.
+     * Removes a Hologram which ID equals 'name' argument.
      *
      * @param name Hologram ID
      */
     void remove(String name);
 
     /**
-     * Sets lines for an Hologram which ID equals 'name' argument.
+     * Sets lines for a Hologram which ID equals 'name' argument.
      *
      * @param name  Hologram ID
      * @param lines Lines to set
      */
     void setLines(String name, List<String> lines);
+
+    /**
+     * Gets the driver type
+     *
+     * @return The driver type
+     */
+    @NotNull
+    HologramDriverType getType();
 }

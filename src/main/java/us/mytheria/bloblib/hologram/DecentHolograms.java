@@ -3,6 +3,7 @@ package us.mytheria.bloblib.hologram;
 import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
 import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -32,5 +33,10 @@ public class DecentHolograms implements HologramDriver {
     public void setLines(String name, List<String> lines) {
         Hologram hologram = DHAPI.getHologram(name);
         DHAPI.setHologramLines(hologram, lines);
+    }
+
+    @Override
+    public @NotNull HologramDriverType getType() {
+        return HologramDriverType.DECENT_HOLOGRAMS;
     }
 }

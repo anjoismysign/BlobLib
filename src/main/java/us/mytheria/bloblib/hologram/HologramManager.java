@@ -2,6 +2,7 @@ package us.mytheria.bloblib.hologram;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -13,7 +14,16 @@ public class HologramManager {
             driver = new DecentHolograms();
             return;
         }
+        if (Bukkit.getServer().getPluginManager().getPlugin("FancyHolograms") != null) {
+            driver = new FancyHolograms();
+            return;
+        }
         driver = new Absent();
+    }
+
+    @NotNull
+    public HologramDriver getDriver() {
+        return driver;
     }
 
     public void create(String name, Location location, List<String> lines) {

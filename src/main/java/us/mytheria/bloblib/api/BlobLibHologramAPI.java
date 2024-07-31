@@ -1,7 +1,9 @@
 package us.mytheria.bloblib.api;
 
 import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.hologram.HologramDriver;
 
 import java.util.List;
 
@@ -26,15 +28,22 @@ public class BlobLibHologramAPI {
         return getInstance(null);
     }
 
+    @NotNull
+    public HologramDriver getHologramDriver() {
+        return plugin.getHologramManager().getDriver();
+    }
+
     /**
      * Creates a hologram
      *
      * @param name     name of hologram
      * @param location Bukkit's Location of hologram
      * @param lines    lines of hologram
+     * @deprecated Use {@link #getHologramDriver()} instead
      */
+    @Deprecated
     public void createHologram(String name, Location location, List<String> lines) {
-        plugin.getHologramManager().create(name, location, lines);
+        getHologramDriver().create(name, location, lines);
     }
 
     /**
@@ -44,27 +53,33 @@ public class BlobLibHologramAPI {
      * @param location     Bukkit's Location of hologram
      * @param lines        lines of hologram
      * @param saveToConfig if true, hologram will be saved in configuration
+     * @deprecated Use {@link #getHologramDriver()} instead
      */
+    @Deprecated
     public void createHologram(String name, Location location, List<String> lines, boolean saveToConfig) {
-        plugin.getHologramManager().create(name, location, lines, saveToConfig);
+        getHologramDriver().create(name, location, lines, saveToConfig);
     }
 
     /**
      * Updates a hologram
      *
      * @param name name of hologram
+     * @deprecated Use {@link #getHologramDriver()} instead
      */
+    @Deprecated
     public void updateHologram(String name) {
-        plugin.getHologramManager().update(name);
+        getHologramDriver().update(name);
     }
 
     /**
      * Deletes a hologram
      *
      * @param name name of hologram
+     * @deprecated Use {@link #getHologramDriver()} instead
      */
+    @Deprecated
     public void removeHologram(String name) {
-        plugin.getHologramManager().remove(name);
+        getHologramDriver().remove(name);
     }
 
     /**
@@ -72,8 +87,10 @@ public class BlobLibHologramAPI {
      *
      * @param name  name of hologram
      * @param lines lines of hologram
+     * @deprecated Use {@link #getHologramDriver()} instead
      */
+    @Deprecated
     public void setHologramLines(String name, List<String> lines) {
-        plugin.getHologramManager().setLines(name, lines);
+        getHologramDriver().setLines(name, lines);
     }
 }
