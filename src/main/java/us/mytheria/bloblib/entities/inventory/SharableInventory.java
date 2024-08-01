@@ -32,8 +32,17 @@ public class SharableInventory<T extends InventoryButton> extends InventoryBuild
      * @param size          The size of the inventory.
      * @param buttonManager The ButtonManager that will be used to manage the buttons.
      */
-    protected SharableInventory(@NotNull String title, int size,
+    protected SharableInventory(@NotNull String title,
+                                int size,
                                 @NotNull ButtonManager<T> buttonManager) {
+        this(title, size, buttonManager, null, null);
+    }
+
+    protected SharableInventory(@NotNull String title,
+                                int size,
+                                @NotNull ButtonManager<T> buttonManager,
+                                @Nullable String reference,
+                                @Nullable String locale) {
         this.setTitle(Objects.requireNonNull(title,
                 "'title' cannot be null!"));
         this.setSize(size);
@@ -41,6 +50,8 @@ public class SharableInventory<T extends InventoryButton> extends InventoryBuild
                 "'buttonManager' cannot be null!"));
         this.buildInventory();
         this.loadDefaultButtons();
+        this.reference = reference;
+        this.locale = locale;
     }
 
     /**

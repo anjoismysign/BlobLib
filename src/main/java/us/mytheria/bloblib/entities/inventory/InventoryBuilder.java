@@ -12,6 +12,10 @@ public abstract class InventoryBuilder<T extends InventoryButton> {
     private String title;
     private int size;
     private ButtonManager<T> buttonManager;
+    @Nullable
+    protected String reference;
+    @Nullable
+    protected String locale;
 
     public String getTitle() {
         return title;
@@ -81,5 +85,15 @@ public abstract class InventoryBuilder<T extends InventoryButton> {
             return false;
         }
         return button.handleAll(player);
+    }
+
+    @Nullable
+    public String getLocale() {
+        return locale;
+    }
+
+    @Nullable
+    public String getReference() {
+        return reference;
     }
 }

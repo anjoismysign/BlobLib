@@ -2,6 +2,7 @@ package us.mytheria.bloblib.entities.inventory;
 
 import me.anjoismysign.anjo.entities.Result;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -9,8 +10,23 @@ public class MetaBlobInventory extends SharableInventory<MetaInventoryButton> {
     private final String type;
 
     public static MetaBlobInventory fromInventoryBuilderCarrier(InventoryBuilderCarrier<MetaInventoryButton> carrier) {
-        return new MetaBlobInventory(carrier.title(), carrier.size(),
-                carrier.buttonManager().copy(), carrier.type());
+        return new MetaBlobInventory(
+                carrier.title(),
+                carrier.size(),
+                carrier.buttonManager().copy(),
+                carrier.type(),
+                carrier.reference(),
+                carrier.locale());
+    }
+
+    public MetaBlobInventory(@NotNull String title,
+                             int size,
+                             @NotNull ButtonManager<MetaInventoryButton> buttonManager,
+                             @Nullable String type,
+                             @Nullable String reference,
+                             @Nullable String locale) {
+        super(title, size, buttonManager, reference, locale);
+        this.type = Objects.requireNonNull(type, "'type' cannot be null!");
     }
 
     public MetaBlobInventory(@NotNull String title, int size,
@@ -23,8 +39,13 @@ public class MetaBlobInventory extends SharableInventory<MetaInventoryButton> {
     @Override
     @NotNull
     public MetaBlobInventory copy() {
-        return new MetaBlobInventory(getTitle(), getSize(),
-                getButtonManager().copy(), getType());
+        return new MetaBlobInventory(
+                getTitle(),
+                getSize(),
+                getButtonManager().copy(),
+                getType(),
+                getReference(),
+                getLocale());
     }
 
     /**

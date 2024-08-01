@@ -8,14 +8,18 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.api.BlobLibInventoryAPI;
 import us.mytheria.bloblib.api.BlobLibSoundAPI;
 import us.mytheria.bloblib.entities.BlobEditor;
+import us.mytheria.bloblib.entities.inventory.ClickEventProcessor;
+import us.mytheria.bloblib.entities.inventory.InventoryDataRegistry;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
 import us.mytheria.bloblib.entities.listeners.EditorListener;
 import us.mytheria.bloblib.entities.listeners.SelectorListener;
 import us.mytheria.bloblib.entities.message.BlobSound;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class VariableSelectorManager implements Listener {
     private final BlobLib main;
@@ -42,6 +46,8 @@ public class VariableSelectorManager implements Listener {
         }
         event.setCancelled(true);
         int slot = event.getRawSlot();
+        String reference = Objects.requireNonNull(blobEditor.getReference(), "'blobEditor' was dynamically constructed by BlobLib without providing a reference");
+        InventoryDataRegistry<?> registry = BlobLibInventoryAPI.getInstance().getInventoryDataRegistry(reference);
         BlobSound clickSound = BlobLibSoundAPI.getInstance().getSound("Builder.Button-Click");
         if (blobEditor.isNextPageButton(slot)) {
             blobEditor.nextPage();
@@ -65,23 +71,35 @@ public class VariableSelectorManager implements Listener {
             blobEditor.processReturn();
             return;
         }
-        if (!listener.setInputFromSlot(blobEditor, event.getRawSlot()))
+        if (!listener.setInputFromSlot(blobEditor, event.getRawSlot())) {
+            blobEditor.getKeys().forEach(key -> {
+                var button = blobEditor.getButton(key);
+                if (!button.containsSlot(slot))
+                    return;
+                if (!button.handleAll((Player) event.getWhoClicked()))
+                    return;
+                registry.processSingleClickEvent(key, event);
+                button.accept(ClickEventProcessor.of(event, registry));
+            });
             return;
+        }
         clickSound.handle(player);
     }
 
     @EventHandler
-    public void onSelectorClick(InventoryClickEvent e) {
-        Player player = (Player) e.getWhoClicked();
+    public void onSelectorClick(InventoryClickEvent event) {
+        Player player = (Player) event.getWhoClicked();
         VariableSelector<?> variableSelector = variableSelectors.get(player.getName());
         if (variableSelector == null)
             return;
         SelectorListener<?> listener = main.getSelectorManager().getSelectorListener(player);
-        BlobSound clickSound = BlobLibSoundAPI.getInstance().getSound("Builder.Button-Click");
         if (listener == null)
             return;
-        e.setCancelled(true);
-        int slot = e.getRawSlot();
+        event.setCancelled(true);
+        String reference = Objects.requireNonNull(variableSelector.getReference(), "'variableSelector' was dynamically constructed by BlobLib without providing a reference");
+        InventoryDataRegistry<?> registry = BlobLibInventoryAPI.getInstance().getInventoryDataRegistry(reference);
+        int slot = event.getRawSlot();
+        BlobSound clickSound = BlobLibSoundAPI.getInstance().getSound("Builder.Button-Click");
         if (variableSelector.isNextPageButton(slot)) {
             variableSelector.nextPage();
             clickSound.handle(player);
@@ -97,14 +115,24 @@ public class VariableSelectorManager implements Listener {
             clickSound.handle(player);
             return;
         }
-        if (!listener.setInputFromSlot(variableSelector, slot))
+        if (!listener.setInputFromSlot(variableSelector, slot)) {
+            variableSelector.getKeys().forEach(key -> {
+                var button = variableSelector.getButton(key);
+                if (!button.containsSlot(slot))
+                    return;
+                if (!button.handleAll((Player) event.getWhoClicked()))
+                    return;
+                registry.processSingleClickEvent(key, event);
+                button.accept(ClickEventProcessor.of(event, registry));
+            });
             return;
+        }
         listener.getClickSound().handle(player);
     }
 
     @EventHandler
-    public void onSelectorClose(InventoryCloseEvent e) {
-        Player player = (Player) e.getPlayer();
+    public void onSelectorClose(InventoryCloseEvent event) {
+        Player player = (Player) event.getPlayer();
         if (!variableSelectors.containsKey(player.getName()))
             return;
         SelectorListener<?> listener = main.getSelectorManager().getSelectorListener(player);
@@ -114,8 +142,8 @@ public class VariableSelectorManager implements Listener {
     }
 
     @EventHandler
-    public void onEditorClose(InventoryCloseEvent e) {
-        Player player = (Player) e.getPlayer();
+    public void onEditorClose(InventoryCloseEvent event) {
+        Player player = (Player) event.getPlayer();
         if (!blobEditors.containsKey(player.getName()))
             return;
         EditorListener<?> listener = main.getSelectorManager().getEditorListener(player);

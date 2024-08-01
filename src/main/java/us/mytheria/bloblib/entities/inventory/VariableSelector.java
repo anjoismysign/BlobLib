@@ -94,7 +94,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
                             @Nullable Function<T, ItemStack> loadFunction,
                             @Nullable Supplier<Collection<T>> collectionSupplier,
                             @Nullable String buttonRangeKey) {
-        super(blobInventory.getTitle(), blobInventory.getSize(), blobInventory.getButtonManager());
+        super(blobInventory.getTitle(), blobInventory.getSize(), blobInventory.getButtonManager(), blobInventory.getReference(), blobInventory.getLocale());
         this.returnAction = returnAction == null ? HumanEntity::closeInventory : returnAction;
         this.loadFunction = loadFunction;
         this.collectionSupplier = collectionSupplier;
