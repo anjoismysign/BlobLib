@@ -28,10 +28,11 @@ public record InventoryBuilderCarrier<T extends InventoryButton>(@NotNull String
         return BLOB_FROM_CONFIGURATION_SECTION(configuration, fileName);
     }
 
+    @NotNull
     public static InventoryBuilderCarrier<InventoryButton> BLOB_FROM_CONFIGURATION_SECTION(
             @NotNull ConfigurationSection configurationSection, @NotNull String reference) {
-        String title = TextColor.PARSE(Objects.requireNonNull(configurationSection,
-                "'configurationSection' cannot be null!").getString("Title", configurationSection.getName() + ">NOT-SET"));
+        Objects.requireNonNull(configurationSection, "'configurationSection' cannot be null!");
+        String title = TextColor.PARSE(configurationSection.getString("Title", configurationSection.getName() + ">NOT-SET"));
         int size = configurationSection.getInt("Size", -1);
         if (size < 0 || size % 9 != 0) {
             if (size < 0) {
@@ -67,8 +68,8 @@ public record InventoryBuilderCarrier<T extends InventoryButton>(@NotNull String
 
     public static InventoryBuilderCarrier<MetaInventoryButton> META_FROM_CONFIGURATION_SECTION(
             @NotNull ConfigurationSection configurationSection, @NotNull String reference) {
-        String title = TextColor.PARSE(Objects.requireNonNull(configurationSection,
-                "'configurationSection' cannot be null!").getString("Title", configurationSection.getName() + ">NOT-SET"));
+        Objects.requireNonNull(configurationSection, "'configurationSection' cannot be null!");
+        String title = TextColor.PARSE(configurationSection.getString("Title", configurationSection.getName() + ">NOT-SET"));
         int size = configurationSection.getInt("Size", -1);
         if (size < 0 || size % 9 != 0) {
             if (size < 0) {

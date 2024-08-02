@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.BlobSoundReader;
 import us.mytheria.bloblib.entities.message.BlobSound;
+import us.mytheria.bloblib.exception.ConfigurationFieldException;
 
 import java.io.File;
 import java.util.HashMap;
@@ -81,6 +82,9 @@ public class SoundManager {
                     continue;
                 try {
                     loadYamlConfiguration(file);
+                } catch (ConfigurationFieldException exception) {
+                    main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
+                    continue;
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
                     continue;

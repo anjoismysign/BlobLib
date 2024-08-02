@@ -9,6 +9,7 @@ import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
 import us.mytheria.bloblib.entities.BlobMessageReader;
 import us.mytheria.bloblib.entities.message.BlobMessage;
+import us.mytheria.bloblib.exception.ConfigurationFieldException;
 
 import java.io.File;
 import java.util.*;
@@ -79,6 +80,9 @@ public class MessageManager {
                     continue;
                 try {
                     loadYamlConfiguration(file);
+                } catch (ConfigurationFieldException exception) {
+                    main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
+                    continue;
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
                     continue;

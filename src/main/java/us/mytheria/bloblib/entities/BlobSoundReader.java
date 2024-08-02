@@ -9,6 +9,7 @@ import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.api.BlobLibSoundAPI;
 import us.mytheria.bloblib.entities.message.BlobSound;
 import us.mytheria.bloblib.entities.message.MessageAudience;
+import us.mytheria.bloblib.exception.ConfigurationFieldException;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -17,24 +18,24 @@ public class BlobSoundReader {
     public static BlobSound read(@NotNull ConfigurationSection section,
                                  @NotNull String key) {
         if (!section.contains("Sound"))
-            throw new IllegalArgumentException("'Sound' is not defined");
+            throw new ConfigurationFieldException("'Sound' is not defined");
         if (!section.contains("Volume"))
-            throw new IllegalArgumentException("'Volume' is not defined");
+            throw new ConfigurationFieldException("'Volume' is not defined");
         if (!section.contains("Pitch"))
-            throw new IllegalArgumentException("'Pitch' is not defined");
+            throw new ConfigurationFieldException("'Pitch' is not defined");
         Optional<SoundCategory> category = Optional.empty();
         if (section.contains("Category"))
             try {
                 category = Optional.of(SoundCategory.valueOf(section.getString("Category")));
             } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Invalid Sound's Category: " + section.getString("Category"));
+                throw new ConfigurationFieldException("Invalid Sound's Category: " + section.getString("Category"));
             }
         MessageAudience audience = MessageAudience.PLAYER;
         if (section.contains("Audience"))
             try {
                 audience = MessageAudience.valueOf(section.getString("Audience"));
             } catch (IllegalArgumentException e) {
-                BlobLib.getAnjoLogger().singleError("Invalid Sound's Audience: " + section.getString("Audience"));
+                throw new ConfigurationFieldException("Invalid Sound's Audience: " + section.getString("Audience"));
             }
         return new BlobSound(
                 Sound.valueOf(section.getString("Sound")),

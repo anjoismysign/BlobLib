@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.action.Action;
+import us.mytheria.bloblib.exception.ConfigurationFieldException;
 
 import java.io.File;
 import java.util.HashMap;
@@ -76,6 +77,9 @@ public class ActionManager {
                     continue;
                 try {
                     loadYamlConfiguration(file);
+                } catch (ConfigurationFieldException exception) {
+                    main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
+                    continue;
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
                     continue;

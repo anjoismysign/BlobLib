@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.DataAsset;
 import us.mytheria.bloblib.entities.DataAssetType;
+import us.mytheria.bloblib.exception.ConfigurationFieldException;
 
 import java.io.File;
 import java.util.HashMap;
@@ -101,6 +102,9 @@ public class DataAssetManager<T extends DataAsset> {
                     continue;
                 try {
                     loadYamlConfiguration(file);
+                } catch (ConfigurationFieldException exception) {
+                    main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
+                    continue;
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
                     continue;

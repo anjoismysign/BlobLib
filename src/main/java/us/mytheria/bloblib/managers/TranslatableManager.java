@@ -11,6 +11,7 @@ import us.mytheria.bloblib.entities.translatable.TranslatableBlock;
 import us.mytheria.bloblib.entities.translatable.TranslatableReader;
 import us.mytheria.bloblib.entities.translatable.TranslatableRegistry;
 import us.mytheria.bloblib.entities.translatable.TranslatableSnippet;
+import us.mytheria.bloblib.exception.ConfigurationFieldException;
 
 import java.io.File;
 import java.util.*;
@@ -103,6 +104,9 @@ public class TranslatableManager {
                     continue;
                 try {
                     loadSnippet(file);
+                } catch (ConfigurationFieldException exception) {
+                    main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
+                    continue;
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
                     continue;
@@ -121,8 +125,11 @@ public class TranslatableManager {
                     continue;
                 try {
                     loadBlock(file);
-                } catch (Throwable e) {
-                    e.printStackTrace();
+                } catch (ConfigurationFieldException exception) {
+                    main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
+                    continue;
+                } catch (Throwable throwable) {
+                    throwable.printStackTrace();
                     continue;
                 }
             }

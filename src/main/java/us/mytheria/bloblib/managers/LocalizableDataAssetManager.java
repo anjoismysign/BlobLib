@@ -11,6 +11,7 @@ import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
 import us.mytheria.bloblib.entities.DataAsset;
 import us.mytheria.bloblib.entities.DataAssetType;
 import us.mytheria.bloblib.entities.Localizable;
+import us.mytheria.bloblib.exception.ConfigurationFieldException;
 
 import java.io.File;
 import java.util.*;
@@ -100,8 +101,10 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
                     continue;
                 try {
                     loadYamlConfiguration(file);
+                } catch (ConfigurationFieldException exception) {
+                    main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
+                    continue;
                 } catch (Throwable throwable) {
-                    BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
                     throwable.printStackTrace();
                     continue;
                 }

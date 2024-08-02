@@ -6,11 +6,11 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.action.ActionMemo;
 import us.mytheria.bloblib.action.ActionType;
 import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
 import us.mytheria.bloblib.entities.translatable.TranslatableItem;
+import us.mytheria.bloblib.exception.ConfigurationFieldException;
 import us.mytheria.bloblib.itemstack.ItemStackReader;
 import us.mytheria.bloblib.utilities.IntegerRange;
 
@@ -51,14 +51,12 @@ public class BlobMultiSlotable extends MultiSlotable {
                     .getTranslatableItem(reference,
                             locale);
             if (translatableItem == null)
-                throw new NullPointerException("TranslatableItem not found: " + reference);
+                throw new ConfigurationFieldException("TranslatableItem not found: " + reference);
             itemStack = translatableItem.getClone();
         } else {
             ConfigurationSection itemStackSection = section.getConfigurationSection("ItemStack");
-            if (itemStackSection == null) {
-                Bukkit.getLogger().severe("ItemStack section is null for " + key);
-                return null;
-            }
+            if (itemStackSection == null)
+                throw new ConfigurationFieldException("'ItemStack' ConfigurationSection is null");
             itemStack = ItemStackReader.getInstance().readOrFailFast(itemStackSection);
         }
         if (section.isInt("Amount")) {
@@ -110,7 +108,7 @@ public class BlobMultiSlotable extends MultiSlotable {
             try {
                 actionType = ActionType.valueOf(singleActionSection.getString("Action-Type"));
             } catch (IllegalArgumentException e) {
-                BlobLib.getAnjoLogger().singleError("Invalid 'ActionType' for " + key + ".Action.Action-Type");
+                throw new ConfigurationFieldException("Invalid 'ActionType' for " + key + ".Action.Action-Type");
             }
         }
         List<ActionMemo> actions = new ArrayList<>();
@@ -130,7 +128,7 @@ public class BlobMultiSlotable extends MultiSlotable {
                     try {
                         type = ActionType.valueOf(actionSection.getString("Action-Type"));
                     } catch (IllegalArgumentException e) {
-                        BlobLib.getAnjoLogger().singleError("Invalid 'ActionType' for " + key + ".Action.Action-Type");
+                        throw new ConfigurationFieldException("Invalid 'ActionType' for " + key + ".Action.Action-Type");
                     }
                     actions.add(new ActionMemo(reference, type));
                 } else if (actionsSection.isString(key1)) {

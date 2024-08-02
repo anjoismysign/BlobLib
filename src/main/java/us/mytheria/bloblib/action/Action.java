@@ -2,8 +2,8 @@ package us.mytheria.bloblib.action;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
+import us.mytheria.bloblib.exception.ConfigurationFieldException;
 
-import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -19,20 +19,26 @@ public abstract class Action<T extends Entity> {
      * @return The action
      */
     public static Action<Entity> fromConfigurationSection(ConfigurationSection section) {
-        String type = Objects.requireNonNull(section.getString("Type"), "Action.Type is null");
+        String type = section.getString("Type");
+        if (type == null)
+            throw new ConfigurationFieldException("'Action.Type' is not set or valid");
         ActionType actionType;
         try {
             actionType = ActionType.valueOf(type);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Unknown Action Type: " + type);
+            throw new ConfigurationFieldException("Invalid 'Action.Type': " + type);
         }
         switch (actionType) {
             case ACTOR_COMMAND -> {
-                String command = Objects.requireNonNull(section.getString("Command"), "Action.Command is null");
+                String command = section.getString("Command");
+                if (command == null)
+                    throw new ConfigurationFieldException("'Action.Command' is not valid");
                 return CommandAction.build(command);
             }
             case CONSOLE_COMMAND -> {
-                String command = Objects.requireNonNull(section.getString("Command"), "Action.Command is null");
+                String command = section.getString("Command");
+                if (command == null)
+                    throw new ConfigurationFieldException("'Action.Command' is not valid");
                 return ConsoleCommandAction.build(command);
             }
             default -> throw new IllegalArgumentException("Unknown Action Type: " + type);
