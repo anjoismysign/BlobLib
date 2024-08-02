@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import java.util.List;
+import java.util.Objects;
 
 public class FancyHolograms implements HologramDriver {
 
@@ -33,7 +34,7 @@ public class FancyHolograms implements HologramDriver {
                 saveToConfig,
                 false,
                 Color.fromARGB(0, 0, 0, 0),
-                null,
+                Display.Billboard.VERTICAL,
                 null,
                 false,
                 -1,
@@ -85,7 +86,8 @@ public class FancyHolograms implements HologramDriver {
     }
 
     @Nullable
-    public Hologram get(String name) {
+    public Hologram get(@NotNull String name) {
+        Objects.requireNonNull(name, "'name' cannot be null");
         HologramManager manager = FancyHologramsPlugin.get().getHologramManager();
         return manager.getHologram(name).orElse(null);
     }
@@ -103,7 +105,7 @@ public class FancyHolograms implements HologramDriver {
         Hologram hologram = get(name);
         if (hologram == null)
             return;
-        hologram.deleteHologram();
+        FancyHologramsPlugin.get().getHologramManager().removeHologram(hologram);
     }
 
     @Override
