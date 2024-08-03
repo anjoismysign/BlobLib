@@ -17,15 +17,15 @@ import java.util.Objects;
 public interface TranslatableItem extends Translatable<ItemStack> {
 
     /**
-     * Gets a TranslatableItem by its Material and CustomModelData.
+     * Gets a TranslatableItem by its Material and ItemMeta
      *
      * @param itemStack The ItemStack to get the TranslatableItem by.
      * @param locale    The locale to get the TranslatableItem by.
      * @return The TranslatableItem, or null if it doesn't exist.
      */
     @Nullable
-    static TranslatableItem byMaterialAndCustomModelData(@NotNull ItemStack itemStack,
-                                                         @NotNull String locale) {
+    static TranslatableItem byItemStack(@NotNull ItemStack itemStack,
+                                        @NotNull String locale) {
         Objects.requireNonNull(itemStack, "'itemStack' cannot be null");
         ItemMeta meta = itemStack.getItemMeta();
         if (meta == null)
@@ -56,25 +56,25 @@ public interface TranslatableItem extends Translatable<ItemStack> {
     }
 
     /**
-     * Gets a TranslatableItem by its Material and CustomModelData in the default locale [en_us]
+     * Gets a TranslatableItem by its Material and ItemMeta in the default locale [en_us]
      *
      * @param itemStack The ItemStack to get the TranslatableItem by.
      * @return The TranslatableItem, or null if it doesn't exist.
      */
-    static TranslatableItem byMaterialAndCustomModelData(@NotNull ItemStack itemStack) {
-        return byMaterialAndCustomModelData(itemStack, "en_us");
+    static TranslatableItem byItemStack(@NotNull ItemStack itemStack) {
+        return byItemStack(itemStack, "en_us");
     }
 
     /**
-     * Gets a TranslatableItem by its Material and CustomModelData.
+     * Gets a TranslatableItem by its Material and ItemMeta
      *
      * @param itemStack The ItemStack to get the TranslatableItem by.
      * @param player    The player to get the TranslatableItem's locale by.
      * @return The TranslatableItem, or null if it doesn't exist.
      */
-    static TranslatableItem byMaterialAndCustomModelData(@NotNull ItemStack itemStack,
-                                                         @NotNull Player player) {
-        return byMaterialAndCustomModelData(itemStack, player.getLocale());
+    static TranslatableItem byItemStack(@NotNull ItemStack itemStack,
+                                        @NotNull Player player) {
+        return byItemStack(itemStack, player.getLocale());
     }
 
     /**
