@@ -8,6 +8,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -102,9 +103,19 @@ public class ItemStackReader implements ItemStackReaderMiddleman {
                     double amount = attributeSection.getDouble("Amount");
                     if (!attributeSection.isString("Operation"))
                         throw new ConfigurationFieldException("Attribute '" + key + "' is missing 'Operation' field");
+                    EquipmentSlot equipmentSlot;
+                    String readEquipmentSlot = attributeSection.getString("EquipmentSlot");
+                    if (readEquipmentSlot != null) {
+                        try {
+                            equipmentSlot = EquipmentSlot.valueOf(readEquipmentSlot);
+                        } catch (IllegalArgumentException exception) {
+                            throw new ConfigurationFieldException("EquipmentSlot '" + readEquipmentSlot + "' is not valid");
+                        }
+                    } else
+                        equipmentSlot = null;
                     AttributeModifier.Operation operation = AttributeModifier.Operation.valueOf(attributeSection.getString("Operation"));
-                    uber.talk(uber.thanks().attribute(attribute, amount, operation));
-                } catch (IllegalArgumentException e) {
+                    uber.talk(uber.thanks().attribute(attribute, amount, operation, equipmentSlot));
+                } catch (IllegalArgumentException exception) {
                     throw new ConfigurationFieldException("Attribute '" + key + "' has an invalid Operation");
                 }
             });

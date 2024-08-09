@@ -7,10 +7,12 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.utilities.TextColor;
 
 import java.util.*;
@@ -23,7 +25,7 @@ public final class ItemStackBuilder {
     private static final ItemFlag[] ALL_CONSTANTS = ItemFlag.values();
 
     public static ItemStackBuilder build(ItemStack itemStack) {
-        return new ItemStackBuilder(itemStack.clone()).hideAll();
+        return new ItemStackBuilder(new ItemStack(itemStack));
     }
 
     public static ItemStackBuilder build(Material material) {
@@ -31,7 +33,7 @@ public final class ItemStackBuilder {
     }
 
     public static ItemStackBuilder build(Material material, int amount) {
-        return build(new ItemStack(material, amount));
+        return new ItemStackBuilder(new ItemStack(material, amount));
     }
 
     public static ItemStackBuilder build(String material) {
@@ -249,11 +251,15 @@ public final class ItemStackBuilder {
         });
     }
 
-    public ItemStackBuilder attribute(Attribute attribute, double amount, AttributeModifier.Operation operation) {
+    public ItemStackBuilder attribute(
+            Attribute attribute,
+            double amount,
+            AttributeModifier.Operation operation,
+            @Nullable EquipmentSlot equipmentSlot) {
         return itemMeta(itemMeta -> {
             try {
                 UUID uuid = UUID.randomUUID();
-                AttributeModifier modifier = new AttributeModifier(uuid, uuid.toString(), amount, operation);
+                AttributeModifier modifier = new AttributeModifier(uuid, uuid.toString(), amount, operation, equipmentSlot);
                 itemMeta.addAttributeModifier(attribute, modifier);
             } catch (Exception exception) {
                 Bukkit.getLogger().log(Level.SEVERE, exception, () -> "Failed to add attribute modifier");

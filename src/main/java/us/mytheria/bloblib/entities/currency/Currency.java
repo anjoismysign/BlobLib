@@ -229,10 +229,8 @@ public class Currency implements BlobObject {
      * @return the formatted String
      */
     public String display(double amount) {
-        return display.replace("%balance%", decimalFormat.format(amount)).replace(
-                "%wattsBalance%", Formatter.WATTS((float) amount)).replace(
-                "%bytesBalance%", Formatter.BYTES((float) amount)).replace(
-                "%gramsBalance%", Formatter.GRAMS((float) amount));
+        String balance = display.replace("%balance%", decimalFormat.format(amount));
+        return Formatter.getInstance().formatAll(balance, amount);
     }
 
     /**
