@@ -3,6 +3,8 @@ package us.mytheria.bloblib.entities.translatable;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import us.mytheria.bloblib.SoulAPI;
+import us.mytheria.bloblib.UniqueAPI;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
 import us.mytheria.bloblib.itemstack.ItemStackReader;
 import us.mytheria.bloblib.utilities.TextColor;
@@ -20,7 +22,13 @@ public class TranslatableReader {
         Objects.requireNonNull(key, "Key cannot be null");
         if (!section.isConfigurationSection("ItemStack"))
             throw new ConfigurationFieldException("'ItemStack' is missing or not set");
+        boolean isSoul = section.getBoolean("Is-Soul", false);
+        boolean isUnique = section.getBoolean("Is-Unique", false);
         ItemStack itemStack = ItemStackReader.getInstance().readOrFailFast(section.getConfigurationSection("ItemStack"));
+        if (isSoul)
+            SoulAPI.getInstance().setSoul(itemStack);
+        if (isUnique)
+            UniqueAPI.getInstance().setUnique(itemStack);
         return BlobTranslatableItem.of(key, locale, itemStack);
     }
 

@@ -62,6 +62,8 @@ public class BlobLib extends JavaPlugin {
     private DataAssetManager<TagSet> tagSetManager;
 
     private MinecraftVersion running;
+    private SoulAPI soulAPI;
+    private UniqueAPI uniqueAPI;
 
     private static BlobLib instance;
 
@@ -90,6 +92,8 @@ public class BlobLib extends JavaPlugin {
     public void onEnable() {
         instance = this;
         running = MinecraftVersion.getRunning();
+        soulAPI = SoulAPI.getInstance(this);
+        uniqueAPI = UniqueAPI.getInstance(this);
         api = BlobLibAPI.getInstance(this);
         bloblibupdater = new BlobLibUpdater(this);
         serializationLib = SerializationLib.getInstance(this);
