@@ -12,7 +12,15 @@ public class EngineHubManager {
     private final WorldGuardWorker worldGuard;
     private boolean worldGuardInstalled = false;
 
-    public EngineHubManager() {
+    private static EngineHubManager instance;
+
+    public static EngineHubManager getInstance() {
+        if (instance == null)
+            instance = new EngineHubManager();
+        return instance;
+    }
+
+    private EngineHubManager() {
         if (Bukkit.getPluginManager().getPlugin("WorldEdit") == null) {
             Bukkit.getLogger().info("[BlobLib] WorldEdit not found, disabling its features.");
             worldEdit = new Absent();
@@ -24,7 +32,7 @@ public class EngineHubManager {
             Bukkit.getLogger().info("[BlobLib] WorldGuard not found, disabling its features.");
             worldGuard = new us.mytheria.bloblib.enginehub.worldguard.Absent();
         } else {
-            worldGuard = new us.mytheria.bloblib.enginehub.worldguard.Found();
+            worldGuard = new us.mytheria.bloblib.enginehub.worldguard.Found(worldEdit);
             worldGuardInstalled = true;
         }
     }

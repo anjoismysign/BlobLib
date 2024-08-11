@@ -1,38 +1,36 @@
 package us.mytheria.bloblib.enginehub.worldedit;
 
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.function.pattern.Pattern;
-import com.sk89q.worldedit.math.BlockVector2;
-import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.regions.CuboidRegion;
-import com.sk89q.worldedit.regions.Region;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.jetbrains.annotations.Nullable;
 
 public interface WorldEditWorker {
     /**
      * Creates an EditSession for the given world
      *
      * @param world the world
-     * @return the EditSession
+     * @return the EditSession (cast to EditSession)
      */
-    EditSession editSession(World world);
+    @Nullable
+    Object editSession(World world);
 
     /**
      * Converts a Bukkit world to a WorldEdit world
      *
      * @param world the Bukkit world
-     * @return the WorldEdit world
+     * @return the WorldEdit world (cast to com.sk89q.worldedit.world.World)
      */
-    com.sk89q.worldedit.world.World world(World world);
+    @Nullable
+    Object world(World world);
 
     /**
-     * Converts a Bukkit location to a WorldEdit location
+     * Creates a pattern
      *
-     * @param string the Bukkit location
-     * @return the WorldEdit location
+     * @param string The string to use
+     * @return The pattern (cast to Pattern)
      */
-    Pattern parse(String string);
+    @Nullable
+    Object pattern(String string);
 
     /**
      * Sets the blocks in the given region to the given pattern
@@ -42,30 +40,33 @@ public interface WorldEditWorker {
      * @param pattern the pattern
      * @return true if the operation was successful
      */
-    boolean setBlocks(EditSession session, Region region, Pattern pattern);
+    boolean setBlocks(Object session, Object region, Object pattern);
 
     /**
      * Creates a cuboid region from the given locations
      *
      * @param min the minimum location
      * @param max the maximum location
-     * @return the cuboid region
+     * @return the cuboid region (cast to CuboidRegion)
      */
-    CuboidRegion cuboidRegion(Location min, Location max);
+    @Nullable
+    Object cuboidRegion(Location min, Location max);
 
     /**
      * Creates a block vector from the given location
      *
      * @param location the location
-     * @return the block vector
+     * @return the block vector (cast to BlockVector3)
      */
-    BlockVector3 blockVector3(Location location);
+    @Nullable
+    Object blockVector3(Location location);
 
     /**
      * Creates a block vector from the given location
      *
      * @param location the location
-     * @return the block vector
+     * @return the block vector (cast to BlockVector2)
      */
-    BlockVector2 blockVector2(Location location);
+    @Nullable
+    Object blockVector2(Location location);
 }

@@ -28,7 +28,7 @@ public class Found implements WorldEditWorker {
     }
 
     @Override
-    public Pattern parse(String string) {
+    public Pattern pattern(String string) {
         PatternFactory factory = com.sk89q.worldedit.WorldEdit.getInstance().getPatternFactory();
         try {
             ParserContext context = new ParserContext();
@@ -42,7 +42,13 @@ public class Found implements WorldEditWorker {
     }
 
     @Override
-    public boolean setBlocks(EditSession session, Region region, Pattern pattern) {
+    public boolean setBlocks(Object sessionObject, Object regionObject, Object patternObject) {
+        if (!(sessionObject instanceof EditSession session))
+            return false;
+        if (!(regionObject instanceof Region region))
+            return false;
+        if (!(patternObject instanceof Pattern pattern))
+            return false;
         try {
             session.setBlocks(region, pattern);
             Operation operation = session.commit();

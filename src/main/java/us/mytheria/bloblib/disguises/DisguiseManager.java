@@ -14,6 +14,8 @@ public class DisguiseManager {
      * Should not be run by plugins, only by BlobLib
      */
     public void load() {
+        if (loaded)
+            return;
         if (Bukkit.getPluginManager().getPlugin("LibsDisguises") != null) {
             updateDisguiser(new LibsDisguises());
         } else {
@@ -25,7 +27,7 @@ public class DisguiseManager {
     private void updateDisguiser(Disguiser disguiser) {
         this.disguiser = disguiser;
     }
-    
+
     public Disguiser getDisguiser() {
         if (!loaded)
             throw new IllegalStateException("DisguiseManager loads after world load!");

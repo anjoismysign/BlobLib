@@ -1,10 +1,5 @@
 package us.mytheria.bloblib.enginehub.worldguard;
 
-import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
-import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -20,7 +15,7 @@ public class Absent implements WorldGuardWorker {
      * @return null
      */
     @Override
-    public RegionContainer regionContainer() {
+    public Object regionContainer() {
         return null;
     }
 
@@ -31,7 +26,7 @@ public class Absent implements WorldGuardWorker {
      * @return null
      */
     @Override
-    public RegionManager regionManager(World world) {
+    public Object regionManager(World world) {
         return null;
     }
 
@@ -45,7 +40,7 @@ public class Absent implements WorldGuardWorker {
      * @return null
      */
     @Override
-    public ProtectedCuboidRegion protectedCuboidRegion(String id, boolean isTransient, Location min, Location max) {
+    public Object protectedCuboidRegion(String id, boolean isTransient, Location min, Location max) {
         return null;
     }
 
@@ -60,7 +55,7 @@ public class Absent implements WorldGuardWorker {
      * @return null
      */
     @Override
-    public ProtectedPolygonalRegion protectedPolygonalRegion(String id, boolean isTransient, List<Location> points, int minY, int maxY) {
+    public Object protectedPolygonalRegion(String id, boolean isTransient, List<Location> points, int minY, int maxY) {
         return null;
     }
 
@@ -72,7 +67,7 @@ public class Absent implements WorldGuardWorker {
      * @return null
      */
     @Override
-    public ProtectedRegion getRegion(World world, String id) {
+    public Object getRegion(World world, String id) {
         return null;
     }
 }

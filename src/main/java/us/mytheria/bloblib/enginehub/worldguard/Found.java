@@ -1,6 +1,7 @@
 package us.mytheria.bloblib.enginehub.worldguard;
 
 import com.sk89q.worldedit.math.BlockVector2;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
@@ -9,12 +10,18 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.bukkit.Location;
 import org.bukkit.World;
-import us.mytheria.bloblib.enginehub.EngineHubAPI;
+import us.mytheria.bloblib.enginehub.worldedit.WorldEditWorker;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Found implements WorldGuardWorker {
+    private final WorldEditWorker worldEditWorker;
+
+    public Found(WorldEditWorker worldEditWorker) {
+        this.worldEditWorker = worldEditWorker;
+    }
+
     @Override
     public RegionContainer regionContainer() {
         return WorldGuard.getInstance().getPlatform().getRegionContainer();
@@ -22,14 +29,14 @@ public class Found implements WorldGuardWorker {
 
     @Override
     public RegionManager regionManager(World world) {
-        return regionContainer().get(EngineHubAPI.world(world));
+        return regionContainer().get((com.sk89q.worldedit.world.World) worldEditWorker.world(world));
     }
 
     @Override
     public ProtectedCuboidRegion protectedCuboidRegion(String id, boolean isTransient,
                                                        Location min, Location max) {
         return new ProtectedCuboidRegion(id, isTransient,
-                EngineHubAPI.blockVector3(min), EngineHubAPI.blockVector3(max));
+                (BlockVector3) worldEditWorker.blockVector3(min), (BlockVector3) worldEditWorker.blockVector3(max));
     }
 
     @Override
@@ -38,7 +45,7 @@ public class Found implements WorldGuardWorker {
                                                              int maxY) {
         List<BlockVector2> list = new ArrayList<>();
         for (Location point : points) {
-            list.add(EngineHubAPI.blockVector2(point));
+            list.add((BlockVector2) worldEditWorker.blockVector2(point));
         }
         return new ProtectedPolygonalRegion(id, isTransient, list, minY, maxY);
     }

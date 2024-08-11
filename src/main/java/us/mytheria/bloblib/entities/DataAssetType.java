@@ -2,29 +2,57 @@ package us.mytheria.bloblib.entities;
 
 import me.anjoismysign.anjo.entities.NamingConventions;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.managers.*;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.BiConsumer;
 
 public enum DataAssetType {
-    BLOB_MESSAGE("messages", "/BlobMessage", "_lang.yml"),
-    BLOB_SOUND("sounds", "/BlobSound", "_sounds.yml"),
-    BLOB_INVENTORY("blobInventories", "/BlobInventory", "_inventories.yml"),
-    META_BLOB_INVENTORY("metaBlobInventories", "/MetaBlobInventory", "_meta_inventories.yml"),
-    ACTION("actions", "/Action", "_actions.yml"),
-    TRANSLATABLE_BLOCK("translatableBlocks", "/TranslatableBlock", "_translatable_blocks.yml"),
-    TRANSLATABLE_SNIPPET("translatableSnippets", "/TranslatableSnippet", "_translatable_snippets.yml"),
-    TRANSLATABLE_ITEM("translatableItems", "/TranslatableItem", "_translatable_items.yml"),
-    TAG_SET("tagSets", "/TagSet", "_tag_sets.yml"),
-    TRANSLATABLE_POSITIONABLE("translatablePositionables", "/TranslatablePositionable", "_translatable_positionables.yml");
+    BLOB_MESSAGE("messages", "/BlobMessage", "_lang.yml",
+            (plugin, files) -> MessageManager.continueLoadingMessages(plugin, true, files.toArray(new File[0]))),
+    BLOB_SOUND("sounds", "/BlobSound", "_sounds.yml",
+            (plugin, files) -> SoundManager.continueLoadingSounds(plugin, true, files.toArray(new File[0]))),
+    BLOB_INVENTORY("blobInventories", "/BlobInventory", "_inventories.yml",
+            (plugin, files) -> InventoryManager.continueLoadingBlobInventories(plugin, files.toArray(new File[0]))),
+    META_BLOB_INVENTORY("metaBlobInventories", "/MetaBlobInventory", "_meta_inventories.yml",
+            (plugin, files) -> InventoryManager.continueLoadingMetaInventories(plugin, files.toArray(new File[0]))),
+    ACTION("actions", "/Action", "_actions.yml",
+            (plugin, files) -> {
+            }),
+    TRANSLATABLE_BLOCK("translatableBlocks", "/TranslatableBlock", "_translatable_blocks.yml",
+            (plugin, files) -> TranslatableManager.continueLoadingBlocks(plugin, true, files.toArray(new File[0]))),
+    TRANSLATABLE_SNIPPET("translatableSnippets", "/TranslatableSnippet", "_translatable_snippets.yml",
+            (plugin, files) -> TranslatableManager.continueLoadingSnippets(plugin, true, files.toArray(new File[0]))),
+    TRANSLATABLE_ITEM("translatableItems", "/TranslatableItem", "_translatable_items.yml",
+            (plugin, files) -> BlobLib.getInstance().getTranslatableItemManager().continueLoadingAssets(plugin, true, files.toArray(new File[0]))),
+    TAG_SET("tagSets", "/TagSet", "_tag_sets.yml",
+            (plugin, files) -> BlobLib.getInstance().getTagSetManager().continueLoadingAssets(plugin, true, files.toArray(new File[0]))),
+    TRANSLATABLE_POSITIONABLE("translatablePositionables", "/TranslatablePositionable", "_translatable_positionables.yml",
+            (plugin, files) -> BlobLib.getInstance().getTranslatablePositionableManager().continueLoadingAssets(plugin, true, files.toArray(new File[0]))),
+    TRANSLATABLE_AREA("translatableAreas", "/TranslatableArea", "_translatable_areas.yml",
+            (plugin, files) -> BlobLib.getInstance().getTranslatableAreaManager().continueLoadingAssets(plugin, true, files.toArray(new File[0])));
 
     @NotNull
     private final String key, directoryPath, defaultFilePath;
 
+    @NotNull
+    private final BiConsumer<BlobPlugin, List<File>> continueLoading;
+
     private DataAssetType(
             @NotNull String key,
             @NotNull String directoryPath,
-            @NotNull String defaultFilePath) {
+            @NotNull String defaultFilePath,
+            @NotNull BiConsumer<BlobPlugin, List<File>> continueLoading) {
         this.key = key;
         this.directoryPath = directoryPath;
         this.defaultFilePath = defaultFilePath;
+        this.continueLoading = continueLoading;
     }
 
     @NotNull
@@ -48,7 +76,25 @@ public enum DataAssetType {
         return directoryPath;
     }
 
+    public @NotNull BiConsumer<BlobPlugin, List<File>> getContinueLoading() {
+        return continueLoading;
+    }
+
     public String getObjectName() {
         return name().replace("_", "");
+    }
+
+    private static final Map<String, DataAssetType> byEqualsIgnoreObjectName = new HashMap<>();
+
+    static {
+        for (DataAssetType assetType : values()) {
+            byEqualsIgnoreObjectName.put(assetType.getObjectName().toLowerCase(), assetType);
+        }
+    }
+
+    @Nullable
+    public static DataAssetType byEqualsIgnoreObjectName(@NotNull String objectName) {
+        Objects.requireNonNull(objectName, "'objectName' cannot be null");
+        return byEqualsIgnoreObjectName.get(objectName.toLowerCase());
     }
 }

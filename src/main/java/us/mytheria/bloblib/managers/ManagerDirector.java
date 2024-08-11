@@ -820,6 +820,58 @@ public abstract class ManagerDirector implements IManagerDirector {
     }
 
     /**
+     * Will detach all TranslatablePositionables provided.
+     *
+     * @param debug     Whether to print debug messages
+     * @param fileNames The names of the files to detach. Needs to include the extension.
+     * @return The ManagerDirector instance for method chaining
+     */
+    public ManagerDirector registerTranslatablePositionable(boolean debug, String... fileNames) {
+        String[] yaml = addYml(fileNames);
+        File[] freshFiles = freshFiles(debug, getRealFileManager().getDirectory(DataAssetType.TRANSLATABLE_POSITIONABLE), yaml);
+        BlobLib.getInstance().getTranslatablePositionableManager().continueLoadingAssets(plugin, true, freshFiles);
+        if (debug)
+            getPlugin().getAnjoLogger().debug(" translatable positionable asset " + Arrays.toString(fileNames) + " successfully registered");
+        return this;
+    }
+
+    /**
+     * Will detach all TranslatablePositionables provided.
+     *
+     * @param fileNames The names of the files to detach. Needs to include the extension.
+     * @return The ManagerDirector instance for method chaining
+     */
+    public ManagerDirector registerTranslatablePositionable(String... fileNames) {
+        return registerTranslatablePositionable(false, fileNames);
+    }
+
+    /**
+     * Will detach all TranslatableAreas provided.
+     *
+     * @param debug     Whether to print debug messages
+     * @param fileNames The names of the files to detach. Needs to include the extension.
+     * @return The ManagerDirector instance for method chaining
+     */
+    public ManagerDirector registerTranslatableArea(boolean debug, String... fileNames) {
+        String[] yaml = addYml(fileNames);
+        File[] freshFiles = freshFiles(debug, getRealFileManager().getDirectory(DataAssetType.TRANSLATABLE_AREA), yaml);
+        BlobLib.getInstance().getTranslatableAreaManager().continueLoadingAssets(plugin, true, freshFiles);
+        if (debug)
+            getPlugin().getAnjoLogger().debug(" translatable area asset " + Arrays.toString(fileNames) + " successfully registered");
+        return this;
+    }
+
+    /**
+     * Will detach all TranslatableAreas provided.
+     *
+     * @param fileNames The names of the files to detach. Needs to include the extension.
+     * @return The ManagerDirector instance for method chaining
+     */
+    public ManagerDirector registerTranslatableArea(String... fileNames) {
+        return registerTranslatableArea(false, fileNames);
+    }
+
+    /**
      * Creates a new NamespacedKey.
      *
      * @param key The key
@@ -870,136 +922,25 @@ public abstract class ManagerDirector implements IManagerDirector {
         Map<DataAssetType, List<File>> assets = new HashMap<>();
         Map<DataAssetType, File> assetsDirectory = new HashMap<>();
         for (File directory : handyDirectory.listDirectories()) {
-            if (directory.getName().equalsIgnoreCase(DataAssetType.BLOB_SOUND.getObjectName())) {
-                HandyDirectory subDirectory = HandyDirectory.of(directory);
-                List<File> list = subDirectory.listRecursively("yml").stream().toList();
-                assets.put(DataAssetType.BLOB_SOUND, list);
-                assetsDirectory.put(DataAssetType.BLOB_SOUND, directory);
+            DataAssetType match = DataAssetType.byEqualsIgnoreObjectName(directory.getName());
+            if (match == null)
                 continue;
-            }
-            if (directory.getName().equalsIgnoreCase(DataAssetType.BLOB_MESSAGE.getObjectName())) {
-                HandyDirectory subDirectory = HandyDirectory.of(directory);
-                List<File> list = subDirectory.listRecursively("yml").stream().toList();
-                assets.put(DataAssetType.BLOB_MESSAGE, list);
-                assetsDirectory.put(DataAssetType.BLOB_MESSAGE, directory);
-                continue;
-            }
-            if (directory.getName().equalsIgnoreCase(DataAssetType.BLOB_INVENTORY.getObjectName())) {
-                HandyDirectory subDirectory = HandyDirectory.of(directory);
-                List<File> list = subDirectory.listRecursively("yml").stream().toList();
-                assets.put(DataAssetType.BLOB_INVENTORY, list);
-                assetsDirectory.put(DataAssetType.BLOB_INVENTORY, directory);
-                continue;
-            }
-            if (directory.getName().equalsIgnoreCase(DataAssetType.META_BLOB_INVENTORY.getObjectName())) {
-                HandyDirectory subDirectory = HandyDirectory.of(directory);
-                List<File> list = subDirectory.listRecursively("yml").stream().toList();
-                assets.put(DataAssetType.META_BLOB_INVENTORY, list);
-                assetsDirectory.put(DataAssetType.META_BLOB_INVENTORY, directory);
-                continue;
-            }
-            if (directory.getName().equalsIgnoreCase(DataAssetType.TRANSLATABLE_BLOCK.getObjectName())) {
-                HandyDirectory subDirectory = HandyDirectory.of(directory);
-                List<File> list = subDirectory.listRecursively("yml").stream().toList();
-                assets.put(DataAssetType.TRANSLATABLE_BLOCK, list);
-                assetsDirectory.put(DataAssetType.TRANSLATABLE_BLOCK, directory);
-                continue;
-            }
-            if (directory.getName().equalsIgnoreCase(DataAssetType.TRANSLATABLE_SNIPPET.getObjectName())) {
-                HandyDirectory subDirectory = HandyDirectory.of(directory);
-                List<File> list = subDirectory.listRecursively("yml").stream().toList();
-                assets.put(DataAssetType.TRANSLATABLE_SNIPPET, list);
-                assetsDirectory.put(DataAssetType.TRANSLATABLE_SNIPPET, directory);
-                continue;
-            }
-            if (directory.getName().equalsIgnoreCase(DataAssetType.TRANSLATABLE_ITEM.getObjectName())) {
-                HandyDirectory subDirectory = HandyDirectory.of(directory);
-                List<File> list = subDirectory.listRecursively("yml").stream().toList();
-                assets.put(DataAssetType.TRANSLATABLE_ITEM, list);
-                assetsDirectory.put(DataAssetType.TRANSLATABLE_ITEM, directory);
-                continue;
-            }
-            if (directory.getName().equalsIgnoreCase(DataAssetType.TAG_SET.getObjectName())) {
-                HandyDirectory subDirectory = HandyDirectory.of(directory);
-                List<File> list = subDirectory.listRecursively("yml").stream().toList();
-                assets.put(DataAssetType.TAG_SET, list);
-                assetsDirectory.put(DataAssetType.TAG_SET, directory);
-            }
+            HandyDirectory subDirectory = HandyDirectory.of(directory);
+            List<File> list = subDirectory.listRecursively("yml").stream().toList();
+            assets.put(match, list);
+            assetsDirectory.put(match, directory);
         }
         if (assets.isEmpty())
             return true;
-        BlobLib blobLib = BlobLib.getInstance();
-        List<File> blobSound = assets.get(DataAssetType.BLOB_SOUND);
-        if (blobSound != null && !blobSound.isEmpty()) {
-            SoundManager.continueLoadingSounds(plugin, true, blobSound.toArray(new File[0]));
-            try {
-                FileUtils.deleteDirectory(assetsDirectory.get(DataAssetType.BLOB_SOUND));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        List<File> blobMessage = assets.get(DataAssetType.BLOB_MESSAGE);
-        if (blobMessage != null && !blobMessage.isEmpty()) {
-            MessageManager.continueLoadingMessages(plugin, true, blobMessage.toArray(new File[0]));
-            try {
-                FileUtils.deleteDirectory(assetsDirectory.get(DataAssetType.BLOB_MESSAGE));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        List<File> blobInventory = assets.get(DataAssetType.BLOB_INVENTORY);
-        if (blobInventory != null && !blobInventory.isEmpty()) {
-            InventoryManager.continueLoadingBlobInventories(plugin, blobInventory.toArray(new File[0]));
-            try {
-                FileUtils.deleteDirectory(assetsDirectory.get(DataAssetType.BLOB_INVENTORY));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        List<File> metaBlobInventory = assets.get(DataAssetType.META_BLOB_INVENTORY);
-        if (metaBlobInventory != null && !metaBlobInventory.isEmpty()) {
-            InventoryManager.continueLoadingMetaInventories(plugin, metaBlobInventory.toArray(new File[0]));
-            try {
-                FileUtils.deleteDirectory(assetsDirectory.get(DataAssetType.META_BLOB_INVENTORY));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        List<File> translatableBlock = assets.get(DataAssetType.TRANSLATABLE_BLOCK);
-        if (translatableBlock != null
-                && !translatableBlock.isEmpty()) {
-            TranslatableManager.continueLoadingBlocks(plugin, true, translatableBlock.toArray(new File[0]));
-            try {
-                FileUtils.deleteDirectory(assetsDirectory.get(DataAssetType.TRANSLATABLE_BLOCK));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        List<File> translatableSnippet = assets.get(DataAssetType.TRANSLATABLE_SNIPPET);
-        if (translatableSnippet != null && !translatableSnippet.isEmpty()) {
-            TranslatableManager.continueLoadingSnippets(plugin, true, translatableSnippet.toArray(new File[0]));
-            try {
-                FileUtils.deleteDirectory(assetsDirectory.get(DataAssetType.TRANSLATABLE_SNIPPET));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        List<File> translatableItem = assets.get(DataAssetType.TRANSLATABLE_ITEM);
-        if (translatableItem != null && !translatableItem.isEmpty()) {
-            blobLib.getTranslatableItemManager().continueLoadingAssets(plugin, true, translatableItem.toArray(new File[0]));
-            try {
-                FileUtils.deleteDirectory(assetsDirectory.get(DataAssetType.TRANSLATABLE_ITEM));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        List<File> tagSet = assets.get(DataAssetType.TAG_SET);
-        if (tagSet != null && !tagSet.isEmpty()) {
-            blobLib.getTagSetManager().continueLoadingAssets(plugin, true, tagSet.toArray(new File[0]));
-            try {
-                FileUtils.deleteDirectory(assetsDirectory.get(DataAssetType.TAG_SET));
-            } catch (IOException e) {
-                e.printStackTrace();
+        for (DataAssetType assetType : DataAssetType.values()) {
+            List<File> files = assets.get(assetType);
+            if (files != null && !files.isEmpty()) {
+                assetType.getContinueLoading().accept(plugin, files);
+                try {
+                    FileUtils.deleteDirectory(assetsDirectory.get(assetType));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return true;

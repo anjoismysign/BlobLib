@@ -4,10 +4,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.entities.translatable.TranslatableBlock;
-import us.mytheria.bloblib.entities.translatable.TranslatableItem;
-import us.mytheria.bloblib.entities.translatable.TranslatablePositionable;
-import us.mytheria.bloblib.entities.translatable.TranslatableSnippet;
+import us.mytheria.bloblib.entities.translatable.*;
 import us.mytheria.bloblib.managers.BlobLibConfigManager;
 import us.mytheria.bloblib.managers.TranslatableManager;
 
@@ -198,7 +195,7 @@ public class BlobLibTranslatableAPI {
      *
      * @param key    The key of the translatable
      * @param player The player to get the locale from
-     * @return The TranslatableItem
+     * @return The TranslatablePositionable
      */
     @Nullable
     public TranslatablePositionable getTranslatablePositionable(@NotNull String key,
@@ -216,6 +213,55 @@ public class BlobLibTranslatableAPI {
     @NotNull
     public List<TranslatablePositionable> getTranslatablePositionables(@NotNull String locale) {
         return plugin.getTranslatablePositionableManager().getAssets(locale);
+    }
+
+    /**
+     * Will get a TranslatableArea by its key and locale.
+     *
+     * @param key    The key of the translatable
+     * @param locale The locale of the translatable
+     * @return The TranslatableArea
+     */
+    @Nullable
+    public TranslatableArea getTranslatableArea(@NotNull String key,
+                                                @NotNull String locale) {
+        return plugin.getTranslatableAreaManager().getAsset(key, locale);
+    }
+
+    /**
+     * Will get a TranslatableArea by its key and the default locale.
+     *
+     * @param key The key of the translatable
+     * @return The TranslatableArea
+     */
+    @Nullable
+    public TranslatableArea getTranslatableArea(@NotNull String key) {
+        return plugin.getTranslatableAreaManager().getAsset(key);
+    }
+
+    /**
+     * Will get a TranslatableArea by its key and the player's locale.
+     *
+     * @param key    The key of the translatable
+     * @param player The player to get the locale from
+     * @return The TranslatableArea
+     */
+    @Nullable
+    public TranslatableArea getTranslatableArea(@NotNull String key,
+                                                @NotNull Player player) {
+        Objects.requireNonNull(player);
+        return plugin.getTranslatableAreaManager().getAsset(key, player.getLocale());
+    }
+
+    /**
+     * Get all the TranslatableAreas by their key.
+     *
+     * @param locale The locale for the TranslatableAreas
+     * @return The list of TranslatableArea
+     */
+    @NotNull
+    public List<TranslatableArea> getTranslatableAreas(@NotNull String locale) {
+        return plugin.getTranslatableAreaManager().getAssets(locale);
     }
 
     /**

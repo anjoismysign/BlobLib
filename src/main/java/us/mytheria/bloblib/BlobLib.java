@@ -1,20 +1,20 @@
 package us.mytheria.bloblib;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.command.BlobLibCmd;
 import us.mytheria.bloblib.disguises.DisguiseManager;
 import us.mytheria.bloblib.enginehub.EngineHubManager;
 import us.mytheria.bloblib.entities.DataAssetType;
+import us.mytheria.bloblib.entities.area.WorldGuardArea;
 import us.mytheria.bloblib.entities.logger.BlobPluginLogger;
 import us.mytheria.bloblib.entities.positionable.Positionable;
 import us.mytheria.bloblib.entities.positionable.PositionableReader;
 import us.mytheria.bloblib.entities.tag.TagSet;
 import us.mytheria.bloblib.entities.tag.TagSetReader;
-import us.mytheria.bloblib.entities.translatable.BlobTranslatablePositionable;
-import us.mytheria.bloblib.entities.translatable.TranslatableItem;
-import us.mytheria.bloblib.entities.translatable.TranslatablePositionable;
-import us.mytheria.bloblib.entities.translatable.TranslatableReader;
+import us.mytheria.bloblib.entities.translatable.*;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
 import us.mytheria.bloblib.hologram.HologramManager;
 import us.mytheria.bloblib.managers.*;
@@ -59,6 +59,7 @@ public class BlobLib extends JavaPlugin {
 
     private LocalizableDataAssetManager<TranslatableItem> translatableItemManager;
     private LocalizableDataAssetManager<TranslatablePositionable> translatablePositionableManager;
+    private LocalizableDataAssetManager<TranslatableArea> translatableAreaManager;
     private DataAssetManager<TagSet> tagSetManager;
 
     private MinecraftVersion running;
@@ -103,6 +104,7 @@ public class BlobLib extends JavaPlugin {
         colorManager = new ColorManager();
         fileManager = new BlobLibFileManager();
         fileManager.unpackYamlFile("/BlobInventory", "CurrencyBuilder", false);
+        engineHubManager = EngineHubManager.getInstance();
 
         inventoryManager = new InventoryManager();
         inventoryTrackerManager = new InventoryTrackerManager();
@@ -128,12 +130,26 @@ public class BlobLib extends JavaPlugin {
                         },
                         DataAssetType.TRANSLATABLE_POSITIONABLE,
                         section -> section.isDouble("X") && section.isDouble("Y") && section.isDouble("Z"));
+        translatableAreaManager = LocalizableDataAssetManager
+                .of(fileManager.getDirectory(DataAssetType.TRANSLATABLE_AREA),
+                        (section, locale, key) -> {
+                            if (!engineHubManager.isWorldGuardInstalled()) {
+                                getLogger().severe("WorldGuard is not installed, failed to load Area: " + key);
+                                return null;
+                            }
+                            String worldName = section.getString("World");
+                            @NotNull World world = SerializationLib.deserializeWorld(worldName);
+                            String id = section.getString("Id");
+                            String display = section.getString("Display");
+                            return BlobTranslatableArea.of(key, locale, display, WorldGuardArea.of(world, id));
+                        },
+                        DataAssetType.TRANSLATABLE_AREA,
+                        section -> section.isString("World") && section.isString("Id"));
         messageManager = new MessageManager();
         actionManager = new ActionManager();
         soundManager = new SoundManager();
         fillerManager = new FillerManager();
         vaultManager = new VaultManager();
-        engineHubManager = new EngineHubManager();
         disguiseManager = new DisguiseManager();
         hologramManager = new HologramManager();
         chatManager = new ChatListenerManager();
@@ -242,6 +258,10 @@ public class BlobLib extends JavaPlugin {
 
     public LocalizableDataAssetManager<TranslatablePositionable> getTranslatablePositionableManager() {
         return translatablePositionableManager;
+    }
+
+    public LocalizableDataAssetManager<TranslatableArea> getTranslatableAreaManager() {
+        return translatableAreaManager;
     }
 
     public DataAssetManager<TagSet> getTagSetManager() {
