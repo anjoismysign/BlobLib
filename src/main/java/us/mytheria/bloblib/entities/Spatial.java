@@ -11,11 +11,7 @@ public interface Spatial extends Positionable {
 
     float getPitch();
 
-    @NotNull
-    default Location toLocation() {
-        return toLocation(null);
-    }
-
+    @Override
     @NotNull
     default Location toLocation(@Nullable World world) {
         Vector vector = toVector();
