@@ -7,10 +7,15 @@ import us.mytheria.bloblib.disguises.DisguiseManager;
 import us.mytheria.bloblib.enginehub.EngineHubManager;
 import us.mytheria.bloblib.entities.DataAssetType;
 import us.mytheria.bloblib.entities.logger.BlobPluginLogger;
+import us.mytheria.bloblib.entities.positionable.Positionable;
+import us.mytheria.bloblib.entities.positionable.PositionableReader;
 import us.mytheria.bloblib.entities.tag.TagSet;
 import us.mytheria.bloblib.entities.tag.TagSetReader;
+import us.mytheria.bloblib.entities.translatable.BlobTranslatablePositionable;
 import us.mytheria.bloblib.entities.translatable.TranslatableItem;
+import us.mytheria.bloblib.entities.translatable.TranslatablePositionable;
 import us.mytheria.bloblib.entities.translatable.TranslatableReader;
+import us.mytheria.bloblib.exception.ConfigurationFieldException;
 import us.mytheria.bloblib.hologram.HologramManager;
 import us.mytheria.bloblib.managers.*;
 import us.mytheria.bloblib.managers.fillermanager.FillerManager;
@@ -53,6 +58,7 @@ public class BlobLib extends JavaPlugin {
     private TranslatableManager translatableManager;
 
     private LocalizableDataAssetManager<TranslatableItem> translatableItemManager;
+    private LocalizableDataAssetManager<TranslatablePositionable> translatablePositionableManager;
     private DataAssetManager<TagSet> tagSetManager;
 
     private MinecraftVersion running;
@@ -97,16 +103,27 @@ public class BlobLib extends JavaPlugin {
         inventoryManager = new InventoryManager();
         inventoryTrackerManager = new InventoryTrackerManager();
         translatableManager = new TranslatableManager();
-        tagSetManager = DataAssetManager.of(fileManager.tagSetsDirectory(),
+        tagSetManager = DataAssetManager.of(fileManager.getDirectory(DataAssetType.TAG_SET),
                 TagSetReader::READ,
                 DataAssetType.TAG_SET,
                 section -> section.isList("Inclusions") ||
                         !section.getStringList("Include-Set").isEmpty());
         translatableItemManager = LocalizableDataAssetManager
-                .of(fileManager.itemsDirectory(),
+                .of(fileManager.getDirectory(DataAssetType.TRANSLATABLE_ITEM),
                         TranslatableReader::ITEM,
                         DataAssetType.TRANSLATABLE_ITEM,
                         section -> section.isConfigurationSection("ItemStack"));
+        translatablePositionableManager = LocalizableDataAssetManager
+                .of(fileManager.getDirectory(DataAssetType.TRANSLATABLE_POSITIONABLE),
+                        (section, locale, key) -> {
+                            Positionable positionable = PositionableReader.getInstance().read(section);
+                            if (!section.isString("Display"))
+                                throw new ConfigurationFieldException("'Display' is missing or not set");
+                            String display = section.getString("Display");
+                            return BlobTranslatablePositionable.of(key, locale, display, positionable);
+                        },
+                        DataAssetType.TRANSLATABLE_POSITIONABLE,
+                        section -> section.isDouble("X") && section.isDouble("Y") && section.isDouble("Z"));
         messageManager = new MessageManager();
         actionManager = new ActionManager();
         soundManager = new SoundManager();
@@ -148,6 +165,7 @@ public class BlobLib extends JavaPlugin {
         tagSetManager.reload();
         translatableManager.reload();
         translatableItemManager.reload();
+        translatablePositionableManager.reload();
         messageManager.reload();
         actionManager.reload();
         inventoryManager.reload();
@@ -216,6 +234,10 @@ public class BlobLib extends JavaPlugin {
 
     public LocalizableDataAssetManager<TranslatableItem> getTranslatableItemManager() {
         return translatableItemManager;
+    }
+
+    public LocalizableDataAssetManager<TranslatablePositionable> getTranslatablePositionableManager() {
+        return translatablePositionableManager;
     }
 
     public DataAssetManager<TagSet> getTagSetManager() {

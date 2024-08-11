@@ -9,7 +9,6 @@ import us.mytheria.bloblib.entities.inventory.*;
 import us.mytheria.bloblib.entities.message.BlobSound;
 import us.mytheria.bloblib.managers.*;
 
-import java.io.File;
 import java.util.Optional;
 
 /**
@@ -134,37 +133,6 @@ public class BlobLibAssetAPI {
     @Deprecated
     public static void playSound(String key, Player player) {
         getSoundManager().play(player, key);
-    }
-
-
-    @Deprecated
-    public static File getMessagesDirectory() {
-        return BlobLibMessageAPI.getInstance().getMessagesDirectory();
-    }
-
-    @Deprecated
-    public static String getMessagesFilePath() {
-        return BlobLibMessageAPI.getInstance().getMessagesFilePath();
-    }
-
-    @Deprecated
-    public static File getSoundsDirectory() {
-        return BlobLibSoundAPI.getInstance().getSoundsDirectory();
-    }
-
-    @Deprecated
-    public static String getSoundsFilePath() {
-        return BlobLibSoundAPI.getInstance().getSoundsFilePath();
-    }
-
-    @Deprecated
-    public static File getInventoriesDirectory() {
-        return BlobLibInventoryAPI.getInstance().getInventoriesDirectory();
-    }
-
-    @Deprecated
-    public static String getInventoriesFilePath() {
-        return BlobLibInventoryAPI.getInstance().getInventoriesFilePath();
     }
 
     @Deprecated

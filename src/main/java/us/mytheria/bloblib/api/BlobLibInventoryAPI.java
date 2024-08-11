@@ -13,7 +13,6 @@ import us.mytheria.bloblib.managers.InventoryManager;
 import us.mytheria.bloblib.managers.InventoryTrackerManager;
 import us.mytheria.bloblib.managers.MetaInventoryShard;
 
-import java.io.File;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -194,25 +193,7 @@ public class BlobLibInventoryAPI {
     public Optional<MetaInventoryShard> hasMetaInventoryShard(String type) {
         return Optional.ofNullable(getInventoryManager().getMetaInventoryShard(type));
     }
-
-    /**
-     * Retrieves a file from the inventories' directory.
-     *
-     * @return The inventories file
-     */
-    @NotNull
-    public File getInventoriesDirectory() {
-        return plugin.getFileManager().inventoriesDirectory();
-    }
-
-    /**
-     * @return The inventories file path
-     */
-    @NotNull
-    public String getInventoriesFilePath() {
-        return plugin.getFileManager().inventoriesDirectory().getPath();
-    }
-
+    
     /**
      * Attempts to build an inventory from the given key.
      * If the inventory is not found, a NullPointerException is thrown.

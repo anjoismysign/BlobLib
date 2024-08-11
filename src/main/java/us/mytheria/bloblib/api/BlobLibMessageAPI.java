@@ -11,7 +11,6 @@ import us.mytheria.bloblib.entities.message.BlobMessage;
 import us.mytheria.bloblib.managers.BlobLibConfigManager;
 import us.mytheria.bloblib.managers.MessageManager;
 
-import java.io.File;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -42,22 +41,6 @@ public class BlobLibMessageAPI {
      */
     public MessageManager getMessageManager() {
         return plugin.getMessageManager();
-    }
-
-    /**
-     * @return The messages file
-     */
-    @NotNull
-    public File getMessagesDirectory() {
-        return plugin.getFileManager().messagesDirectory();
-    }
-
-    /**
-     * @return The messages file path
-     */
-    @NotNull
-    public String getMessagesFilePath() {
-        return plugin.getFileManager().messagesDirectory().getPath();
     }
 
     /**

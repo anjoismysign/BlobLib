@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.translatable.TranslatableBlock;
 import us.mytheria.bloblib.entities.translatable.TranslatableItem;
+import us.mytheria.bloblib.entities.translatable.TranslatablePositionable;
 import us.mytheria.bloblib.entities.translatable.TranslatableSnippet;
 import us.mytheria.bloblib.managers.BlobLibConfigManager;
 import us.mytheria.bloblib.managers.TranslatableManager;
@@ -133,7 +134,7 @@ public class BlobLibTranslatableAPI {
     }
 
     /**
-     * Will get a TranslatableKey by its key and the default locale.
+     * Will get a TranslatableItem by its key and the default locale.
      *
      * @param key The key of the translatable
      * @return The TranslatableItem
@@ -158,14 +159,63 @@ public class BlobLibTranslatableAPI {
     }
 
     /**
-     * Get all the translatable items by their key.
+     * Get all the TranslatableItems by their key.
      *
-     * @param key The key of the translatable
-     * @return The list of translatable items
+     * @param locale The locale for the TranslatableItems
+     * @return The list of TranslatableItem
      */
     @NotNull
-    public List<TranslatableItem> getTranslatableItems(@NotNull String key) {
-        return plugin.getTranslatableItemManager().getAssets(key);
+    public List<TranslatableItem> getTranslatableItems(@NotNull String locale) {
+        return plugin.getTranslatableItemManager().getAssets(locale);
+    }
+
+    /**
+     * Will get a TranslatablePositionable by its key and locale.
+     *
+     * @param key    The key of the translatable
+     * @param locale The locale of the translatable
+     * @return The TranslatablePositionable
+     */
+    @Nullable
+    public TranslatablePositionable getTranslatablePositionable(@NotNull String key,
+                                                                @NotNull String locale) {
+        return plugin.getTranslatablePositionableManager().getAsset(key, locale);
+    }
+
+    /**
+     * Will get a TranslatablePositionable by its key and the default locale.
+     *
+     * @param key The key of the translatable
+     * @return The TranslatablePositionable
+     */
+    @Nullable
+    public TranslatablePositionable getTranslatablePositionable(@NotNull String key) {
+        return plugin.getTranslatablePositionableManager().getAsset(key);
+    }
+
+    /**
+     * Will get a TranslatablePositionable by its key and the player's locale.
+     *
+     * @param key    The key of the translatable
+     * @param player The player to get the locale from
+     * @return The TranslatableItem
+     */
+    @Nullable
+    public TranslatablePositionable getTranslatablePositionable(@NotNull String key,
+                                                                @NotNull Player player) {
+        Objects.requireNonNull(player);
+        return plugin.getTranslatablePositionableManager().getAsset(key, player.getLocale());
+    }
+
+    /**
+     * Get all the TranslatablePositionables by their key.
+     *
+     * @param locale The locale for the TranslatablePositionables
+     * @return The list of TranslatablePositionable
+     */
+    @NotNull
+    public List<TranslatablePositionable> getTranslatablePositionables(@NotNull String locale) {
+        return plugin.getTranslatablePositionableManager().getAssets(locale);
     }
 
     /**

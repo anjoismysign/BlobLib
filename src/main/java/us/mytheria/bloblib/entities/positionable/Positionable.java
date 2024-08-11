@@ -1,4 +1,4 @@
-package us.mytheria.bloblib.entities;
+package us.mytheria.bloblib.entities.positionable;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -29,7 +29,13 @@ public interface Positionable {
         return new Location(world, vector.getX(), vector.getY(), vector.getZ());
     }
 
-    default boolean isLocatable() {
-        return false;
+    /**
+     * Gets the PositionableType of this Positionable
+     *
+     * @return The PositionableType
+     */
+    @NotNull
+    default PositionableType getPositionableType() {
+        return PositionableType.POSITIONABLE;
     }
 }

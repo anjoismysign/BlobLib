@@ -10,6 +10,7 @@ import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.exception.ConfigurationFieldException;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -162,7 +163,7 @@ public class SerializationLib {
             }.runTaskTimerAsynchronously(BlobLib.getInstance(), 0, period);
             World world;
             try {
-                world = completableFuture.get(1, TimeUnit.MINUTES);
+                world = completableFuture.get(period, TimeUnit.SECONDS); // period is in ticks but in CompletableFuture#get is in seconds
             } catch (Exception e) {
                 world = null;
             }
@@ -171,7 +172,7 @@ public class SerializationLib {
         try {
             return future.get();
         } catch (Exception e) {
-            throw new RuntimeException("World " + string + " not found after waiting 60 seconds!");
+            throw new ConfigurationFieldException("World " + string + " not found after waiting 60 seconds!");
         }
     }
 

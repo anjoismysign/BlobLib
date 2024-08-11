@@ -603,7 +603,7 @@ public abstract class ManagerDirector implements IManagerDirector {
      */
     public ManagerDirector registerMetaBlobInventory(boolean debug, String... fileNames) {
         String[] yaml = addYml(fileNames);
-        File[] freshFiles = freshFiles(debug, getRealFileManager().metaInventoriesDirectory(), yaml);
+        File[] freshFiles = freshFiles(debug, getRealFileManager().getDirectory(DataAssetType.META_BLOB_INVENTORY), yaml);
         InventoryManager.continueLoadingMetaInventories(plugin, freshFiles);
         if (debug)
             getPlugin().getAnjoLogger().debug(" inventory asset " + Arrays.toString(fileNames) + " successfully registered");
@@ -632,7 +632,7 @@ public abstract class ManagerDirector implements IManagerDirector {
      */
     public ManagerDirector registerBlobInventory(boolean debug, String... fileNames) {
         String[] yaml = addYml(fileNames);
-        File[] freshFiles = freshFiles(debug, getRealFileManager().inventoriesDirectory(), yaml);
+        File[] freshFiles = freshFiles(debug, getRealFileManager().getDirectory(DataAssetType.BLOB_INVENTORY), yaml);
         InventoryManager.continueLoadingBlobInventories(plugin, freshFiles);
         if (debug)
             getPlugin().getAnjoLogger().debug(" inventory asset " + Arrays.toString(fileNames) + ".yml successfully registered");
@@ -661,7 +661,7 @@ public abstract class ManagerDirector implements IManagerDirector {
      */
     public ManagerDirector registerBlobMessage(boolean debug, String... fileNames) {
         String[] yaml = addYml(fileNames);
-        File[] freshFiles = freshFiles(debug, getRealFileManager().messagesDirectory(), yaml);
+        File[] freshFiles = freshFiles(debug, getRealFileManager().getDirectory(DataAssetType.BLOB_MESSAGE), yaml);
         MessageManager.continueLoadingMessages(plugin, true, freshFiles);
         if (debug)
             getPlugin().getAnjoLogger().debug(" message asset " + Arrays.toString(fileNames) + " successfully registered");
@@ -690,7 +690,7 @@ public abstract class ManagerDirector implements IManagerDirector {
      */
     public ManagerDirector registerBlobSound(boolean debug, String... fileNames) {
         String[] yaml = addYml(fileNames);
-        File[] freshFiles = freshFiles(debug, getRealFileManager().soundsDirectory(), yaml);
+        File[] freshFiles = freshFiles(debug, getRealFileManager().getDirectory(DataAssetType.BLOB_SOUND), yaml);
         SoundManager.continueLoadingSounds(plugin, true, freshFiles);
         if (debug)
             getPlugin().getAnjoLogger().debug(" sound asset " + Arrays.toString(fileNames) + " successfully registered");
@@ -719,7 +719,7 @@ public abstract class ManagerDirector implements IManagerDirector {
      */
     public ManagerDirector registerTranslatableBlock(boolean debug, String... fileNames) {
         String[] yaml = addYml(fileNames);
-        File[] freshFiles = freshFiles(debug, getRealFileManager().translatableBlocksDirectory(), yaml);
+        File[] freshFiles = freshFiles(debug, getRealFileManager().getDirectory(DataAssetType.TRANSLATABLE_BLOCK), yaml);
         TranslatableManager.continueLoadingBlocks(plugin, true, freshFiles);
         if (debug)
             getPlugin().getAnjoLogger().debug(" translatable block asset " + Arrays.toString(fileNames) + " successfully registered");
@@ -748,7 +748,7 @@ public abstract class ManagerDirector implements IManagerDirector {
      */
     public ManagerDirector registerTranslatableSnippet(boolean debug, String... fileNames) {
         String[] yaml = addYml(fileNames);
-        File[] freshFiles = freshFiles(debug, getRealFileManager().translatableSnippetsDirectory(), yaml);
+        File[] freshFiles = freshFiles(debug, getRealFileManager().getDirectory(DataAssetType.TRANSLATABLE_SNIPPET), yaml);
         TranslatableManager.continueLoadingSnippets(plugin, true, freshFiles);
         if (debug)
             getPlugin().getAnjoLogger().debug(" translatable block asset " + Arrays.toString(fileNames) + " successfully registered");

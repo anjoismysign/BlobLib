@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.BlobSoundReader;
+import us.mytheria.bloblib.entities.DataAssetType;
 import us.mytheria.bloblib.entities.message.BlobSound;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
 
@@ -33,7 +34,7 @@ public class SoundManager {
         sounds = new HashMap<>();
         pluginSounds = new HashMap<>();
         duplicates = new HashMap<>();
-        loadFiles(main.getFileManager().soundsDirectory());
+        loadFiles(main.getFileManager().getDirectory(DataAssetType.BLOB_SOUND));
         duplicates.forEach((key, value) -> main.getLogger()
                 .severe("Duplicate BlobSound: '" + key + "' (found " + value + " instances)"));
     }
@@ -44,7 +45,7 @@ public class SoundManager {
             throw new IllegalArgumentException("Plugin '" + pluginName + "' has already been loaded");
         pluginSounds.put(pluginName, new HashSet<>());
         duplicates.clear();
-        File directory = director.getFileManager().soundsDirectory();
+        File directory = director.getFileManager().getDirectory(DataAssetType.BLOB_SOUND);
         loadFiles(directory);
         duplicates.forEach((key, value) -> main.getLogger()
                 .severe("Duplicate BlobSound: '" + key + "' (found " + value + " instances)"));

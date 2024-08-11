@@ -1,14 +1,15 @@
-package us.mytheria.bloblib.entities;
+package us.mytheria.bloblib.entities.positionable;
 
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 public interface Locatable extends Spatial {
-    @Nullable
+    @NotNull
     World getWorld();
 
+    @NotNull
     @Override
     default Location toLocation() {
         Vector vector = toVector();
@@ -16,7 +17,8 @@ public interface Locatable extends Spatial {
     }
 
     @Override
-    default boolean isLocatable() {
-        return getWorld() != null;
+    @NotNull
+    default PositionableType getPositionableType() {
+        return PositionableType.LOCATABLE;
     }
 }

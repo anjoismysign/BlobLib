@@ -1,13 +1,10 @@
 package us.mytheria.bloblib.api;
 
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.message.BlobSound;
 import us.mytheria.bloblib.managers.SoundManager;
-
-import java.io.File;
 
 public class BlobLibSoundAPI {
     private static BlobLibSoundAPI instance;
@@ -53,21 +50,4 @@ public class BlobLibSoundAPI {
     public void playSound(String key, Player player) {
         getSoundManager().play(player, key);
     }
-
-    /**
-     * @return The sounds file
-     */
-    @NotNull
-    public File getSoundsDirectory() {
-        return plugin.getFileManager().soundsDirectory();
-    }
-
-    /**
-     * @return The sounds file path
-     */
-    @NotNull
-    public String getSoundsFilePath() {
-        return plugin.getFileManager().soundsDirectory().getPath();
-    }
-
 }

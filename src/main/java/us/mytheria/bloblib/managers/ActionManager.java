@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.action.Action;
+import us.mytheria.bloblib.entities.DataAssetType;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
 
 import java.io.File;
@@ -30,7 +31,7 @@ public class ActionManager {
         actions = new HashMap<>();
         pluginActions = new HashMap<>();
         duplicates = new HashMap<>();
-        loadFiles(main.getFileManager().actionsDirectory());
+        loadFiles(main.getFileManager().getDirectory(DataAssetType.ACTION));
         duplicates.forEach((key, value) -> BlobLib.getAnjoLogger()
                 .log("Duplicate Action: '" + key + "' (found " + value + " instances)"));
     }
@@ -41,7 +42,7 @@ public class ActionManager {
             throw new IllegalArgumentException("Plugin '" + pluginName + "' has already been loaded");
         pluginActions.put(pluginName, new HashSet<>());
         duplicates.clear();
-        File directory = director.getFileManager().actionsDirectory();
+        File directory = director.getFileManager().getDirectory(DataAssetType.ACTION);
         loadFiles(directory);
         duplicates.forEach((key, value) -> plugin.getAnjoLogger()
                 .log("Duplicate Action: '" + key + "' (found " + value + " instances)"));

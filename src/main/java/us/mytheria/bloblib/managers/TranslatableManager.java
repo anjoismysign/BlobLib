@@ -6,6 +6,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
+import us.mytheria.bloblib.entities.DataAssetType;
 import us.mytheria.bloblib.entities.IFileManager;
 import us.mytheria.bloblib.entities.translatable.TranslatableBlock;
 import us.mytheria.bloblib.entities.translatable.TranslatableReader;
@@ -38,8 +39,8 @@ public class TranslatableManager {
         pluginSnippets = new HashMap<>();
         pluginBlocks = new HashMap<>();
         duplicates = new HashMap<>();
-        loadSnippets(main.getFileManager().snippetsDirectory());
-        loadBlocks(main.getFileManager().blocksDirectory());
+        loadSnippets(main.getFileManager().getDirectory(DataAssetType.TRANSLATABLE_SNIPPET));
+        loadBlocks(main.getFileManager().getDirectory(DataAssetType.TRANSLATABLE_BLOCK));
         duplicates.forEach((key, value) -> BlobLib.getAnjoLogger()
                 .log("Duplicate Inventory: '" + key + "' (found " + value + " instances)"));
     }
@@ -52,9 +53,9 @@ public class TranslatableManager {
         pluginBlocks.put(pluginName, new HashSet<>());
         duplicates.clear();
         IFileManager fileManager = director.getFileManager();
-        File snippetsDirectory = fileManager.translatableSnippetsDirectory();
+        File snippetsDirectory = fileManager.getDirectory(DataAssetType.TRANSLATABLE_SNIPPET);
         loadSnippets(snippetsDirectory);
-        File blocksDirectory = fileManager.translatableBlocksDirectory();
+        File blocksDirectory = fileManager.getDirectory(DataAssetType.TRANSLATABLE_BLOCK);
         loadBlocks(blocksDirectory);
         duplicates.forEach((key, value) -> plugin.getAnjoLogger()
                 .log("Duplicate translatable: '" + key + "' (found " + value + " instances)"));

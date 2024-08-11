@@ -1,8 +1,6 @@
 package us.mytheria.bloblib.entities;
 
 import me.anjoismysign.anjo.entities.NamingConventions;
-import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.entities.logger.BlobPluginLogger;
 import us.mytheria.bloblib.managers.BlobPlugin;
 import us.mytheria.bloblib.managers.InventoryManager;
 
@@ -26,9 +24,8 @@ public record ObjectDirectorData(String objectDirectory, String objectBuilderKey
                                                       String objectDirectoryFilename,
                                                       String objectName) {
 
-        File file = new File(blobFileManager.inventoriesDirectory() + "/" + objectBuilderFilename + ".yml");
+        File file = new File(blobFileManager.getDirectory(DataAssetType.BLOB_INVENTORY) + "/" + objectBuilderFilename + ".yml");
         String fileName = file.getName();
-        BlobPluginLogger logger = BlobLib.getAnjoLogger();
         BlobPlugin plugin = blobFileManager.getPlugin();
         blobFileManager.addDirectory(objectDirectoryFilename, NamingConventions.toCamelCase(objectName));
         if (plugin.getResource(fileName) != null) {

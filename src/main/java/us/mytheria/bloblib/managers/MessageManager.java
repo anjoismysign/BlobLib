@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
 import us.mytheria.bloblib.entities.BlobMessageReader;
+import us.mytheria.bloblib.entities.DataAssetType;
 import us.mytheria.bloblib.entities.message.BlobMessage;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
 
@@ -32,7 +33,7 @@ public class MessageManager {
         locales = new HashMap<>();
         pluginMessages = new HashMap<>();
         duplicates = new HashMap<>();
-        loadFiles(main.getFileManager().messagesDirectory());
+        loadFiles(main.getFileManager().getDirectory(DataAssetType.BLOB_MESSAGE));
         duplicates.forEach((key, value) -> BlobLib.getAnjoLogger()
                 .log("Duplicate BlobMessage: '" + key + "' (found " + value + " instances)"));
     }
@@ -43,7 +44,7 @@ public class MessageManager {
             throw new IllegalArgumentException("Plugin '" + pluginName + "' has already been loaded");
         pluginMessages.put(pluginName, new HashSet<>());
         duplicates.clear();
-        File directory = director.getFileManager().messagesDirectory();
+        File directory = director.getFileManager().getDirectory(DataAssetType.BLOB_MESSAGE);
         loadFiles(directory);
         duplicates.forEach((key, value) -> plugin.getAnjoLogger()
                 .log("Duplicate BlobMessage: '" + key + "' (found " + value + " instances)"));

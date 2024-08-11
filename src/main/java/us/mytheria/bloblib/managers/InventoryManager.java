@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
+import us.mytheria.bloblib.entities.DataAssetType;
 import us.mytheria.bloblib.entities.IFileManager;
 import us.mytheria.bloblib.entities.inventory.*;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
@@ -40,8 +41,8 @@ public class InventoryManager {
         pluginBlobInventories = new HashMap<>();
         pluginMetaInventories = new HashMap<>();
         duplicates = new HashMap<>();
-        loadBlobInventories(main.getFileManager().inventoriesDirectory());
-        loadMetaInventories(main.getFileManager().metaInventoriesDirectory());
+        loadBlobInventories(main.getFileManager().getDirectory(DataAssetType.BLOB_INVENTORY));
+        loadMetaInventories(main.getFileManager().getDirectory(DataAssetType.META_BLOB_INVENTORY));
         duplicates.forEach((key, value) -> BlobLib.getAnjoLogger()
                 .log("Duplicate Inventory: '" + key + "' (found " + value + " instances)"));
     }
@@ -54,9 +55,9 @@ public class InventoryManager {
         pluginMetaInventories.put(pluginName, new HashSet<>());
         duplicates.clear();
         IFileManager fileManager = director.getFileManager();
-        File blobDirectory = fileManager.inventoriesDirectory();
+        File blobDirectory = fileManager.getDirectory(DataAssetType.BLOB_INVENTORY);
         loadBlobInventories(blobDirectory);
-        File metaDirectory = fileManager.metaInventoriesDirectory();
+        File metaDirectory = fileManager.getDirectory(DataAssetType.META_BLOB_INVENTORY);
         loadMetaInventories(metaDirectory);
         duplicates.forEach((key, value) -> plugin.getAnjoLogger()
                 .log("Duplicate Inventory: '" + key + "' (found " + value + " instances)"));

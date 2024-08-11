@@ -1,4 +1,4 @@
-package us.mytheria.bloblib.entities;
+package us.mytheria.bloblib.entities.positionable;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -16,5 +16,11 @@ public interface Spatial extends Positionable {
     default Location toLocation(@Nullable World world) {
         Vector vector = toVector();
         return new Location(world, vector.getX(), vector.getY(), vector.getZ(), getYaw(), getPitch());
+    }
+
+    @Override
+    @NotNull
+    default PositionableType getPositionableType() {
+        return PositionableType.SPATIAL;
     }
 }

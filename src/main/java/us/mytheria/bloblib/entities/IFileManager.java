@@ -1,6 +1,6 @@
 package us.mytheria.bloblib.entities;
 
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
@@ -11,27 +11,6 @@ public interface IFileManager {
      * @param type The data asset type.
      * @return The directory for the given data asset type.
      */
-    @Nullable
+    @NotNull
     File getDirectory(DataAssetType type);
-
-    @Deprecated
-    File messagesDirectory();
-
-    @Deprecated
-    File soundsDirectory();
-
-    @Deprecated
-    File inventoriesDirectory();
-
-    @Deprecated
-    File metaInventoriesDirectory();
-
-    @Deprecated
-    File actionsDirectory();
-
-    @Deprecated
-    File translatableSnippetsDirectory();
-
-    @Deprecated
-    File translatableBlocksDirectory();
 }
