@@ -121,6 +121,8 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
         if (filter.test(yamlConfiguration)) {
             try {
                 T asset = readFunction.apply(yamlConfiguration, locale, fileName);
+                if (asset == null)
+                    return;
                 addOrCreateLocale(asset, fileName);
             } catch (Throwable throwable) {
                 BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
@@ -151,6 +153,8 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
         if (filter.test(yamlConfiguration)) {
             try {
                 T asset = readFunction.apply(yamlConfiguration, locale, fileName);
+                if (asset == null)
+                    return;
                 addOrCreateLocale(asset, fileName);
                 assets.get(plugin.getName()).add(fileName);
             } catch (Throwable throwable) {

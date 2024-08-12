@@ -5,3 +5,5 @@ BlobLib:
     Snippet: 'false'
   Player-Not-Online:
     Snippet: not online
+  Wilderness:
+    Snippet: Wilderness

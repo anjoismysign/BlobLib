@@ -1,9 +1,7 @@
 package us.mytheria.bloblib;
 
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.command.BlobLibCmd;
 import us.mytheria.bloblib.disguises.DisguiseManager;
 import us.mytheria.bloblib.enginehub.EngineHubManager;
@@ -20,6 +18,7 @@ import us.mytheria.bloblib.hologram.HologramManager;
 import us.mytheria.bloblib.managers.*;
 import us.mytheria.bloblib.managers.fillermanager.FillerManager;
 import us.mytheria.bloblib.placeholderapi.TranslatablePH;
+import us.mytheria.bloblib.placeholderapi.WorldGuardPH;
 import us.mytheria.bloblib.utilities.MinecraftVersion;
 import us.mytheria.bloblib.utilities.SerializationLib;
 import us.mytheria.bloblib.vault.VaultManager;
@@ -138,10 +137,9 @@ public class BlobLib extends JavaPlugin {
                                 return null;
                             }
                             String worldName = section.getString("World");
-                            @NotNull World world = SerializationLib.deserializeWorld(worldName);
                             String id = section.getString("Id");
                             String display = section.getString("Display");
-                            return BlobTranslatableArea.of(key, locale, display, WorldGuardArea.of(world, id));
+                            return BlobTranslatableArea.of(key, locale, display, WorldGuardArea.of(worldName, id));
                         },
                         DataAssetType.TRANSLATABLE_AREA,
                         section -> section.isString("World") && section.isString("Id"));
@@ -166,6 +164,8 @@ public class BlobLib extends JavaPlugin {
 
         Bukkit.getScheduler().runTask(this, () -> {
             TranslatablePH.getInstance(this);
+            if (engineHubManager.isWorldGuardInstalled())
+                WorldGuardPH.getInstance(this);
             disguiseManager.load();
         });
     }
@@ -186,6 +186,8 @@ public class BlobLib extends JavaPlugin {
         translatableManager.reload();
         translatableItemManager.reload();
         translatablePositionableManager.reload();
+        translatablePositionableManager.reload();
+        translatableAreaManager.reload();
         messageManager.reload();
         actionManager.reload();
         inventoryManager.reload();

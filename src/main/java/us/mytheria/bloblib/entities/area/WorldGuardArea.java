@@ -9,29 +9,29 @@ import us.mytheria.bloblib.enginehub.EngineHubManager;
 import java.util.Objects;
 
 public class WorldGuardArea implements Area {
-    private final World world;
+    private final String worldName;
     private final String id;
 
     /**
      * Instances a WorldGuard Area.
      * It's implied that before calling this method, it needs to check that WorldGuard is installed.
      *
-     * @param world The world the ProtectedRegion belongs to
-     * @param id    The ProtectedRegion's ID
+     * @param worldName The world the ProtectedRegion belongs to
+     * @param id        The ProtectedRegion's ID
      * @return The WorldGuardArea
      */
     public static WorldGuardArea of(
-            @NotNull World world,
+            @NotNull String worldName,
             @NotNull String id) {
-        Objects.requireNonNull(world, "'world' cannot be null");
+        Objects.requireNonNull(worldName, "'worldName' cannot be null");
         Objects.requireNonNull(id, "'id' cannot be null");
-        return new WorldGuardArea(world, id);
+        return new WorldGuardArea(worldName, id);
     }
 
     private WorldGuardArea(
-            World world,
+            String worldName,
             String id) {
-        this.world = world;
+        this.worldName = worldName;
         this.id = id;
     }
 
@@ -39,20 +39,25 @@ public class WorldGuardArea implements Area {
     private ProtectedRegion getProtectedRegion() {
         Object result = EngineHubManager.getInstance()
                 .getWorldGuardWorker()
-                .getRegion(world, id);
-        Objects.requireNonNull(result, "Couldn't find " + id + " in: " + world);
+                .getRegion(getWorld(), id);
+        Objects.requireNonNull(result, "Couldn't find " + id + " in: " + worldName);
         return (ProtectedRegion) result;
     }
 
-    @Override
-    public @NotNull World getWorld() {
-        return world;
+    @NotNull
+    public String getWorldName() {
+        return worldName;
+    }
+
+    @NotNull
+    public String getId() {
+        return id;
     }
 
     @Override
     public boolean isInside(@NotNull Location location) {
         World locationWorld = location.getWorld();
-        return locationWorld != null && locationWorld.getName().equals(world.getName())
+        return locationWorld != null && locationWorld.getName().equals(worldName)
                 && getProtectedRegion().contains(location.getBlockX(), location.getBlockY(), location.getBlockZ());
     }
 }

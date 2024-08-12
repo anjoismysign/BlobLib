@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.entities.area;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -10,7 +11,12 @@ import java.util.Objects;
 
 public interface Area {
     @NotNull
-    World getWorld();
+    String getWorldName();
+
+    @NotNull
+    default World getWorld() {
+        return Objects.requireNonNull(Bukkit.getWorld(getWorldName()), "World not found: " + getWorldName());
+    }
 
     boolean isInside(@NotNull Location location);
 

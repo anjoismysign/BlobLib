@@ -121,6 +121,8 @@ public class DataAssetManager<T extends DataAsset> {
         if (filter.test(yamlConfiguration)) {
             try {
                 T asset = readFunction.apply(yamlConfiguration, fileName);
+                if (asset == null)
+                    return;
                 addOrCreate(asset, fileName);
             } catch (Throwable throwable) {
                 BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
@@ -150,6 +152,8 @@ public class DataAssetManager<T extends DataAsset> {
         if (filter.test(yamlConfiguration)) {
             try {
                 T asset = readFunction.apply(yamlConfiguration, fileName);
+                if (asset == null)
+                    return;
                 addOrCreate(asset, fileName);
                 pluginAssets.get(plugin.getName()).add(fileName);
             } catch (Throwable throwable) {
