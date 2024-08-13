@@ -51,7 +51,7 @@ public abstract class DisplayPackFloatingPet<T extends Display, R extends Clonea
         EntityAnimationsCarrier animationsCarrier = settings.animationsCarrier();
         logicTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             Player owner = findOwner();
-            if (owner == null || !owner.isOnline()) {
+            if (owner == null) {
                 destroy();
                 return;
             }

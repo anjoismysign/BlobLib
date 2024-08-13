@@ -107,7 +107,7 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand, ItemStack> 
     private void initLogic(JavaPlugin plugin) {
         logicTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
             Player owner = findOwner();
-            if (owner == null || !owner.isOnline()) {
+            if (owner == null) {
                 destroy();
                 return;
             }

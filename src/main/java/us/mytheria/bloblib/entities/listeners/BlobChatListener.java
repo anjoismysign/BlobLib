@@ -62,14 +62,14 @@ public class BlobChatListener extends ChatListener {
         messages.forEach(message -> timerMessages.add(
                 message.modify(s -> s.replace("%world%", owner.getWorld().getName()))
         ));
+        UUID uuid = owner.getUniqueId();
         return new BlobChatListener(owner.getName(), timeout,
                 inputListener -> {
                     String input = inputListener.getInput();
                     chatManager.removeChatListener(owner);
                     Bukkit.getScheduler().runTask(main, () -> {
-                        if (owner == null || !owner.isOnline()) {
+                        if (owner != Bukkit.getPlayer(uuid))
                             return;
-                        }
                         consumer.accept(input);
                     });
                 },

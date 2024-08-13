@@ -115,7 +115,7 @@ public abstract class DisplayFloatingPet<T extends Display, R extends Cloneable>
         EntityAnimationsCarrier animationsCarrier = settings.animationsCarrier();
         logicTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             Player owner = findOwner();
-            if (owner == null || !owner.isOnline()) {
+            if (owner == null) {
                 destroy();
                 return;
             }
