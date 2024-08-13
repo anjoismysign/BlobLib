@@ -3,6 +3,7 @@ package us.mytheria.bloblib.entities.translatable;
 import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
 import us.mytheria.bloblib.entities.DataAssetType;
+import us.mytheria.bloblib.utilities.TextColor;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -27,7 +28,7 @@ public class BlobTranslatableSnippet implements TranslatableSnippet {
             matcher.appendReplacement(replaced, replacement);
         }
         matcher.appendTail(replaced);
-        return replaced.toString();
+        return TextColor.PARSE(replaced.toString());
     }
 
     public static String PARSE(@NotNull String text) {

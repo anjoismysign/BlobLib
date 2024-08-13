@@ -1,10 +1,10 @@
 package us.mytheria.bloblib.entities.positionable;
 
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
-import us.mytheria.bloblib.utilities.SerializationLib;
 
 import java.util.Objects;
 
@@ -99,11 +99,10 @@ public class PositionableReader {
             };
         }
         String worldName = section.getString("World");
-        @NotNull World world = SerializationLib.deserializeWorld(worldName);
         return new Locatable() {
             @NotNull
             public World getWorld() {
-                return world;
+                return Objects.requireNonNull(Bukkit.getWorld(worldName), "World not found: " + worldName);
             }
 
             public float getYaw() {
