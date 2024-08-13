@@ -11,10 +11,7 @@ import us.mytheria.bloblib.entities.DataAssetType;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
@@ -208,5 +205,10 @@ public class DataAssetManager<T extends DataAsset> {
     public T getAsset(@NotNull String key) {
         Objects.requireNonNull(key);
         return assets.get(key);
+    }
+
+    @NotNull
+    public List<T> getAssets() {
+        return assets.values().stream().toList();
     }
 }

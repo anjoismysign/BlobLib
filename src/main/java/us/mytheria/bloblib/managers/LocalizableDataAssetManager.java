@@ -218,10 +218,11 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
 
     public List<T> getAssets(@NotNull String locale) {
         Objects.requireNonNull(locale);
+        Map<String, T> copy = new HashMap<>(locales.get("en_us"));
         Map<String, T> map = locales.get(locale);
-        if (map == null)
-            return new ArrayList<>();
-        return new ArrayList<>(map.values());
+        if (map != null)
+            copy.putAll(map);
+        return copy.values().stream().toList();
     }
 
     public List<T> getAssets() {
