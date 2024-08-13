@@ -352,3 +352,20 @@ BlobMessage:
     Type: CHAT
     Message: '&cBlobMessage not found: &f%key%'
     BlobSound: System.Alert
+Soul:
+  Fail:
+    Type: TITLE
+    Title: '&c&lUNSUCCESSFUL'
+    Subtitle: "&7Couldn't proceed"
+  Hand-Success:
+    Type: TITLE
+    Title: '&a&lSUCCESSFUL'
+    Subtitle: '&7Item in your &fhand &7is now soul'
+  Offhand-Success:
+    Type: TITLE
+    Title: '&a&lSUCCESSFUL'
+    Subtitle: '&7Item in your &foffhand &7is now soul'
+  Inventory:
+    Type: TITLE
+    Title: '&f&lDONE'
+    Subtitle: '&7Attempted to soul all items in your inventory'
