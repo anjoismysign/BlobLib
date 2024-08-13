@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -21,9 +22,12 @@ import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
 import us.mytheria.bloblib.entities.PluginUpdater;
 import us.mytheria.bloblib.entities.inventory.BlobInventoryTracker;
 import us.mytheria.bloblib.entities.message.BlobMessage;
+import us.mytheria.bloblib.entities.positionable.Positionable;
 import us.mytheria.bloblib.entities.translatable.TranslatableItem;
+import us.mytheria.bloblib.entities.translatable.TranslatablePositionable;
 import us.mytheria.bloblib.managers.BlobPlugin;
 import us.mytheria.bloblib.utilities.PlayerUtil;
+import us.mytheria.bloblib.utilities.TextColor;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -271,6 +275,46 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                         }
                     }
                 }
+                case "translatablepositionable" -> {
+                    if (length < 3) {
+                        sender.sendMessage(TextColor.PARSE("&c/bloblib translatablepositionable open <player>"));
+                        return true;
+                    }
+                    String arg2 = args[1].toLowerCase();
+                    if (!arg2.equals("teleport")) {
+                        sender.sendMessage(TextColor.PARSE("&c/bloblib translatablepositionable open <player>"));
+                        return true;
+                    }
+                    String key = args[2];
+                    Player player;
+                    if (length < 4) {
+                        if (!(sender instanceof Player)) {
+                            BlobLibMessageAPI.getInstance()
+                                    .getMessage("System.Console-Not-Allowed-Command", sender)
+                                    .toCommandSender(sender);
+                            return true;
+                        }
+                        player = (Player) sender;
+                    } else {
+                        String playerName = args[3];
+                        player = Bukkit.getPlayer(playerName);
+                        if (player == null) {
+                            BlobLibMessageAPI.getInstance()
+                                    .getMessage("Player.Not-Found", sender)
+                                    .toCommandSender(sender);
+                            return true;
+                        }
+                    }
+                    TranslatablePositionable translatablePositionable = TranslatablePositionable.by(key);
+                    if (translatablePositionable == null) {
+                        sender.sendMessage(TextColor.PARSE("&cNot found: " + key));
+                        return true;
+                    }
+                    Positionable positionable = translatablePositionable.get();
+                    Location location = positionable.getPositionableType().isLocatable() ? positionable.toLocation() : positionable.toLocation(player.getWorld());
+                    player.teleport(location);
+                    return true;
+                }
                 case "update" -> {
                     PluginUpdater updater;
                     boolean isPlugin = false;
@@ -400,6 +444,7 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                         list.add("update");
                         list.add("download");
                         list.add("translatableitem");
+                        list.add("translatablepositionable");
                         list.add("blobinventory");
                         list.add("closeinventory");
                         list.add("blobmessage");
@@ -425,6 +470,9 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                             }
                             case "blobinventory" -> {
                                 list.add("open");
+                            }
+                            case "translatablepositionable" -> {
+                                list.add("teleport");
                             }
                             case "blobmessage" -> {
                                 list.add("send");
@@ -461,6 +509,16 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                                     return list;
                                 }
                             }
+                            case "translatablepositionable" -> {
+                                String sub = args[1].toLowerCase();
+                                if (sub.equals("teleport")) {
+                                    return BlobLibTranslatableAPI.getInstance()
+                                            .getTranslatablePositionables("en_us")
+                                            .stream()
+                                            .map(TranslatablePositionable::getReference)
+                                            .toList();
+                                }
+                            }
                             case "blobmessage" -> {
                                 String sub = args[1].toLowerCase();
                                 if (sub.equals("send")) {
@@ -487,6 +545,15 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                             case "blobinventory" -> {
                                 String sub = args[1].toLowerCase();
                                 if (sub.equals("open")) {
+                                    list.addAll(main.getServer().getOnlinePlayers().stream()
+                                            .map(Player::getName)
+                                            .toList());
+                                    return list;
+                                }
+                            }
+                            case "translatablepositionable" -> {
+                                String sub = args[1].toLowerCase();
+                                if (sub.equals("teleport")) {
                                     list.addAll(main.getServer().getOnlinePlayers().stream()
                                             .map(Player::getName)
                                             .toList());
