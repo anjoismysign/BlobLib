@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.action.ActionMemo;
 import us.mytheria.bloblib.action.ActionType;
+import us.mytheria.bloblib.api.BlobLibActionAPI;
 import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
 import us.mytheria.bloblib.entities.translatable.TranslatableItem;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
@@ -107,6 +108,8 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
         String action = null;
         if (section.isString("Action"))
             action = section.getString("Action");
+        if (action != null && BlobLibActionAPI.getInstance().getAction(action) == null)
+            throw new ConfigurationFieldException("'Action' doesn't point to a valid Action: " + action);
         ActionType actionType = null;
         ConfigurationSection singleActionSection = section.getConfigurationSection("Action");
         if (singleActionSection != null) {
