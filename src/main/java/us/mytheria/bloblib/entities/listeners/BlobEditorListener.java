@@ -10,10 +10,7 @@ import us.mytheria.bloblib.entities.BlobEditor;
 import us.mytheria.bloblib.entities.message.BlobMessage;
 import us.mytheria.bloblib.managers.SelectorListenerManager;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class BlobEditorListener<T> extends EditorListener<T> {
@@ -43,6 +40,7 @@ public class BlobEditorListener<T> extends EditorListener<T> {
         if (timerMessageKey != null)
             timerMessage = Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(timerMessageKey, player));
         List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(new ArrayList<>());
+        UUID uuid = player.getUniqueId();
         return new BlobEditorListener<>(player.getName(), listener -> {
             T input = listener.getInput();
             selectorManager.removeEditorListener(player);
@@ -51,9 +49,8 @@ public class BlobEditorListener<T> extends EditorListener<T> {
                 return;
             }
             Bukkit.getScheduler().runTask(main, () -> {
-                if (player == null || !player.isOnline()) {
+                if (player != Bukkit.getPlayer(uuid))
                     return;
-                }
                 consumer.accept(input);
             });
         }, messages, selector);
@@ -82,10 +79,11 @@ public class BlobEditorListener<T> extends EditorListener<T> {
     @Override
     public void runTasks() {
         Player player = Bukkit.getPlayer(getOwner());
+        UUID uuid = player.getUniqueId();
         BukkitRunnable bukkitRunnable = new BukkitRunnable() {
             @Override
             public void run() {
-                if (player == null || !player.isOnline()) {
+                if (player != Bukkit.getPlayer(uuid)) {
                     this.cancel();
                     return;
                 }

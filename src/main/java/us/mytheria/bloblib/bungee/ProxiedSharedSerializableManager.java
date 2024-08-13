@@ -19,10 +19,7 @@ import us.mytheria.bloblib.storage.IdentifierType;
 import us.mytheria.bloblib.storage.StorageType;
 import us.mytheria.bloblib.utilities.BlobCrudManagerFactory;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -66,49 +63,6 @@ public class ProxiedSharedSerializableManager<T extends SharedSerializable<?>>
         unload();
     }
 
-/*
-    @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
-        Player player = e.getPlayer();
-        UUID uuid = player.getUniqueId();
-        CompletableFuture<BlobCrudable> future = new CompletableFuture<>();
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            if (player == null || !player.isOnline()) {
-                future.completeExceptionally(new NullPointerException("Player is null"));
-                return;
-            }
-            BlobCrudable crudable = crudManager.read(uuid.toString());
-            future.complete(crudable);
-        });
-        future.thenAccept(crudable -> {
-            if (player == null || !player.isOnline())
-                return;
-            T applied = generator.apply(crudable);
-            serializables.put(uuid, applied);
-            if (joinEvent == null)
-                return;
-            Bukkit.getPluginManager().callEvent(joinEvent.apply(applied));
-        });
-    }
-
-    @EventHandler
-    public void onQuit(PlayerQuitEvent e) {
-        Player player = e.getPlayer();
-        UUID uuid = player.getUniqueId();
-        Optional<T> optional = isSharedSerializable(uuid);
-        if (optional.isEmpty())
-            return;
-        T serializable = optional.get();
-        if (quitEvent != null)
-            Bukkit.getPluginManager().callEvent(quitEvent.apply(serializable));
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            crudManager.update(serializable.serializeAllAttributes());
-            removeObject(uuid);
-            //Send Quit message
-        });
-    }
-*/
-
     @Override
     public void onPluginMessageReceived(@NotNull String channel,
                                         @NotNull Player x,
@@ -126,8 +80,9 @@ public class ProxiedSharedSerializableManager<T extends SharedSerializable<?>>
                 String instanceId = decorator.hasString("SharedSerializable#UniqueId")
                         .orElseThrow();
                 CompletableFuture<BlobCrudable> future = new CompletableFuture<>();
+                UUID uuid = player.getUniqueId();
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                    if (player == null || !player.isOnline()) {
+                    if (player != Bukkit.getPlayer(uuid)) {
                         future.completeExceptionally(new NullPointerException("Player is null"));
                         return;
                     }
@@ -135,7 +90,7 @@ public class ProxiedSharedSerializableManager<T extends SharedSerializable<?>>
                     future.complete(crudable);
                 });
                 future.thenAccept(crudable -> {
-                    if (player == null || !player.isOnline())
+                    if (player != Bukkit.getPlayer(uuid))
                         return;
                     T applied = generator.apply(crudable);
                     cache.put(instanceId, applied);

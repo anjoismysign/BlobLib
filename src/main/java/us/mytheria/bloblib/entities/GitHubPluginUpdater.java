@@ -25,6 +25,7 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.UUID;
 
 public class GitHubPluginUpdater implements PluginUpdater {
     private final JavaPlugin plugin;
@@ -174,8 +175,9 @@ public class GitHubPluginUpdater implements PluginUpdater {
             Player player = event.getPlayer();
             if (!player.hasPermission(pluginName.toLowerCase() + ".admin"))
                 return;
+            UUID uuid = player.getUniqueId();
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                if (player == null || !player.isOnline())
+                if (player != Bukkit.getPlayer(uuid))
                     return;
                 BlobLibMessageAPI.getInstance()
                         .getMessage("BlobLib.Updater-Available", player)

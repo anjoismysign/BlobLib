@@ -9,10 +9,7 @@ import us.mytheria.bloblib.api.BlobLibMessageAPI;
 import us.mytheria.bloblib.entities.message.BlobMessage;
 import us.mytheria.bloblib.managers.ChatListenerManager;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -107,10 +104,11 @@ public class BlobChatListener extends ChatListener {
     public void runTasks() {
         super.runTasks();
         Player player = Bukkit.getPlayer(getOwner());
+        UUID uuid = player.getUniqueId();
         BukkitRunnable bukkitRunnable = new BukkitRunnable() {
             @Override
             public void run() {
-                if (player == null || !player.isOnline()) {
+                if (player != Bukkit.getPlayer(uuid)) {
                     this.cancel();
                     return;
                 }

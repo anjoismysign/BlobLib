@@ -20,6 +20,7 @@ import java.io.InputStreamReader;
 import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.UUID;
 
 public class BlobLibUpdater implements PluginUpdater {
     private final BlobLib plugin;
@@ -163,8 +164,9 @@ public class BlobLibUpdater implements PluginUpdater {
             Player player = event.getPlayer();
             if (!player.hasPermission("bloblib.admin"))
                 return;
+            UUID uuid = player.getUniqueId();
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                if (player == null || !player.isOnline())
+                if (player != Bukkit.getPlayer(uuid))
                     return;
                 BlobLibMessageAPI.getInstance()
                         .getMessage("BlobLib.Updater-Available", player)
