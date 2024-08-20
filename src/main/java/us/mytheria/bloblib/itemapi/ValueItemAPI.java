@@ -1,9 +1,9 @@
 package us.mytheria.bloblib.itemapi;
 
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataHolder;
@@ -102,6 +102,56 @@ public interface ValueItemAPI<T> extends ItemAPI {
             values.add(get(entity));
         if (entity instanceof InventoryHolder inventoryHolder) {
             for (ItemStack itemStack : inventoryHolder.getInventory().getContents()) {
+                if (itemStack == null)
+                    continue;
+                if (isInstance(itemStack)) {
+                    T t = get(itemStack.getItemMeta());
+                    values.add(t);
+                }
+            }
+        }
+        return values;
+    }
+
+    /**
+     * Gets all the instances values from an Entity by checking its PersistentDataContainer and its equipment.
+     *
+     * @param entity The entity to check
+     * @return A list holding all the values
+     */
+    @NotNull
+    default List<T> getEquipment(@NotNull Entity entity) {
+        Objects.requireNonNull(entity, "'entity' cannot be null");
+        List<T> values = new ArrayList<>();
+        if (isInstance(entity))
+            values.add(get(entity));
+        if (entity.getType() == EntityType.PLAYER) {
+            Player player = (Player) entity;
+            PlayerInventory playerInventory = player.getInventory();
+            List<ItemStack> equipment = new ArrayList<>();
+            for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+                if (equipmentSlot.name().equalsIgnoreCase("BODY"))
+                    continue;
+                equipment.add(playerInventory.getItem(equipmentSlot));
+            }
+            for (ItemStack itemStack : equipment) {
+                if (itemStack == null)
+                    continue;
+                if (isInstance(itemStack)) {
+                    T t = get(itemStack.getItemMeta());
+                    values.add(t);
+                }
+            }
+            return values;
+        }
+        if (entity instanceof EntityEquipment entityEquipment) {
+            List<ItemStack> equipment = new ArrayList<>();
+            for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+                if (equipmentSlot.name().equalsIgnoreCase("BODY"))
+                    continue;
+                equipment.add(entityEquipment.getItem(equipmentSlot));
+            }
+            for (ItemStack itemStack : equipment) {
                 if (itemStack == null)
                     continue;
                 if (isInstance(itemStack)) {

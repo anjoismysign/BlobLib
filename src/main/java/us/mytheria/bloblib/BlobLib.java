@@ -64,6 +64,7 @@ public class BlobLib extends JavaPlugin {
     private MinecraftVersion running;
     private SoulAPI soulAPI;
     private UniqueAPI uniqueAPI;
+    private FluidPressureAPI fluidPressureAPI;
 
     private static BlobLib instance;
 
@@ -94,6 +95,7 @@ public class BlobLib extends JavaPlugin {
         running = MinecraftVersion.getRunning();
         soulAPI = SoulAPI.getInstance(this);
         uniqueAPI = UniqueAPI.getInstance(this);
+        fluidPressureAPI = FluidPressureAPI.getInstance(this);
         api = BlobLibAPI.getInstance(this);
         bloblibupdater = new BlobLibUpdater(this);
         serializationLib = SerializationLib.getInstance(this);

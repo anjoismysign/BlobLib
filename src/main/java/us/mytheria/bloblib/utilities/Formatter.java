@@ -23,7 +23,8 @@ public class Formatter {
                 "%wattsBalance%", watts((float) amount)).replace(
                 "%bytesBalance%", bytes((float) amount)).replace(
                 "%gramsBalance%", grams((float) amount)).replace(
-                "%litersBalance%", liters((float) amount));
+                "%litersBalance%", liters((float) amount)).replace(
+                "%psi%", psi((float) amount));
     }
 
     private String watts(float value) {
@@ -68,5 +69,16 @@ public class Formatter {
         }
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
         return String.format("%s%s", decimalFormat.format(value), arr[index]);
+    }
+
+    private String psi(float value) {
+        String[] arr = {"", "k", "M", "G", "T", "P", "E", "Z", "Y"};
+        int index = 0;
+        while ((value / 1000) >= 1) {
+            value = value / 1000;
+            index++;
+        }
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        return String.format("%s%s", decimalFormat.format(value), arr[index]) + "psi";
     }
 }
