@@ -1,7 +1,12 @@
 package us.mytheria.bloblib;
 
 import org.bukkit.NamespacedKey;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataHolder;
+import org.bukkit.persistence.PersistentDataType;
 import us.mytheria.bloblib.itemapi.DiscriminatorItemAPI;
+
+import java.util.UUID;
 
 public class UniqueAPI implements DiscriminatorItemAPI {
     private static UniqueAPI instance;
@@ -22,6 +27,18 @@ public class UniqueAPI implements DiscriminatorItemAPI {
 
     public static UniqueAPI getInstance() {
         return getInstance(null);
+    }
+
+    @Override
+    public void set(PersistentDataHolder holder) {
+        UUID random = UUID.randomUUID();
+        holder.getPersistentDataContainer().set(namespacedKey, PersistentDataType.STRING, random.toString());
+    }
+
+    @Override
+    public boolean isInstance(PersistentDataHolder holder) {
+        PersistentDataContainer container = holder.getPersistentDataContainer();
+        return container.has(namespacedKey, PersistentDataType.STRING);
     }
 
     public NamespacedKey getNamespacedKey() {
