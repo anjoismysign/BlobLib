@@ -3,10 +3,7 @@ version: ${project.parent.version}
 main: us.mytheria.bloblib.BlobLib
 api-version: 1.17
 load: STARTUP
-loadbefore: [ Vault, LibsDisguises, ProtocolLib ]
-softdepend:
-  - WorldEdit
-  - WorldGuard
+loadbefore: [ Vault, LibsDisguises, ProtocolLib, WorldEdit, WorldGuard ]
 authors: [ promorrom, j0ach1mmall3, Dean B, SmallCode ]
 commands:
   bloblib:

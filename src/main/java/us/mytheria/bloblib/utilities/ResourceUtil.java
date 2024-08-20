@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.utilities;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -96,10 +97,11 @@ public class ResourceUtil {
                 file.createNewFile();
             else
                 return;
-            FileOutputStream fos = new FileOutputStream(file);
-            byte[] ba = inputStream.readAllBytes();
-            fos.write(ba);
-            fos.flush();
+            try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+                byte[] ba = inputStream.readAllBytes();
+                fileOutputStream.write(ba);
+                fileOutputStream.flush();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -114,7 +116,7 @@ public class ResourceUtil {
     public static void updateYml(File existingFile, Plugin main) {
         String name = existingFile.getName();
         File path = existingFile.getParentFile();
-        updateYml(path, "/temp" + name, name, existingFile, main);
+        updateYml(path, File.separator + "temp" + name, name, existingFile, main);
     }
 
     public static void updateYml(File path, String tempFileName, String fileName, File existingFile, Plugin main) {
@@ -128,7 +130,8 @@ public class ResourceUtil {
         YamlConfiguration tempYamlConfiguration = YamlConfiguration.loadConfiguration(tempFile);
         ResourceUtil.writeNewValues(existingFile,
                 tempYamlConfiguration); // attempts to write new values to existing file if they don't exist
-        tempFile.delete();
+        if (!tempFile.delete())
+            Bukkit.getLogger().severe("Couldn't delete: " + tempFile);
     }
 
     @NotNull

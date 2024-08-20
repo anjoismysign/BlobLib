@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -22,7 +23,7 @@ public class BlobPHExpansion extends PlaceholderExpansion {
 
     public BlobPHExpansion(JavaPlugin plugin, String identifier) {
         this.plugin = plugin;
-        this.identifier = identifier.toLowerCase();
+        this.identifier = identifier.toLowerCase(Locale.ROOT);
         simple = new HashMap<>();
         startsWith = new HashMap<>();
         Bukkit.getScheduler().runTask(plugin, this::register);
@@ -59,7 +60,7 @@ public class BlobPHExpansion extends PlaceholderExpansion {
     }
 
     public @NotNull String getIdentifier() {
-        return plugin.getName().toLowerCase() + identifier;
+        return plugin.getName().toLowerCase(Locale.ROOT) + identifier;
     }
 
     public @NotNull String getVersion() {

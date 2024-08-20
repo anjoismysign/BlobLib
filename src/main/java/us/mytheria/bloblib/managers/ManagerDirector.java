@@ -50,7 +50,7 @@ public abstract class ManagerDirector implements IManagerDirector {
         reloadNamespacedKeys();
         this.pluginOperator = () -> plugin;
         this.blobFileManager = new BlobFileManager(this,
-                "plugins/" + plugin.getName(),
+                "plugins" + File.separator + plugin.getName(),
                 plugin);
         this.proxiedFileManager = BlobProxifier.PROXY(blobFileManager);
         chatListenerManager = BlobLib.getInstance().getChatManager();

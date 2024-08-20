@@ -10,6 +10,7 @@ import us.mytheria.bloblib.api.BlobLibMessageAPI;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -25,11 +26,11 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
     private final List<String> callers;
 
     public BlobExecutor(JavaPlugin plugin, String commandName) {
-        commandName = commandName.toLowerCase();
+        commandName = commandName.toLowerCase(Locale.ROOT);
         PluginCommand command = plugin.getCommand(commandName);
         this.pluginCommand = command;
-        this.adminPermission = plugin.getName().toLowerCase() + ".admin";
-        this.debugPermission = plugin.getName().toLowerCase() + ".debug";
+        this.adminPermission = plugin.getName().toLowerCase(Locale.ROOT) + ".admin";
+        this.debugPermission = plugin.getName().toLowerCase(Locale.ROOT) + ".debug";
         tabCompleter = (sender, args) -> {
             List<String> list = new ArrayList<>();
             list.add("By default, this command has no tab completion.");
@@ -53,8 +54,8 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
             plugin.getLogger().log(Level.WARNING, "Command " + commandName + " not found inside plugin.yml");
             return;
         }
-        command.getAliases().forEach(alias -> callers.add(alias.toLowerCase()));
-        callers.add(commandName.toLowerCase());
+        command.getAliases().forEach(alias -> callers.add(alias.toLowerCase(Locale.ROOT)));
+        callers.add(commandName.toLowerCase(Locale.ROOT));
         command.setExecutor(this);
         command.setTabCompleter(this);
     }
@@ -312,7 +313,7 @@ public class BlobExecutor implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (callers.contains(command.getName().toLowerCase())) {
+        if (callers.contains(command.getName().toLowerCase(Locale.ROOT))) {
             return tabCompleter.apply(sender, args);
         }
         return null;

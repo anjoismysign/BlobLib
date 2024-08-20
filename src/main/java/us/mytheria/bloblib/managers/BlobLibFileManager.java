@@ -23,7 +23,7 @@ public class BlobLibFileManager implements IFileManager {
     private static final String LOWERCASED = "bloblib";
 
     private final BlobLib plugin;
-    private final File path = new File("plugins/BlobLib");
+    private final File path = new File("plugins" + File.separator + "BlobLib");
     private final Map<String, File> files = new HashMap<>();
     private final Map<DataAssetType, String> directories = new HashMap<>();
 
@@ -36,7 +36,7 @@ public class BlobLibFileManager implements IFileManager {
             String key = assetType.getKey();
             directories.put(assetType, key);
             addFile(key, new File(path.getPath() + assetType.getDirectoryPath()));
-            addFile(assetType.getDefaultFileKey(), new File(getDirectory(assetType).getPath() + "/" + LOWERCASED + assetType.getDefaultFilePath()));
+            addFile(assetType.getDefaultFileKey(), new File(getDirectory(assetType).getPath() + File.separator + LOWERCASED + assetType.getDefaultFilePath()));
         }
         loadFiles();
     }
@@ -66,7 +66,7 @@ public class BlobLibFileManager implements IFileManager {
                     @Nullable File file = getFile(assetType.getDefaultFileKey());
                     Objects.requireNonNull(file, "No default file for DataAssetType: " + assetType.name());
                     file.createNewFile();
-                    ResourceUtil.updateYml(getDirectory(assetType), "/temp" + path, path, file, plugin);
+                    ResourceUtil.updateYml(getDirectory(assetType), File.separator + "temp" + path, path, file, plugin);
                 }
             }
         } catch (Exception e) {
@@ -92,14 +92,14 @@ public class BlobLibFileManager implements IFileManager {
         File directory = new File(this.path + path);
         try {
             Files.createDirectories(directory.toPath());
-            File file = new File(directory + "/" + fileName + ".yml");
+            File file = new File(directory + File.separator + fileName + ".yml");
             Optional<InputStream> optional = Optional.ofNullable(plugin.getResource(fileName + ".yml"));
             if (optional.isPresent()) {
                 try {
                     if (softUpdate && file.exists())
                         return;
                     file.createNewFile();
-                    ResourceUtil.updateYml(directory, "/temp" + fileName + ".yml",
+                    ResourceUtil.updateYml(directory, File.separator + "temp" + fileName + ".yml",
                             fileName + ".yml", file, plugin);
                 } catch (IOException e) {
                     e.printStackTrace();

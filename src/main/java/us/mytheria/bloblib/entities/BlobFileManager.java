@@ -38,7 +38,7 @@ public class BlobFileManager extends Manager implements IFileManager {
      */
     public static BlobFileManager of(ManagerDirector managerDirector) {
         BlobPlugin plugin = managerDirector.getPlugin();
-        return new BlobFileManager(managerDirector, "plugins/" +
+        return new BlobFileManager(managerDirector, "plugins" + File.separator +
                 plugin.getDataFolder().getPath(), plugin);
     }
 
@@ -52,13 +52,13 @@ public class BlobFileManager extends Manager implements IFileManager {
                            String pluginDirectoryPathname,
                            JavaPlugin plugin) {
         super(managerDirector);
-        this.lowercased = plugin.getName().toLowerCase();
+        this.lowercased = plugin.getName().toLowerCase(Locale.ROOT);
         this.pluginDirectory = new File(pluginDirectoryPathname);
         for (DataAssetType assetType : DataAssetType.values()) {
             String key = assetType.getKey();
             directories.put(assetType, key);
             addFile(key, new File(pluginDirectory.getPath() + assetType.getDirectoryPath()));
-            addFile(assetType.getDefaultFileKey(), new File(getDirectory(assetType).getPath() + "/" + lowercased + assetType.getDefaultFilePath()));
+            addFile(assetType.getDefaultFileKey(), new File(getDirectory(assetType).getPath() + File.separator + lowercased + assetType.getDefaultFilePath()));
         }
         loadFiles(plugin);
     }
@@ -72,7 +72,7 @@ public class BlobFileManager extends Manager implements IFileManager {
      * @return the file created
      */
     public File addDirectory(String key, String folderName) {
-        File directory = new File(pluginDirectory.getPath() + "/" + folderName);
+        File directory = new File(pluginDirectory.getPath() + File.separator + folderName);
         addFile(key, directory);
         return directory;
     }
@@ -130,7 +130,7 @@ public class BlobFileManager extends Manager implements IFileManager {
         try {
             boolean isFresh = file.createNewFile();
             ResourceUtil.updateYml(file.getParentFile(),
-                    "/temp" + fileName + ".yml",
+                    File.separator + "temp" + fileName + ".yml",
                     path, file, getPlugin());
             return isFresh;
         } catch (IOException e) {
@@ -184,7 +184,7 @@ public class BlobFileManager extends Manager implements IFileManager {
     public Optional<File> searchFile(String key) {
         return Optional.ofNullable(files.get(key));
     }
-    
+
     private void loadFiles(JavaPlugin plugin) {
         try {
             for (DataAssetType assetType : DataAssetType.values()) {
@@ -198,11 +198,11 @@ public class BlobFileManager extends Manager implements IFileManager {
                     @Nullable File file = getFile(assetType.getDefaultFileKey());
                     Objects.requireNonNull(file, "No default file for DataAssetType: " + assetType.name());
                     file.createNewFile();
-                    ResourceUtil.updateYml(getDirectory(assetType), "/temp" + path, path, file, plugin);
+                    ResourceUtil.updateYml(getDirectory(assetType), File.separator + "temp" + path, path, file, plugin);
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
         }
     }
 
@@ -224,14 +224,14 @@ public class BlobFileManager extends Manager implements IFileManager {
         File directory = new File(pluginDirectory.getPath() + path);
         try {
             Files.createDirectories(directory.toPath());
-            File file = new File(directory + "/" + fileName + ".yml");
+            File file = new File(directory + File.separator + fileName + ".yml");
             Optional<InputStream> optional = Optional.ofNullable(getPlugin().getResource(fileName + ".yml"));
             if (optional.isPresent()) {
                 try {
                     if (softUpdate && file.exists())
                         return;
                     file.createNewFile();
-                    ResourceUtil.updateYml(directory, "/temp" + fileName + ".yml",
+                    ResourceUtil.updateYml(directory, File.separator + "temp" + fileName + ".yml",
                             fileName + ".yml", file, getPlugin());
                 } catch (IOException e) {
                     e.printStackTrace();

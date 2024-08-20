@@ -25,6 +25,7 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.UUID;
 
 public class GitHubPluginUpdater implements PluginUpdater {
@@ -173,7 +174,7 @@ public class GitHubPluginUpdater implements PluginUpdater {
         @EventHandler
         public void handle(PlayerJoinEvent event) {
             Player player = event.getPlayer();
-            if (!player.hasPermission(pluginName.toLowerCase() + ".admin"))
+            if (!player.hasPermission(pluginName.toLowerCase(Locale.ROOT) + ".admin"))
                 return;
             UUID uuid = player.getUniqueId();
             Bukkit.getScheduler().runTaskLater(plugin, () -> {

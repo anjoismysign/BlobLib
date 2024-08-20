@@ -56,7 +56,7 @@ public class BlobMessageModder<T extends BlobMessage> {
      * @return The message in lower case
      */
     public BlobMessageModder<T> lowerCase() {
-        return modify(String::toLowerCase);
+        return modify(s -> s.toLowerCase(Locale.ROOT));
     }
 
     /**
@@ -71,7 +71,7 @@ public class BlobMessageModder<T extends BlobMessage> {
      * @return The message in upper case
      */
     public BlobMessageModder<T> upperCase() {
-        return modify(String::toUpperCase);
+        return modify(s -> s.toUpperCase(Locale.ROOT));
     }
 
     /**
@@ -86,7 +86,7 @@ public class BlobMessageModder<T extends BlobMessage> {
      * @return Makes sure that first letter is capitalized
      */
     public BlobMessageModder<T> capitalize() {
-        return modify(s -> s.substring(0, 1).toUpperCase() + s.substring(1));
+        return modify(s -> s.substring(0, 1).toUpperCase(Locale.ROOT) + s.substring(1));
     }
 
     /**

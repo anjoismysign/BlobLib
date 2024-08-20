@@ -3,6 +3,7 @@ package us.mytheria.bloblib.entities.translatable;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import us.mytheria.bloblib.FluidPressureAPI;
 import us.mytheria.bloblib.SoulAPI;
 import us.mytheria.bloblib.UniqueAPI;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
@@ -26,9 +27,13 @@ public class TranslatableReader {
         boolean isUnique = section.getBoolean("Is-Unique", false);
         ItemStack itemStack = ItemStackReader.getInstance().readOrFailFast(section.getConfigurationSection("ItemStack"));
         if (isSoul)
-            SoulAPI.getInstance().setSoul(itemStack);
+            SoulAPI.getInstance().set(itemStack);
         if (isUnique)
-            UniqueAPI.getInstance().setUnique(itemStack);
+            UniqueAPI.getInstance().set(itemStack);
+        if (section.isDouble("Fluid-Pressure")) {
+            double pressure = section.getDouble("Fluid-Pressure");
+            FluidPressureAPI.getInstance().set(itemStack, pressure);
+        }
         return BlobTranslatableItem.of(key, locale, itemStack);
     }
 

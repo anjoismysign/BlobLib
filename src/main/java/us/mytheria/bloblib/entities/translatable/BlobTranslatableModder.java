@@ -87,7 +87,7 @@ public class BlobTranslatableModder<T extends Translatable<R>, R> {
      * @return The translatable in lower case
      */
     public BlobTranslatableModder<T, R> lowerCase() {
-        return modify(String::toLowerCase);
+        return modify(s -> s.toLowerCase(Locale.ROOT));
     }
 
     /**
@@ -102,7 +102,7 @@ public class BlobTranslatableModder<T extends Translatable<R>, R> {
      * @return The translatable in upper case
      */
     public BlobTranslatableModder<T, R> upperCase() {
-        return modify(String::toUpperCase);
+        return modify(s -> s.toUpperCase(Locale.ROOT));
     }
 
     /**
@@ -117,7 +117,7 @@ public class BlobTranslatableModder<T extends Translatable<R>, R> {
      * @return Makes sure that first letter is capitalized
      */
     public BlobTranslatableModder<T, R> capitalize() {
-        return modify(s -> s.substring(0, 1).toUpperCase() + s.substring(1));
+        return modify(s -> s.substring(0, 1).toUpperCase(Locale.ROOT) + s.substring(1));
     }
 
     /**

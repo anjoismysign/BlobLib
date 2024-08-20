@@ -13,6 +13,7 @@ import us.mytheria.bloblib.exception.ConfigurationFieldException;
 import us.mytheria.bloblib.managers.BlobPlugin;
 import us.mytheria.bloblib.storage.*;
 
+import java.util.Locale;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -166,10 +167,10 @@ public class BlobCrudManagerFactory {
         String password = databaseSection.getString("Password");
         if (logActivity)
             return CrudManagerBuilder.MYSQL(hostname, port, database, user, password, tableNamingConvention(crudableName), primaryKeyName,
-                    primaryKeyLength, crudableName.toUpperCase(), createFunction, plugin.getAnjoLogger());
+                    primaryKeyLength, crudableName.toUpperCase(Locale.ROOT), createFunction, plugin.getAnjoLogger());
         else
             return CrudManagerBuilder.MYSQL_NO_LOGGER(hostname, port, database, user, password, tableNamingConvention(crudableName), primaryKeyName,
-                    primaryKeyLength, crudableName.toUpperCase(), createFunction);
+                    primaryKeyLength, crudableName.toUpperCase(Locale.ROOT), createFunction);
     }
 
 
@@ -200,10 +201,10 @@ public class BlobCrudManagerFactory {
         String database = databaseSection.getString("Database");
         if (logActivity)
             return CrudManagerBuilder.SQLITE(database, plugin.getDataFolder(), tableNamingConvention(crudableName), primaryKeyName,
-                    primaryKeyLength, crudableName.toUpperCase(), function, plugin.getAnjoLogger());
+                    primaryKeyLength, crudableName.toUpperCase(Locale.ROOT), function, plugin.getAnjoLogger());
         else
             return CrudManagerBuilder.SQLITE_NO_LOGGER(database, plugin.getDataFolder(), tableNamingConvention(crudableName), primaryKeyName,
-                    primaryKeyLength, crudableName.toUpperCase(), function);
+                    primaryKeyLength, crudableName.toUpperCase(Locale.ROOT), function);
     }
 
     private static String tableNamingConvention(String name) {

@@ -15,6 +15,7 @@ import org.bson.Document;
 import us.mytheria.bloblib.entities.DocumentDecorator;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -64,7 +65,7 @@ public class SharedSerializableInstanceManager implements Listener {
         Connection connection = event.getSender();
         if (!(connection instanceof Server origin))
             return;
-        String action = document.getString("Action").toLowerCase();
+        String action = document.getString("Action").toLowerCase(Locale.ROOT);
         switch (action) {
             case "shutdown" -> {
                 ServerInfo info = origin.getInfo();

@@ -6,6 +6,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -28,7 +29,7 @@ public class EconomyPHExpansion<T extends WalletOwner> extends PlaceholderExpans
     }
 
     public @NotNull String getIdentifier() {
-        return ownerManager.getPlugin().getName().toLowerCase() + "economy";
+        return ownerManager.getPlugin().getName().toLowerCase(Locale.ROOT) + "economy";
     }
 
     public @NotNull String getVersion() {
@@ -69,7 +70,7 @@ public class EconomyPHExpansion<T extends WalletOwner> extends PlaceholderExpans
                         displayName = currency.getDisplayName(player);
                     displayName = pattern
                             .matcher(displayName)
-                            .replaceFirst(m -> m.group().toUpperCase());
+                            .replaceFirst(m -> m.group().toUpperCase(Locale.ROOT));
                     return displayName;
                 }
                 default -> {

@@ -69,7 +69,7 @@ public class ProxiedSharedSerializableManager<T extends SharedSerializable<?>>
                                         byte[] bytes) {
         DocumentDecorator decorator = DocumentDecorator.deserialize(bytes);
         Document document = decorator.document();
-        String action = document.getString("Action").toLowerCase();
+        String action = document.getString("Action").toLowerCase(Locale.ROOT);
         switch (action) {
             case "initialize" -> {
                 String playerName = decorator.hasString("SharedSerializable#OwnerName")

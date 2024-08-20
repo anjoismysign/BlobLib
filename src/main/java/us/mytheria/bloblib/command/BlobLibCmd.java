@@ -41,6 +41,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -84,7 +85,7 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                 debug(sender);
                 return true;
             }
-            String arg1 = args[0].toLowerCase();
+            String arg1 = args[0].toLowerCase(Locale.ROOT);
             switch (arg1) {
                 case "reload" -> {
                     main.reload();
@@ -100,7 +101,7 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                                 .toCommandSender(sender);
                         return true;
                     }
-                    String arg2 = args[1].toLowerCase();
+                    String arg2 = args[1].toLowerCase(Locale.ROOT);
                     if (!arg2.equals("send")) {
                         BlobLibMessageAPI.getInstance()
                                 .getMessage("BlobMessage.Usage", sender)
@@ -166,7 +167,7 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                                 .toCommandSender(sender);
                         return true;
                     }
-                    String arg2 = args[1].toLowerCase();
+                    String arg2 = args[1].toLowerCase(Locale.ROOT);
                     if (!arg2.equals("open")) {
                         BlobLibMessageAPI.getInstance()
                                 .getMessage("BlobInventory.Usage", sender)
@@ -214,7 +215,7 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                                 .toCommandSender(sender);
                         return true;
                     }
-                    String arg2 = args[1].toLowerCase();
+                    String arg2 = args[1].toLowerCase(Locale.ROOT);
                     String key = args[2];
                     switch (arg2) {
                         case "get" -> {
@@ -280,7 +281,7 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                         sender.sendMessage(TextColor.PARSE("&c/bloblib translatablepositionable open <player>"));
                         return true;
                     }
-                    String arg2 = args[1].toLowerCase();
+                    String arg2 = args[1].toLowerCase(Locale.ROOT);
                     if (!arg2.equals("teleport")) {
                         sender.sendMessage(TextColor.PARSE("&c/bloblib translatablepositionable open <player>"));
                         return true;
@@ -450,7 +451,7 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                         list.add("blobmessage");
                     }
                     case 2 -> {
-                        String arg = args[0].toLowerCase();
+                        String arg = args[0].toLowerCase(Locale.ROOT);
                         switch (arg) {
                             case "update" -> {
                                 list.addAll(main.getPluginManager().values().stream()
@@ -487,10 +488,10 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                         }
                     }
                     case 3 -> {
-                        String arg = args[0].toLowerCase();
+                        String arg = args[0].toLowerCase(Locale.ROOT);
                         switch (arg) {
                             case "translatableitem" -> {
-                                String sub = args[1].toLowerCase();
+                                String sub = args[1].toLowerCase(Locale.ROOT);
                                 if (sub.equals("get") || sub.equals("give")) {
                                     BlobLibTranslatableAPI.getInstance()
                                             .getTranslatableItems("en_us")
@@ -501,7 +502,7 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                                 }
                             }
                             case "blobinventory" -> {
-                                String sub = args[1].toLowerCase();
+                                String sub = args[1].toLowerCase(Locale.ROOT);
                                 if (sub.equals("open")) {
                                     BlobLibInventoryAPI.getInstance()
                                             .getBlobInventories().keySet()
@@ -510,7 +511,7 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                                 }
                             }
                             case "translatablepositionable" -> {
-                                String sub = args[1].toLowerCase();
+                                String sub = args[1].toLowerCase(Locale.ROOT);
                                 if (sub.equals("teleport")) {
                                     return BlobLibTranslatableAPI.getInstance()
                                             .getTranslatablePositionables("en_us")
@@ -520,7 +521,7 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                                 }
                             }
                             case "blobmessage" -> {
-                                String sub = args[1].toLowerCase();
+                                String sub = args[1].toLowerCase(Locale.ROOT);
                                 if (sub.equals("send")) {
                                     BlobLibMessageAPI.getInstance()
                                             .getDefaultReferences()
@@ -531,10 +532,10 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                         }
                     }
                     case 4 -> {
-                        String arg = args[0].toLowerCase();
+                        String arg = args[0].toLowerCase(Locale.ROOT);
                         switch (arg) {
                             case "translatableitem" -> {
-                                String sub = args[1].toLowerCase();
+                                String sub = args[1].toLowerCase(Locale.ROOT);
                                 if (sub.equals("give")) {
                                     list.addAll(main.getServer().getOnlinePlayers().stream()
                                             .map(Player::getName)
@@ -543,7 +544,7 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                                 }
                             }
                             case "blobinventory" -> {
-                                String sub = args[1].toLowerCase();
+                                String sub = args[1].toLowerCase(Locale.ROOT);
                                 if (sub.equals("open")) {
                                     list.addAll(main.getServer().getOnlinePlayers().stream()
                                             .map(Player::getName)
@@ -552,7 +553,7 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                                 }
                             }
                             case "translatablepositionable" -> {
-                                String sub = args[1].toLowerCase();
+                                String sub = args[1].toLowerCase(Locale.ROOT);
                                 if (sub.equals("teleport")) {
                                     list.addAll(main.getServer().getOnlinePlayers().stream()
                                             .map(Player::getName)
@@ -561,7 +562,7 @@ public class BlobLibCmd implements CommandExecutor, TabCompleter {
                                 }
                             }
                             case "blobmessage" -> {
-                                String sub = args[1].toLowerCase();
+                                String sub = args[1].toLowerCase(Locale.ROOT);
                                 if (sub.equals("send")) {
                                     list.addAll(main.getServer().getOnlinePlayers().stream()
                                             .map(Player::getName)
