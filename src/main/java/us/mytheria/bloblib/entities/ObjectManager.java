@@ -241,6 +241,10 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager
         });
     }
 
+    public ObjectDirector<T> getParent() {
+        return parent;
+    }
+
     public List<String> get() {
         return new ArrayList<>(objects.keySet());
     }

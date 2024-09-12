@@ -13,16 +13,16 @@ import us.mytheria.bloblib.entities.inventory.ObjectBuilder;
 import us.mytheria.bloblib.itemstack.ItemStackBuilder;
 import us.mytheria.bloblib.managers.Manager;
 import us.mytheria.bloblib.managers.ManagerDirector;
-import us.mytheria.bloblib.utilities.HandyDirectory;
 import us.mytheria.bloblib.utilities.ItemStackUtil;
 
 import java.io.File;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.logging.Level;
 
 public class ObjectDirector<T extends BlobObject> extends Manager
         implements Listener, RunnableReloadable {
@@ -36,12 +36,21 @@ public class ObjectDirector<T extends BlobObject> extends Manager
     public ObjectDirector(ManagerDirector managerDirector,
                           ObjectDirectorData objectDirectorData,
                           Function<File, T> readFunction) {
-        this(managerDirector, objectDirectorData, readFunction, true);
+        this(managerDirector, objectDirectorData, readFunction, true, true);
     }
 
     public ObjectDirector(ManagerDirector managerDirector,
                           ObjectDirectorData objectDirectorData,
-                          Function<File, T> readFunction, boolean hasObjectBuilderManager) {
+                          Function<File, T> readFunction,
+                          boolean hasObjectBuilderManager) {
+        this(managerDirector, objectDirectorData, readFunction, hasObjectBuilderManager, true);
+    }
+
+    public ObjectDirector(ManagerDirector managerDirector,
+                          ObjectDirectorData objectDirectorData,
+                          Function<File, T> readFunction,
+                          boolean hasObjectBuilderManager,
+                          boolean isAsynchronous) {
         super(managerDirector);
         this.commandDirector = new CommandDirector(managerDirector.getPlugin(), objectDirectorData.objectName());
         objectIsEditable = false;
@@ -57,43 +66,10 @@ public class ObjectDirector<T extends BlobObject> extends Manager
             Bukkit.getLogger().info("The loadFilesPathKey is not valid");
             throw new IllegalArgumentException("The loadFilesPathKey is not valid");
         }
-        this.objectManager = new ObjectManager<>(managerDirector, loadFilesDirectory.get(),
-                ConcurrentHashMap::new, ConcurrentHashMap::new, this) {
-            public void loadFiles(File path, CompletableFuture<Void> mainFuture) {
-                if (!path.exists())
-                    path.mkdir();
-                Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () -> {
-                    HandyDirectory handyDirectory = HandyDirectory.of(path);
-                    Collection<File> files = handyDirectory.listRecursively("yml");
-                    List<CompletableFuture<Void>> futures = new ArrayList<>();
-                    files.forEach(file -> {
-                        CompletableFuture<Void> fileFuture = CompletableFuture.runAsync(() -> {
-                            loadFile(file, mainFuture::completeExceptionally);
-                        });
-                        futures.add(fileFuture);
-                    });
-                    CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).thenAccept(v -> mainFuture.complete(null));
-                });
-            }
-
-            @Override
-            public void loadFile(@NotNull File file,
-                                 Consumer<Throwable> ifFail) {
-                T blobObject;
-                try {
-                    blobObject = readFunction.apply(file);
-                    if (blobObject != null) {
-                        if (blobObject.edit() != null)
-                            objectIsEditable = true;
-                        this.addObject(blobObject.getKey(), blobObject, file);
-                    }
-                } catch (Throwable throwable) {
-                    Bukkit.getLogger().log(Level.SEVERE, throwable.getMessage() + " \n " +
-                            "At: " + file.getPath(), throwable);
-                    ifFail.accept(throwable);
-                }
-            }
-        };
+        this.objectManager = isAsynchronous ? new AsynchronousObjectManager<>(managerDirector, loadFilesDirectory.get(),
+                ConcurrentHashMap::new, ConcurrentHashMap::new, this, readFunction) :
+                new SynchronousObjectManager<>(managerDirector, loadFilesDirectory.get(),
+                        ConcurrentHashMap::new, ConcurrentHashMap::new, this, readFunction);
         Bukkit.getPluginManager().registerEvents(this, managerDirector.getPlugin());
         objectName = objectDirectorData.objectName();
         setDefaultCommands().setDefaultTabCompleter();
@@ -334,6 +310,10 @@ public class ObjectDirector<T extends BlobObject> extends Manager
 
     public boolean objectIsEditable() {
         return objectIsEditable;
+    }
+
+    public void setObjectIsEditable(boolean objectIsEditable) {
+        this.objectIsEditable = objectIsEditable;
     }
 
     @SuppressWarnings("unchecked")
