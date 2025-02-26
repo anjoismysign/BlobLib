@@ -14,7 +14,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author anjoismysign
@@ -133,7 +140,7 @@ public class BlobFileManager extends Manager implements IFileManager {
                     File.separator + "temp" + fileName + ".yml",
                     path, file, getPlugin());
             return isFresh;
-        } catch (IOException e) {
+        } catch ( IOException e ) {
             e.printStackTrace();
         }
         return false;
@@ -197,11 +204,12 @@ public class BlobFileManager extends Manager implements IFileManager {
                 if (optional.isPresent()) {
                     @Nullable File file = getFile(assetType.getDefaultFileKey());
                     Objects.requireNonNull(file, "No default file for DataAssetType: " + assetType.name());
+                    file.getParentFile().mkdirs();
                     file.createNewFile();
                     ResourceUtil.updateYml(getDirectory(assetType), File.separator + "temp" + path, path, file, plugin);
                 }
             }
-        } catch (Throwable throwable) {
+        } catch ( Throwable throwable ) {
             throwable.printStackTrace();
         }
     }
@@ -233,11 +241,11 @@ public class BlobFileManager extends Manager implements IFileManager {
                     file.createNewFile();
                     ResourceUtil.updateYml(directory, File.separator + "temp" + fileName + ".yml",
                             fileName + ".yml", file, getPlugin());
-                } catch (IOException e) {
+                } catch ( IOException e ) {
                     e.printStackTrace();
                 }
             }
-        } catch (IOException e) {
+        } catch ( IOException e ) {
             e.printStackTrace();
         }
     }

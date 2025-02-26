@@ -11,6 +11,8 @@ import us.mytheria.bloblib.entities.message.BlobMessage;
 import us.mytheria.bloblib.managers.BlobLibConfigManager;
 import us.mytheria.bloblib.managers.MessageManager;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -171,6 +173,15 @@ public class BlobLibMessageAPI {
     @NotNull
     public Set<String> getDefaultReferences() {
         return getMessageManager().getDefaultReferences();
+    }
+
+    public Map<String, BlobMessage> getDefault() {
+        Set<String> references = getDefaultReferences();
+        Map<String, BlobMessage> messages = new HashMap<>();
+        references.forEach(key -> {
+            messages.put(key, getMessageManager().getMessage(key));
+        });
+        return messages;
     }
 
 }

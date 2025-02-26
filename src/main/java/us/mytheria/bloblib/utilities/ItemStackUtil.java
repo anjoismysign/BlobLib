@@ -7,16 +7,14 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.jetbrains.annotations.Nullable;
-import us.mytheria.bloblib.itemstack.Util1_20_5;
-import us.mytheria.bloblib.itemstack.UtilLegacy;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 public class ItemStackUtil {
-    private static final ItemStackUtilMiddleman middleman = (MinecraftVersion.of("1.20.5").compareTo(MinecraftVersion.getRunning()) >= 0) ?
-            new Util1_20_5() : new UtilLegacy();
 
     /**
      * Will display an ItemStack by either their ItemMeta's displayname or their Material's name
@@ -25,7 +23,16 @@ public class ItemStackUtil {
      * @return The displayname of the ItemStack
      */
     public static String display(ItemStack itemStack) {
-        return middleman.display(itemStack);
+        if (itemStack == null)
+            return "null";
+        if (!itemStack.hasItemMeta())
+            return itemStack.getType().name();
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (itemMeta.hasItemName())
+            return itemMeta.getItemName();
+        if (itemMeta.hasDisplayName())
+            return itemMeta.getDisplayName();
+        return itemStack.getType().name();
     }
 
     /**
@@ -36,7 +43,28 @@ public class ItemStackUtil {
      * @param replacement The string to replace with
      */
     public static void replace(ItemStack itemStack, String target, String replacement) {
-        middleman.replace(itemStack, target, replacement);
+        if (itemStack == null)
+            return;
+        if (!itemStack.hasItemMeta())
+            return;
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (itemMeta.hasItemName()) {
+            String itemName = itemMeta.getItemName().replace(target, replacement);
+            itemMeta.setItemName(itemName);
+        }
+        if (itemMeta.hasDisplayName()) {
+            String displayname = itemMeta.getDisplayName().replace(target, replacement);
+            itemMeta.setDisplayName(displayname);
+        }
+        if (itemMeta.hasLore()) {
+            List<String> lore = new ArrayList<>();
+            List<String> current = itemMeta.getLore();
+            for (String s : current) {
+                lore.add(s.replace(target, replacement));
+            }
+            itemMeta.setLore(lore);
+        }
+        itemStack.setItemMeta(itemMeta);
     }
 
     /**
@@ -91,7 +119,7 @@ public class ItemStackUtil {
                 objectOutputStream.writeObject(itemStack);
             }
             return Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray());
-        } catch (Exception e) {
+        } catch ( Exception e ) {
             e.printStackTrace();
         }
         return null;
@@ -106,7 +134,7 @@ public class ItemStackUtil {
                 itemStacks[i] = (ItemStack) objectInputStream.readObject();
             }
             return itemStacks;
-        } catch (Exception e) {
+        } catch ( Exception e ) {
             e.printStackTrace();
         }
         return null;

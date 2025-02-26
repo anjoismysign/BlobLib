@@ -4,10 +4,24 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.action.Action;
-import us.mytheria.bloblib.api.*;
-import us.mytheria.bloblib.entities.inventory.*;
+import us.mytheria.bloblib.api.BlobLibActionAPI;
+import us.mytheria.bloblib.api.BlobLibInventoryAPI;
+import us.mytheria.bloblib.api.BlobLibMessageAPI;
+import us.mytheria.bloblib.api.BlobLibSoundAPI;
+import us.mytheria.bloblib.api.BlobLibTagAPI;
+import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
+import us.mytheria.bloblib.entities.inventory.BlobInventory;
+import us.mytheria.bloblib.entities.inventory.InventoryBuilderCarrier;
+import us.mytheria.bloblib.entities.inventory.InventoryButton;
+import us.mytheria.bloblib.entities.inventory.MetaBlobInventory;
+import us.mytheria.bloblib.entities.inventory.MetaInventoryButton;
 import us.mytheria.bloblib.entities.message.BlobSound;
-import us.mytheria.bloblib.managers.*;
+import us.mytheria.bloblib.itemapi.ItemMaterialManager;
+import us.mytheria.bloblib.managers.ActionManager;
+import us.mytheria.bloblib.managers.InventoryManager;
+import us.mytheria.bloblib.managers.MessageManager;
+import us.mytheria.bloblib.managers.MetaInventoryShard;
+import us.mytheria.bloblib.managers.SoundManager;
 
 import java.util.Optional;
 
@@ -22,6 +36,7 @@ public class BlobLibAssetAPI {
     private final BlobLibTagAPI tagAPI;
     private final BlobLibMessageAPI messageAPI;
     private final BlobLibTranslatableAPI translatableAPI;
+    private final ItemMaterialManager materialManager;
 
     private BlobLibAssetAPI(BlobLib plugin) {
         this.soundAPI = BlobLibSoundAPI.getInstance(plugin);
@@ -30,6 +45,8 @@ public class BlobLibAssetAPI {
         this.tagAPI = BlobLibTagAPI.getInstance(plugin);
         this.messageAPI = BlobLibMessageAPI.getInstance(plugin);
         this.translatableAPI = BlobLibTranslatableAPI.getInstance(plugin);
+        this.materialManager = new ItemMaterialManager() {
+        };
     }
 
     public static BlobLibAssetAPI getInstance(BlobLib plugin) {
@@ -67,6 +84,10 @@ public class BlobLibAssetAPI {
 
     public BlobLibTranslatableAPI getTranslatableAPI() {
         return translatableAPI;
+    }
+
+    public ItemMaterialManager getMaterialManager() {
+        return materialManager;
     }
 
     @Deprecated

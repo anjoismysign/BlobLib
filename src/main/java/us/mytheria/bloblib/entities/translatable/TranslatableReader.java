@@ -4,6 +4,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.FluidPressureAPI;
+import us.mytheria.bloblib.ProjectileDamageAPI;
 import us.mytheria.bloblib.SoulAPI;
 import us.mytheria.bloblib.UniqueAPI;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
@@ -25,7 +26,7 @@ public class TranslatableReader {
             throw new ConfigurationFieldException("'ItemStack' is missing or not set");
         boolean isSoul = section.getBoolean("Is-Soul", false);
         boolean isUnique = section.getBoolean("Is-Unique", false);
-        ItemStack itemStack = ItemStackReader.getInstance().readOrFailFast(section.getConfigurationSection("ItemStack"));
+        ItemStack itemStack = ItemStackReader.READ_OR_FAIL_FAST(section.getConfigurationSection("ItemStack")).build();
         if (isSoul)
             SoulAPI.getInstance().set(itemStack);
         if (isUnique)
@@ -33,6 +34,10 @@ public class TranslatableReader {
         if (section.isDouble("Fluid-Pressure")) {
             double pressure = section.getDouble("Fluid-Pressure");
             FluidPressureAPI.getInstance().set(itemStack, pressure);
+        }
+        if (section.isDouble("Projectile-Damage")) {
+            double damage = section.getDouble("Projectile-Damage");
+            ProjectileDamageAPI.getInstance().set(itemStack, damage);
         }
         return BlobTranslatableItem.of(key, locale, itemStack);
     }

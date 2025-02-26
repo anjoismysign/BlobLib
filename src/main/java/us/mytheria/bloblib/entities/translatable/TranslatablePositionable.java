@@ -8,7 +8,7 @@ import us.mytheria.bloblib.entities.positionable.Positionable;
 
 import java.util.Objects;
 
-public interface TranslatablePositionable extends Translatable<Positionable> {
+public interface TranslatablePositionable extends Displayable<Positionable> {
 
     /**
      * Gets a TranslatablePositionable by its key. Key is the same as getReference.
@@ -21,14 +21,6 @@ public interface TranslatablePositionable extends Translatable<Positionable> {
         Objects.requireNonNull(key);
         return BlobLibTranslatableAPI.getInstance().getTranslatablePositionable(key);
     }
-
-    /**
-     * Gets the display of this TranslatablePositionable
-     *
-     * @return The name
-     */
-    @NotNull
-    String getDisplay();
 
     /**
      * Localizes the TranslatablePositionable to a specific locale.

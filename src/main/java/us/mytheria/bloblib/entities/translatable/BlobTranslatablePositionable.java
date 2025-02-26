@@ -25,10 +25,10 @@ public class BlobTranslatablePositionable implements TranslatablePositionable {
         return new BlobTranslatablePositionable(key, locale, display, positionable);
     }
 
-    private BlobTranslatablePositionable(@NotNull String key,
-                                         @NotNull String locale,
-                                         @NotNull String display,
-                                         @NotNull Positionable positionable) {
+    public BlobTranslatablePositionable(@NotNull String key,
+                                        @NotNull String locale,
+                                        @NotNull String display,
+                                        @NotNull Positionable positionable) {
         this.key = key;
         this.locale = locale;
         this.display = BlobTranslatableSnippet.PARSE(display, locale);

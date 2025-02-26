@@ -7,15 +7,28 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ArmorMeta;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.inventory.meta.Repairable;
+import org.bukkit.inventory.meta.components.FoodComponent;
+import org.bukkit.inventory.meta.trim.ArmorTrim;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.utilities.TextColor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 
@@ -44,7 +57,7 @@ public final class ItemStackBuilder {
         Material mat;
         try {
             mat = Material.valueOf(material);
-        } catch (IllegalArgumentException e) {
+        } catch ( IllegalArgumentException e ) {
             mat = Material.DIRT;
             Bukkit.getLogger().info("Material " + material + " is not a valid material. Using DIRT instead.");
         }
@@ -55,6 +68,49 @@ public final class ItemStackBuilder {
         this.itemStack = Objects.requireNonNull(itemStack, "itemStack cannot be null");
     }
 
+    private ItemStackBuilder damageable(Consumer<Damageable> consumer) {
+        ItemMeta m = this.itemStack.getItemMeta();
+        if (m instanceof Damageable damageable) {
+            consumer.accept(damageable);
+            this.itemStack.setItemMeta(m);
+        }
+        return this;
+    }
+
+    public ItemStackBuilder damage(int damage) {
+        return damageable(damageable -> damageable.setDamage(damage));
+    }
+
+    public ItemStackBuilder maxDamage(int maxDamage) {
+        return damageable(damageable -> damageable.setMaxDamage(maxDamage));
+    }
+
+    private ItemStackBuilder repariable(Consumer<Repairable> consumer) {
+        ItemMeta m = this.itemStack.getItemMeta();
+        if (m instanceof Repairable repairable) {
+            consumer.accept(repairable);
+            this.itemStack.setItemMeta(m);
+        }
+        return this;
+    }
+
+    public ItemStackBuilder repairCost(int repairCost) {
+        return repariable(repairable -> repairable.setRepairCost(repairCost));
+    }
+
+    private ItemStackBuilder armor(Consumer<ArmorMeta> consumer) {
+        ItemMeta m = this.itemStack.getItemMeta();
+        if (m instanceof ArmorMeta armorMeta) {
+            consumer.accept(armorMeta);
+            this.itemStack.setItemMeta(m);
+        }
+        return this;
+    }
+
+    public ItemStackBuilder armorTrim(ArmorTrim armorTrim) {
+        return armor(armorMeta -> armorMeta.setTrim(armorTrim));
+    }
+
     private ItemStackBuilder itemMeta(Consumer<ItemMeta> consumer) {
         ItemMeta m = this.itemStack.getItemMeta();
         if (m != null) {
@@ -62,6 +118,38 @@ public final class ItemStackBuilder {
             this.itemStack.setItemMeta(m);
         }
         return this;
+    }
+
+    public ItemStackBuilder itemName(String name) {
+        return itemMeta(itemMeta -> itemMeta.setItemName(name));
+    }
+
+    public ItemStackBuilder hideToolTip(boolean hideToolTip) {
+        return itemMeta(itemMeta -> itemMeta.setHideTooltip(hideToolTip));
+    }
+
+    public ItemStackBuilder enchantmentGlintOverride(boolean glint) {
+        return itemMeta(itemMeta -> itemMeta.setEnchantmentGlintOverride(glint));
+    }
+
+    public ItemStackBuilder fireResistant(boolean fireResistant) {
+        return itemMeta(itemMeta -> itemMeta.setFireResistant(fireResistant));
+    }
+
+    public ItemStackBuilder maxStackSize(int maxStackSize) {
+        return itemMeta(itemMeta -> itemMeta.setMaxStackSize(maxStackSize));
+    }
+
+    public ItemStackBuilder rarity(ItemRarity rarity) {
+        return itemMeta(itemMeta -> itemMeta.setRarity(rarity));
+    }
+
+    public ItemStackBuilder food(Consumer<FoodComponent> consumer) {
+        return itemMeta(itemMeta -> {
+            FoodComponent foodComponent = itemMeta.getFood();
+            consumer.accept(foodComponent);
+            itemMeta.setFood(foodComponent);
+        });
     }
 
     public ItemStackBuilder hideAll() {
@@ -85,7 +173,7 @@ public final class ItemStackBuilder {
         for (String flag : flags) {
             try {
                 itemFlags.add(ItemFlag.valueOf(flag));
-            } catch (IllegalArgumentException e) {
+            } catch ( IllegalArgumentException e ) {
                 Bukkit.getLogger().info("ItemFlag " + flag + " is not a valid ItemFlag.");
             }
         }
@@ -210,7 +298,7 @@ public final class ItemStackBuilder {
             int level;
             try {
                 level = Integer.parseInt(split[1]);
-            } catch (NumberFormatException e) {
+            } catch ( NumberFormatException e ) {
                 Bukkit.getLogger().severe("Invalid level for " + key + " enchantment: " + split[1]);
                 return;
             }
@@ -253,15 +341,16 @@ public final class ItemStackBuilder {
 
     public ItemStackBuilder attribute(
             Attribute attribute,
+            @NotNull String name,
             double amount,
-            AttributeModifier.Operation operation,
-            @Nullable EquipmentSlot equipmentSlot) {
+            @NotNull AttributeModifier.Operation operation,
+            @Nullable EquipmentSlotGroup equipmentSlotGroup) {
         return itemMeta(itemMeta -> {
             try {
-                UUID uuid = UUID.randomUUID();
-                AttributeModifier modifier = new AttributeModifier(uuid, uuid.toString(), amount, operation, equipmentSlot);
+                NamespacedKey key = new NamespacedKey(BlobLib.getInstance(), name);
+                AttributeModifier modifier = new AttributeModifier(key, amount, operation, equipmentSlotGroup);
                 itemMeta.addAttributeModifier(attribute, modifier);
-            } catch (Exception exception) {
+            } catch ( Exception exception ) {
                 Bukkit.getLogger().log(Level.SEVERE, exception, () -> "Failed to add attribute modifier");
             }
         });
@@ -274,4 +363,6 @@ public final class ItemStackBuilder {
     public ItemStack build() {
         return this.itemStack;
     }
+
+
 }

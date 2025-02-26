@@ -10,6 +10,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 public interface Area {
+
+    @NotNull
+    AreaType getType();
+
     @NotNull
     String getWorldName();
 

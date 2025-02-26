@@ -324,6 +324,23 @@ Deposit:
   Successful:
     Type: CHAT
     Message: You have deposited %display%
+TranslatablePositionable:
+  Random:
+    Type: CHAT
+    Message: '&f%reference% &7was successfully added'
+TranslatableArea:
+  Wand-Min:
+    Type: CHAT
+    Message: '&7Set &fmin &7position at: %pos%'
+  Wand-Max:
+    Type: CHAT
+    Message: '&7Set &fmax &7position at: %pos%'
+  Random:
+    Type: CHAT
+    Message: '&f%reference% &7was successfully added'
+  Random-Fail:
+    Type: CHAT
+    Message: '&7Seems a generation fail. Are you sure you are using the proper TranslatableItem? (&fTranslatableArea.Wand&7)'
 TranslatableItem:
   Usage:
     Type: CHAT

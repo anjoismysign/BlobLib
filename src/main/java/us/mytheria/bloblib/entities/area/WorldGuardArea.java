@@ -8,9 +8,8 @@ import us.mytheria.bloblib.enginehub.EngineHubManager;
 
 import java.util.Objects;
 
-public class WorldGuardArea implements Area {
-    private final String worldName;
-    private final String id;
+public record WorldGuardArea(@NotNull String worldName,
+                             @NotNull String id) implements Area {
 
     /**
      * Instances a WorldGuard Area.
@@ -28,13 +27,6 @@ public class WorldGuardArea implements Area {
         return new WorldGuardArea(worldName, id);
     }
 
-    private WorldGuardArea(
-            String worldName,
-            String id) {
-        this.worldName = worldName;
-        this.id = id;
-    }
-
     @NotNull
     private ProtectedRegion getProtectedRegion() {
         Object result = EngineHubManager.getInstance()
@@ -42,6 +34,11 @@ public class WorldGuardArea implements Area {
                 .getRegion(getWorld(), id);
         Objects.requireNonNull(result, "Couldn't find " + id + " in: " + worldName);
         return (ProtectedRegion) result;
+    }
+
+    @Override
+    public @NotNull AreaType getType() {
+        return AreaType.WORLD_GUARD_AREA;
     }
 
     @NotNull

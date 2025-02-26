@@ -2,23 +2,45 @@ package us.mytheria.bloblib;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import us.mytheria.bloblib.command.BlobLibCmd;
+import us.mytheria.bloblib.command.BlobLibCommand;
 import us.mytheria.bloblib.disguises.DisguiseManager;
 import us.mytheria.bloblib.enginehub.EngineHubManager;
 import us.mytheria.bloblib.entities.DataAssetType;
-import us.mytheria.bloblib.entities.area.WorldGuardArea;
 import us.mytheria.bloblib.entities.logger.BlobPluginLogger;
 import us.mytheria.bloblib.entities.positionable.Positionable;
-import us.mytheria.bloblib.entities.positionable.PositionableReader;
+import us.mytheria.bloblib.entities.positionable.PositionableIO;
 import us.mytheria.bloblib.entities.tag.TagSet;
 import us.mytheria.bloblib.entities.tag.TagSetReader;
-import us.mytheria.bloblib.entities.translatable.*;
+import us.mytheria.bloblib.entities.translatable.BlobTranslatablePositionable;
+import us.mytheria.bloblib.entities.translatable.TranslatableItem;
+import us.mytheria.bloblib.entities.translatable.TranslatablePositionable;
+import us.mytheria.bloblib.entities.translatable.TranslatableReader;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
 import us.mytheria.bloblib.hologram.HologramManager;
-import us.mytheria.bloblib.managers.*;
+import us.mytheria.bloblib.managers.ActionManager;
+import us.mytheria.bloblib.managers.BlobLibConfigManager;
+import us.mytheria.bloblib.managers.BlobLibFileManager;
+import us.mytheria.bloblib.managers.BlobLibListenerManager;
+import us.mytheria.bloblib.managers.ChatListenerManager;
+import us.mytheria.bloblib.managers.ColorManager;
+import us.mytheria.bloblib.managers.DataAssetManager;
+import us.mytheria.bloblib.managers.DropListenerManager;
+import us.mytheria.bloblib.managers.InventoryManager;
+import us.mytheria.bloblib.managers.InventoryTrackerManager;
+import us.mytheria.bloblib.managers.LocalizableDataAssetManager;
+import us.mytheria.bloblib.managers.MessageManager;
+import us.mytheria.bloblib.managers.PluginManager;
+import us.mytheria.bloblib.managers.ScriptManager;
+import us.mytheria.bloblib.managers.SelPosListenerManager;
+import us.mytheria.bloblib.managers.SelectorListenerManager;
+import us.mytheria.bloblib.managers.SoundManager;
+import us.mytheria.bloblib.managers.TranslatableAreaManager;
+import us.mytheria.bloblib.managers.TranslatableManager;
+import us.mytheria.bloblib.managers.VariableSelectorManager;
 import us.mytheria.bloblib.managers.fillermanager.FillerManager;
 import us.mytheria.bloblib.placeholderapi.TranslatablePH;
 import us.mytheria.bloblib.placeholderapi.WorldGuardPH;
+import us.mytheria.bloblib.psa.BukkitPSA;
 import us.mytheria.bloblib.utilities.MinecraftVersion;
 import us.mytheria.bloblib.utilities.SerializationLib;
 import us.mytheria.bloblib.vault.VaultManager;
@@ -58,13 +80,14 @@ public class BlobLib extends JavaPlugin {
 
     private LocalizableDataAssetManager<TranslatableItem> translatableItemManager;
     private LocalizableDataAssetManager<TranslatablePositionable> translatablePositionableManager;
-    private LocalizableDataAssetManager<TranslatableArea> translatableAreaManager;
+    private TranslatableAreaManager translatableAreaManager;
     private DataAssetManager<TagSet> tagSetManager;
 
     private MinecraftVersion running;
     private SoulAPI soulAPI;
     private UniqueAPI uniqueAPI;
     private FluidPressureAPI fluidPressureAPI;
+    private ProjectileDamageAPI projectileDamageAPI;
 
     private static BlobLib instance;
 
@@ -92,16 +115,18 @@ public class BlobLib extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        BukkitPSA.INSTANCE.load(this);
         running = MinecraftVersion.getRunning();
         soulAPI = SoulAPI.getInstance(this);
         uniqueAPI = UniqueAPI.getInstance(this);
         fluidPressureAPI = FluidPressureAPI.getInstance(this);
+        projectileDamageAPI = ProjectileDamageAPI.getInstance(this);
         api = BlobLibAPI.getInstance(this);
         bloblibupdater = new BlobLibUpdater(this);
         serializationLib = SerializationLib.getInstance(this);
         anjoLogger = new BlobPluginLogger(this);
         scriptManager = new ScriptManager();
-        pluginManager = new PluginManager();
+        pluginManager = PluginManager.getInstance();
         colorManager = new ColorManager();
         fileManager = new BlobLibFileManager();
         fileManager.unpackYamlFile("/BlobInventory", "CurrencyBuilder", false);
@@ -123,7 +148,7 @@ public class BlobLib extends JavaPlugin {
         translatablePositionableManager = LocalizableDataAssetManager
                 .of(fileManager.getDirectory(DataAssetType.TRANSLATABLE_POSITIONABLE),
                         (section, locale, key) -> {
-                            Positionable positionable = PositionableReader.getInstance().read(section);
+                            Positionable positionable = PositionableIO.INSTANCE.read(section);
                             if (!section.isString("Display"))
                                 throw new ConfigurationFieldException("'Display' is missing or not set");
                             String display = section.getString("Display");
@@ -131,20 +156,7 @@ public class BlobLib extends JavaPlugin {
                         },
                         DataAssetType.TRANSLATABLE_POSITIONABLE,
                         section -> section.isDouble("X") && section.isDouble("Y") && section.isDouble("Z"));
-        translatableAreaManager = LocalizableDataAssetManager
-                .of(fileManager.getDirectory(DataAssetType.TRANSLATABLE_AREA),
-                        (section, locale, key) -> {
-                            if (!engineHubManager.isWorldGuardInstalled()) {
-                                getLogger().severe("WorldGuard is not installed, failed to load Area: " + key);
-                                return null;
-                            }
-                            String worldName = section.getString("World");
-                            String id = section.getString("Id");
-                            String display = section.getString("Display");
-                            return BlobTranslatableArea.of(key, locale, display, WorldGuardArea.of(worldName, id));
-                        },
-                        DataAssetType.TRANSLATABLE_AREA,
-                        section -> section.isString("World") && section.isString("Id"));
+        translatableAreaManager = TranslatableAreaManager.of();
         messageManager = new MessageManager();
         actionManager = new ActionManager();
         soundManager = new SoundManager();
@@ -162,7 +174,7 @@ public class BlobLib extends JavaPlugin {
 
         //Load reloadable managers
         reload();
-        new BlobLibCmd();
+        BlobLibCommand.INSTANCE.initialize();
 
         Bukkit.getScheduler().runTask(this, () -> {
             TranslatablePH.getInstance(this);
@@ -264,7 +276,7 @@ public class BlobLib extends JavaPlugin {
         return translatablePositionableManager;
     }
 
-    public LocalizableDataAssetManager<TranslatableArea> getTranslatableAreaManager() {
+    public TranslatableAreaManager getTranslatableAreaManager() {
         return translatableAreaManager;
     }
 

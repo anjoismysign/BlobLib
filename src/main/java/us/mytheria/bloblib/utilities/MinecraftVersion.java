@@ -38,12 +38,11 @@ public record MinecraftVersion(int getMajor, int getMinor) implements Comparable
                 return new MinecraftVersion(x, y);
             }
             major = split[1];
-            minor = "0";
             int x = Integer.parseInt(major);
-            int y = Integer.parseInt(minor);
+            int y = 0;
             return new MinecraftVersion(x, y);
-        } catch (NumberFormatException exception) {
-            throw exception;
+        } catch ( NumberFormatException exception ) {
+            throw new RuntimeException(exception);
         }
     }
 

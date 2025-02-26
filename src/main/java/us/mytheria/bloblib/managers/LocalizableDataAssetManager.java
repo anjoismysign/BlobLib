@@ -14,7 +14,12 @@ import us.mytheria.bloblib.entities.Localizable;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Predicate;
 
 public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
@@ -54,10 +59,10 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
                 readFunction, type, filter);
     }
 
-    private LocalizableDataAssetManager(@NotNull File assetDirectory,
-                                        @NotNull TriFunction<ConfigurationSection, String, String, T> readFunction,
-                                        @NotNull DataAssetType type,
-                                        Predicate<ConfigurationSection> filter) {
+    LocalizableDataAssetManager(@NotNull File assetDirectory,
+                                @NotNull TriFunction<ConfigurationSection, String, String, T> readFunction,
+                                @NotNull DataAssetType type,
+                                Predicate<ConfigurationSection> filter) {
         this.main = BlobLib.getInstance();
         this.assetDirectory = assetDirectory;
         this.readFunction = readFunction;
@@ -101,10 +106,10 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
                     continue;
                 try {
                     loadYamlConfiguration(file);
-                } catch (ConfigurationFieldException exception) {
+                } catch ( ConfigurationFieldException exception ) {
                     main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
                     continue;
-                } catch (Throwable throwable) {
+                } catch ( Throwable throwable ) {
                     throwable.printStackTrace();
                     continue;
                 }
@@ -124,7 +129,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
                 if (asset == null)
                     return;
                 addOrCreateLocale(asset, fileName);
-            } catch (Throwable throwable) {
+            } catch ( Throwable throwable ) {
                 BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
                 throwable.printStackTrace();
             }
@@ -139,7 +144,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
             try {
                 T asset = readFunction.apply(section, locale, reference);
                 addOrCreateLocale(asset, reference);
-            } catch (Throwable throwable) {
+            } catch ( Throwable throwable ) {
                 BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
                 throwable.printStackTrace();
             }
@@ -157,7 +162,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
                     return;
                 addOrCreateLocale(asset, fileName);
                 assets.get(plugin.getName()).add(fileName);
-            } catch (Throwable throwable) {
+            } catch ( Throwable throwable ) {
                 BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
                 throwable.printStackTrace();
             }
@@ -173,7 +178,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
                 T asset = readFunction.apply(section, locale, reference);
                 addOrCreateLocale(asset, reference);
                 assets.get(plugin.getName()).add(reference);
-            } catch (Throwable throwable) {
+            } catch ( Throwable throwable ) {
                 BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
                 throwable.printStackTrace();
             }
@@ -218,11 +223,22 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
 
     public List<T> getAssets(@NotNull String locale) {
         Objects.requireNonNull(locale);
-        Map<String, T> copy = new HashMap<>(locales.get("en_us"));
+        @Nullable Map<String, T> english = locales.get("en_us");
+        Map<String, T> copy = new HashMap<>();
+        if (english != null)
+            copy.putAll(english);
         Map<String, T> map = locales.get(locale);
         if (map != null)
             copy.putAll(map);
         return copy.values().stream().toList();
+    }
+
+    public Map<String, T> getDefault() {
+        @Nullable Map<String, T> english = locales.get("en_us");
+        Map<String, T> copy = new HashMap<>();
+        if (english != null)
+            copy.putAll(english);
+        return copy;
     }
 
     public List<T> getAssets() {
@@ -241,5 +257,10 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
         if (localeMap == null)
             return null;
         return localeMap.get(key);
+    }
+
+    @NotNull
+    public File getAssetDirectory() {
+        return assetDirectory;
     }
 }

@@ -24,7 +24,15 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 public class Currency implements BlobObject {
     private final String display, key;
@@ -272,7 +280,7 @@ public class Currency implements BlobObject {
         yamlConfiguration.set("Is-Tangible", isTangible);
         try {
             yamlConfiguration.save(file);
-        } catch (Exception exception) {
+        } catch ( Exception exception ) {
             exception.printStackTrace();
         }
         return file;
@@ -317,7 +325,7 @@ public class Currency implements BlobObject {
                 if (!shape.isDouble("Denomination"))
                     throw new ConfigurationFieldException("'" + a + ".Denomination' is missing or not valid (DECIMAL NUMBER)");
                 BigDecimal denomination = BigDecimal.valueOf(shape.getDouble("Denomination"));
-                ItemStack builder = ItemStackReader.getInstance().readOrFailFast(itemSection);
+                ItemStack builder = ItemStackReader.READ_OR_FAIL_FAST(itemSection).build();
                 ItemMeta itemMeta = builder.getItemMeta();
                 PersistentDataContainer pdc = itemMeta.getPersistentDataContainer();
                 pdc.set(director.getNamespacedKey("tangibleCurrencyKey"), PersistentDataType.STRING, key);

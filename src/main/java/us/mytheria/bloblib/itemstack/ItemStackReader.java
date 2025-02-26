@@ -1,6 +1,9 @@
 package us.mytheria.bloblib.itemstack;
 
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
 import me.anjoismysign.anjo.entities.Uber;
+import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -8,42 +11,28 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.EquipmentSlotGroup;
+import org.bukkit.inventory.ItemRarity;
+import org.bukkit.inventory.meta.trim.ArmorTrim;
+import org.bukkit.inventory.meta.trim.TrimMaterial;
+import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.SkullCreator;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
-import us.mytheria.bloblib.utilities.MinecraftVersion;
 import us.mytheria.bloblib.utilities.TextColor;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-public class ItemStackReader implements ItemStackReaderMiddleman {
-    private static ItemStackReaderMiddleman instance;
+public class ItemStackReader {
 
-    public static ItemStackReaderMiddleman getInstance() {
-        if (instance == null) {
-            MinecraftVersion supported = MinecraftVersion.of("1.20.5");
-            MinecraftVersion running = MinecraftVersion.getRunning();
-            if (running.compareTo(supported) >= 0)
-                instance = new Reader1_20_5();
-            else
-                instance = new ItemStackReader();
-        }
-        return instance;
-    }
-
-    /**
-     * @deprecated Use {@link #readOrFailFast(ConfigurationSection)}
-     */
-    @Deprecated
     public static ItemStackBuilder READ_OR_FAIL_FAST(ConfigurationSection section) {
         if (!section.isString("Material"))
             throw new ConfigurationFieldException("'Material' field is missing or not a String");
+        RegistryAccess registryAccess = RegistryAccess.registryAccess();
         String inputMaterial = section.getString("Material");
         ItemStackBuilder builder;
         if (!inputMaterial.startsWith("HEAD-")) {
@@ -58,6 +47,75 @@ public class ItemStackReader implements ItemStackReaderMiddleman {
             if (amount < 1 || amount > 127)
                 throw new ConfigurationFieldException("'Amount' field is not a valid amount");
             builder = builder.amount(section.getInt("Amount"));
+        }
+        if (section.isInt("Damage")) {
+            int damage = section.getInt("Damage");
+            if (damage < 0)
+                throw new ConfigurationFieldException("'Damage' field is not a valid damage value");
+            builder = builder.damage(damage);
+        }
+        if (section.isInt("RepairCost")) {
+            int repairCost = section.getInt("RepairCost");
+            if (repairCost < 0)
+                throw new ConfigurationFieldException("'RepairCost' field is not a valid repair cost value");
+            builder = builder.repairCost(repairCost);
+        }
+        if (section.isConfigurationSection("ArmorTrim")) {
+            ConfigurationSection armorTrim = section.getConfigurationSection("ArmorTrim");
+            if (!armorTrim.isString("TrimMaterial"))
+                throw new ConfigurationFieldException("ArmorTrim is missing 'TrimMaterial' field");
+            String trimMaterial = armorTrim.getString("TrimMaterial");
+            if (!armorTrim.isString("TrimPattern"))
+                throw new ConfigurationFieldException("ArmorTrim is missing 'TrimPattern' field");
+            String trimPattern = armorTrim.getString("TrimPattern");
+            TrimMaterial material = registryAccess.getRegistry(RegistryKey.TRIM_MATERIAL).get(Key.key(trimMaterial));
+            if (material == null)
+                throw new ConfigurationFieldException("'" + trimPattern + "' is not a valid TrimMaterial");
+            TrimPattern pattern = registryAccess.getRegistry(RegistryKey.TRIM_PATTERN).get(Key.key(trimPattern));
+            if (pattern == null)
+                throw new ConfigurationFieldException("'" + trimPattern + "' is not a valid TrimPattern");
+            builder = builder.armorTrim(new ArmorTrim(material, pattern));
+        }
+        if (section.isString("ItemName")) {
+            String itemName = section.getString("ItemName");
+            builder = builder.itemName(TextColor.PARSE(itemName));
+        }
+        if (section.isBoolean("HideToolTip")) {
+            boolean hideToolTip = section.getBoolean("HideToolTip");
+            builder = builder.hideToolTip(hideToolTip);
+        }
+        if (section.isBoolean("EnchantmentGlintOverride")) {
+            boolean enchantmentGlintOverride = section.getBoolean("EnchantmentGlintOverride");
+            builder = builder.enchantmentGlintOverride(enchantmentGlintOverride);
+        }
+        if (section.isBoolean("FireResistant")) {
+            boolean fireResistant = section.getBoolean("FireResistant");
+            builder = builder.fireResistant(fireResistant);
+        }
+        if (section.isInt("MaxStackSize")) {
+            int maxStackSize = section.getInt("MaxStackSize");
+            builder = builder.maxStackSize(maxStackSize);
+        }
+        if (section.isInt("MaxDamage")) {
+            int maxDamage = section.getInt("MaxDamage");
+            if (maxDamage < 0)
+                throw new ConfigurationFieldException("'MaxDamage' field is not a valid max damage value");
+            builder = builder.maxDamage(maxDamage);
+        }
+        if (section.isString("Rarity")) {
+            ItemRarity rarity = ItemRarity.valueOf(section.getString("Rarity"));
+            builder = builder.rarity(rarity);
+        }
+        if (section.isConfigurationSection("Food")) {
+            ConfigurationSection food = section.getConfigurationSection("Food");
+            if (food.isInt("Nutrition"))
+                builder = builder.food(foodComponent -> foodComponent.setNutrition(food.getInt("Nutrition")));
+            if (food.isDouble("Saturation")) {
+                float saturation = (float) food.getDouble("Saturation");
+                builder = builder.food(foodComponent -> foodComponent.setSaturation(saturation));
+            }
+            if (food.isBoolean("CanAlwaysEat"))
+                builder = builder.food(foodComponent -> foodComponent.setCanAlwaysEat(food.getBoolean("CanAlwaysEat")));
         }
         if (section.isString("DisplayName")) {
             builder = builder.displayName(TextColor.PARSE(section
@@ -82,13 +140,6 @@ public class ItemStackReader implements ItemStackReaderMiddleman {
         if (section.isInt("CustomModelData")) {
             builder = builder.customModelData(section.getInt("CustomModelData"));
         }
-        boolean showAll = section.getBoolean("ShowAllItemFlags", false);
-        if (showAll)
-            builder = builder.showAll();
-        if (section.isList("ItemFlags")) {
-            List<String> flagNames = section.getStringList("ItemFlags");
-            builder = builder.deserializeAndFlag(flagNames);
-        }
         if (section.isConfigurationSection("Attributes")) {
             ConfigurationSection attributes = section.getConfigurationSection("Attributes");
             Uber<ItemStackBuilder> uber = Uber.drive(builder);
@@ -97,100 +148,71 @@ public class ItemStackReader implements ItemStackReaderMiddleman {
                     throw new ConfigurationFieldException("Attribute '" + key + "' is not valid");
                 ConfigurationSection attributeSection = attributes.getConfigurationSection(key);
                 try {
-                    Attribute attribute = Attribute.valueOf(key);
+                    String name = attributes.getString("Name", UUID.randomUUID().toString());
+                    Attribute attribute = registryAccess.getRegistry(RegistryKey.ATTRIBUTE).get(Key.key(key));
                     if (!attributeSection.isDouble("Amount"))
                         throw new ConfigurationFieldException("Attribute '" + key + "' has an invalid amount (DECIMAL NUMBER)");
                     double amount = attributeSection.getDouble("Amount");
                     if (!attributeSection.isString("Operation"))
                         throw new ConfigurationFieldException("Attribute '" + key + "' is missing 'Operation' field");
-                    EquipmentSlot equipmentSlot;
-                    String readEquipmentSlot = attributeSection.getString("EquipmentSlot");
-                    if (readEquipmentSlot != null) {
+                    EquipmentSlotGroup equipmentSlot;
+                    String readEquipmentSlotGroup = attributeSection.getString("EquipmentSlotGroup");
+                    if (readEquipmentSlotGroup != null) {
                         try {
-                            equipmentSlot = EquipmentSlot.valueOf(readEquipmentSlot);
-                        } catch (IllegalArgumentException exception) {
-                            throw new ConfigurationFieldException("EquipmentSlot '" + readEquipmentSlot + "' is not valid");
+                            equipmentSlot = EquipmentSlotGroup.getByName(readEquipmentSlotGroup);
+                        } catch ( IllegalArgumentException exception ) {
+                            throw new ConfigurationFieldException("EquipmentSlot '" + readEquipmentSlotGroup + "' is not valid");
                         }
                     } else
                         equipmentSlot = null;
                     AttributeModifier.Operation operation = AttributeModifier.Operation.valueOf(attributeSection.getString("Operation"));
-                    uber.talk(uber.thanks().attribute(attribute, amount, operation, equipmentSlot));
-                } catch (IllegalArgumentException exception) {
+                    uber.talk(uber.thanks().attribute(attribute, name, amount, operation, equipmentSlot));
+                } catch ( IllegalArgumentException exception ) {
                     throw new ConfigurationFieldException("Attribute '" + key + "' has an invalid Operation");
                 }
             });
             builder = uber.thanks();
         }
+        builder.hideAll();
+        boolean showAll = section.getBoolean("ShowAllItemFlags", false);
+        if (showAll)
+            builder = builder.showAll();
+        if (section.isList("ItemFlags")) {
+            List<String> flagNames = section.getStringList("ItemFlags");
+            builder = builder.deserializeAndFlag(flagNames);
+        }
         return builder;
     }
 
-    @Override
-    public @NotNull ItemStack readOrFailFast(@NotNull ConfigurationSection section) {
-        return READ_OR_FAIL_FAST(section).build();
-    }
-
-    @Override
-    public @Nullable ItemStack attempRead(@NotNull ConfigurationSection section) {
-        try {
-            return readOrFailFast(section);
-        } catch (Throwable e) {
-            return null;
-        }
-    }
-
-    /**
-     * @deprecated Use {@link #attempRead(ConfigurationSection)}
-     */
-    @Deprecated
     @NotNull
     public static ItemStackBuilder read(ConfigurationSection section) {
         ItemStackBuilder builder;
         try {
             builder = READ_OR_FAIL_FAST(section);
             return builder;
-        } catch (Exception e) {
-            Bukkit.getLogger().severe(e.getMessage());
+        } catch ( Exception exception ) {
+            Bukkit.getLogger().severe(exception.getMessage());
             return ItemStackBuilder.build(Material.DIRT);
         }
     }
 
-    /**
-     * @deprecated Use {@link #readOrFailFast(ConfigurationSection)} (ConfigurationSection)}
-     */
-    @Deprecated
     public static ItemStackBuilder read(File file, String path) {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         return READ_OR_FAIL_FAST(Objects.requireNonNull(config.getConfigurationSection(path)));
     }
 
-    /**
-     * @deprecated Use {@link #readOrFailFast(ConfigurationSection)}
-     */
-    @Deprecated
     public static ItemStackBuilder read(File file) {
         return read(file, "ItemStack");
     }
 
-    /**
-     * @deprecated Use {@link #readOrFailFast(ConfigurationSection)}
-     */
-    @Deprecated
     public static ItemStackBuilder read(YamlConfiguration config, String path) {
         return READ_OR_FAIL_FAST(Objects.requireNonNull(config.getConfigurationSection(path)));
     }
 
-    /**
-     * @deprecated Use {@link #readOrFailFast(ConfigurationSection)}
-     */
-    @Deprecated
     public static ItemStackBuilder read(YamlConfiguration config) {
         return read(config, "ItemStack");
     }
 
-    /**
-     * @deprecated will be inside singleton
-     */
-    @Deprecated
     public static Color parseColor(String color) {
         String[] input = color.split(",");
         if (input.length != 3) {
@@ -201,15 +223,11 @@ public class ItemStackReader implements ItemStackReaderMiddleman {
             int g = Integer.parseInt(input[1]);
             int b = Integer.parseInt(input[2]);
             return Color.fromRGB(r, g, b);
-        } catch (NumberFormatException e) {
+        } catch ( NumberFormatException exception ) {
             throw new IllegalArgumentException("Color " + color + " is not a valid color.");
         }
     }
 
-    /**
-     * @deprecated marked for removal
-     */
-    @Deprecated
     public static String parse(Color color) {
         return color.getRed() + "," + color.getGreen() + "," + color.getBlue();
     }

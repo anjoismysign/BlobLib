@@ -32,6 +32,7 @@ public class BlobLibConfigManager {
     private TinyEventListener displayRiding;
     private String consoleLocale;
     private Map<String, String> defaultLocale;
+    private boolean verbose;
 
     private BlobLibConfigManager(BlobLib plugin) {
         this.plugin = plugin;
@@ -43,6 +44,8 @@ public class BlobLibConfigManager {
         plugin.reloadConfig();
         plugin.saveDefaultConfig();
         ConfigDecorator configDecorator = new ConfigDecorator(plugin);
+        ConfigurationSection section = configDecorator.reloadAndGetSection("Settings");
+        verbose = section.getBoolean("Verbose", false);
         ConfigurationSection locale = configDecorator.reloadAndGetSection("Locale");
         consoleLocale = locale.getString("Console");
         Set<LocaleDefault> set = LocaleDefault.READ(
@@ -83,5 +86,9 @@ public class BlobLibConfigManager {
      */
     public String getRealLocale(String locale) {
         return defaultLocale.getOrDefault(locale, locale);
+    }
+
+    public boolean isVerbose() {
+        return verbose;
     }
 }

@@ -3,12 +3,15 @@ package us.mytheria.bloblib.entities.translatable;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
+import us.mytheria.bloblib.entities.DataAssetType;
 import us.mytheria.bloblib.entities.area.Area;
 
 import java.util.Objects;
+import java.util.function.Function;
 
-public interface TranslatableArea extends Translatable<Area> {
+public interface TranslatableArea extends Displayable<Area> {
 
     /**
      * Gets a TranslatableArea by its key. Key is the same as getReference.
@@ -22,13 +25,42 @@ public interface TranslatableArea extends Translatable<Area> {
         return BlobLibTranslatableAPI.getInstance().getTranslatableArea(key);
     }
 
-    /**
-     * Gets the display of this TranslatableArea
-     *
-     * @return The name
-     */
     @NotNull
-    String getDisplay();
+    static TranslatableArea forLocale(@NotNull String reference,
+                                      @NotNull String locale,
+                                      @NotNull String display) {
+        return new TranslatableArea() {
+            @Override
+            public @NotNull String getDisplay() {
+                return display;
+            }
+
+            @Override
+            public @NotNull Area get() {
+                return Objects.requireNonNull(BlobLib.getInstance().getTranslatableAreaManager().getAsset(reference), "No default locale provided").get();
+            }
+
+            @Override
+            public @NotNull Translatable<Area> modify(Function<String, String> function) {
+                return new BlobTranslatableArea(reference, locale, function.apply(display), get());
+            }
+
+            @Override
+            public String getReference() {
+                return reference;
+            }
+
+            @Override
+            public DataAssetType getType() {
+                return DataAssetType.TRANSLATABLE_AREA;
+            }
+
+            @Override
+            public @NotNull String getLocale() {
+                return locale;
+            }
+        };
+    }
 
     /**
      * Localizes the TranslatableArea to a specific locale.

@@ -1,10 +1,16 @@
 name: BlobLib
 version: ${project.parent.version}
 main: us.mytheria.bloblib.BlobLib
-api-version: 1.17
+api-version: ${minecraft.version}
 load: STARTUP
 loadbefore: [ Vault, LibsDisguises, ProtocolLib, WorldEdit, WorldGuard ]
 authors: [ promorrom, j0ach1mmall3, Dean B, SmallCode ]
 commands:
   bloblib:
     usage: "/bloblib reload"
+libraries:
+  - com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${jackson.version}
+  - commons-io:commons-io:2.7
+  - org.mongodb:mongodb-driver-sync:4.10.2
+  - net.lingala.zip4j:zip4j:2.11.5
+  - org.apache.commons:commons-lang3:3.17.0

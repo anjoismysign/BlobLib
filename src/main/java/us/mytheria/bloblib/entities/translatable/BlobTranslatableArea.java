@@ -25,10 +25,10 @@ public class BlobTranslatableArea implements TranslatableArea {
         return new BlobTranslatableArea(key, locale, display, area);
     }
 
-    private BlobTranslatableArea(@NotNull String key,
-                                 @NotNull String locale,
-                                 @NotNull String display,
-                                 @NotNull Area area) {
+    BlobTranslatableArea(@NotNull String key,
+                         @NotNull String locale,
+                         @NotNull String display,
+                         @NotNull Area area) {
         this.key = key;
         this.locale = locale;
         this.display = BlobTranslatableSnippet.PARSE(display, locale);

@@ -1,21 +1,41 @@
 package us.mytheria.bloblib.managers;
 
+import me.anjoismysign.psa.crud.CrudDatabaseCredentials;
+import me.anjoismysign.psa.lehmapp.LehmappCrudable;
+import me.anjoismysign.psa.lehmapp.LehmappSerializable;
 import org.bukkit.Bukkit;
+import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.component.ComponentConsumer;
+import us.mytheria.bloblib.entities.BlobScheduler;
 import us.mytheria.bloblib.entities.ConfigDecorator;
 import us.mytheria.bloblib.entities.GitHubPluginUpdater;
+import us.mytheria.bloblib.entities.PermissionDecorator;
 import us.mytheria.bloblib.entities.PluginUpdater;
 import us.mytheria.bloblib.entities.logger.BlobPluginLogger;
+import us.mytheria.bloblib.managers.serializablemanager.AbstractBukkitSerializableManager;
+import us.mytheria.bloblib.managers.serializablemanager.BukkitSerializableEvent;
+import us.mytheria.bloblib.managers.serializablemanager.BukkitSerializableManager;
+import us.mytheria.bloblib.psa.BukkitDatabaseProvider;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * @author anjoismysign
  * <p>
  * A BlobPlugin is a plugin that makes use of BlobLib's assets features.
  */
-public abstract class BlobPlugin extends JavaPlugin {
+public abstract class BlobPlugin extends JavaPlugin implements PermissionDecorator, ComponentConsumer {
     private final BlobPluginLogger logger = new BlobPluginLogger(this);
+    private BlobScheduler scheduler = new BlobScheduler(this);
+    private final Map<Class<? extends LehmappSerializable>, BukkitSerializableManager<? extends LehmappSerializable>> serializableManagers = new HashMap<>();
+    private Permission permission;
 
     /**
      * Will unregister from BlobLib and
@@ -120,5 +140,53 @@ public abstract class BlobPlugin extends JavaPlugin {
     @NotNull
     public ConfigDecorator getConfigDecorator() {
         return new ConfigDecorator(this);
+    }
+
+    @NotNull
+    public BlobScheduler getScheduler() {
+        return scheduler;
+    }
+
+    @NotNull
+    public Permission getPermission() {
+        if (permission == null)
+            permission = new Permission(getName());
+        return permission;
+    }
+
+    @NotNull
+    public Map<Class<? extends LehmappSerializable>, BukkitSerializableManager<? extends LehmappSerializable>> getSerializableManagers() {
+        return serializableManagers;
+    }
+
+    @NotNull
+    public <T extends LehmappSerializable, S extends BukkitSerializableEvent<T>> BukkitSerializableManager<T> registerSerializableManager(
+            @NotNull Class<T> serializableClass,
+            @NotNull Function<LehmappCrudable, T> deserializer,
+            @Nullable Function<T, S> joinEvent,
+            @Nullable Function<T, S> quitEvent,
+            @Nullable Supplier<Boolean> eventsRegistrationSupplier) {
+        Objects.requireNonNull(deserializer, "'deserializeFunction' cannot be null");
+        CrudDatabaseCredentials crudDatabaseCredentials = BukkitDatabaseProvider.INSTANCE.getDatabaseProvider().of(this);
+        PermissionDecorator proxy = proxyPermissionDecorator();
+        BukkitSerializableManager<T> serializableManager = new AbstractBukkitSerializableManager<>(
+                crudDatabaseCredentials,
+                deserializer,
+                joinEvent,
+                quitEvent,
+                this,
+                eventsRegistrationSupplier) {
+            @Override
+            public @NotNull BlobScheduler getScheduler() {
+                return scheduler;
+            }
+
+            @Override
+            public @NotNull PermissionDecorator getPermissionDecorator() {
+                return proxy;
+            }
+        };
+        serializableManagers.put(serializableClass, serializableManager);
+        return serializableManager;
     }
 }

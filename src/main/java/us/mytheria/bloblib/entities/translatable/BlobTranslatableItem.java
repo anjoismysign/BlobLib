@@ -14,8 +14,8 @@ import java.util.Objects;
 import java.util.function.Function;
 
 public class BlobTranslatableItem implements TranslatableItem {
-    protected static final NamespacedKey keyKey = new NamespacedKey(BlobLib.getInstance(), "item_key");
-    protected static final NamespacedKey localeKey = new NamespacedKey(BlobLib.getInstance(), "item_locale");
+    static final NamespacedKey keyKey = new NamespacedKey(BlobLib.getInstance(), "item_key");
+    static final NamespacedKey localeKey = new NamespacedKey(BlobLib.getInstance(), "item_locale");
 
     @NotNull
     private final String locale, key;

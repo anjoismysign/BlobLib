@@ -17,64 +17,26 @@ import java.util.Objects;
 public interface TranslatableItem extends Translatable<ItemStack> {
 
     /**
-     * Gets a TranslatableItem by its Material and ItemMeta
+     * Gets a TranslatableItem by its PersistentDataContainer
      *
      * @param itemStack The ItemStack to get the TranslatableItem by.
-     * @param locale    The locale to get the TranslatableItem by.
      * @return The TranslatableItem, or null if it doesn't exist.
      */
     @Nullable
-    static TranslatableItem byItemStack(@NotNull ItemStack itemStack,
-                                        @NotNull String locale) {
-        Objects.requireNonNull(itemStack, "'itemStack' cannot be null");
-        ItemMeta meta = itemStack.getItemMeta();
-        if (meta == null)
-            return null;
-        List<TranslatableItem> translatableItems = BlobLibTranslatableAPI.getInstance()
-                .getTranslatableItems(locale);
-        translatableItems.forEach(translatableItem -> {
-            ItemStack stack = translatableItem.get();
-            ItemMeta stackMeta = stack.getItemMeta();
-            if (stackMeta == null)
-                return;
-            if (stack.getType() != itemStack.getType())
-                return;
-            if (stackMeta.getCustomModelData() != meta.getCustomModelData())
-                return;
-        });
-        return translatableItems.stream()
-                .filter(translatableItem -> translatableItem.get().getType() == itemStack.getType())
-                .filter(translatableItem -> {
-                    ItemMeta stackMeta = translatableItem.get().getItemMeta();
-                    if (stackMeta == null)
-                        return false;
-                    if (!stackMeta.hasCustomModelData())
-                        return false;
-                    return stackMeta.getCustomModelData() == meta.getCustomModelData();
-                })
-                .findFirst().orElse(null);
-    }
-
-    /**
-     * Gets a TranslatableItem by its Material and ItemMeta in the default locale [en_us]
-     *
-     * @param itemStack The ItemStack to get the TranslatableItem by.
-     * @return The TranslatableItem, or null if it doesn't exist.
-     */
     static TranslatableItem byItemStack(@NotNull ItemStack itemStack) {
-        return byItemStack(itemStack, "en_us");
-    }
-
-    /**
-     * Gets a TranslatableItem by its Material and ItemMeta
-     *
-     * @param itemStack The ItemStack to get the TranslatableItem by.
-     * @param player    The player to get the TranslatableItem's locale by.
-     * @return The TranslatableItem, or null if it doesn't exist.
-     */
-    static TranslatableItem byItemStack(@NotNull ItemStack itemStack,
-                                        @NotNull Player player) {
-        return byItemStack(itemStack, player.getLocale());
+        Objects.requireNonNull(itemStack, "'itemStack' cannot be null");
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (itemMeta == null)
+            return null;
+        PersistentDataContainer container = itemMeta.getPersistentDataContainer();
+        String key = container.get(BlobTranslatableItem.keyKey, PersistentDataType.STRING);
+        String locale = container.get(BlobTranslatableItem.localeKey, PersistentDataType.STRING);
+        if (key == null || locale == null)
+            return null;
+        @Nullable TranslatableItem translatableItem = TranslatableItem.by(key);
+        if (translatableItem == null)
+            return null;
+        return translatableItem.localize(locale);
     }
 
     /**

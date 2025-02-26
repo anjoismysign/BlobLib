@@ -30,7 +30,7 @@ public record DisplayPetRecord(@Nullable ItemStack itemStack,
     public static DisplayPetRecord read(ConfigurationSection section) {
         ItemStack itemStack = null;
         if (section.isConfigurationSection("ItemStack")) {
-            itemStack = ItemStackReader.getInstance().readOrFailFast(section.getConfigurationSection("ItemStack"));
+            itemStack = ItemStackReader.READ_OR_FAIL_FAST(section.getConfigurationSection("ItemStack")).build();
         }
         BlockData blockData = null;
         if (section.isString("BlockData")) {
