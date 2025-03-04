@@ -7,9 +7,9 @@ import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
 import java.util.Objects;
 
 public interface TranslatableSnippet extends Translatable<String> {
-    
+
     /**
-     * Gets a TranslatableSnippet by its key. Key is the same as getReference.
+     * Gets a TranslatableSnippet by its key. Key is the same as identifier.
      *
      * @param key The key to get the tag set by.
      * @return The TranslatableSnippet, or null if it doesn't exist.

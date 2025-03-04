@@ -1,0 +1,60 @@
+VariableSelector:
+  Title: '&l%variable% > SELECT'
+  Size: 54
+  Buttons:
+    Background:
+      ItemStack: BlobLib.Background
+      Slot: 45-53
+    White-Background:
+      ItemStack:
+        Material: WHITE_STAINED_GLASS_PANE
+        HideToolTip: true
+        DisplayName: ' '
+        Lore: [ ]
+      Slot: 0-44
+    Return:
+      ItemStack: BlobLib.Return
+      Slot: 45
+    Previous-Page:
+      ItemStack: BlobLib.Previous-Page
+      Slot: 52
+    Next-Page:
+      ItemStack: BlobLib.Next-Page
+      Slot: 53
+BlobEditor:
+  Title: '&l%variable% > VIEW'
+  Size: 54
+  Buttons:
+    Background:
+      ItemStack: BlobLib.Background
+      Slot: 45-53
+    White-Background:
+      ItemStack:
+        Material: WHITE_STAINED_GLASS_PANE
+        HideToolTip: true
+        DisplayName: ' '
+        Lore: [ ]
+      Slot: 0-44
+    Return:
+      ItemStack: BlobLib.Return
+      Slot: 45
+    Add:
+      ItemStack:
+        Material: ANVIL
+        DisplayName: '&6Add'
+        Lore:
+          - '&7Click to &aadd &7a new element'
+      Slot: 49
+    Remove:
+      ItemStack:
+        Material: GRINDSTONE
+        DisplayName: '&6Remove'
+        Lore:
+          - '&7Click to &cremove &7an existing element'
+      Slot: 50
+    Previous-Page:
+      ItemStack: BlobLib.Previous-Page
+      Slot: 52
+    Next-Page:
+      ItemStack: BlobLib.Next-Page
+      Slot: 53

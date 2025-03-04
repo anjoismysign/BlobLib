@@ -1,17 +1,21 @@
 package us.mytheria.bloblib.managers;
 
+import me.anjoismysign.holoworld.asset.DataAsset;
 import org.apache.commons.io.FilenameUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.entities.DataAsset;
 import us.mytheria.bloblib.entities.DataAssetType;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
@@ -99,10 +103,10 @@ public class DataAssetManager<T extends DataAsset> {
                     continue;
                 try {
                     loadYamlConfiguration(file);
-                } catch (ConfigurationFieldException exception) {
+                } catch ( ConfigurationFieldException exception ) {
                     main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
                     continue;
-                } catch (Throwable throwable) {
+                } catch ( Throwable throwable ) {
                     throwable.printStackTrace();
                     continue;
                 }
@@ -121,7 +125,7 @@ public class DataAssetManager<T extends DataAsset> {
                 if (asset == null)
                     return;
                 addOrCreate(asset, fileName);
-            } catch (Throwable throwable) {
+            } catch ( Throwable throwable ) {
                 BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
                 throwable.printStackTrace();
             }
@@ -136,7 +140,7 @@ public class DataAssetManager<T extends DataAsset> {
             try {
                 T asset = readFunction.apply(section, reference);
                 addOrCreate(asset, reference);
-            } catch (Throwable throwable) {
+            } catch ( Throwable throwable ) {
                 BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
                 throwable.printStackTrace();
             }
@@ -153,7 +157,7 @@ public class DataAssetManager<T extends DataAsset> {
                     return;
                 addOrCreate(asset, fileName);
                 pluginAssets.get(plugin.getName()).add(fileName);
-            } catch (Throwable throwable) {
+            } catch ( Throwable throwable ) {
                 BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
                 throwable.printStackTrace();
             }
@@ -169,7 +173,7 @@ public class DataAssetManager<T extends DataAsset> {
                 T asset = readFunction.apply(section, reference);
                 addOrCreate(asset, reference);
                 pluginAssets.get(plugin.getName()).add(reference);
-            } catch (Throwable throwable) {
+            } catch ( Throwable throwable ) {
                 BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
                 throwable.printStackTrace();
             }

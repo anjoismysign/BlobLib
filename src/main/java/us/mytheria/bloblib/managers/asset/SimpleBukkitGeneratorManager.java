@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.managers.asset;
 
+import me.anjoismysign.aesthetic.NamingConventions;
 import me.anjoismysign.holoworld.asset.AssetGenerator;
 import me.anjoismysign.holoworld.asset.DataAsset;
 import me.anjoismysign.holoworld.asset.DataAssetEntry;
@@ -11,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.managers.BlobLibConfigManager;
 
 import java.io.File;
-import java.util.Locale;
 import java.util.Set;
 
 public record SimpleBukkitGeneratorManager<T extends DataAsset>(
@@ -23,7 +23,7 @@ public record SimpleBukkitGeneratorManager<T extends DataAsset>(
             @NotNull Class<? extends AssetGenerator<T>> clazz,
             @NotNull Plugin plugin,
             @NotNull String name) {
-        File parentDirectory = new File(plugin.getDataFolder(), name.toLowerCase(Locale.ROOT));
+        File parentDirectory = new File(plugin.getDataFolder(), NamingConventions.toSnakeCase(name));
         boolean verbose = BlobLibConfigManager.getInstance().isVerbose();
         return new SimpleBukkitGeneratorManager<>(plugin, SingletonManagerFactory.INSTANCE.generatorManager(clazz, parentDirectory, verbose ? plugin.getLogger() : null));
     }
@@ -39,13 +39,8 @@ public record SimpleBukkitGeneratorManager<T extends DataAsset>(
     }
 
     @Override
-    public @NotNull String defaultLocale() {
-        return generatorManager.defaultLocale();
-    }
-
-    @Override
-    public @Nullable DataAssetEntry<T> fetchGenerationByLocale(@NotNull String identifier, @NotNull String locale) {
-        return generatorManager.fetchGenerationByLocale(identifier, locale);
+    public @Nullable DataAssetEntry<T> fetchGeneration(@NotNull String identifier) {
+        return generatorManager.fetchGeneration(identifier);
     }
 
     @Override

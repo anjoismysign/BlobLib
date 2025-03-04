@@ -1,7 +1,6 @@
 package us.mytheria.bloblib.entities.translatable;
 
 import org.jetbrains.annotations.NotNull;
-import us.mytheria.bloblib.entities.DataAssetType;
 import us.mytheria.bloblib.entities.area.Area;
 
 import java.util.Objects;
@@ -36,7 +35,7 @@ public class BlobTranslatableArea implements TranslatableArea {
     }
 
     @NotNull
-    public String getLocale() {
+    public String locale() {
         return locale;
     }
 
@@ -46,12 +45,8 @@ public class BlobTranslatableArea implements TranslatableArea {
     }
 
     @NotNull
-    public String getReference() {
+    public String identifier() {
         return key;
-    }
-
-    public DataAssetType getType() {
-        return DataAssetType.TRANSLATABLE_AREA;
     }
 
     @NotNull

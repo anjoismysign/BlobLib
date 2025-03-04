@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 public interface ItemMaterial {
 
     @NotNull
-    String getReference();
+    String getIdentifier();
 
     @NotNull
     ItemStack toItemStack(@NotNull Player player);
@@ -15,6 +15,6 @@ public interface ItemMaterial {
     boolean isInstance(@NotNull ItemStack itemStack);
 
     default boolean isInstance(@NotNull String reference) {
-        return getReference().equals(reference);
+        return getIdentifier().equals(reference);
     }
 }

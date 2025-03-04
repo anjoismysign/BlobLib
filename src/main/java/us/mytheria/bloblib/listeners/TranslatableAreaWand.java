@@ -67,7 +67,7 @@ public class TranslatableAreaWand implements Listener {
         @Nullable TranslatableItem translatableItem = TranslatableItem.byItemStack(itemStack);
         if (translatableItem == null)
             return;
-        if (!translatableItem.getReference().equals("TranslatableArea.Wand"))
+        if (!translatableItem.identifier().equals("TranslatableArea.Wand"))
             return;
         @Nullable Block clicked = event.getClickedBlock();
         if (clicked == null)

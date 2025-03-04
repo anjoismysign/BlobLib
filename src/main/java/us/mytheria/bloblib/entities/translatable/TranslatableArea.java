@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
-import us.mytheria.bloblib.entities.DataAssetType;
 import us.mytheria.bloblib.entities.area.Area;
 
 import java.util.Objects;
@@ -14,7 +13,7 @@ import java.util.function.Function;
 public interface TranslatableArea extends Displayable<Area> {
 
     /**
-     * Gets a TranslatableArea by its key. Key is the same as getReference.
+     * Gets a TranslatableArea by its key. Key is the same as identifier.
      *
      * @param key The key to get the tag set by.
      * @return The TranslatableArea, or null if it doesn't exist.
@@ -46,17 +45,12 @@ public interface TranslatableArea extends Displayable<Area> {
             }
 
             @Override
-            public String getReference() {
+            public String identifier() {
                 return reference;
             }
 
             @Override
-            public DataAssetType getType() {
-                return DataAssetType.TRANSLATABLE_AREA;
-            }
-
-            @Override
-            public @NotNull String getLocale() {
+            public @NotNull String locale() {
                 return locale;
             }
         };
@@ -71,10 +65,10 @@ public interface TranslatableArea extends Displayable<Area> {
     @Nullable
     default TranslatableArea localize(@NotNull String locale) {
         Objects.requireNonNull(locale, "'locale' cannot be null");
-        if (getLocale().equals(locale))
+        if (locale().equals(locale))
             return this;
         return BlobLibTranslatableAPI.getInstance()
-                .getTranslatableArea(getReference(),
+                .getTranslatableArea(identifier(),
                         locale);
     }
 

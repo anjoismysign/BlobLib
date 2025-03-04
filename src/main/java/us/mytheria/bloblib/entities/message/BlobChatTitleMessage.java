@@ -76,20 +76,20 @@ public class BlobChatTitleMessage extends BlobChatMessage {
      */
     @Override
     public @NotNull BlobChatTitleMessage modify(Function<String, String> function) {
-        return new BlobChatTitleMessage(getReference(), function.apply(chat),
+        return new BlobChatTitleMessage(identifier(), function.apply(chat),
                 hover == null ? null : function.apply(hover),
                 function.apply(title),
                 function.apply(subtitle),
                 fadeIn, stay, fadeOut,
                 getSound(),
-                getLocale(),
+                locale(),
                 getClickEvent());
     }
 
     @Override
     @NotNull
     public BlobChatTitleMessage onClick(ClickEvent event) {
-        return new BlobChatTitleMessage(getReference(), chat, hover, title, subtitle, fadeIn, stay,
-                fadeOut, getSound(), getLocale(), event);
+        return new BlobChatTitleMessage(identifier(), chat, hover, title, subtitle, fadeIn, stay,
+                fadeOut, getSound(), locale(), event);
     }
 }

@@ -1,5 +1,19 @@
 package us.mytheria.bloblib.itemstack;
 
+import io.papermc.paper.datacomponent.DataComponentType;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.Consumable;
+import io.papermc.paper.datacomponent.item.DamageResistant;
+import io.papermc.paper.datacomponent.item.DyedItemColor;
+import io.papermc.paper.datacomponent.item.Equippable;
+import io.papermc.paper.datacomponent.item.FoodProperties;
+import io.papermc.paper.datacomponent.item.ItemAdventurePredicate;
+import io.papermc.paper.datacomponent.item.ItemAttributeModifiers;
+import io.papermc.paper.datacomponent.item.ItemEnchantments;
+import io.papermc.paper.datacomponent.item.ShownInTooltip;
+import io.papermc.paper.datacomponent.item.Tool;
+import io.papermc.paper.datacomponent.item.Unbreakable;
+import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -16,7 +30,6 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.Repairable;
-import org.bukkit.inventory.meta.components.FoodComponent;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -46,7 +59,10 @@ public final class ItemStackBuilder {
     }
 
     public static ItemStackBuilder build(Material material, int amount) {
-        return new ItemStackBuilder(new ItemStack(material, amount));
+        ItemStack itemStack = new ItemStack(material, amount);
+        if (material == Material.POISONOUS_POTATO)
+            itemStack.unsetData(DataComponentTypes.FOOD);
+        return new ItemStackBuilder(itemStack);
     }
 
     public static ItemStackBuilder build(String material) {
@@ -74,6 +90,50 @@ public final class ItemStackBuilder {
             consumer.accept(damageable);
             this.itemStack.setItemMeta(m);
         }
+        return this;
+    }
+
+    public ItemStackBuilder canPlaceOn(@NotNull ItemAdventurePredicate predicate) {
+        itemStack.setData(DataComponentTypes.CAN_PLACE_ON, predicate);
+        return this;
+    }
+
+    public ItemStackBuilder canBreak(@NotNull ItemAdventurePredicate predicate) {
+        itemStack.setData(DataComponentTypes.CAN_BREAK, predicate);
+        return this;
+    }
+
+    public ItemStackBuilder tooltipStyle(@NotNull Key key) {
+        itemStack.setData(DataComponentTypes.TOOLTIP_STYLE, key);
+        return this;
+    }
+
+    public ItemStackBuilder equippable(@NotNull Equippable equippable) {
+        itemStack.setData(DataComponentTypes.EQUIPPABLE, equippable);
+        return this;
+    }
+
+    public ItemStackBuilder glider() {
+        itemStack.setData(DataComponentTypes.GLIDER);
+        return this;
+    }
+
+    public ItemStackBuilder damageResistant(@NotNull DamageResistant damageResistant) {
+        itemStack.setData(DataComponentTypes.DAMAGE_RESISTANT, damageResistant);
+        return this;
+    }
+
+    public ItemStackBuilder consumable(@NotNull Consumable consumable) {
+        itemStack.setData(DataComponentTypes.CONSUMABLE, consumable);
+        return this;
+    }
+
+    public ItemStackBuilder itemModel(@NotNull NamespacedKey itemModel) {
+        return itemMeta(itemMeta -> itemMeta.setItemModel(itemModel));
+    }
+
+    public ItemStackBuilder tool(Tool tool) {
+        itemStack.setData(DataComponentTypes.TOOL, tool);
         return this;
     }
 
@@ -144,16 +204,29 @@ public final class ItemStackBuilder {
         return itemMeta(itemMeta -> itemMeta.setRarity(rarity));
     }
 
-    public ItemStackBuilder food(Consumer<FoodComponent> consumer) {
-        return itemMeta(itemMeta -> {
-            FoodComponent foodComponent = itemMeta.getFood();
-            consumer.accept(foodComponent);
-            itemMeta.setFood(foodComponent);
-        });
+    public ItemStackBuilder food(@NotNull FoodProperties foodProperties) {
+        itemStack.setData(DataComponentTypes.FOOD, foodProperties);
+        return this;
     }
 
     public ItemStackBuilder hideAll() {
+        hideInTooltip(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.itemAttributes().build());
+        hideInTooltip(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments().build());
+        hideInTooltip(DataComponentTypes.UNBREAKABLE, Unbreakable.unbreakable().build());
+        hideInTooltip(DataComponentTypes.TRIM, null);
+        hideInTooltip(DataComponentTypes.JUKEBOX_PLAYABLE, null);
+        hideInTooltip(DataComponentTypes.CAN_PLACE_ON, ItemAdventurePredicate.itemAdventurePredicate().build());
+        hideInTooltip(DataComponentTypes.CAN_BREAK, ItemAdventurePredicate.itemAdventurePredicate().build());
+        hideInTooltip(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor().build());
         return flag(ALL_CONSTANTS);
+    }
+
+    private <T extends ShownInTooltip<T>> void hideInTooltip(@NotNull DataComponentType.@NotNull Valued<T> type,
+                                                             @Nullable T fallback) {
+        @Nullable var modifiers = itemStack.getDataOrDefault(type, fallback);
+        if (modifiers == null)
+            return;
+        itemStack.setData(type, modifiers.showInTooltip(false));
     }
 
     public ItemStackBuilder showAll() {

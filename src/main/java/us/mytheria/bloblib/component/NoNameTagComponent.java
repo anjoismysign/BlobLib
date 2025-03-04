@@ -17,8 +17,18 @@ import java.util.function.Consumer;
 public interface NoNameTagComponent {
     MutableAddress<String> isListening = MutableAddress.of(null);
 
-    static void register(@NotNull Plugin plugin) {
+    @Nullable
+    static String listening() {
         @Nullable String isListening = NoNameTagComponent.isListening.look();
+        return isListening;
+    }
+
+    static boolean isRegistered() {
+        return listening() != null;
+    }
+
+    static void register(@NotNull Plugin plugin) {
+        @Nullable String isListening = listening();
         if (isListening != null) {
             plugin.getLogger().info(isListening + " already enabled NoNameTagComponent. You might ignore this message");
             return;

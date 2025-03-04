@@ -1,0 +1,37 @@
+BlobLib:
+  Background:
+    ItemStack:
+      Material: BLACK_STAINED_GLASS_PANE
+      CustomModelData: 1
+      DisplayName: ' '
+      HideToolTip: true
+      Lore: [ ]
+  Previous-Page:
+    ItemStack:
+      Material: ARROW
+      CustomModelData: 1
+      DisplayName: '&6Previous page'
+      Lore:
+        - '&7Click to go to the previous page'
+  Next-Page:
+    ItemStack:
+      Material: ARROW
+      CustomModelData: 2
+      DisplayName: '&6Next page'
+      Lore:
+        - '&7Click to go to the next page'
+  Return:
+    ItemStack:
+      Material: SPECTRAL_ARROW
+      CustomModelData: 3
+      DisplayName: '&6Done'
+      Lore:
+        - '&7Click if done'
+TranslatableArea:
+  Wand:
+    ItemStack:
+      Material: STICK
+      ItemName: '&6Wand'
+      Lore:
+        - '&fLMB &7a block for selecting min'
+        - '&fRMB &7a block for selecting max'

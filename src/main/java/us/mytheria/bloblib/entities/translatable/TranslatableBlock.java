@@ -10,7 +10,7 @@ import java.util.Objects;
 public interface TranslatableBlock extends Translatable<List<String>> {
 
     /**
-     * Gets a TranslatableBlock by its key. Key is the same as getReference.
+     * Gets a TranslatableBlock by its key. Key is the same as identifier.
      *
      * @param key The key to get the tag set by.
      * @return The TranslatableBlock, or null if it doesn't exist.

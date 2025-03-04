@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.managers;
 
+import me.anjoismysign.holoworld.asset.DataAsset;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.function.TriFunction;
 import org.bukkit.configuration.ConfigurationSection;
@@ -8,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
-import us.mytheria.bloblib.entities.DataAsset;
 import us.mytheria.bloblib.entities.DataAssetType;
 import us.mytheria.bloblib.entities.Localizable;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
@@ -186,7 +186,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
     }
 
     private boolean addOrCreateLocale(T asset, String reference) {
-        String locale = asset.getLocale();
+        String locale = asset.locale();
         Map<String, T> localeMap = locales.computeIfAbsent(locale, k -> new HashMap<>());
         if (localeMap.containsKey(reference)) {
             addDuplicate(reference);

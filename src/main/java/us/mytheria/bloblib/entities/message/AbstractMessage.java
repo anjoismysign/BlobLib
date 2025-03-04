@@ -33,7 +33,7 @@ public abstract class AbstractMessage implements BlobMessage {
 
     public abstract void toCommandSender(CommandSender commandSender);
 
-    public String getReference() {
+    public String identifier() {
         return reference;
     }
 
@@ -56,7 +56,7 @@ public abstract class AbstractMessage implements BlobMessage {
      * @return The locale of the message
      */
     @NotNull
-    public String getLocale() {
+    public String locale() {
         return locale;
     }
 

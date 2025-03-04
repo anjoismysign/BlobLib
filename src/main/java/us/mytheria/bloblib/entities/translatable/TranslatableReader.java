@@ -2,7 +2,10 @@ package us.mytheria.bloblib.entities.translatable;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.FluidPressureAPI;
 import us.mytheria.bloblib.ProjectileDamageAPI;
 import us.mytheria.bloblib.SoulAPI;
@@ -11,6 +14,7 @@ import us.mytheria.bloblib.exception.ConfigurationFieldException;
 import us.mytheria.bloblib.itemstack.ItemStackReader;
 import us.mytheria.bloblib.utilities.TextColor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,6 +31,15 @@ public class TranslatableReader {
         boolean isSoul = section.getBoolean("Is-Soul", false);
         boolean isUnique = section.getBoolean("Is-Unique", false);
         ItemStack itemStack = ItemStackReader.READ_OR_FAIL_FAST(section.getConfigurationSection("ItemStack")).build();
+        @Nullable ItemMeta itemMeta = itemStack.getItemMeta();
+        Objects.requireNonNull(itemMeta, "'itemMeta' cannot be null");
+        CustomModelDataComponent dataComponent = itemMeta.getCustomModelDataComponent();
+        List<String> list = new ArrayList<>(dataComponent.getStrings());
+        list.add(TranslatableItem.KEY_PREFIX + key);
+        list.add(TranslatableItem.LOCALE_PREFIX + locale);
+        dataComponent.setStrings(list);
+        itemMeta.setCustomModelDataComponent(dataComponent);
+        itemStack.setItemMeta(itemMeta);
         if (isSoul)
             SoulAPI.getInstance().set(itemStack);
         if (isUnique)

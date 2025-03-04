@@ -1,22 +1,35 @@
 package us.mytheria.bloblib.itemstack;
 
+import io.papermc.paper.datacomponent.item.Consumable;
+import io.papermc.paper.datacomponent.item.Equippable;
+import io.papermc.paper.datacomponent.item.FoodProperties;
+import io.papermc.paper.datacomponent.item.Tool;
+import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
+import io.papermc.paper.registry.tag.Tag;
+import io.papermc.paper.registry.tag.TagKey;
 import me.anjoismysign.anjo.entities.Uber;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.util.TriState;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.block.BlockType;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.SkullCreator;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
 import us.mytheria.bloblib.utilities.TextColor;
@@ -27,14 +40,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+@SuppressWarnings({"PatternValidation", "UnstableApiUsage"})
 public class ItemStackReader {
 
     public static ItemStackBuilder READ_OR_FAIL_FAST(ConfigurationSection section) {
-        if (!section.isString("Material"))
-            throw new ConfigurationFieldException("'Material' field is missing or not a String");
         RegistryAccess registryAccess = RegistryAccess.registryAccess();
-        String inputMaterial = section.getString("Material");
         ItemStackBuilder builder;
+        @Nullable String inputMaterial = section.getString("Material");
         if (!inputMaterial.startsWith("HEAD-")) {
             Material material = Material.getMaterial(inputMaterial);
             if (material == null)
@@ -106,16 +118,150 @@ public class ItemStackReader {
             ItemRarity rarity = ItemRarity.valueOf(section.getString("Rarity"));
             builder = builder.rarity(rarity);
         }
-        if (section.isConfigurationSection("Food")) {
-            ConfigurationSection food = section.getConfigurationSection("Food");
-            if (food.isInt("Nutrition"))
-                builder = builder.food(foodComponent -> foodComponent.setNutrition(food.getInt("Nutrition")));
-            if (food.isDouble("Saturation")) {
-                float saturation = (float) food.getDouble("Saturation");
-                builder = builder.food(foodComponent -> foodComponent.setSaturation(saturation));
+        if (section.isString("TooltipStyle")) {
+            String tooltipStyle = section.getString("TooltipStyle");
+            String[] split = tooltipStyle.split(":");
+            if (split.length != 2)
+                throw new ConfigurationFieldException("'TooltipStyle' field is not valid: " + tooltipStyle);
+            Key key = Key.key(split[0], split[1]);
+            builder.tooltipStyle(key);
+        }
+        if (section.isConfigurationSection("Equippable")) {
+            ConfigurationSection equippableSection = section.getConfigurationSection("Equippable");
+            String path = "Equipabble";
+            @Nullable String equipmentSlot = equippableSection.getString("EquipmentSlot");
+            if (equipmentSlot == null)
+                throw new ConfigurationFieldException("'" + path + ".EquipmentSlot' field is not valid");
+            EquipmentSlot slot;
+            try {
+                slot = EquipmentSlot.valueOf(equipmentSlot);
+            } catch ( IllegalArgumentException exception ) {
+                throw new ConfigurationFieldException("'" + path + ".EquipmentSlot' field is not valid");
             }
-            if (food.isBoolean("CanAlwaysEat"))
-                builder = builder.food(foodComponent -> foodComponent.setCanAlwaysEat(food.getBoolean("CanAlwaysEat")));
+            var equippable = Equippable.equippable(slot);
+            @Nullable String cameraOverlay = equippableSection.getString("CameraOverlay");
+            if (cameraOverlay != null) {
+                String[] split = cameraOverlay.split(":");
+                if (split.length != 2)
+                    throw new ConfigurationFieldException("'" + path + ".CameraOverlay' field is not valid: " + cameraOverlay);
+                Key key = Key.key(split[0], split[1]);
+                equippable.cameraOverlay(key);
+            }
+            @Nullable String equipSound = equippableSection.getString("EquipSound");
+            if (equipSound != null) {
+                String[] split = equipSound.split(":");
+                if (split.length != 2)
+                    throw new ConfigurationFieldException("'" + path + ".EquipSound' field is not valid: " + equipSound);
+                Key key = Key.key(split[0], split[1]);
+                equippable.equipSound(key);
+            }
+            @Nullable String assetId = equippableSection.getString("AssetId");
+            if (assetId != null) {
+                String[] split = assetId.split(":");
+                if (split.length != 2)
+                    throw new ConfigurationFieldException("'" + path + ".AssetId' field is not valid: " + assetId);
+                Key key = Key.key(split[0], split[1]);
+                equippable.assetId(key);
+            }
+            @Nullable String allowedEntities = section.getString("AllowedEntities");
+            if (allowedEntities != null) {
+                RegistryKey<EntityType> registryKey = RegistryKey.ENTITY_TYPE;
+                TagKey<EntityType> tagKey = registryKey.tagKey(allowedEntities);
+                Registry<EntityType> registry = RegistryAccess.registryAccess().getRegistry(registryKey);
+                if (!registry.hasTag(tagKey)) {
+                    throw new ConfigurationFieldException("'" + path + ".AllowedEntities' is not valid: " + allowedEntities);
+                }
+                Tag<EntityType> tag = registry.getTag(tagKey);
+                equippable.allowedEntities(tag);
+            }
+            boolean damageOnHurt = equippableSection.getBoolean("DamageOnHurt", false);
+            equippable.damageOnHurt(damageOnHurt);
+            boolean dispensable = equippableSection.getBoolean("Dispensable", false);
+            equippable.dispensable(dispensable);
+            boolean swappable = equippableSection.getBoolean("Swappable", false);
+            equippable.swappable(swappable);
+
+            builder.equippable(equippable.build());
+        }
+        if (section.isBoolean("Glider")) {
+            boolean glider = section.getBoolean("Glider");
+            if (glider)
+                builder.glider();
+        }
+        if (section.isConfigurationSection("Consumable")) {
+            ConfigurationSection consumableSection = section.getConfigurationSection("Consumable");
+            var consumable = Consumable.consumable();
+            if (consumableSection.isDouble("ConsumeSeconds")) {
+                double consumeSeconds = consumableSection.getDouble("ConsumeSeconds");
+                consumable.consumeSeconds((float) consumeSeconds);
+            }
+            if (consumableSection.isBoolean("HasConsumeParticles")) {
+                consumable.hasConsumeParticles(consumableSection.getBoolean("HasConsumeParticles"));
+            }
+            if (consumableSection.isString("Animation")) {
+                String animation = consumableSection.getString("Animation");
+                try {
+                    ItemUseAnimation useAnimation = ItemUseAnimation.valueOf(animation);
+                    consumable.animation(useAnimation);
+                } catch ( IllegalArgumentException exception ) {
+                    throw new ConfigurationFieldException("Consumable.Animation is not a valid ItemUseAnimation");
+                }
+            }
+            builder.consumable(consumable.build());
+        }
+        if (section.isConfigurationSection("Tool")) {
+            ConfigurationSection toolSection = section.getConfigurationSection("Tool");
+            var tool = Tool.tool();
+            if (toolSection.isInt("DamagePerBlock"))
+                tool.damagePerBlock(toolSection.getInt("DamagePerBlock"));
+            if (toolSection.isDouble("DefaultMiningSpeed")) {
+                double miningSpeed = toolSection.getDouble("DefaultMiningSpeed");
+                tool.defaultMiningSpeed((float) miningSpeed);
+            }
+            ConfigurationSection rulesSection = toolSection.getConfigurationSection("Rules");
+            if (rulesSection != null) {
+                rulesSection.getKeys(false).forEach(ruleSectionName -> {
+                    ConfigurationSection ruleSection = rulesSection.getConfigurationSection(ruleSectionName);
+                    if (ruleSection == null) {
+                        return;
+                    }
+                    String path = "Tool." + ruleSectionName;
+                    @Nullable String blocks = ruleSection.getString("Blocks");
+                    if (blocks == null) {
+                        return;
+                    }
+                    RegistryKey<BlockType> registryKey = RegistryKey.BLOCK;
+                    TagKey<BlockType> tagKey = registryKey.tagKey(blocks);
+                    Registry<BlockType> registry = RegistryAccess.registryAccess().getRegistry(registryKey);
+                    if (!registry.hasTag(tagKey)) {
+                        throw new ConfigurationFieldException("'" + path + ".Blocks' is not valid: " + blocks);
+                    }
+                    Tag<BlockType> tag = registry.getTag(tagKey);
+                    @Nullable Double speed;
+                    if (ruleSection.isDouble("Speed"))
+                        speed = ruleSection.getDouble("Speed");
+                    else
+                        speed = null;
+                    boolean correctForDrops = ruleSection.getBoolean("CorrectForDrops", false);
+                    TriState triState = TriState.byBoolean(correctForDrops);
+                    Tool.Rule rule = Tool.rule(tag, speed == null ? null : speed.floatValue(), triState);
+                    tool.addRule(rule);
+                });
+            }
+            builder.tool(tool.build());
+        }
+        if (section.isConfigurationSection("Food")) {
+            ConfigurationSection foodSection = section.getConfigurationSection("Food");
+            var properties = FoodProperties.food();
+            if (foodSection.isInt("Nutrition"))
+                properties.nutrition(foodSection.getInt("Nutrition"));
+            if (foodSection.isDouble("Saturation")) {
+                float saturation = (float) foodSection.getDouble("Saturation");
+                properties.saturation(saturation);
+            }
+            if (foodSection.isBoolean("CanAlwaysEat"))
+                properties.canAlwaysEat(foodSection.getBoolean("CanAlwaysEat"));
+            builder.food(properties.build());
         }
         if (section.isString("DisplayName")) {
             builder = builder.displayName(TextColor.PARSE(section
@@ -136,9 +282,6 @@ public class ItemStackReader {
         if (section.isList("Enchantments")) {
             List<String> enchantNames = section.getStringList("Enchantments");
             builder = builder.deserializeAndEnchant(enchantNames);
-        }
-        if (section.isInt("CustomModelData")) {
-            builder = builder.customModelData(section.getInt("CustomModelData"));
         }
         if (section.isConfigurationSection("Attributes")) {
             ConfigurationSection attributes = section.getConfigurationSection("Attributes");

@@ -1,8 +1,6 @@
 package us.mytheria.bloblib.utilities;
 
 import me.anjoismysign.anjo.entities.Uber;
-import me.anjoismysign.manobukkit.entities.decorators.ManoBlockState;
-import me.anjoismysign.manobukkit.entities.decorators.implementations.ManoratorFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -22,11 +20,14 @@ import org.bukkit.structure.Structure;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
-import us.mytheria.bloblib.BlobLibAPI;
 import us.mytheria.bloblib.entities.ChainedTask;
 import us.mytheria.bloblib.entities.ChainedTaskProgress;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Blob;
 import java.util.Iterator;
 import java.util.List;
@@ -41,8 +42,6 @@ import java.util.function.Consumer;
  * Needs further testing
  */
 public class Structrador {
-    private static final ManoratorFactory MANORATOR_FACTORY = BlobLibAPI.getInstance().getManoBukkit().getManoratorFactory();
-
     protected final Structure structure;
     protected final JavaPlugin plugin;
 
@@ -99,7 +98,7 @@ public class Structrador {
         Structure structure;
         try {
             structure = Bukkit.getStructureManager().loadStructure(file);
-        } catch (IOException e) {
+        } catch ( IOException e ) {
             throw new RuntimeException(e);
         }
         this.structure = structure;
@@ -110,7 +109,7 @@ public class Structrador {
         Structure structure;
         try {
             structure = Bukkit.getStructureManager().loadStructure(inputStream);
-        } catch (IOException e) {
+        } catch ( IOException e ) {
             throw new RuntimeException(e);
         }
         this.structure = structure;
@@ -133,7 +132,7 @@ public class Structrador {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
             Bukkit.getStructureManager().saveStructure(outputStream, structure);
-        } catch (IOException e) {
+        } catch ( IOException e ) {
             throw new RuntimeException(e);
         }
         return outputStream;
@@ -287,8 +286,8 @@ public class Structrador {
                                 .add(result.getX() + blockOffset.getX(),
                                         result.getY() + blockOffset.getY(),
                                         result.getZ() + blockOffset.getZ());
-                        ManoBlockState state = MANORATOR_FACTORY.of(next);
-                        state.update(true, false, blockLocation);
+                        BlockState state = next.copy(blockLocation);
+                        state.update(true, false);
                         BlockState current = blockLocation.getBlock().getState();
                         BlockData data = current.getBlockData();
                         if (data instanceof Directional directional) {
@@ -353,7 +352,7 @@ public class Structrador {
                 };
                 chainedTask.setTask(entityTask.runTaskTimer(plugin, 1L, period));
             });
-        } catch (Throwable e) {
+        } catch ( Throwable e ) {
             future.completeExceptionally(e);
             e.printStackTrace();
         }

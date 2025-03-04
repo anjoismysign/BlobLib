@@ -9,8 +9,18 @@ import us.mytheria.bloblib.entities.MutableAddress;
 public interface CustomNameTagComponent {
     MutableAddress<String> isListening = MutableAddress.of(null);
 
-    static void register(@NotNull Plugin plugin) {
+    @Nullable
+    static String listening() {
         @Nullable String isListening = CustomNameTagComponent.isListening.look();
+        return isListening;
+    }
+
+    static boolean isRegistered() {
+        return listening() != null;
+    }
+
+    static void register(@NotNull Plugin plugin) {
+        String isListening = listening();
         if (isListening != null) {
             plugin.getLogger().info(isListening + " already enabled CustomNameTagComponent. You might ignore this message");
             return;

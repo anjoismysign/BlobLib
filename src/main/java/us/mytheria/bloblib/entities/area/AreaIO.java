@@ -70,7 +70,7 @@ public enum AreaIO {
         Area area = translatableArea.get();
         if (!(area instanceof BoxArea boxArea))
             return;
-        String locale = translatableArea.getLocale();
+        String locale = translatableArea.locale();
         String display = translatableArea.getDisplay();
 
         at.set("Locale", locale);

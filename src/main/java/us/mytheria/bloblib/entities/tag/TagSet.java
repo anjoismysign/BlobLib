@@ -1,19 +1,18 @@
 package us.mytheria.bloblib.entities.tag;
 
+import me.anjoismysign.holoworld.asset.DataAsset;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.api.BlobLibTagAPI;
-import us.mytheria.bloblib.entities.DataAsset;
-import us.mytheria.bloblib.entities.DataAssetType;
 
 import java.util.Objects;
 import java.util.Set;
 
 public record TagSet(@NotNull Set<String> getInclusions,
-                     @NotNull String getReference) implements DataAsset {
+                     @NotNull String identifier) implements DataAsset {
 
     /**
-     * Gets a TagSet by its key. Key is the same as getReference.
+     * Gets a TagSet by its key. Key is the same as identifier.
      *
      * @param key The key to get the tag set by.
      * @return The TagSet, or null if it doesn't exist.
@@ -22,10 +21,6 @@ public record TagSet(@NotNull Set<String> getInclusions,
     public static TagSet by(@NotNull String key) {
         Objects.requireNonNull(key);
         return BlobLibTagAPI.getInstance().getTagSet(key);
-    }
-
-    public DataAssetType getType() {
-        return DataAssetType.TAG_SET;
     }
 
     /**

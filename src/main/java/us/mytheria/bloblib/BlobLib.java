@@ -15,6 +15,7 @@ import us.mytheria.bloblib.entities.translatable.BlobTranslatablePositionable;
 import us.mytheria.bloblib.entities.translatable.TranslatableItem;
 import us.mytheria.bloblib.entities.translatable.TranslatablePositionable;
 import us.mytheria.bloblib.entities.translatable.TranslatableReader;
+import us.mytheria.bloblib.events.BlobLibReloadEvent;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
 import us.mytheria.bloblib.hologram.HologramManager;
 import us.mytheria.bloblib.managers.ActionManager;
@@ -42,7 +43,6 @@ import us.mytheria.bloblib.placeholderapi.TranslatablePH;
 import us.mytheria.bloblib.placeholderapi.WorldGuardPH;
 import us.mytheria.bloblib.psa.BukkitPSA;
 import us.mytheria.bloblib.utilities.MinecraftVersion;
-import us.mytheria.bloblib.utilities.SerializationLib;
 import us.mytheria.bloblib.vault.VaultManager;
 
 /**
@@ -74,7 +74,6 @@ public class BlobLib extends JavaPlugin {
     private ActionManager actionManager;
     private BlobLibConfigManager configManager;
     private BlobLibListenerManager listenerManager;
-    private SerializationLib serializationLib;
     private InventoryTrackerManager inventoryTrackerManager;
     private TranslatableManager translatableManager;
 
@@ -123,7 +122,6 @@ public class BlobLib extends JavaPlugin {
         projectileDamageAPI = ProjectileDamageAPI.getInstance(this);
         api = BlobLibAPI.getInstance(this);
         bloblibupdater = new BlobLibUpdater(this);
-        serializationLib = SerializationLib.getInstance(this);
         anjoLogger = new BlobPluginLogger(this);
         scriptManager = new ScriptManager();
         pluginManager = PluginManager.getInstance();
@@ -184,11 +182,6 @@ public class BlobLib extends JavaPlugin {
         });
     }
 
-    @Override
-    public void onDisable() {
-        serializationLib.shutdown();
-    }
-
     /**
      * Will reload all the managers
      */
@@ -206,6 +199,9 @@ public class BlobLib extends JavaPlugin {
         actionManager.reload();
         inventoryManager.reload();
         getPluginManager().reload();
+
+        BlobLibReloadEvent reloadEvent = new BlobLibReloadEvent();
+        Bukkit.getPluginManager().callEvent(reloadEvent);
     }
 
     public BlobLibAPI getAPI() {

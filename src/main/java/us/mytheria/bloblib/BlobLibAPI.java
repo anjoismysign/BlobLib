@@ -1,12 +1,16 @@
 package us.mytheria.bloblib;
 
-import me.anjoismysign.manobukkit.ManoBukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import us.mytheria.bloblib.api.*;
+import us.mytheria.bloblib.api.BlobLibDisguiseAPI;
+import us.mytheria.bloblib.api.BlobLibEconomyAPI;
+import us.mytheria.bloblib.api.BlobLibHologramAPI;
+import us.mytheria.bloblib.api.BlobLibListenerAPI;
+import us.mytheria.bloblib.api.BlobLibPermissionAPI;
+import us.mytheria.bloblib.api.BlobLibPetAPI;
 import us.mytheria.bloblib.disguises.Disguiser;
 import us.mytheria.bloblib.entities.BlobEditor;
 import us.mytheria.bloblib.entities.inventory.VariableSelector;
@@ -29,10 +33,8 @@ public class BlobLibAPI {
     private final BlobLibDisguiseAPI disguiseAPI;
     private final BlobLibAssetAPI assetAPI;
     private final BlobLibPetAPI petAPI;
-    private final ManoBukkit manoBukkit;
 
     private BlobLibAPI(BlobLib plugin) {
-        manoBukkit = ManoBukkit.getInstance();
         this.listenerAPI = BlobLibListenerAPI.getInstance(plugin);
         this.economyAPI = BlobLibEconomyAPI.getInstance(plugin);
         this.hologramAPI = BlobLibHologramAPI.getInstance(plugin);
@@ -81,10 +83,6 @@ public class BlobLibAPI {
 
     public BlobLibPetAPI getPetAPI() {
         return petAPI;
-    }
-
-    public ManoBukkit getManoBukkit() {
-        return manoBukkit;
     }
 
     @Deprecated

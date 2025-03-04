@@ -3,11 +3,8 @@ package us.mytheria.bloblib.entities.translatable;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.entities.DataAssetType;
 import us.mytheria.bloblib.itemstack.ItemStackModder;
 
 import java.util.Objects;
@@ -25,16 +22,8 @@ public class BlobTranslatableItem implements TranslatableItem {
     public static BlobTranslatableItem of(@NotNull String key,
                                           @NotNull String locale,
                                           @NotNull ItemStack itemStack) {
-        Objects.requireNonNull(locale, "Locale cannot be null");
-        Objects.requireNonNull(itemStack, "ItemStack cannot be null");
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        Objects.requireNonNull(itemMeta);
-        PersistentDataContainer container = itemMeta.getPersistentDataContainer();
-        if (!container.has(keyKey, PersistentDataType.STRING))
-            container.set(keyKey, PersistentDataType.STRING, key);
-        if (!container.has(localeKey, PersistentDataType.STRING))
-            container.set(localeKey, PersistentDataType.STRING, locale);
-        itemStack.setItemMeta(itemMeta);
+        Objects.requireNonNull(locale, "'locale' cannot be null");
+        Objects.requireNonNull(itemStack, "'itemStack' cannot be null");
         return new BlobTranslatableItem(key, locale, itemStack);
     }
 
@@ -47,7 +36,7 @@ public class BlobTranslatableItem implements TranslatableItem {
     }
 
     @NotNull
-    public String getLocale() {
+    public String locale() {
         return locale;
     }
 
@@ -57,12 +46,8 @@ public class BlobTranslatableItem implements TranslatableItem {
     }
 
     @NotNull
-    public String getReference() {
+    public String identifier() {
         return key;
-    }
-
-    public DataAssetType getType() {
-        return DataAssetType.TRANSLATABLE_ITEM;
     }
 
     @Override

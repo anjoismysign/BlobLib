@@ -4,7 +4,6 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.SkullType;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
 import org.bukkit.inventory.ItemStack;
@@ -47,7 +46,7 @@ public class SkullCreator {
 
         try {
             return new ItemStack(Material.valueOf("PLAYER_HEAD"));
-        } catch (IllegalArgumentException e) {
+        } catch ( IllegalArgumentException e ) {
             return new ItemStack(Material.valueOf("SKULL_ITEM"), 1, (byte) 3);
         }
     }
@@ -59,6 +58,7 @@ public class SkullCreator {
      * @return The head of the Player.
      * @deprecated names don't make for good identifiers.
      */
+    @Deprecated
     public static ItemStack itemFromName(String name) {
         return itemWithName(createSkull(), name);
     }
@@ -230,15 +230,8 @@ public class SkullCreator {
 
     private static void setToSkull(Block block) {
         checkLegacy();
-
-        try {
-            block.setType(Material.valueOf("PLAYER_HEAD"), false);
-        } catch (IllegalArgumentException e) {
-            block.setType(Material.valueOf("SKULL"), false);
-            Skull state = (Skull) block.getState();
-            state.setSkullType(SkullType.PLAYER);
-            state.update(false, false);
-        }
+        
+        block.setType(Material.valueOf("PLAYER_HEAD"), false);
     }
 
     private static void notNull(Object o, String name) {
@@ -252,7 +245,7 @@ public class SkullCreator {
         URI actualUrl;
         try {
             actualUrl = new URI(url);
-        } catch (URISyntaxException e) {
+        } catch ( URISyntaxException e ) {
             throw new RuntimeException(e);
         }
         String toEncode = "{\"textures\":{\"SKIN\":{\"url\":\"" + actualUrl + "\"}}}";
@@ -274,7 +267,7 @@ public class SkullCreator {
                 blockProfileField.setAccessible(true);
             }
             blockProfileField.set(block, makeProfile(b64));
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+        } catch ( NoSuchFieldException | IllegalAccessException e ) {
             e.printStackTrace();
         }
     }
@@ -286,7 +279,7 @@ public class SkullCreator {
                 metaSetProfileMethod.setAccessible(true);
             }
             metaSetProfileMethod.invoke(meta, makeProfile(b64));
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
+        } catch ( NoSuchMethodException | IllegalAccessException | InvocationTargetException ex ) {
             // if in an older API where there is no setProfile method,
             // we set the profile field directly.
             try {
@@ -296,7 +289,7 @@ public class SkullCreator {
                 }
                 metaProfileField.set(meta, makeProfile(b64));
 
-            } catch (NoSuchFieldException | IllegalAccessException ex2) {
+            } catch ( NoSuchFieldException | IllegalAccessException ex2 ) {
                 ex2.printStackTrace();
             }
         }
@@ -316,7 +309,7 @@ public class SkullCreator {
                         "SKULLCREATOR API - Using the legacy bukkit API with 1.13+ bukkit versions is not supported!");
                 warningPosted = true;
             }
-        } catch (NoSuchFieldException | IllegalArgumentException ignored) {
+        } catch ( NoSuchFieldException | IllegalArgumentException ignored ) {
         }
     }
 }

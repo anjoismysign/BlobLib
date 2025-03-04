@@ -47,7 +47,7 @@ public class TranslatableRegistry<T extends Translatable<?>> {
      */
     public boolean process(@NotNull T translatable) {
         Objects.requireNonNull(translatable, "carrier cannot be null");
-        String locale = translatable.getLocale();
+        String locale = translatable.locale();
         if (this.translatables.containsKey(locale))
             return false;
         this.translatables.put(locale, translatable);

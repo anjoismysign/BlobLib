@@ -4,20 +4,23 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
 import us.mytheria.bloblib.events.TranslatableItemCloneEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public interface TranslatableItem extends Translatable<ItemStack> {
 
+    static final String KEY_PREFIX = "translatableitem_key:";
+    static final String LOCALE_PREFIX = "translatableitem_locale:";
+
     /**
-     * Gets a TranslatableItem by its PersistentDataContainer
+     * Gets a TranslatableItem by an ItemStack
      *
      * @param itemStack The ItemStack to get the TranslatableItem by.
      * @return The TranslatableItem, or null if it doesn't exist.
@@ -28,9 +31,15 @@ public interface TranslatableItem extends Translatable<ItemStack> {
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta == null)
             return null;
-        PersistentDataContainer container = itemMeta.getPersistentDataContainer();
-        String key = container.get(BlobTranslatableItem.keyKey, PersistentDataType.STRING);
-        String locale = container.get(BlobTranslatableItem.localeKey, PersistentDataType.STRING);
+        CustomModelDataComponent dataComponent = itemMeta.getCustomModelDataComponent();
+        String key = null;
+        String locale = null;
+        for (String data : dataComponent.getStrings()) {
+            if (data.startsWith(KEY_PREFIX))
+                key = data.replace(KEY_PREFIX, "");
+            if (data.startsWith(LOCALE_PREFIX))
+                locale = data.replace(LOCALE_PREFIX, "");
+        }
         if (key == null || locale == null)
             return null;
         @Nullable TranslatableItem translatableItem = TranslatableItem.by(key);
@@ -40,7 +49,7 @@ public interface TranslatableItem extends Translatable<ItemStack> {
     }
 
     /**
-     * Gets a TranslatableItem by its key. Key is the same as getReference.
+     * Gets a TranslatableItem by its key. Key is the same as identifier.
      *
      * @param key The key to get the tag set by.
      * @return The TranslatableItem, or null if it doesn't exist.
@@ -60,7 +69,7 @@ public interface TranslatableItem extends Translatable<ItemStack> {
      */
     static void localize(@Nullable ItemStack itemStack,
                          @NotNull String locale) {
-        TranslatableItem translatableItem = TranslatableItem.isInstance(itemStack);
+        TranslatableItem translatableItem = TranslatableItem.byItemStack(itemStack);
         if (translatableItem == null)
             return;
         TranslatableItem localized = translatableItem.localize(locale);
@@ -77,32 +86,15 @@ public interface TranslatableItem extends Translatable<ItemStack> {
             from.setLore(to.getLore());
         else
             from.setLore(null);
-        PersistentDataContainer container = from.getPersistentDataContainer();
-        container.set(BlobTranslatableItem.localeKey, PersistentDataType.STRING, localized.getLocale());
+        var component = from.getCustomModelDataComponent();
+        List<String> get = component.getStrings();
+        List<String> list = new ArrayList<>(get
+                .stream()
+                .filter(line -> !line.startsWith(LOCALE_PREFIX)).toList());
+        list.add(LOCALE_PREFIX + locale);
+        component.setStrings(list);
+        from.setCustomModelDataComponent(component);
         itemStack.setItemMeta(from);
-    }
-
-    /**
-     * Checks whether an ItemStack is a TranslatableItem instance.
-     *
-     * @param item The ItemStack to check.
-     * @return The TranslatableItem, or null if it isn't one.
-     */
-    @Nullable
-    static TranslatableItem isInstance(@Nullable ItemStack item) {
-        if (item == null)
-            return null;
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null)
-            return null;
-        PersistentDataContainer container = meta.getPersistentDataContainer();
-        if (!container.has(BlobTranslatableItem.keyKey, PersistentDataType.STRING))
-            return null;
-        if (!container.has(BlobTranslatableItem.localeKey, PersistentDataType.STRING))
-            return null;
-        String key = container.get(BlobTranslatableItem.keyKey, PersistentDataType.STRING);
-        String locale = container.get(BlobTranslatableItem.localeKey, PersistentDataType.STRING);
-        return BlobLibTranslatableAPI.getInstance().getTranslatableItem(key, locale);
     }
 
     /**
@@ -114,10 +106,10 @@ public interface TranslatableItem extends Translatable<ItemStack> {
     @Nullable
     default TranslatableItem localize(@NotNull String locale) {
         Objects.requireNonNull(locale, "'locale' cannot be null");
-        if (getLocale().equals(locale))
+        if (locale().equals(locale))
             return this;
         return BlobLibTranslatableAPI.getInstance()
-                .getTranslatableItem(getReference(),
+                .getTranslatableItem(identifier(),
                         locale);
     }
 
@@ -182,7 +174,8 @@ public interface TranslatableItem extends Translatable<ItemStack> {
         Objects.requireNonNull(itemStack, "'hand' cannot be null");
         Objects.requireNonNull(locale, "'locale' cannot be null");
         TranslatableItem localized = localize(locale);
-        locale = localized.getLocale();
+        locale = localized.locale();
+        String key = localized.identifier();
         ItemStack translatedItem = localized.getClone();
         ItemMeta translatedMeta = translatedItem.getItemMeta();
         String name = translatedMeta.hasDisplayName() ? translatedMeta.getDisplayName() : null;
@@ -192,11 +185,16 @@ public interface TranslatableItem extends Translatable<ItemStack> {
             handMeta.setDisplayName(name);
         if (lore != null)
             handMeta.setLore(lore);
-        PersistentDataContainer container = handMeta.getPersistentDataContainer();
-        if (!container.has(BlobTranslatableItem.keyKey, PersistentDataType.STRING))
-            container.set(BlobTranslatableItem.keyKey, PersistentDataType.STRING, localized.getReference());
-        if (!container.has(BlobTranslatableItem.localeKey, PersistentDataType.STRING))
-            container.set(BlobTranslatableItem.localeKey, PersistentDataType.STRING, locale);
+        var component = handMeta.getCustomModelDataComponent();
+        List<String> get = component.getStrings();
+        List<String> list = new ArrayList<>(get
+                .stream()
+                .filter(line -> !line.startsWith(LOCALE_PREFIX))
+                .filter(line -> !line.startsWith(KEY_PREFIX)).toList());
+        list.add(KEY_PREFIX + key);
+        list.add(LOCALE_PREFIX + locale);
+        component.setStrings(list);
+        handMeta.setCustomModelDataComponent(component);
         itemStack.setItemMeta(handMeta);
     }
 

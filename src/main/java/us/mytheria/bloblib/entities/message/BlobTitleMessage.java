@@ -56,7 +56,7 @@ public class BlobTitleMessage extends AbstractMessage {
 
     @Override
     public @NotNull BlobTitleMessage modify(Function<String, String> function) {
-        return new BlobTitleMessage(getReference(), function.apply(title), function.apply(subtitle), fadeIn, stay,
-                fadeOut, getSound(), getLocale());
+        return new BlobTitleMessage(identifier(), function.apply(title), function.apply(subtitle), fadeIn, stay,
+                fadeOut, getSound(), locale());
     }
 }

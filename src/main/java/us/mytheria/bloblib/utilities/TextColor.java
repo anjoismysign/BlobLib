@@ -2,6 +2,7 @@ package us.mytheria.bloblib.utilities;
 
 
 import org.bukkit.ChatColor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,7 +33,7 @@ public class TextColor {
      * @param textToTranslate    The text to translate.
      * @return The translated text.
      */
-    public static String CUSTOM_PARSE(char alternateColorChar, String textToTranslate) {
+    public static String CUSTOM_PARSE(char alternateColorChar, @NotNull String textToTranslate) {
         TextColor textColor = new TextColor();
         return translateAlternateColorCodes(alternateColorChar, textColor.translateHexColorCodes(alternateColorChar, textToTranslate));
     }
@@ -58,7 +59,7 @@ public class TextColor {
      * @param textToTranslate The text to translate.
      * @return The translated text.
      */
-    public static String PARSE(String textToTranslate) {
+    public static String PARSE(@NotNull String textToTranslate) {
         return CUSTOM_PARSE('&', textToTranslate);
     }
 }

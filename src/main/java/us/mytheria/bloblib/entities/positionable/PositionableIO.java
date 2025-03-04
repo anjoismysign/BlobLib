@@ -76,7 +76,7 @@ public enum PositionableIO {
                       @NotNull TranslatablePositionable translatablePositionable) {
         Objects.requireNonNull(translatablePositionable, "'translatablePositionable' cannot be null");
         Positionable positionable = translatablePositionable.get();
-        String locale = translatablePositionable.getLocale();
+        String locale = translatablePositionable.locale();
         String display = translatablePositionable.getDisplay();
 
         at.set("Locale", locale);

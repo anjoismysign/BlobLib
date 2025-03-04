@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.itemapi;
 
+import me.anjoismysign.holoworld.asset.DataAsset;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +22,7 @@ public interface ItemMaterialManager {
                         @Nullable Player player) {
         if (itemStack == null)
             return;
-        @Nullable TranslatableItem translatableItem = TranslatableItem.isInstance(itemStack);
+        @Nullable TranslatableItem translatableItem = TranslatableItem.byItemStack(itemStack);
         if (translatableItem == null)
             return;
         ItemStack copy = translatableItem.localize(player).getClone();
@@ -30,7 +31,7 @@ public interface ItemMaterialManager {
 
     @Nullable
     default ItemMaterial of(@Nullable ItemStack itemStack) {
-        @Nullable TranslatableItem translatableItem = TranslatableItem.isInstance(itemStack);
+        @Nullable TranslatableItem translatableItem = TranslatableItem.byItemStack(itemStack);
         if (translatableItem == null)
             return null;
         return of(translatableItem);
@@ -47,7 +48,7 @@ public interface ItemMaterialManager {
         return BlobLibTranslatableAPI.getInstance().getTranslatableItems("en_us")
                 .stream()
                 .collect(Collectors.toMap(
-                        TranslatableItem::getReference,
+                        DataAsset::identifier,
                         this::of
                 ));
     }
@@ -56,8 +57,8 @@ public interface ItemMaterialManager {
     private ItemMaterial of(@NotNull TranslatableItem translatableItem) {
         return new ItemMaterial() {
             @Override
-            public @NotNull String getReference() {
-                return translatableItem.getReference();
+            public @NotNull String getIdentifier() {
+                return translatableItem.identifier();
             }
 
             @Override
@@ -67,7 +68,7 @@ public interface ItemMaterialManager {
 
             @Override
             public boolean isInstance(@NotNull ItemStack itemStack) {
-                return TranslatableItem.isInstance(itemStack) == null;
+                return TranslatableItem.byItemStack(itemStack) == null;
             }
         };
     }

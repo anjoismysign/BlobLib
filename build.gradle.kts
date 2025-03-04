@@ -44,16 +44,15 @@ repositories {
 }
 
 dependencies {
-    api(libs.org.apache.commons.commons.lang3)
     api(libs.org.mongodb.bson)
     api(libs.me.anjoismysign.anjo.anjo)
     api(libs.net.milkbowl.vault.vaultapi)
-    api(libs.me.anjoismysign.manobukkit)
     api(libs.me.anjoismysign.skeramidcommands)
     api(libs.me.anjoismysign.holoworld)
     api(libs.me.anjoismysign.psa.api)
     api(libs.me.anjoismysign.winona)
     api(libs.me.anjoismysign.aesthetic)
+    compileOnly(libs.org.apache.commons.commons.lang3)
     compileOnly(libs.io.papermc.paper.paper.api)
     compileOnly(libs.com.mojang.authlib)
     compileOnly(libs.com.fasterxml.jackson.core.jackson.databind)
@@ -71,7 +70,7 @@ dependencies {
 
 group = "us.mytheria"
 version = "1.698.31"
-description = "BlobLib"
+description = "bloblib"
 java.sourceCompatibility = JavaVersion.VERSION_21
 
 publishing {
@@ -90,4 +89,5 @@ tasks.withType<Javadoc>() {
 
 tasks.shadowJar {
     minimize()
+    archiveClassifier.set("")
 }
