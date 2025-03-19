@@ -11,7 +11,19 @@ import org.bukkit.event.EventPriority;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.entities.*;
+import us.mytheria.bloblib.entities.BlobCrudable;
+import us.mytheria.bloblib.entities.BlobFileManager;
+import us.mytheria.bloblib.entities.BlobObject;
+import us.mytheria.bloblib.entities.BlobPHExpansion;
+import us.mytheria.bloblib.entities.BlobSerializable;
+import us.mytheria.bloblib.entities.BlobSerializableManager;
+import us.mytheria.bloblib.entities.BlobSerializableManagerFactory;
+import us.mytheria.bloblib.entities.BukkitPluginOperator;
+import us.mytheria.bloblib.entities.DataAssetType;
+import us.mytheria.bloblib.entities.FileDetachment;
+import us.mytheria.bloblib.entities.IFileManager;
+import us.mytheria.bloblib.entities.ObjectDirector;
+import us.mytheria.bloblib.entities.ObjectDirectorData;
 import us.mytheria.bloblib.entities.currency.Currency;
 import us.mytheria.bloblib.entities.currency.EconomyFactory;
 import us.mytheria.bloblib.entities.currency.WalletOwner;
@@ -23,7 +35,13 @@ import us.mytheria.bloblib.utilities.ResourceUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -914,7 +932,7 @@ public abstract class ManagerDirector implements IManagerDirector {
             outputFile.mkdirs();
         try (ZipFile zipFile = new ZipFile(expansion)) {
             zipFile.extractAll(outputFile.getAbsolutePath());
-        } catch (Exception e) {
+        } catch ( Exception e ) {
             e.printStackTrace();
             return false;
         }
@@ -938,7 +956,7 @@ public abstract class ManagerDirector implements IManagerDirector {
                 assetType.getContinueLoading().accept(plugin, files);
                 try {
                     FileUtils.deleteDirectory(assetsDirectory.get(assetType));
-                } catch (IOException e) {
+                } catch ( IOException e ) {
                     e.printStackTrace();
                 }
             }

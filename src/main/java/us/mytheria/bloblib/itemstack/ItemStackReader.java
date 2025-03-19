@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.itemstack;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import io.papermc.paper.datacomponent.item.Consumable;
 import io.papermc.paper.datacomponent.item.Equippable;
 import io.papermc.paper.datacomponent.item.FoodProperties;
@@ -28,13 +29,16 @@ import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.bukkit.inventory.meta.trim.TrimPattern;
+import org.bukkit.profile.PlayerTextures;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.mytheria.bloblib.SkullCreator;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
 import us.mytheria.bloblib.utilities.TextColor;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -42,6 +46,20 @@ import java.util.UUID;
 
 @SuppressWarnings({"PatternValidation", "UnstableApiUsage"})
 public class ItemStackReader {
+
+    public static PlayerProfile profile(@NotNull String url) {
+        PlayerProfile profile = Bukkit.createProfile("Notch");
+        PlayerTextures textures = profile.getTextures();
+        URL skin = null;
+        try {
+            skin = URI.create(url).toURL();
+        } catch ( MalformedURLException exception ) {
+            throw new RuntimeException(exception);
+        }
+        textures.setSkin(skin);
+        profile.setTextures(textures);
+        return profile;
+    }
 
     public static ItemStackBuilder READ_OR_FAIL_FAST(ConfigurationSection section) {
         RegistryAccess registryAccess = RegistryAccess.registryAccess();
@@ -52,8 +70,11 @@ public class ItemStackReader {
             if (material == null)
                 throw new ConfigurationFieldException("'Material' field is not a valid material");
             builder = ItemStackBuilder.build(material);
-        } else
-            builder = ItemStackBuilder.build(SkullCreator.itemFromUrl(inputMaterial.substring(5)));
+        } else {
+            builder = ItemStackBuilder.build(Material.PLAYER_HEAD);
+            String url = inputMaterial.substring(5);
+            builder.playerProfile(profile(url));
+        }
         if (section.isInt("Amount")) {
             int amount = section.getInt("Amount");
             if (amount < 1 || amount > 127)

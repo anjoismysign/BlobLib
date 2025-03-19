@@ -110,7 +110,7 @@ public class BlobMultiSlotable extends MultiSlotable {
             action = singleActionSection.getString("Action");
             try {
                 actionType = ActionType.valueOf(singleActionSection.getString("Action-Type"));
-            } catch ( IllegalArgumentException e ) {
+            } catch ( IllegalArgumentException exception ) {
                 throw new ConfigurationFieldException("Invalid 'ActionType' for " + key + ".Action.Action-Type");
             }
         }
@@ -130,7 +130,7 @@ public class BlobMultiSlotable extends MultiSlotable {
                     reference = actionSection.getString("Action");
                     try {
                         type = ActionType.valueOf(actionSection.getString("Action-Type"));
-                    } catch ( IllegalArgumentException e ) {
+                    } catch ( IllegalArgumentException exception ) {
                         throw new ConfigurationFieldException("Invalid 'ActionType' for " + key + ".Action.Action-Type");
                     }
                     actions.add(new ActionMemo(reference, type));
@@ -241,7 +241,7 @@ public class BlobMultiSlotable extends MultiSlotable {
                 int start = 0;
                 try {
                     start = Integer.parseInt(split[0]);
-                } catch ( NumberFormatException e ) {
+                } catch ( NumberFormatException exception ) {
                     Bukkit.getLogger().info(sectionName + " got a slot that's not a number");
                     Bukkit.getLogger().info("This is not possible in an inventory so it was set");
                     Bukkit.getLogger().info("to '0' which is default.");
@@ -249,7 +249,7 @@ public class BlobMultiSlotable extends MultiSlotable {
                 int end = 0;
                 try {
                     end = Integer.parseInt(split[1]);
-                } catch ( NumberFormatException e ) {
+                } catch ( NumberFormatException exception ) {
                     Bukkit.getLogger().info(sectionName + " got a slot that's not a number");
                     Bukkit.getLogger().info("This is not possible in an inventory so it was set");
                     Bukkit.getLogger().info("to '0' which is default.");

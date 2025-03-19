@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.itemstack;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import io.papermc.paper.datacomponent.DataComponentType;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.Consumable;
@@ -10,6 +11,7 @@ import io.papermc.paper.datacomponent.item.FoodProperties;
 import io.papermc.paper.datacomponent.item.ItemAdventurePredicate;
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers;
 import io.papermc.paper.datacomponent.item.ItemEnchantments;
+import io.papermc.paper.datacomponent.item.ResolvableProfile;
 import io.papermc.paper.datacomponent.item.ShownInTooltip;
 import io.papermc.paper.datacomponent.item.Tool;
 import io.papermc.paper.datacomponent.item.Unbreakable;
@@ -30,6 +32,7 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.Repairable;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -73,7 +76,7 @@ public final class ItemStackBuilder {
         Material mat;
         try {
             mat = Material.valueOf(material);
-        } catch ( IllegalArgumentException e ) {
+        } catch ( IllegalArgumentException exception ) {
             mat = Material.DIRT;
             Bukkit.getLogger().info("Material " + material + " is not a valid material. Using DIRT instead.");
         }
@@ -85,11 +88,29 @@ public final class ItemStackBuilder {
     }
 
     private ItemStackBuilder damageable(Consumer<Damageable> consumer) {
-        ItemMeta m = this.itemStack.getItemMeta();
-        if (m instanceof Damageable damageable) {
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (itemMeta instanceof Damageable damageable) {
             consumer.accept(damageable);
-            this.itemStack.setItemMeta(m);
+            this.itemStack.setItemMeta(itemMeta);
         }
+        return this;
+    }
+
+    private ItemStackBuilder skullMeta(Consumer<SkullMeta> consumer) {
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (itemMeta instanceof SkullMeta skullMeta) {
+            consumer.accept(skullMeta);
+            this.itemStack.setItemMeta(itemMeta);
+        }
+        return this;
+    }
+
+    public ItemStackBuilder playerProfile(@NotNull PlayerProfile profile) {
+        return skullMeta(skullMeta -> skullMeta.setPlayerProfile(profile));
+    }
+
+    public ItemStackBuilder resolvableProfile(@NotNull ResolvableProfile profile) {
+        itemStack.setData(DataComponentTypes.PROFILE, profile);
         return this;
     }
 
@@ -246,7 +267,7 @@ public final class ItemStackBuilder {
         for (String flag : flags) {
             try {
                 itemFlags.add(ItemFlag.valueOf(flag));
-            } catch ( IllegalArgumentException e ) {
+            } catch ( IllegalArgumentException exception ) {
                 Bukkit.getLogger().info("ItemFlag " + flag + " is not a valid ItemFlag.");
             }
         }
@@ -371,7 +392,7 @@ public final class ItemStackBuilder {
             int level;
             try {
                 level = Integer.parseInt(split[1]);
-            } catch ( NumberFormatException e ) {
+            } catch ( NumberFormatException exception ) {
                 Bukkit.getLogger().severe("Invalid level for " + key + " enchantment: " + split[1]);
                 return;
             }

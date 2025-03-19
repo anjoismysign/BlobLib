@@ -120,7 +120,7 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
             action = singleActionSection.getString("Action");
             try {
                 actionType = ActionType.valueOf(singleActionSection.getString("Action-Type"));
-            } catch ( IllegalArgumentException e ) {
+            } catch ( IllegalArgumentException exception ) {
                 throw new ConfigurationFieldException("Invalid 'ActionType' for " + key + ".Action.Action-Type");
             }
         }
@@ -140,7 +140,7 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
                     reference = actionSection.getString("Action");
                     try {
                         type = ActionType.valueOf(actionSection.getString("Action-Type"));
-                    } catch ( IllegalArgumentException e ) {
+                    } catch ( IllegalArgumentException exception ) {
                         throw new ConfigurationFieldException("Invalid 'ActionType' for " + key + ".Action.Action-Type");
                     }
                     actions.add(new ActionMemo(reference, type));

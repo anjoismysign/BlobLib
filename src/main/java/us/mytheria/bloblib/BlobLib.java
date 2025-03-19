@@ -43,6 +43,7 @@ import us.mytheria.bloblib.placeholderapi.TranslatablePH;
 import us.mytheria.bloblib.placeholderapi.WorldGuardPH;
 import us.mytheria.bloblib.psa.BukkitPSA;
 import us.mytheria.bloblib.utilities.MinecraftVersion;
+import us.mytheria.bloblib.utilities.SerializationLib;
 import us.mytheria.bloblib.vault.VaultManager;
 
 /**
@@ -50,6 +51,8 @@ import us.mytheria.bloblib.vault.VaultManager;
  */
 public class BlobLib extends JavaPlugin {
     private static BlobPluginLogger anjoLogger;
+
+    private SerializationLib serializationLib;
 
     private BlobLibUpdater bloblibupdater;
     private BlobLibAPI api;
@@ -114,6 +117,7 @@ public class BlobLib extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        serializationLib = SerializationLib.getInstance();
         BukkitPSA.INSTANCE.load(this);
         running = MinecraftVersion.getRunning();
         soulAPI = SoulAPI.getInstance(this);

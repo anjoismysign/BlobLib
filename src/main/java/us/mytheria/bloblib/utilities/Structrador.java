@@ -98,8 +98,8 @@ public class Structrador {
         Structure structure;
         try {
             structure = Bukkit.getStructureManager().loadStructure(file);
-        } catch ( IOException e ) {
-            throw new RuntimeException(e);
+        } catch ( IOException exception ) {
+            throw new RuntimeException(exception);
         }
         this.structure = structure;
         this.plugin = Objects.requireNonNull(plugin);
@@ -109,8 +109,8 @@ public class Structrador {
         Structure structure;
         try {
             structure = Bukkit.getStructureManager().loadStructure(inputStream);
-        } catch ( IOException e ) {
-            throw new RuntimeException(e);
+        } catch ( IOException exception ) {
+            throw new RuntimeException(exception);
         }
         this.structure = structure;
         this.plugin = Objects.requireNonNull(plugin);
@@ -132,8 +132,8 @@ public class Structrador {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
             Bukkit.getStructureManager().saveStructure(outputStream, structure);
-        } catch ( IOException e ) {
-            throw new RuntimeException(e);
+        } catch ( IOException exception ) {
+            throw new RuntimeException(exception);
         }
         return outputStream;
     }

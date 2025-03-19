@@ -465,24 +465,24 @@ public enum BlobLibCommand {
         URL url;
         try {
             url = new URL(repoUrl);
-        } catch ( MalformedURLException e ) {
+        } catch ( MalformedURLException exception ) {
             return BlobLibCommand.RepositoryDownload.FAIL(BlobLibCommand.DownloadError.MALFORMED_URL);
         }
         HttpURLConnection connection;
         try {
             connection = (HttpURLConnection) url.openConnection();
-        } catch ( IOException e ) {
+        } catch ( IOException exception ) {
             return BlobLibCommand.RepositoryDownload.FAIL(BlobLibCommand.DownloadError.NO_CONNECTION);
         }
         try {
             connection.setRequestMethod("GET");
-        } catch ( ProtocolException e ) {
+        } catch ( ProtocolException exception ) {
             return BlobLibCommand.RepositoryDownload.FAIL(BlobLibCommand.DownloadError.PROTOCOL_ERROR);
         }
         BufferedReader reader;
         try {
             reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        } catch ( IOException e ) {
+        } catch ( IOException exception ) {
             BlobLib.getAnjoLogger().singleError("Repo not found: " + repoUrl);
             return BlobLibCommand.RepositoryDownload.FAIL(BlobLibCommand.DownloadError.REPO_NOT_FOUND);
         }
@@ -493,7 +493,7 @@ public enum BlobLibCommand {
                 response.append(line);
             }
             reader.close();
-        } catch ( IOException e ) {
+        } catch ( IOException exception ) {
             return BlobLibCommand.RepositoryDownload.FAIL(BlobLibCommand.DownloadError.UNKNOWN);
         }
         Gson gson = new Gson();
@@ -503,14 +503,14 @@ public enum BlobLibCommand {
         String fileName = latestUrl.substring(latestUrl.lastIndexOf("/") + 1);
         try {
             url = new URL(latestUrl);
-        } catch ( MalformedURLException e ) {
+        } catch ( MalformedURLException exception ) {
             return BlobLibCommand.RepositoryDownload.FAIL(BlobLibCommand.DownloadError.MALFORMED_URL);
         }
         Path targetPath = Path.of("plugins", fileName);
         try (InputStream inputStream = url.openStream()) {
             Files.copy(inputStream, targetPath);
             return new BlobLibCommand.RepositoryDownload(fileName, BlobLibCommand.DownloadError.NONE);
-        } catch ( IOException e ) {
+        } catch ( IOException exception ) {
             return BlobLibCommand.RepositoryDownload.FAIL(BlobLibCommand.DownloadError.UNKNOWN);
         }
     }

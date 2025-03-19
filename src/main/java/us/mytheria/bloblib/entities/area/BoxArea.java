@@ -2,15 +2,25 @@ package us.mytheria.bloblib.entities.area;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.util.BlockVector;
 import org.bukkit.util.BoundingBox;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public record BoxArea(@NotNull BoundingBox getBoundingBox,
-                      @NotNull String getWorldName) implements Area {
+                      @NotNull String getWorldName,
+                      @Nullable BlockVector blockVectorCenter) implements Area {
 
     @Override
     public @NotNull AreaType getType() {
         return AreaType.BOX_AREA;
+    }
+
+    @Override
+    public @Nullable Location getCenter() {
+        if (blockVectorCenter == null)
+            return null;
+        return new Location(getWorld(), blockVectorCenter.getX(), blockVectorCenter.getY(), blockVectorCenter.getZ());
     }
 
     public boolean contains(@NotNull BoxArea other) {

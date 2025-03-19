@@ -75,18 +75,20 @@ public class SoundManager {
         manager.unload(plugin);
     }
 
-    private void loadFiles(File path) {
-        File[] listOfFiles = path.listFiles();
+    private void loadFiles(File directory) {
+        @Nullable File[] listOfFiles = directory.listFiles();
+        if (listOfFiles == null)
+            return;
         for (File file : listOfFiles) {
             if (file.isFile()) {
                 if (file.getName().equals(".DS_Store"))
                     continue;
                 try {
                     loadYamlConfiguration(file);
-                } catch (ConfigurationFieldException exception) {
+                } catch ( ConfigurationFieldException exception ) {
                     main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
                     continue;
-                } catch (Throwable throwable) {
+                } catch ( Throwable throwable ) {
                     throwable.printStackTrace();
                     continue;
                 }

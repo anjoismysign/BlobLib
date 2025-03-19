@@ -9,13 +9,22 @@ import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
 import us.mytheria.bloblib.entities.DataAssetType;
 import us.mytheria.bloblib.entities.IFileManager;
-import us.mytheria.bloblib.entities.inventory.*;
+import us.mytheria.bloblib.entities.inventory.BlobInventory;
+import us.mytheria.bloblib.entities.inventory.InventoryBuilderCarrier;
+import static us.mytheria.bloblib.entities.inventory.InventoryBuilderCarrier.BLOB_FROM_CONFIGURATION_SECTION;
+import us.mytheria.bloblib.entities.inventory.InventoryButton;
+import us.mytheria.bloblib.entities.inventory.InventoryDataRegistry;
+import us.mytheria.bloblib.entities.inventory.MetaBlobInventory;
+import us.mytheria.bloblib.entities.inventory.MetaInventoryButton;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
 
 import java.io.File;
-import java.util.*;
-
-import static us.mytheria.bloblib.entities.inventory.InventoryBuilderCarrier.BLOB_FROM_CONFIGURATION_SECTION;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 public class InventoryManager {
     private final BlobLib main;
@@ -99,18 +108,20 @@ public class InventoryManager {
         manager.unload(plugin);
     }
 
-    private void loadBlobInventories(File path) {
-        File[] listOfFiles = path.listFiles();
+    private void loadBlobInventories(File directory) {
+        @Nullable File[] listOfFiles = directory.listFiles();
+        if (listOfFiles == null)
+            return;
         for (File file : listOfFiles) {
             if (file.isFile()) {
                 if (!file.getName().endsWith(".yml"))
                     continue;
                 try {
                     loadBlobInventory(file);
-                } catch (ConfigurationFieldException exception) {
+                } catch ( ConfigurationFieldException exception ) {
                     main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
                     continue;
-                } catch (Throwable throwable) {
+                } catch ( Throwable throwable ) {
                     throwable.printStackTrace();
                     continue;
                 }
@@ -120,18 +131,20 @@ public class InventoryManager {
         }
     }
 
-    private void loadMetaInventories(File path) {
-        File[] listOfFiles = path.listFiles();
+    private void loadMetaInventories(File directory) {
+        @Nullable File[] listOfFiles = directory.listFiles();
+        if (listOfFiles == null)
+            return;
         for (File file : listOfFiles) {
             if (file.isFile()) {
                 if (!file.getName().endsWith(".yml"))
                     continue;
                 try {
                     loadMetaInventory(file);
-                } catch (ConfigurationFieldException exception) {
+                } catch ( ConfigurationFieldException exception ) {
                     main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
                     continue;
-                } catch (Throwable throwable) {
+                } catch ( Throwable throwable ) {
                     throwable.printStackTrace();
                     continue;
                 }

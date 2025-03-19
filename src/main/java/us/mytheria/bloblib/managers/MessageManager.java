@@ -77,8 +77,10 @@ public class MessageManager {
         manager.load(plugin, director);
     }
 
-    private void loadFiles(File path) {
-        File[] listOfFiles = path.listFiles();
+    private void loadFiles(File directory) {
+        @Nullable File[] listOfFiles = directory.listFiles();
+        if (listOfFiles == null)
+            return;
         for (File file : listOfFiles) {
             if (file.isFile()) {
                 if (file.getName().equals(".DS_Store"))

@@ -3,13 +3,16 @@ package us.mytheria.bloblib.entities.area;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.util.BlockVector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.enginehub.EngineHubManager;
 
 import java.util.Objects;
 
 public record WorldGuardArea(@NotNull String worldName,
-                             @NotNull String id) implements Area {
+                             @NotNull String id,
+                             @Nullable BlockVector blockVectorCenter) implements Area {
 
     /**
      * Instances a WorldGuard Area.
@@ -21,10 +24,11 @@ public record WorldGuardArea(@NotNull String worldName,
      */
     public static WorldGuardArea of(
             @NotNull String worldName,
-            @NotNull String id) {
+            @NotNull String id,
+            @Nullable BlockVector center) {
         Objects.requireNonNull(worldName, "'worldName' cannot be null");
         Objects.requireNonNull(id, "'id' cannot be null");
-        return new WorldGuardArea(worldName, id);
+        return new WorldGuardArea(worldName, id, center);
     }
 
     @NotNull
@@ -44,6 +48,13 @@ public record WorldGuardArea(@NotNull String worldName,
     @NotNull
     public String getWorldName() {
         return worldName;
+    }
+
+    @Override
+    public @Nullable Location getCenter() {
+        if (blockVectorCenter != null)
+            return null;
+        return new Location(getWorld(), blockVectorCenter.getX(), blockVectorCenter.getY(), blockVectorCenter.getZ());
     }
 
     @NotNull

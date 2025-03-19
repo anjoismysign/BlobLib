@@ -1,10 +1,12 @@
 package us.mytheria.bloblib.objects;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import us.mytheria.bloblib.SkullCreator;
+import org.bukkit.inventory.meta.SkullMeta;
+import us.mytheria.bloblib.itemstack.ItemStackReader;
 import us.mytheria.bloblib.utilities.TextColor;
 
 import java.util.ArrayList;
@@ -21,7 +23,12 @@ public class SerializableItem {
             material = "HEAD-https://textures.minecraft.net/texture/" +
                     "65b95da1281642daa5d022adbd3e7cb69dc0942c81cd63be9c3857d222e1c8d9";
         if (material.contains("HEAD-")) {
-            itemStack = SkullCreator.itemFromUrl(material.replace("HEAD-", ""));
+            itemStack = new ItemStack(Material.PLAYER_HEAD);
+            String url = material.substring(5);
+            SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
+            PlayerProfile profile = ItemStackReader.profile(url);
+            skullMeta.setPlayerProfile(profile);
+            itemStack.setItemMeta(skullMeta);
         } else {
             itemStack = new ItemStack(Material.valueOf(material));
         }

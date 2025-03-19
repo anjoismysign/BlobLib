@@ -29,6 +29,10 @@ public class BlobPHExpansion extends PlaceholderExpansion {
         Bukkit.getScheduler().runTask(plugin, this::register);
     }
 
+    public BlobPHExpansion(JavaPlugin plugin) {
+        this(plugin, "");
+    }
+
     /**
      * @return the previous value associated with key, or null if there was no mapping for key. (A null return can also indicate that the map previously associated null with key, if the implementation supports null values.)
      */

@@ -4,6 +4,7 @@ import me.anjoismysign.psa.crud.CrudDatabaseCredentials;
 import me.anjoismysign.psa.crud.DatabaseCredentials;
 import me.anjoismysign.psa.lehmapp.LehmappCrudable;
 import me.anjoismysign.psa.lehmapp.LehmappSerializable;
+import me.anjoismysign.psa.serializablemanager.SimpleSerializableManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,7 +24,7 @@ import java.util.function.Supplier;
 
 public abstract class AbstractBukkitSerializableManager
         <T extends LehmappSerializable, S extends BukkitSerializableEvent<T>>
-        extends me.anjoismysign.psa.serializablemanager.SimpleSerializableManager<T>
+        extends SimpleSerializableManager<T>
         implements BukkitSerializableManager<T>, Listener {
     private final @Nullable Listener joinEvent;
     private final @Nullable Listener quitEvent;
@@ -39,6 +40,21 @@ public abstract class AbstractBukkitSerializableManager
             @NotNull BlobPlugin plugin,
             @Nullable Supplier<Boolean> eventsRegistrationSupplier) {
         super(credentials, deserializer);
+        Bukkit.getOnlinePlayers().forEach(player -> {
+            String id = identifier.apply(player);
+            BlobScheduler scheduler = plugin.getScheduler();
+            scheduler.async(() -> {
+                LehmappCrudable crudable = controller.getCrudManager().read(id);
+                scheduler.sync(() -> {
+                    T constructed = deserializer.apply(crudable);
+                    if (joinEvent != null) {
+                        S serializableEvent = joinEvent.apply(constructed);
+                        Bukkit.getPluginManager().callEvent(serializableEvent);
+                    }
+                    map().put(id, constructed);
+                });
+            });
+        });
         this.joinEvent = joinEvent == null ? null : new Listener() {
             @EventHandler
             public void onJoin(PlayerJoinEvent event) {

@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -140,8 +141,8 @@ public class BlobFileManager extends Manager implements IFileManager {
                     File.separator + "temp" + fileName + ".yml",
                     path, file, getPlugin());
             return isFresh;
-        } catch ( IOException e ) {
-            e.printStackTrace();
+        } catch ( IOException exception ) {
+            exception.printStackTrace();
         }
         return false;
     }
@@ -153,9 +154,7 @@ public class BlobFileManager extends Manager implements IFileManager {
      * @param files the files to update.
      */
     public void updateYAMLs(File... files) {
-        for (File file : files) {
-            updateYAML(file);
-        }
+        updateYAMLs(Arrays.stream(files).toList());
     }
 
     /**
@@ -241,12 +240,12 @@ public class BlobFileManager extends Manager implements IFileManager {
                     file.createNewFile();
                     ResourceUtil.updateYml(directory, File.separator + "temp" + fileName + ".yml",
                             fileName + ".yml", file, getPlugin());
-                } catch ( IOException e ) {
-                    e.printStackTrace();
+                } catch ( IOException exception ) {
+                    exception.printStackTrace();
                 }
             }
-        } catch ( IOException e ) {
-            e.printStackTrace();
+        } catch ( IOException exception ) {
+            exception.printStackTrace();
         }
     }
 
@@ -282,6 +281,7 @@ public class BlobFileManager extends Manager implements IFileManager {
         return YamlConfiguration.loadConfiguration(f);
     }
 
+    @Override
     @NotNull
     public File getDirectory(DataAssetType type) {
         @Nullable File directory = getFile(directories.get(type));

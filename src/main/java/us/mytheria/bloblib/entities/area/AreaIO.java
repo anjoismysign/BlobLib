@@ -1,9 +1,11 @@
 package us.mytheria.bloblib.entities.area;
 
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.util.BlockVector;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -14,6 +16,7 @@ import us.mytheria.bloblib.entities.translatable.BlobTranslatableArea;
 import us.mytheria.bloblib.entities.translatable.TranslatableArea;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
 import us.mytheria.bloblib.managers.BlobLibListenerManager;
+import us.mytheria.bloblib.utilities.SerializationLib;
 import us.mytheria.bloblib.utilities.VectorUtil;
 
 import java.io.File;
@@ -45,7 +48,7 @@ public enum AreaIO {
                 key,
                 "en_us",
                 "Change me later!",
-                new BoxArea(boundingBox, world.getName())
+                new BoxArea(boundingBox, world.getName(), null)
         );
         File file = new File(directory, key + ".yml");
         directory.mkdirs();
@@ -87,11 +90,15 @@ public enum AreaIO {
         BoundingBox boundingBox = area.getBoundingBox();
         Vector min = boundingBox.getMin();
         Vector max = boundingBox.getMax();
+        @Nullable Location center = area.getCenter();
 
         VectorUtil.setVector(min, at.createSection("Min"));
         VectorUtil.setVector(max, at.createSection("Max"));
 
         at.set("World", area.getWorldName());
+        if (center == null)
+            return;
+        at.set("Center", SerializationLib.serialize(center.toVector().toBlockVector()));
     }
 
     @NotNull
@@ -104,6 +111,11 @@ public enum AreaIO {
         boolean worldGuard = EngineHubManager.getInstance().isWorldGuardInstalled();
         @Nullable ConfigurationSection minSection = section.getConfigurationSection("Min");
         @Nullable ConfigurationSection maxSection = section.getConfigurationSection("Max");
+        BlockVector center = null;
+        try {
+            center = SerializationLib.deserializeBlockVector(section.getString("Center"));
+        } catch ( Exception ignored ) {
+        }
         Area area;
         if (minSection != null && maxSection != null) {
             if (id != null)
@@ -111,13 +123,13 @@ public enum AreaIO {
             Vector min = VectorUtil.fromConfigurationSection(minSection);
             Vector max = VectorUtil.fromConfigurationSection(maxSection);
             BoundingBox boundingBox = BoundingBox.of(min, max);
-            area = new BoxArea(boundingBox, worldName);
+            area = new BoxArea(boundingBox, worldName, center);
             return area;
         }
         if (id != null) {
             if (!worldGuard)
                 throw new RuntimeException("While attempting to load a TranslatableArea, WorldGuard seemed to not be installed");
-            area = WorldGuardArea.of(worldName, id);
+            area = WorldGuardArea.of(worldName, id, center);
             return area;
         } else
             throw new ConfigurationFieldException("'Id' is null while missing both 'Min' and 'Max'");

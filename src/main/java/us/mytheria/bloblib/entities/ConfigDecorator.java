@@ -16,11 +16,14 @@ public class ConfigDecorator {
     public ConfigDecorator(JavaPlugin plugin) {
         this.plugin = plugin;
         File file = new File(plugin.getDataFolder(), "config.yml");
-        if (!file.exists()) {
+        if (!file.isFile()) {
             try {
+                File parent = file.getParentFile();
+                if (!parent.isDirectory())
+                    parent.mkdirs();
                 file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch ( IOException exception ) {
+                exception.printStackTrace();
             }
         }
         ResourceUtil.updateYml(file, plugin);

@@ -101,8 +101,10 @@ public class TranslatableManager {
         manager.unload(plugin);
     }
 
-    private void loadSnippets(File path) {
-        File[] listOfFiles = path.listFiles();
+    private void loadSnippets(File directory) {
+        @Nullable File[] listOfFiles = directory.listFiles();
+        if (listOfFiles == null)
+            return;
         for (File file : listOfFiles) {
             if (file.isFile()) {
                 if (!file.getName().endsWith(".yml"))
@@ -122,8 +124,10 @@ public class TranslatableManager {
         }
     }
 
-    private void loadBlocks(File path) {
-        File[] listOfFiles = path.listFiles();
+    private void loadBlocks(File directory) {
+        @Nullable File[] listOfFiles = directory.listFiles();
+        if (listOfFiles == null)
+            return;
         for (File file : listOfFiles) {
             if (file.isFile()) {
                 if (!file.getName().endsWith(".yml"))
