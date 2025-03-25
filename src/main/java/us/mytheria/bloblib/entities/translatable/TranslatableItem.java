@@ -26,8 +26,9 @@ public interface TranslatableItem extends Translatable<ItemStack> {
      * @return The TranslatableItem, or null if it doesn't exist.
      */
     @Nullable
-    static TranslatableItem byItemStack(@NotNull ItemStack itemStack) {
-        Objects.requireNonNull(itemStack, "'itemStack' cannot be null");
+    static TranslatableItem byItemStack(@Nullable ItemStack itemStack) {
+        if (itemStack == null)
+            return null;
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta == null)
             return null;

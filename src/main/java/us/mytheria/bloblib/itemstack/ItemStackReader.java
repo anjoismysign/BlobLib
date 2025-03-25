@@ -41,6 +41,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -308,12 +309,13 @@ public class ItemStackReader {
             ConfigurationSection attributes = section.getConfigurationSection("Attributes");
             Uber<ItemStackBuilder> uber = Uber.drive(builder);
             attributes.getKeys(false).forEach(key -> {
+                String attributeKey = key.toLowerCase(Locale.ROOT);
                 if (!attributes.isConfigurationSection(key))
                     throw new ConfigurationFieldException("Attribute '" + key + "' is not valid");
                 ConfigurationSection attributeSection = attributes.getConfigurationSection(key);
                 try {
                     String name = attributes.getString("Name", UUID.randomUUID().toString());
-                    Attribute attribute = registryAccess.getRegistry(RegistryKey.ATTRIBUTE).get(Key.key(key));
+                    Attribute attribute = registryAccess.getRegistry(RegistryKey.ATTRIBUTE).get(Key.key(attributeKey));
                     if (!attributeSection.isDouble("Amount"))
                         throw new ConfigurationFieldException("Attribute '" + key + "' has an invalid amount (DECIMAL NUMBER)");
                     double amount = attributeSection.getDouble("Amount");
@@ -321,6 +323,8 @@ public class ItemStackReader {
                         throw new ConfigurationFieldException("Attribute '" + key + "' is missing 'Operation' field");
                     EquipmentSlotGroup equipmentSlot;
                     String readEquipmentSlotGroup = attributeSection.getString("EquipmentSlotGroup");
+                    if (readEquipmentSlotGroup == null)
+                        readEquipmentSlotGroup = attributeSection.getString("EquipmentSlot");
                     if (readEquipmentSlotGroup != null) {
                         try {
                             equipmentSlot = EquipmentSlotGroup.getByName(readEquipmentSlotGroup);
