@@ -71,8 +71,8 @@ public class BlobActionbarTitleMessage extends BlobTitleMessage {
      */
     @Override
     public @NotNull BlobActionbarTitleMessage modify(Function<String, String> function) {
-        return new BlobActionbarTitleMessage(getReference(), function.apply(actionbar), function.apply(title),
+        return new BlobActionbarTitleMessage(identifier(), function.apply(actionbar), function.apply(title),
                 function.apply(subtitle), fadeIn, stay, fadeOut, getSound(),
-                getLocale());
+                locale());
     }
 }

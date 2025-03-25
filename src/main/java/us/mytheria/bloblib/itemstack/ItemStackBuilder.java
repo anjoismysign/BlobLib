@@ -1,5 +1,21 @@
 package us.mytheria.bloblib.itemstack;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
+import io.papermc.paper.datacomponent.DataComponentType;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.Consumable;
+import io.papermc.paper.datacomponent.item.DamageResistant;
+import io.papermc.paper.datacomponent.item.DyedItemColor;
+import io.papermc.paper.datacomponent.item.Equippable;
+import io.papermc.paper.datacomponent.item.FoodProperties;
+import io.papermc.paper.datacomponent.item.ItemAdventurePredicate;
+import io.papermc.paper.datacomponent.item.ItemAttributeModifiers;
+import io.papermc.paper.datacomponent.item.ItemEnchantments;
+import io.papermc.paper.datacomponent.item.ResolvableProfile;
+import io.papermc.paper.datacomponent.item.ShownInTooltip;
+import io.papermc.paper.datacomponent.item.Tool;
+import io.papermc.paper.datacomponent.item.Unbreakable;
+import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -7,15 +23,28 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ArmorMeta;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.inventory.meta.Repairable;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.inventory.meta.trim.ArmorTrim;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.utilities.TextColor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 
@@ -33,7 +62,10 @@ public final class ItemStackBuilder {
     }
 
     public static ItemStackBuilder build(Material material, int amount) {
-        return new ItemStackBuilder(new ItemStack(material, amount));
+        ItemStack itemStack = new ItemStack(material, amount);
+        if (material == Material.POISONOUS_POTATO)
+            itemStack.unsetData(DataComponentTypes.FOOD);
+        return new ItemStackBuilder(itemStack);
     }
 
     public static ItemStackBuilder build(String material) {
@@ -44,7 +76,7 @@ public final class ItemStackBuilder {
         Material mat;
         try {
             mat = Material.valueOf(material);
-        } catch (IllegalArgumentException e) {
+        } catch ( IllegalArgumentException exception ) {
             mat = Material.DIRT;
             Bukkit.getLogger().info("Material " + material + " is not a valid material. Using DIRT instead.");
         }
@@ -53,6 +85,111 @@ public final class ItemStackBuilder {
 
     private ItemStackBuilder(ItemStack itemStack) {
         this.itemStack = Objects.requireNonNull(itemStack, "itemStack cannot be null");
+    }
+
+    private ItemStackBuilder damageable(Consumer<Damageable> consumer) {
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (itemMeta instanceof Damageable damageable) {
+            consumer.accept(damageable);
+            this.itemStack.setItemMeta(itemMeta);
+        }
+        return this;
+    }
+
+    private ItemStackBuilder skullMeta(Consumer<SkullMeta> consumer) {
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (itemMeta instanceof SkullMeta skullMeta) {
+            consumer.accept(skullMeta);
+            this.itemStack.setItemMeta(itemMeta);
+        }
+        return this;
+    }
+
+    public ItemStackBuilder playerProfile(@NotNull PlayerProfile profile) {
+        return skullMeta(skullMeta -> skullMeta.setPlayerProfile(profile));
+    }
+
+    public ItemStackBuilder resolvableProfile(@NotNull ResolvableProfile profile) {
+        itemStack.setData(DataComponentTypes.PROFILE, profile);
+        return this;
+    }
+
+    public ItemStackBuilder canPlaceOn(@NotNull ItemAdventurePredicate predicate) {
+        itemStack.setData(DataComponentTypes.CAN_PLACE_ON, predicate);
+        return this;
+    }
+
+    public ItemStackBuilder canBreak(@NotNull ItemAdventurePredicate predicate) {
+        itemStack.setData(DataComponentTypes.CAN_BREAK, predicate);
+        return this;
+    }
+
+    public ItemStackBuilder tooltipStyle(@NotNull Key key) {
+        itemStack.setData(DataComponentTypes.TOOLTIP_STYLE, key);
+        return this;
+    }
+
+    public ItemStackBuilder equippable(@NotNull Equippable equippable) {
+        itemStack.setData(DataComponentTypes.EQUIPPABLE, equippable);
+        return this;
+    }
+
+    public ItemStackBuilder glider() {
+        itemStack.setData(DataComponentTypes.GLIDER);
+        return this;
+    }
+
+    public ItemStackBuilder damageResistant(@NotNull DamageResistant damageResistant) {
+        itemStack.setData(DataComponentTypes.DAMAGE_RESISTANT, damageResistant);
+        return this;
+    }
+
+    public ItemStackBuilder consumable(@NotNull Consumable consumable) {
+        itemStack.setData(DataComponentTypes.CONSUMABLE, consumable);
+        return this;
+    }
+
+    public ItemStackBuilder itemModel(@NotNull NamespacedKey itemModel) {
+        return itemMeta(itemMeta -> itemMeta.setItemModel(itemModel));
+    }
+
+    public ItemStackBuilder tool(Tool tool) {
+        itemStack.setData(DataComponentTypes.TOOL, tool);
+        return this;
+    }
+
+    public ItemStackBuilder damage(int damage) {
+        return damageable(damageable -> damageable.setDamage(damage));
+    }
+
+    public ItemStackBuilder maxDamage(int maxDamage) {
+        return damageable(damageable -> damageable.setMaxDamage(maxDamage));
+    }
+
+    private ItemStackBuilder repariable(Consumer<Repairable> consumer) {
+        ItemMeta m = this.itemStack.getItemMeta();
+        if (m instanceof Repairable repairable) {
+            consumer.accept(repairable);
+            this.itemStack.setItemMeta(m);
+        }
+        return this;
+    }
+
+    public ItemStackBuilder repairCost(int repairCost) {
+        return repariable(repairable -> repairable.setRepairCost(repairCost));
+    }
+
+    private ItemStackBuilder armor(Consumer<ArmorMeta> consumer) {
+        ItemMeta m = this.itemStack.getItemMeta();
+        if (m instanceof ArmorMeta armorMeta) {
+            consumer.accept(armorMeta);
+            this.itemStack.setItemMeta(m);
+        }
+        return this;
+    }
+
+    public ItemStackBuilder armorTrim(ArmorTrim armorTrim) {
+        return armor(armorMeta -> armorMeta.setTrim(armorTrim));
     }
 
     private ItemStackBuilder itemMeta(Consumer<ItemMeta> consumer) {
@@ -64,8 +201,53 @@ public final class ItemStackBuilder {
         return this;
     }
 
+    public ItemStackBuilder itemName(String name) {
+        return itemMeta(itemMeta -> itemMeta.setItemName(name));
+    }
+
+    public ItemStackBuilder hideToolTip(boolean hideToolTip) {
+        return itemMeta(itemMeta -> itemMeta.setHideTooltip(hideToolTip));
+    }
+
+    public ItemStackBuilder enchantmentGlintOverride(boolean glint) {
+        return itemMeta(itemMeta -> itemMeta.setEnchantmentGlintOverride(glint));
+    }
+
+    public ItemStackBuilder fireResistant(boolean fireResistant) {
+        return itemMeta(itemMeta -> itemMeta.setFireResistant(fireResistant));
+    }
+
+    public ItemStackBuilder maxStackSize(int maxStackSize) {
+        return itemMeta(itemMeta -> itemMeta.setMaxStackSize(maxStackSize));
+    }
+
+    public ItemStackBuilder rarity(ItemRarity rarity) {
+        return itemMeta(itemMeta -> itemMeta.setRarity(rarity));
+    }
+
+    public ItemStackBuilder food(@NotNull FoodProperties foodProperties) {
+        itemStack.setData(DataComponentTypes.FOOD, foodProperties);
+        return this;
+    }
+
     public ItemStackBuilder hideAll() {
+        hideInTooltip(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.itemAttributes().build());
+        hideInTooltip(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments().build());
+        hideInTooltip(DataComponentTypes.UNBREAKABLE, Unbreakable.unbreakable().build());
+        hideInTooltip(DataComponentTypes.TRIM, null);
+        hideInTooltip(DataComponentTypes.JUKEBOX_PLAYABLE, null);
+        hideInTooltip(DataComponentTypes.CAN_PLACE_ON, ItemAdventurePredicate.itemAdventurePredicate().build());
+        hideInTooltip(DataComponentTypes.CAN_BREAK, ItemAdventurePredicate.itemAdventurePredicate().build());
+        hideInTooltip(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor().build());
         return flag(ALL_CONSTANTS);
+    }
+
+    private <T extends ShownInTooltip<T>> void hideInTooltip(@NotNull DataComponentType.@NotNull Valued<T> type,
+                                                             @Nullable T fallback) {
+        @Nullable var modifiers = itemStack.getDataOrDefault(type, fallback);
+        if (modifiers == null)
+            return;
+        itemStack.setData(type, modifiers.showInTooltip(false));
     }
 
     public ItemStackBuilder showAll() {
@@ -85,7 +267,7 @@ public final class ItemStackBuilder {
         for (String flag : flags) {
             try {
                 itemFlags.add(ItemFlag.valueOf(flag));
-            } catch (IllegalArgumentException e) {
+            } catch ( IllegalArgumentException exception ) {
                 Bukkit.getLogger().info("ItemFlag " + flag + " is not a valid ItemFlag.");
             }
         }
@@ -210,7 +392,7 @@ public final class ItemStackBuilder {
             int level;
             try {
                 level = Integer.parseInt(split[1]);
-            } catch (NumberFormatException e) {
+            } catch ( NumberFormatException exception ) {
                 Bukkit.getLogger().severe("Invalid level for " + key + " enchantment: " + split[1]);
                 return;
             }
@@ -253,15 +435,16 @@ public final class ItemStackBuilder {
 
     public ItemStackBuilder attribute(
             Attribute attribute,
+            @NotNull String name,
             double amount,
-            AttributeModifier.Operation operation,
-            @Nullable EquipmentSlot equipmentSlot) {
+            @NotNull AttributeModifier.Operation operation,
+            @Nullable EquipmentSlotGroup equipmentSlotGroup) {
         return itemMeta(itemMeta -> {
             try {
-                UUID uuid = UUID.randomUUID();
-                AttributeModifier modifier = new AttributeModifier(uuid, uuid.toString(), amount, operation, equipmentSlot);
+                NamespacedKey key = new NamespacedKey(BlobLib.getInstance(), name);
+                AttributeModifier modifier = new AttributeModifier(key, amount, operation, equipmentSlotGroup);
                 itemMeta.addAttributeModifier(attribute, modifier);
-            } catch (Exception exception) {
+            } catch ( Exception exception ) {
                 Bukkit.getLogger().log(Level.SEVERE, exception, () -> "Failed to add attribute modifier");
             }
         });
@@ -274,4 +457,6 @@ public final class ItemStackBuilder {
     public ItemStack build() {
         return this.itemStack;
     }
+
+
 }

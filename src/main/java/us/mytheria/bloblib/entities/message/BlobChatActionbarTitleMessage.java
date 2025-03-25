@@ -93,22 +93,22 @@ public class BlobChatActionbarTitleMessage extends BlobChatMessage {
      */
     @Override
     public @NotNull BlobChatActionbarTitleMessage modify(Function<String, String> function) {
-        return new BlobChatActionbarTitleMessage(getReference(), function.apply(chat),
+        return new BlobChatActionbarTitleMessage(identifier(), function.apply(chat),
                 hover == null ? null : function.apply(hover),
                 function.apply(actionbar),
                 function.apply(title),
                 function.apply(subtitle),
                 fadeIn, stay, fadeOut,
                 getSound(),
-                getLocale(),
+                locale(),
                 getClickEvent());
     }
 
     @Override
     @NotNull
     public BlobChatActionbarTitleMessage onClick(ClickEvent event) {
-        return new BlobChatActionbarTitleMessage(getReference(), chat, hover, actionbar, title,
-                subtitle, fadeIn, stay, fadeOut, getSound(), getLocale(),
+        return new BlobChatActionbarTitleMessage(identifier(), chat, hover, actionbar, title,
+                subtitle, fadeIn, stay, fadeOut, getSound(), locale(),
                 event);
     }
 }

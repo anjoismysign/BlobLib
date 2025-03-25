@@ -1,0 +1,66 @@
+Title: '&lCURRENCY > BUILD'
+Size: 27
+Buttons:
+  Background:
+    ItemStack:
+      Material: BLACK_STAINED_GLASS_PANE
+      CustomModelData: 0
+      DisplayName: " "
+      Lore: [ ]
+    Slot: 0-26
+  White-Background:
+    ItemStack:
+      Material: WHITE_STAINED_GLASS_PANE
+      CustomModelData: 0
+      DisplayName: " "
+      Lore: [ ]
+    Slot: 1-7,10-16,19-25
+  Key:
+    ItemStack:
+      Material: BOOK
+      CustomModelData: 0
+      DisplayName: "&6Key"
+      Lore:
+        - "&7Selected: &f%key%"
+    Slot: 1
+  Display:
+    ItemStack:
+      Material: WRITABLE_BOOK
+      CustomModelData: 0
+      DisplayName: "&6Display"
+      Lore:
+        - "&7Selected: &f%itemStack%"
+    Slot: 3
+  InitialBalance:
+    ItemStack:
+      Material: EMERALD
+      CustomModelData: 0
+      DisplayName: "&6InitialBalance"
+      Lore:
+        - "&7Selected: &f%initialBalance%"
+    Slot: 4
+  Persistent:
+    ItemStack:
+      Material: TOTEM_OF_UNDYING
+      CustomModelData: 0
+      DisplayName: "&6Persistent"
+      Lore:
+        - "&7Selected: &f%persistent%"
+    Slot: 5
+  DecimalFormat:
+    ItemStack:
+      Material: WRITABLE_BOOK
+      CustomModelData: 0
+      DisplayName: "&6DecimalFormat"
+      Lore:
+        - "&7Selected: &f%decimalFormat%"
+    Slot: 6
+  Build:
+    ItemStack:
+      Material: SLIME_BALL
+      CustomModelData: 0
+      DisplayName: "&6Build"
+      Lore:
+        - "&7Click to add currency"
+        - "&7to the files."
+    Slot: 22

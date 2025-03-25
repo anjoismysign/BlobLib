@@ -20,7 +20,13 @@ import us.mytheria.bloblib.storage.IdentifierType;
 import us.mytheria.bloblib.storage.StorageType;
 import us.mytheria.bloblib.utilities.BlobCrudManagerFactory;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -85,8 +91,8 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
             e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "You are already saving your data, please try again in a few seconds.");
     }
 
-    public void onJoin(PlayerJoinEvent e) {
-        Player player = e.getPlayer();
+    public void onJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             if (player != Bukkit.getPlayer(uuid))

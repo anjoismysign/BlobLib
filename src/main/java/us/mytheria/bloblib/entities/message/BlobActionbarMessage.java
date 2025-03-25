@@ -55,6 +55,6 @@ public class BlobActionbarMessage extends AbstractMessage {
      */
     @Override
     public @NotNull BlobActionbarMessage modify(Function<String, String> function) {
-        return new BlobActionbarMessage(getReference(), function.apply(actionbar), getSound(), getLocale());
+        return new BlobActionbarMessage(identifier(), function.apply(actionbar), getSound(), locale());
     }
 }

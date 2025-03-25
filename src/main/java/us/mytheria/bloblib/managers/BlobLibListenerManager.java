@@ -1,6 +1,8 @@
 package us.mytheria.bloblib.managers;
 
 import us.mytheria.bloblib.listeners.DisplayUnriding;
+import us.mytheria.bloblib.listeners.ProjectileDamage;
+import us.mytheria.bloblib.listeners.TranslatableAreaWand;
 
 public class BlobLibListenerManager {
     private static BlobLibListenerManager instance;
@@ -19,12 +21,20 @@ public class BlobLibListenerManager {
     }
 
     private final DisplayUnriding displayUnriding;
+    private final ProjectileDamage projectileDamage;
+    private final TranslatableAreaWand areaWand;
 
     private BlobLibListenerManager(BlobLibConfigManager configManager) {
         this.displayUnriding = new DisplayUnriding(configManager);
+        this.projectileDamage = new ProjectileDamage();
+        this.areaWand = new TranslatableAreaWand();
     }
 
     public void reload() {
         displayUnriding.reload();
+    }
+
+    public TranslatableAreaWand getAreaWand() {
+        return areaWand;
     }
 }

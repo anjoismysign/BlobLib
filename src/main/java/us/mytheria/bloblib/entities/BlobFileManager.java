@@ -14,7 +14,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author anjoismysign
@@ -133,8 +141,8 @@ public class BlobFileManager extends Manager implements IFileManager {
                     File.separator + "temp" + fileName + ".yml",
                     path, file, getPlugin());
             return isFresh;
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch ( IOException exception ) {
+            exception.printStackTrace();
         }
         return false;
     }
@@ -146,9 +154,7 @@ public class BlobFileManager extends Manager implements IFileManager {
      * @param files the files to update.
      */
     public void updateYAMLs(File... files) {
-        for (File file : files) {
-            updateYAML(file);
-        }
+        updateYAMLs(Arrays.stream(files).toList());
     }
 
     /**
@@ -190,18 +196,19 @@ public class BlobFileManager extends Manager implements IFileManager {
             for (DataAssetType assetType : DataAssetType.values()) {
                 @Nullable File directory = getDirectory(assetType);
                 Objects.requireNonNull(directory, "No directory for DataAssetType: " + assetType.name());
-                if (!directory.exists())
+                if (!directory.isDirectory())
                     directory.mkdir();
                 String path = lowercased + assetType.getDefaultFilePath();
                 Optional<InputStream> optional = Optional.ofNullable(plugin.getResource(path));
                 if (optional.isPresent()) {
                     @Nullable File file = getFile(assetType.getDefaultFileKey());
                     Objects.requireNonNull(file, "No default file for DataAssetType: " + assetType.name());
+                    file.getParentFile().mkdirs();
                     file.createNewFile();
                     ResourceUtil.updateYml(getDirectory(assetType), File.separator + "temp" + path, path, file, plugin);
                 }
             }
-        } catch (Throwable throwable) {
+        } catch ( Throwable throwable ) {
             throwable.printStackTrace();
         }
     }
@@ -233,12 +240,12 @@ public class BlobFileManager extends Manager implements IFileManager {
                     file.createNewFile();
                     ResourceUtil.updateYml(directory, File.separator + "temp" + fileName + ".yml",
                             fileName + ".yml", file, getPlugin());
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch ( IOException exception ) {
+                    exception.printStackTrace();
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch ( IOException exception ) {
+            exception.printStackTrace();
         }
     }
 
@@ -274,6 +281,7 @@ public class BlobFileManager extends Manager implements IFileManager {
         return YamlConfiguration.loadConfiguration(f);
     }
 
+    @Override
     @NotNull
     public File getDirectory(DataAssetType type) {
         @Nullable File directory = getFile(directories.get(type));

@@ -172,10 +172,10 @@ public class InventoryButton {
         for (ItemStack itemStack : player.getInventory().getContents()) {
             if (itemStack == null)
                 continue;
-            TranslatableItem match = TranslatableItem.isInstance(itemStack);
+            TranslatableItem match = TranslatableItem.byItemStack(itemStack);
             if (match == null)
                 continue;
-            if (match.getReference().equals(item.getReference())) {
+            if (match.identifier().equals(item.identifier())) {
                 hasItem = true;
                 break;
             }

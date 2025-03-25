@@ -3,6 +3,7 @@ package us.mytheria.bloblib.managers;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
+import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.action.Action;
 import us.mytheria.bloblib.entities.DataAssetType;
@@ -51,14 +52,14 @@ public class ActionManager {
     public void unload(BlobPlugin plugin) {
         String pluginName = plugin.getName();
         Set<String> actions = pluginActions.get(pluginName);
+        pluginActions.remove(pluginName);
         if (actions == null)
             return;
         actions.forEach(actions::remove);
-        pluginActions.remove(pluginName);
     }
 
     public static void unloadBlobPlugin(BlobPlugin plugin) {
-        BlobLib.getInstance().getMessageManager().unload(plugin);
+        BlobLib.getInstance().getActionManager().unload(plugin);
     }
 
     public static void loadBlobPlugin(BlobPlugin plugin, IManagerDirector director) {
@@ -70,18 +71,20 @@ public class ActionManager {
         loadBlobPlugin(plugin, plugin.getManagerDirector());
     }
 
-    private void loadFiles(File path) {
-        File[] listOfFiles = path.listFiles();
+    private void loadFiles(File directory) {
+        @Nullable File[] listOfFiles = directory.listFiles();
+        if (listOfFiles == null)
+            return;
         for (File file : listOfFiles) {
             if (file.isFile()) {
                 if (file.getName().equals(".DS_Store"))
                     continue;
                 try {
                     loadYamlConfiguration(file);
-                } catch (ConfigurationFieldException exception) {
+                } catch ( ConfigurationFieldException exception ) {
                     main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
                     continue;
-                } catch (Throwable throwable) {
+                } catch ( Throwable throwable ) {
                     throwable.printStackTrace();
                     continue;
                 }

@@ -15,7 +15,11 @@ import us.mytheria.bloblib.entities.translatable.TranslatableSnippet;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.Set;
 
 public class TranslatableManager {
     private final BlobLib main;
@@ -97,18 +101,20 @@ public class TranslatableManager {
         manager.unload(plugin);
     }
 
-    private void loadSnippets(File path) {
-        File[] listOfFiles = path.listFiles();
+    private void loadSnippets(File directory) {
+        @Nullable File[] listOfFiles = directory.listFiles();
+        if (listOfFiles == null)
+            return;
         for (File file : listOfFiles) {
             if (file.isFile()) {
                 if (!file.getName().endsWith(".yml"))
                     continue;
                 try {
                     loadSnippet(file);
-                } catch (ConfigurationFieldException exception) {
+                } catch ( ConfigurationFieldException exception ) {
                     main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
                     continue;
-                } catch (Throwable throwable) {
+                } catch ( Throwable throwable ) {
                     throwable.printStackTrace();
                     continue;
                 }
@@ -118,18 +124,20 @@ public class TranslatableManager {
         }
     }
 
-    private void loadBlocks(File path) {
-        File[] listOfFiles = path.listFiles();
+    private void loadBlocks(File directory) {
+        @Nullable File[] listOfFiles = directory.listFiles();
+        if (listOfFiles == null)
+            return;
         for (File file : listOfFiles) {
             if (file.isFile()) {
                 if (!file.getName().endsWith(".yml"))
                     continue;
                 try {
                     loadBlock(file);
-                } catch (ConfigurationFieldException exception) {
+                } catch ( ConfigurationFieldException exception ) {
                     main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
                     continue;
-                } catch (Throwable throwable) {
+                } catch ( Throwable throwable ) {
                     throwable.printStackTrace();
                     continue;
                 }
@@ -186,7 +194,7 @@ public class TranslatableManager {
         for (File file : files) {
             try {
                 manager.loadSnippet(plugin, file);
-            } catch (Throwable e) {
+            } catch ( Throwable e ) {
                 e.printStackTrace();
             }
         }
@@ -205,7 +213,7 @@ public class TranslatableManager {
         for (File file : files) {
             try {
                 manager.loadBlock(plugin, file);
-            } catch (Throwable e) {
+            } catch ( Throwable e ) {
                 e.printStackTrace();
             }
         }
@@ -323,7 +331,7 @@ public class TranslatableManager {
             addDuplicate(key);
             return;
         }
-        BlobLib.getAnjoLogger().debug("loaded Snippet: " + key + " with locale: " + snippet.getLocale());
+        BlobLib.getAnjoLogger().debug("loaded Snippet: " + key + " with locale: " + snippet.locale());
         snippets.put(key, registry);
     }
 
@@ -335,7 +343,7 @@ public class TranslatableManager {
             addDuplicate(key);
             return;
         }
-        BlobLib.getAnjoLogger().debug("loaded Block: " + key + " with locale: " + block.getLocale());
+        BlobLib.getAnjoLogger().debug("loaded Block: " + key + " with locale: " + block.locale());
         blocks.put(key, registry);
     }
 }

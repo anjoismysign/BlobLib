@@ -1,5 +1,7 @@
 package us.mytheria.bloblib.displayentity;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -91,7 +93,7 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand, ItemStack> 
      *
      * @param customName - the custom name
      */
-    public void setCustomName(String customName) {
+    public void setCustomName(@Nullable String customName) {
         this.customName = customName;
         if (entity == null)
             return;
@@ -193,6 +195,7 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand, ItemStack> 
      *
      * @return if customName is null, returns 'owner's Pet', else returns customName
      */
+    @NotNull
     public String getCustomName() {
         String name = findOwnerOrFail().getName() + "'s Pet";
         if (this.customName != null)
@@ -324,5 +327,27 @@ public class ArmorStandFloatingPet implements DisplayPet<ArmorStand, ItemStack> 
      */
     public void setDisplay(ItemStack itemStack) {
         this.display = Objects.requireNonNull(itemStack);
+    }
+
+    /**
+     * Will set pet's custom name.
+     * If passing null, will be used 'owner's Pet'
+     *
+     * @param customName - the custom name
+     */
+    public void customName(@Nullable Component customName) {
+        if (customName == null)
+            setCustomName(null);
+        else
+            LegacyComponentSerializer.legacyAmpersand().serialize(customName);
+    }
+
+    /**
+     * Retrieves pet's name.
+     *
+     * @return if customName is null, returns 'owner's Pet', else returns customName
+     */
+    public @NotNull Component customName() {
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(getCustomName());
     }
 }

@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.entities.message;
 
+import me.anjoismysign.holoworld.asset.DataAsset;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -11,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.api.BlobLibSoundAPI;
-import us.mytheria.bloblib.entities.DataAsset;
 import us.mytheria.bloblib.entities.DataAssetType;
 
 import java.util.Objects;
@@ -19,7 +19,7 @@ import java.util.Objects;
 public record BlobSound(Sound sound, float volume, float pitch,
                         @Nullable SoundCategory soundCategory,
                         @NotNull MessageAudience audience,
-                        @NotNull String getReference)
+                        @NotNull String identifier)
         implements DataAsset {
 
     /**

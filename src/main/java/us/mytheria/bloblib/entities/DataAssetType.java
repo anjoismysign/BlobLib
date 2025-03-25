@@ -4,10 +4,18 @@ import me.anjoismysign.anjo.entities.NamingConventions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
-import us.mytheria.bloblib.managers.*;
+import us.mytheria.bloblib.managers.BlobPlugin;
+import us.mytheria.bloblib.managers.InventoryManager;
+import us.mytheria.bloblib.managers.MessageManager;
+import us.mytheria.bloblib.managers.SoundManager;
+import us.mytheria.bloblib.managers.TranslatableManager;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 
 public enum DataAssetType {
@@ -41,7 +49,7 @@ public enum DataAssetType {
     @NotNull
     private final BiConsumer<BlobPlugin, List<File>> continueLoading;
 
-    private DataAssetType(
+    DataAssetType(
             @NotNull String key,
             @NotNull String directoryPath,
             @NotNull String defaultFilePath,

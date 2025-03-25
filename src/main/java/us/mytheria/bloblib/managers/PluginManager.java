@@ -1,12 +1,29 @@
 package us.mytheria.bloblib.managers;
 
+import me.anjoismysign.holoworld.asset.AssetGenerator;
+import me.anjoismysign.holoworld.asset.DataAsset;
+import me.anjoismysign.holoworld.asset.IdentityGenerator;
+import me.anjoismysign.holoworld.manager.Manager;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
+import us.mytheria.bloblib.managers.asset.BukkitAssetManager;
+import us.mytheria.bloblib.managers.asset.BukkitGeneratorManager;
+import us.mytheria.bloblib.managers.asset.BukkitIdentityManager;
+import us.mytheria.bloblib.managers.asset.SimpleBukkitAssetManager;
+import us.mytheria.bloblib.managers.asset.SimpleBukkitGeneratorManager;
+import us.mytheria.bloblib.managers.asset.SimpleBukkitIdentityManager;
 import us.mytheria.bloblib.utilities.Debug;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author anjoismysign
@@ -18,16 +35,35 @@ public class PluginManager {
         return BlobLib.getInstance();
     }
 
+    private static PluginManager instance;
+
+    @NotNull
+    public static PluginManager getInstance() {
+        if (instance == null)
+            instance = new PluginManager();
+        return instance;
+    }
+
     private final Map<String, BlobPlugin> plugins;
     private final List<String> order;
 
     private final Map<String, Runnable> postWorld;
 
+    private final Map<BlobPlugin, List<Class<?>>> pluginManagers = new HashMap<>();
+
+    private final Map<String, Manager> managers = new LinkedHashMap<>();
+
+    private final Map<Class<?>, BukkitAssetManager<?>> assetManagers = new HashMap<>();
+
+    private final Map<Class<?>, BukkitGeneratorManager<?>> generatorManagers = new HashMap<>();
+
+    private final Map<Class<?>, BukkitIdentityManager<?>> identityManagers = new HashMap<>();
+
     /**
      * This constructor is used to initialize the HashMap that will
      * store all the plugins that use BlobLib.
      */
-    public PluginManager() {
+    private PluginManager() {
         plugins = new HashMap<>();
         order = new ArrayList<>();
         postWorld = new HashMap<>();
@@ -61,6 +97,81 @@ public class PluginManager {
         postWorld.remove(name);
     }
 
+    public <T extends DataAsset> BukkitAssetManager<T> addAssetManager(@NotNull Class<T> clazz,
+                                                                       @NotNull BlobPlugin plugin) {
+        return addAssetManager(clazz, plugin, clazz.getSimpleName());
+    }
+
+    public <T extends DataAsset> BukkitAssetManager<T> addAssetManager(@NotNull Class<T> assetClass,
+                                                                       @NotNull BlobPlugin plugin,
+                                                                       @NotNull String name) {
+        Objects.requireNonNull(assetClass, "'clazz' cannot be null");
+        BukkitAssetManager<T> manager = SimpleBukkitAssetManager.of(assetClass, plugin, name);
+        String className = assetClass.getName();
+        managers.put(className, manager);
+        assetManagers.put(assetClass, manager);
+        pluginManagers.computeIfAbsent(plugin, k -> new ArrayList<>()).add(assetClass);
+        return manager;
+    }
+
+    @Nullable
+    public <T extends DataAsset> BukkitAssetManager<T> getAssetManager(Class<?> assetClass) {
+        @Nullable BukkitAssetManager<?> assetManager = assetManagers.get(assetClass);
+        if (assetManager == null)
+            return null;
+        return (BukkitAssetManager<T>) assetManager;
+    }
+
+    public <T extends DataAsset> BukkitGeneratorManager<T> addGeneratorManager(
+            @NotNull Class<? extends AssetGenerator<T>> generatorClass,
+            @NotNull BlobPlugin plugin) {
+        return addGeneratorManager(generatorClass, plugin, generatorClass.getSimpleName());
+    }
+
+    public <T extends DataAsset> BukkitGeneratorManager<T> addGeneratorManager(
+            @NotNull Class<? extends AssetGenerator<T>> generatorClass,
+            @NotNull BlobPlugin plugin,
+            @NotNull String name) {
+        Objects.requireNonNull(generatorClass, "'generatorClass' cannot be null");
+        BukkitGeneratorManager<T> manager = SimpleBukkitGeneratorManager.of(generatorClass, plugin, name);
+        String className = generatorClass.getName();
+        generatorManagers.put(generatorClass, manager);
+        managers.put(className, manager);
+        pluginManagers.computeIfAbsent(plugin, k -> new ArrayList<>()).add(generatorClass);
+        return manager;
+    }
+
+    @Nullable
+    public <T extends DataAsset> BukkitGeneratorManager<T> getGeneratorManager(
+            Class<? extends AssetGenerator<T>> generatorClass) {
+        @Nullable BukkitGeneratorManager<?> generatorManager = generatorManagers.get(generatorClass);
+        if (generatorManager == null)
+            return null;
+        return (BukkitGeneratorManager<T>) generatorManager;
+    }
+
+    public <T extends DataAsset> BukkitIdentityManager<T> addIdentityManager(
+            @NotNull Class<? extends IdentityGenerator<T>> generatorClass,
+            @NotNull BlobPlugin plugin,
+            @NotNull String name) {
+        Objects.requireNonNull(generatorClass, "'generatorClass' cannot be null");
+        BukkitIdentityManager<T> manager = SimpleBukkitIdentityManager.of(generatorClass, plugin, name);
+        String className = generatorClass.getName();
+        identityManagers.put(generatorClass, manager);
+        managers.put(className, manager);
+        pluginManagers.computeIfAbsent(plugin, k -> new ArrayList<>()).add(generatorClass);
+        return manager;
+    }
+
+    @Nullable
+    public <T extends DataAsset> BukkitIdentityManager<T> getIdentityManager(
+            Class<? extends IdentityGenerator<T>> generatorClass) {
+        @Nullable BukkitIdentityManager<?> generatorManager = identityManagers.get(generatorClass);
+        if (generatorManager == null)
+            return null;
+        return (BukkitIdentityManager<T>) generatorManager;
+    }
+
     /**
      * Will reload all BlobPlugin's assets.
      * Will also reload all managers that have the word 'Director' (cAsE sEnSiTiVe)
@@ -68,6 +179,7 @@ public class PluginManager {
      */
     public void reload() {
         plugins.values().forEach(BlobPlugin::blobLibReload);
+        managers.values().forEach(Manager::reload);
     }
 
     /**
@@ -107,6 +219,11 @@ public class PluginManager {
         return list;
     }
 
+    @NotNull
+    public Map<String, BlobPlugin> getPluginsAsMap() {
+        return plugins;
+    }
+
     /**
      * This method should be called whenever a BlobPlugin is enabled.
      * It inserts it inside a HashMap which will be used to call
@@ -144,7 +261,19 @@ public class PluginManager {
      */
     public static void unregisterPlugin(BlobPlugin plugin) {
         unloadAssets(plugin);
-        PluginManager manager = BlobLib.getInstance().getPluginManager();
+        PluginManager manager = getInstance();
+        plugin.getSerializableManagers().values().forEach(bukkitSerializableManager -> {
+            bukkitSerializableManager.syncSaveAll();
+            bukkitSerializableManager.unregisterEvents();
+        });
+        @Nullable List<Class<?>> list = manager.pluginManagers.get(plugin);
+        if (list != null)
+            list.forEach(clazz -> {
+                manager.assetManagers.remove(clazz);
+                manager.generatorManagers.remove(clazz);
+                String className = clazz.getName();
+                manager.managers.remove(className);
+            });
         manager.remove(plugin);
     }
 

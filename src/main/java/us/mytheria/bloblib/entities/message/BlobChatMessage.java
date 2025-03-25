@@ -94,16 +94,16 @@ public class BlobChatMessage extends AbstractMessage {
      */
     @Override
     public @NotNull BlobChatMessage modify(Function<String, String> function) {
-        return new BlobChatMessage(getReference(), function.apply(chat),
+        return new BlobChatMessage(identifier(), function.apply(chat),
                 hover == null ? null : function.apply(hover),
                 getSound(),
-                getLocale(),
+                locale(),
                 getClickEvent());
     }
 
     @Override
     @NotNull
     public BlobChatMessage onClick(ClickEvent event) {
-        return new BlobChatMessage(getReference(), chat, hover, getSound(), getLocale(), event);
+        return new BlobChatMessage(identifier(), chat, hover, getSound(), locale(), event);
     }
 }

@@ -9,5 +9,5 @@ public interface Localizable {
      * @return The locale of the asset
      */
     @NotNull
-    String getLocale();
+    String locale();
 }

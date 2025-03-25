@@ -1,0 +1,38 @@
+System:
+  Alert:
+    Sound: BLOCK_NOTE_BLOCK_PLING
+    Volume: 1.0
+    Pitch: 0.9
+    Audience: PLAYER
+  Done:
+    Sound: ENTITY_ARROW_HIT_PLAYER
+    Volume: 1.0
+    Pitch: 0.9
+    Audience: PLAYER
+Builder:
+  Button-Click:
+    Sound: UI_BUTTON_CLICK
+    Volume: 1.0
+    Pitch: 1.0
+    Audience: PLAYER
+  Build-Complete:
+    Sound: BLOCK_ANVIL_USE
+    Volume: 1.0
+    Pitch: 1.35
+    Audience: PLAYER
+  Timeout:
+    Sound: BLOCK_NOTE_BLOCK_FLUTE
+    Volume: 1.0
+    Pitch: 0.9
+    Audience: PLAYER
+Economy:
+  Received-Deposit:
+    Sound: BLOCK_NOTE_BLOCK_PLING
+    Volume: 1.0
+    Pitch: 2.0
+    Audience: PLAYER
+  Received-Withdrawal:
+    Sound: BLOCK_NOTE_BLOCK_PLING
+    Volume: 1.0
+    Pitch: 0.85
+    Audience: PLAYER

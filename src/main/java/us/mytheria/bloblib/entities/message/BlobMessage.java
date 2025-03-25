@@ -1,5 +1,6 @@
 package us.mytheria.bloblib.entities.message;
 
+import me.anjoismysign.holoworld.asset.DataAsset;
 import net.md_5.bungee.api.chat.ClickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -9,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.api.BlobLibMessageAPI;
 import us.mytheria.bloblib.entities.BlobMessageModder;
-import us.mytheria.bloblib.entities.DataAsset;
 import us.mytheria.bloblib.entities.Localizable;
 
 import java.util.Objects;
@@ -56,9 +56,9 @@ public interface BlobMessage extends Localizable, DataAsset {
     @Nullable
     default BlobMessage localize(@NotNull String locale) {
         Objects.requireNonNull(locale);
-        if (getLocale().equals(locale))
+        if (locale().equals(locale))
             return this;
-        return BlobLibMessageAPI.getInstance().getMessage(getReference(), locale);
+        return BlobLibMessageAPI.getInstance().getMessage(identifier(), locale);
     }
 
     /**

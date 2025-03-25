@@ -13,7 +13,11 @@ import us.mytheria.bloblib.entities.message.BlobMessage;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 public class MessageManager {
     private final BlobLib main;
@@ -73,18 +77,20 @@ public class MessageManager {
         manager.load(plugin, director);
     }
 
-    private void loadFiles(File path) {
-        File[] listOfFiles = path.listFiles();
+    private void loadFiles(File directory) {
+        @Nullable File[] listOfFiles = directory.listFiles();
+        if (listOfFiles == null)
+            return;
         for (File file : listOfFiles) {
             if (file.isFile()) {
                 if (file.getName().equals(".DS_Store"))
                     continue;
                 try {
                     loadYamlConfiguration(file);
-                } catch (ConfigurationFieldException exception) {
+                } catch ( ConfigurationFieldException exception ) {
                     main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
                     continue;
-                } catch (Throwable throwable) {
+                } catch ( Throwable throwable ) {
                     throwable.printStackTrace();
                     continue;
                 }
@@ -106,7 +112,7 @@ public class MessageManager {
             try {
                 BlobMessage message = BlobMessageReader.read(section, locale, reference);
                 addOrCreateLocale(message, reference);
-            } catch (NoClassDefFoundError e) {
+            } catch ( NoClassDefFoundError e ) {
                 BlobLib.getAnjoLogger().singleError("Not loading '" + reference + "' in file '" + file.getPath() + "' due to deprecated server software: " +
                         e.getMessage());
                 return;
@@ -130,7 +136,7 @@ public class MessageManager {
     }
 
     private boolean addOrCreateLocale(BlobMessage message, String reference) {
-        String locale = message.getLocale();
+        String locale = message.locale();
         Map<String, BlobMessage> localeMap = locales.computeIfAbsent(locale, k -> new HashMap<>());
         if (localeMap.containsKey(reference)) {
             addDuplicate(reference);

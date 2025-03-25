@@ -1,6 +1,9 @@
 package us.mytheria.bloblib.displayentity;
 
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.configuration.ConfigurationSection;
@@ -8,7 +11,6 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.itemstack.ItemStackReader;
-import us.mytheria.bloblib.utilities.SerializationLib;
 import us.mytheria.bloblib.utilities.TextColor;
 
 /**
@@ -30,15 +32,17 @@ public record DisplayPetRecord(@Nullable ItemStack itemStack,
     public static DisplayPetRecord read(ConfigurationSection section) {
         ItemStack itemStack = null;
         if (section.isConfigurationSection("ItemStack")) {
-            itemStack = ItemStackReader.getInstance().readOrFailFast(section.getConfigurationSection("ItemStack"));
+            itemStack = ItemStackReader.READ_OR_FAIL_FAST(section.getConfigurationSection("ItemStack")).build();
         }
         BlockData blockData = null;
         if (section.isString("BlockData")) {
             blockData = Bukkit.createBlockData(section.getString("BlockData"));
         }
         Particle particle = null;
-        if (section.contains("Particle"))
-            particle = SerializationLib.deserializeParticle(section.getString("Particle"));
+        if (section.contains("Particle")) {
+            String particleName = section.getString("Particle");
+            particle = RegistryAccess.registryAccess().getRegistry(RegistryKey.PARTICLE_TYPE).get(NamespacedKey.minecraft(particleName));
+        }
         String customName = null;
         if (section.contains("CustomName"))
             customName = TextColor.PARSE(section.getString("CustomName"));

@@ -1,9 +1,11 @@
 package us.mytheria.bloblib.utilities;
 
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.EntityType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockVector;
@@ -15,7 +17,11 @@ import us.mytheria.bloblib.exception.ConfigurationFieldException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.UUID;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public class SerializationLib {
     private static SerializationLib instance;
@@ -25,21 +31,15 @@ public class SerializationLib {
         this.service = Executors.newCachedThreadPool();
     }
 
-    public static SerializationLib getInstance(BlobLib plugin) {
-        if (instance == null) {
-            if (plugin == null)
-                throw new NullPointerException("injected dependency is null");
-            SerializationLib.instance = new SerializationLib();
-        }
-        return instance;
-    }
 
     public void shutdown() {
         service.shutdown();
     }
 
     public static SerializationLib getInstance() {
-        return getInstance(null);
+        if (instance == null)
+            instance = new SerializationLib();
+        return instance;
     }
 
     public static String serialize(PotionEffect effect) {
@@ -98,6 +98,7 @@ public class SerializationLib {
                 "," + location.getZ() + "," + location.getYaw() + "," + location.getPitch();
     }
 
+    @NotNull
     public static Location deserializeLocation(String string) {
         String[] split = string.split(",");
         if (split.length == 4)
@@ -164,14 +165,14 @@ public class SerializationLib {
             World world;
             try {
                 world = completableFuture.get(period, TimeUnit.SECONDS); // period is in ticks but in CompletableFuture#get is in seconds
-            } catch (Exception e) {
+            } catch ( Exception exception ) {
                 world = null;
             }
             return world;
         });
         try {
             return future.get();
-        } catch (Exception e) {
+        } catch ( Exception exception ) {
             throw new ConfigurationFieldException("World " + string + " not found after waiting 60 seconds!");
         }
     }
@@ -185,200 +186,5 @@ public class SerializationLib {
      */
     public static World deserializeWorld(String string) {
         return deserializeWorld(string, 15);
-    }
-
-    public static String serialize(Material material) {
-        return material.name();
-    }
-
-    public static Material deserializeMaterial(String string) {
-        try {
-            return Material.valueOf(string);
-        } catch (IllegalArgumentException e) {
-            BlobLib.getAnjoLogger().error("Material " + string + " not found!");
-            throw e;
-        }
-    }
-
-    public static String serialize(Particle particle) {
-        return particle.name();
-    }
-
-    public static Particle deserializeParticle(String string) {
-        try {
-            return Particle.valueOf(string);
-        } catch (IllegalArgumentException e) {
-            BlobLib.getAnjoLogger().error("Particle " + string + " not found!");
-            throw e;
-        }
-    }
-
-    public static String serialize(EntityType entityType) {
-        return entityType.name();
-    }
-
-    public static EntityType deserializeEntityType(String string) {
-        try {
-            return EntityType.valueOf(string);
-        } catch (IllegalArgumentException e) {
-            BlobLib.getAnjoLogger().error("EntityType " + string + " not found!");
-            throw e;
-        }
-    }
-
-    public static String serialize(DyeColor dyeColor) {
-        return dyeColor.name();
-    }
-
-    public static DyeColor deserializeDyeColor(String string) {
-        try {
-            return DyeColor.valueOf(string);
-        } catch (IllegalArgumentException e) {
-            BlobLib.getAnjoLogger().error("DyeColor " + string + " not found!");
-            throw e;
-        }
-    }
-
-    public static String serialize(GameMode gameMode) {
-        return gameMode.name();
-    }
-
-    public static GameMode deserializeGameMode(String string) {
-        try {
-            return GameMode.valueOf(string);
-        } catch (IllegalArgumentException e) {
-            BlobLib.getAnjoLogger().error("GameMode " + string + " not found!");
-            throw e;
-        }
-    }
-
-    public static String serialize(Enchantment enchantment) {
-        return enchantment.getKey().getKey();
-    }
-
-    public static Enchantment deserializeEnchantment(String string) {
-        try {
-            return Enchantment.getByKey(NamespacedKey.minecraft(string));
-        } catch (IllegalArgumentException e) {
-            BlobLib.getAnjoLogger().error("Enchantment " + string + " not found!");
-            throw e;
-        }
-    }
-
-    public static String serialize(CropState cropState) {
-        return cropState.name();
-    }
-
-    public static CropState deserializeCropState(String string) {
-        try {
-            return CropState.valueOf(string);
-        } catch (IllegalArgumentException e) {
-            BlobLib.getAnjoLogger().error("CropState " + string + " not found!");
-            throw e;
-        }
-    }
-
-    public static String serialize(Difficulty difficulty) {
-        return difficulty.name();
-    }
-
-    public static Difficulty deserializeDifficulty(String string) {
-        try {
-            return Difficulty.valueOf(string);
-        } catch (IllegalArgumentException e) {
-            BlobLib.getAnjoLogger().error("Difficulty " + string + " not found!");
-            throw e;
-        }
-    }
-
-    public static String serialize(WeatherType weatherType) {
-        return weatherType.name();
-    }
-
-    public static WeatherType deserializeWeatherType(String string) {
-        try {
-            return WeatherType.valueOf(string);
-        } catch (IllegalArgumentException e) {
-            BlobLib.getAnjoLogger().error("WeatherType " + string + " not found!");
-            throw e;
-        }
-    }
-
-    public static String serialize(Effect effect) {
-        return effect.name();
-    }
-
-    public static Effect deserializeEffect(String string) {
-        try {
-            return Effect.valueOf(string);
-        } catch (IllegalArgumentException e) {
-            BlobLib.getAnjoLogger().error("Effect " + string + " not found!");
-            throw e;
-        }
-    }
-
-    public static String serialize(EntityEffect entityEffect) {
-        return entityEffect.name();
-    }
-
-    public static EntityEffect deserializeEntityEffect(String string) {
-        try {
-            return EntityEffect.valueOf(string);
-        } catch (IllegalArgumentException e) {
-            BlobLib.getAnjoLogger().error("EntityEffect " + string + " not found!");
-            throw e;
-        }
-    }
-
-    public static String serialize(Fluid fluid) {
-        return fluid.name();
-    }
-
-    public static Fluid deserializeFluid(String string) {
-        try {
-            return Fluid.valueOf(string);
-        } catch (IllegalArgumentException e) {
-            BlobLib.getAnjoLogger().error("Fluid " + string + " not found!");
-            throw e;
-        }
-    }
-
-    public static String serialize(Instrument instrument) {
-        return instrument.name();
-    }
-
-    public static Instrument deserializeInstrument(String string) {
-        try {
-            return Instrument.valueOf(string);
-        } catch (IllegalArgumentException e) {
-            BlobLib.getAnjoLogger().error("Instrument " + string + " not found!");
-            throw e;
-        }
-    }
-
-    public static String serialize(MusicInstrument musicInstrument) {
-        return musicInstrument.getKey().getKey();
-    }
-
-    public static MusicInstrument deserializeMusicInstrument(String string) {
-        try {
-            return MusicInstrument.getByKey(NamespacedKey.minecraft(string));
-        } catch (IllegalArgumentException e) {
-            BlobLib.getAnjoLogger().error("MusicInstrument " + string + " not found!");
-            throw e;
-        }
-    }
-
-    public static String serialize(TreeType treeType) {
-        return treeType.name();
-    }
-
-    public static TreeType deserializeTreeType(String string) {
-        try {
-            return TreeType.valueOf(string);
-        } catch (IllegalArgumentException e) {
-            BlobLib.getAnjoLogger().error("TreeType " + string + " not found!");
-            throw e;
-        }
     }
 }

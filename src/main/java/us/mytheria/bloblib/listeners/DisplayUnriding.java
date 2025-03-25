@@ -23,9 +23,9 @@ public class DisplayUnriding implements Listener {
     }
 
     @EventHandler
-    public void handle(VehicleExitEvent e) {
-        if (!e.getExited().getType().toString().contains("DISPLAY"))
+    public void handle(VehicleExitEvent event) {
+        if (!event.getExited().getType().toString().contains("DISPLAY"))
             return;
-        e.setCancelled(true);
+        event.setCancelled(true);
     }
 }

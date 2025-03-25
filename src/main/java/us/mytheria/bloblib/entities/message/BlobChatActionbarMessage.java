@@ -73,18 +73,18 @@ public class BlobChatActionbarMessage extends BlobChatMessage {
      */
     @Override
     public @NotNull BlobChatActionbarMessage modify(Function<String, String> function) {
-        return new BlobChatActionbarMessage(getReference(), function.apply(chat),
+        return new BlobChatActionbarMessage(identifier(), function.apply(chat),
                 hover == null ? null : function.apply(hover),
                 function.apply(actionbar),
                 getSound(),
-                getLocale(),
+                locale(),
                 getClickEvent());
     }
 
     @Override
     @NotNull
     public BlobChatActionbarMessage onClick(ClickEvent event) {
-        return new BlobChatActionbarMessage(getReference(), chat, hover, actionbar, getSound(),
-                getLocale(), event);
+        return new BlobChatActionbarMessage(identifier(), chat, hover, actionbar, getSound(),
+                locale(), event);
     }
 }

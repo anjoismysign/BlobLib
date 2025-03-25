@@ -8,10 +8,10 @@ import us.mytheria.bloblib.entities.positionable.Positionable;
 
 import java.util.Objects;
 
-public interface TranslatablePositionable extends Translatable<Positionable> {
+public interface TranslatablePositionable extends Displayable<Positionable> {
 
     /**
-     * Gets a TranslatablePositionable by its key. Key is the same as getReference.
+     * Gets a TranslatablePositionable by its key. Key is the same as identifier.
      *
      * @param key The key to get the tag set by.
      * @return The TranslatablePositionable, or null if it doesn't exist.
@@ -23,14 +23,6 @@ public interface TranslatablePositionable extends Translatable<Positionable> {
     }
 
     /**
-     * Gets the display of this TranslatablePositionable
-     *
-     * @return The name
-     */
-    @NotNull
-    String getDisplay();
-
-    /**
      * Localizes the TranslatablePositionable to a specific locale.
      *
      * @param locale The locale to localize to.
@@ -39,10 +31,10 @@ public interface TranslatablePositionable extends Translatable<Positionable> {
     @Nullable
     default TranslatablePositionable localize(@NotNull String locale) {
         Objects.requireNonNull(locale, "'locale' cannot be null");
-        if (getLocale().equals(locale))
+        if (locale().equals(locale))
             return this;
         return BlobLibTranslatableAPI.getInstance()
-                .getTranslatablePositionable(getReference(),
+                .getTranslatablePositionable(identifier(),
                         locale);
     }
 
