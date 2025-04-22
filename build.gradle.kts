@@ -52,6 +52,7 @@ dependencies {
     api(libs.me.anjoismysign.psa.api)
     api(libs.me.anjoismysign.winona)
     api(libs.me.anjoismysign.aesthetic)
+    compileOnly("io.github.classgraph:classgraph:4.8.157")
     compileOnly(libs.org.apache.commons.commons.lang3)
     compileOnly(libs.io.papermc.paper.paper.api)
     compileOnly(libs.com.mojang.authlib)

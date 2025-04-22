@@ -8,12 +8,21 @@ import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.entities.BlobEditor;
 import us.mytheria.bloblib.entities.BlobSelector;
-import us.mytheria.bloblib.entities.inventory.*;
+import us.mytheria.bloblib.entities.inventory.BlobInventory;
+import us.mytheria.bloblib.entities.inventory.BlobInventoryTracker;
+import us.mytheria.bloblib.entities.inventory.InventoryBuilderCarrier;
+import us.mytheria.bloblib.entities.inventory.InventoryButton;
+import us.mytheria.bloblib.entities.inventory.InventoryDataRegistry;
+import us.mytheria.bloblib.entities.inventory.InventoryTracker;
+import us.mytheria.bloblib.entities.inventory.MetaBlobInventoryTracker;
+import us.mytheria.bloblib.entities.inventory.MetaInventoryButton;
 import us.mytheria.bloblib.managers.InventoryManager;
 import us.mytheria.bloblib.managers.InventoryTrackerManager;
 import us.mytheria.bloblib.managers.MetaInventoryShard;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -47,22 +56,6 @@ public class BlobLibInventoryAPI {
     }
 
     /**
-     * @return An unmodifiable map of all BlobInventories.
-     */
-    @NotNull
-    public Map<String, InventoryDataRegistry<InventoryButton>> getBlobInventories() {
-        return getInventoryManager().getBlobInventories();
-    }
-
-    /**
-     * @return An unmodifiable map of all MetaBlobInventories.
-     */
-    @NotNull
-    public Map<String, InventoryDataRegistry<MetaInventoryButton>> getMetaBlobInventories() {
-        return getInventoryManager().getMetaInventories();
-    }
-
-    /**
      * @return The inventory tracker manager
      */
     public InventoryTrackerManager getInventoryTrackerManager() {
@@ -80,49 +73,12 @@ public class BlobLibInventoryAPI {
     }
 
     /**
-     * Uses player to get locale
-     *
-     * @param key    Key that points to the carrier
-     * @param player The player
-     * @return The carrier if found. null otherwise
-     */
-    @Nullable
-    public InventoryBuilderCarrier<InventoryButton> getInventoryBuilderCarrier(String key, Player player) {
-        return getInventoryManager().getInventoryBuilderCarrier(key, player.getLocale());
-    }
-
-    /**
      * @param key Key that points to the carrier
      * @return The carrier if found. null otherwise
      */
     @Nullable
     public InventoryBuilderCarrier<InventoryButton> getInventoryBuilderCarrier(String key) {
         return getInventoryManager().getInventoryBuilderCarrier(key);
-    }
-
-    /**
-     * Will search for an InventoryBuilderCarrier with the given key.
-     * If found, will attempt to build the inventory.
-     *
-     * @param key    Key that points to the inventory
-     * @param locale The locale
-     * @return The inventory
-     */
-    @Nullable
-    public BlobInventory getBlobInventory(String key, String locale) {
-        return getInventoryManager().getInventory(key, locale);
-    }
-
-    /**
-     * Will search for an InventoryBuilderCarrier with the given key.
-     * If found, will attempt to build the inventory.
-     *
-     * @param key Key that points to the inventory
-     * @return The inventory
-     */
-    @Nullable
-    public BlobInventory getBlobInventory(String key) {
-        return getInventoryManager().getInventory(key);
     }
 
     /**
@@ -145,43 +101,6 @@ public class BlobLibInventoryAPI {
     }
 
     /**
-     * Uses player to get locale
-     *
-     * @param key    Key that points to the carrier
-     * @param player The player
-     * @return The carrier if found. null otherwise
-     */
-    @Nullable
-    public InventoryBuilderCarrier<MetaInventoryButton> getMetaInventoryBuilderCarrier(String key, Player player) {
-        return getInventoryManager().getMetaInventoryBuilderCarrier(key, player.getLocale());
-    }
-
-    /**
-     * Will search for an InventoryBuilderCarrier with the given key.
-     * If found, will attempt to build the inventory.
-     *
-     * @param key    Key that points to the inventory
-     * @param locale The locale
-     * @return The inventory
-     */
-    @Nullable
-    public MetaBlobInventory getMetaBlobInventory(String key, String locale) {
-        return getInventoryManager().getMetaInventory(key, locale);
-    }
-
-    /**
-     * Will search for an InventoryBuilderCarrier with the given key.
-     * If found, will attempt to build the inventory.
-     *
-     * @param key Key that points to the inventory
-     * @return The inventory
-     */
-    @Nullable
-    public MetaBlobInventory getMetaBlobInventory(String key) {
-        return getInventoryManager().getMetaInventory(key);
-    }
-
-    /**
      * Attempts to get a MetaInventoryShard from the given type.
      * If not found, will return an empty optional.
      * MUST BE SURE Optional#isPresent == true BEFORE CALLING get() ON IT!
@@ -192,60 +111,6 @@ public class BlobLibInventoryAPI {
     @NotNull
     public Optional<MetaInventoryShard> hasMetaInventoryShard(String type) {
         return Optional.ofNullable(getInventoryManager().getMetaInventoryShard(type));
-    }
-    
-    /**
-     * Attempts to build an inventory from the given key.
-     * If the inventory is not found, a NullPointerException is thrown.
-     *
-     * @param key    Key that points to the inventory
-     * @param locale The locale
-     * @return The inventory
-     */
-    @NotNull
-    public BlobInventory buildInventory(String key, String locale) {
-        return Objects.requireNonNull(getInventoryManager()
-                .cloneInventory(key, locale), "'" + key + "' is not a valid BlobInventory key");
-    }
-
-    /**
-     * Attempts to build an inventory from the given key.
-     * If the inventory is not found, a NullPointerException is thrown.
-     *
-     * @param key Key that points to the inventory
-     * @return The inventory
-     */
-    @NotNull
-    public BlobInventory buildInventory(String key) {
-        return Objects.requireNonNull(getInventoryManager()
-                .cloneInventory(key), "'" + key + "' is not a valid BlobInventory key");
-    }
-
-    /**
-     * Attempts to build a meta blob inventory from the given key.
-     * If the inventory is not found, a NullPointerException is thrown.
-     *
-     * @param key    Key that points to the inventory
-     * @param locale The locale
-     * @return The inventory
-     */
-    @NotNull
-    public MetaBlobInventory buildMetaInventory(String key, String locale) {
-        return Objects.requireNonNull(getInventoryManager()
-                .cloneMetaInventory(key, locale), "'" + key + "' is not a valid MetaBlobInventory key");
-    }
-
-    /**
-     * Attempts to build a MetaBlobInventory from the given key.
-     * If the inventory is not found, a NullPointerException is thrown.
-     *
-     * @param key Key that points to the inventory
-     * @return The inventory
-     */
-    @NotNull
-    public MetaBlobInventory buildMetaInventory(String key) {
-        return Objects.requireNonNull(getInventoryManager()
-                .cloneMetaInventory(key), "'" + key + "' is not a valid MetaBlobInventory key");
     }
 
     @Nullable
@@ -293,130 +158,6 @@ public class BlobLibInventoryAPI {
     }
 
     /**
-     * Will get a BlobInventory from the given key and Player locale
-     *
-     * @param key    the key of the inventory
-     * @param player the player
-     * @return the BlobInventory, null if the key is not found
-     */
-    @Nullable
-    public BlobInventory getBlobInventory(@NotNull String key,
-                                          @NotNull Player player) {
-        Objects.requireNonNull(player, "player cannot be null");
-        return getBlobInventory(key, player.getLocale());
-    }
-
-    /**
-     * Will get a MetaBlobInventory from the given key and Player locale
-     *
-     * @param key    the key of the inventory
-     * @param player the player
-     * @return the MetaBlobInventory, null if the key is not found
-     */
-    @Nullable
-    public MetaBlobInventory getMetaBlobInventory(@NotNull String key,
-                                                  @NotNull Player player) {
-        Objects.requireNonNull(player, "player cannot be null");
-        return getMetaBlobInventory(key, player.getLocale());
-    }
-
-    /**
-     * Attempts to build an inventory from the given key.
-     * Will use the player's locale.
-     * If the inventory is not found, a NullPointerException is thrown.
-     *
-     * @param key    Key that points to the inventory
-     * @param player the player
-     * @return The inventory
-     */
-    @NotNull
-    public BlobInventory buildInventory(@NotNull String key,
-                                        @NotNull Player player) {
-        Objects.requireNonNull(player, "player cannot be null");
-        return buildInventory(key, player.getLocale());
-    }
-
-    /**
-     * Attempts to build a MetaBlobInventory from the given key.
-     * Will use the player's locale.
-     * If the inventory is not found, a NullPointerException is thrown.
-     *
-     * @param key    Key that points to the inventory
-     * @param player the player
-     * @return The inventory
-     */
-    @NotNull
-    public MetaBlobInventory buildMetaInventory(@NotNull String key,
-                                                @NotNull Player player) {
-        Objects.requireNonNull(player, "player cannot be null");
-        return buildMetaInventory(key, player.getLocale());
-    }
-
-    @Deprecated
-    @Nullable
-    public <T> BlobSelector<T> customSelector(@NotNull String blobInventoryKey,
-                                              @NotNull Player player,
-                                              @NotNull String buttonRangeKey,
-                                              @NotNull String dataType,
-                                              @NotNull Supplier<List<T>> selectorList,
-                                              @NotNull Consumer<T> onSelect,
-                                              @Nullable Function<T, ItemStack> display) {
-        return customSelector(blobInventoryKey,
-                player,
-                buttonRangeKey,
-                dataType,
-                selectorList,
-                onSelect,
-                display,
-                null);
-    }
-
-    @Deprecated
-    @Nullable
-    public <T> BlobSelector<T> customSelector(@NotNull String blobInventoryKey,
-                                              @NotNull Player player,
-                                              @NotNull String buttonRangeKey,
-                                              @NotNull String dataType,
-                                              @NotNull Supplier<List<T>> selectorList,
-                                              @NotNull Consumer<T> onSelect,
-                                              @Nullable Function<T, ItemStack> display,
-                                              @Nullable Consumer<Player> onReturn) {
-        return customSelector(blobInventoryKey,
-                player,
-                buttonRangeKey,
-                dataType,
-                selectorList,
-                onSelect,
-                display,
-                onReturn,
-                null,
-                null);
-    }
-
-    @Deprecated
-    @Nullable
-    public <T> BlobSelector<T> customSelector(@NotNull String blobInventoryKey,
-                                              @NotNull Player player,
-                                              @NotNull String buttonRangeKey,
-                                              @Nullable String dataType,
-                                              @NotNull Supplier<List<T>> selectorList,
-                                              @NotNull Consumer<T> onSelect,
-                                              @Nullable Function<T, ItemStack> display,
-                                              @Nullable Consumer<Player> onReturn,
-                                              @Nullable Consumer<Player> onClose) {
-        return customSelector(blobInventoryKey,
-                player,
-                buttonRangeKey,
-                dataType,
-                selectorList,
-                onSelect,
-                display,
-                onReturn,
-                onClose,
-                null);
-    }
-
-    /**
      * Will make Player to select from a list of elements.
      * The selector will be placed in the inventory at the specified buttonRangeKey.
      * The inventory will open automatically.
@@ -444,7 +185,7 @@ public class BlobLibInventoryAPI {
                                               @Nullable Consumer<Player> onReturn,
                                               @Nullable Consumer<Player> onClose,
                                               @Nullable String clickSound) {
-        BlobInventory inventory = buildInventory(blobInventoryKey, player);
+        BlobInventory inventory = getInventoryManager().cloneInventory(blobInventoryKey, player.getLocale());
         BlobSelector<T> selector = BlobSelector.build(inventory, player.getUniqueId(),
                 dataType, selectorList.get(), onReturn);
         selector.setButtonRangeKey(buttonRangeKey);
@@ -477,85 +218,9 @@ public class BlobLibInventoryAPI {
                 dataType,
                 selectorList,
                 onSelect,
-                display, null);
-    }
-
-    @Deprecated
-    @Nullable
-    public <T> BlobEditor<T> customEditor(@NotNull String blobInventoryKey,
-                                          @NotNull Player player,
-                                          @NotNull String buttonRangeKey,
-                                          @NotNull String dataType,
-                                          @NotNull Supplier<Collection<T>> addCollection,
-                                          @NotNull Consumer<T> onAdd,
-                                          @Nullable Function<T, ItemStack> addDisplay,
-                                          @NotNull Supplier<Collection<T>> viewCollection,
-                                          @NotNull Function<T, ItemStack> removeDisplay,
-                                          @NotNull Consumer<T> onRemove) {
-        return customEditor(blobInventoryKey,
-                player,
-                buttonRangeKey,
-                dataType,
-                addCollection,
-                onAdd,
-                addDisplay,
-                viewCollection,
-                removeDisplay,
-                onRemove,
-                null);
-    }
-
-    @Nullable
-    public <T> BlobEditor<T> customEditor(@NotNull String blobInventoryKey,
-                                          @NotNull Player player,
-                                          @NotNull String buttonRangeKey,
-                                          @NotNull String dataType,
-                                          @NotNull Supplier<Collection<T>> addCollection,
-                                          @NotNull Consumer<T> onAdd,
-                                          @Nullable Function<T, ItemStack> addDisplay,
-                                          @NotNull Supplier<Collection<T>> viewCollection,
-                                          @NotNull Function<T, ItemStack> removeDisplay,
-                                          @NotNull Consumer<T> onRemove,
-                                          @Nullable Consumer<Player> onReturn) {
-        return customEditor(blobInventoryKey,
-                player,
-                buttonRangeKey,
-                dataType,
-                addCollection,
-                onAdd,
-                addDisplay,
-                viewCollection,
-                removeDisplay,
-                onRemove,
-                onReturn,
-                null);
-    }
-
-    @Nullable
-    public <T> BlobEditor<T> customEditor(@NotNull String blobInventoryKey,
-                                          @NotNull Player player,
-                                          @NotNull String buttonRangeKey,
-                                          @NotNull String dataType,
-                                          @NotNull Supplier<Collection<T>> addCollection,
-                                          @NotNull Consumer<T> onAdd,
-                                          @Nullable Function<T, ItemStack> addDisplay,
-                                          @NotNull Supplier<Collection<T>> viewCollection,
-                                          @NotNull Function<T, ItemStack> removeDisplay,
-                                          @NotNull Consumer<T> onRemove,
-                                          @Nullable Consumer<Player> onReturn,
-                                          @Nullable Consumer<Player> onClose) {
-        return customEditor(blobInventoryKey,
-                player,
-                buttonRangeKey,
-                dataType,
-                addCollection,
-                onAdd,
-                addDisplay,
-                viewCollection,
-                removeDisplay,
-                onRemove,
-                onReturn,
-                onClose,
+                display,
+                null,
+                null,
                 null);
     }
 
@@ -593,7 +258,7 @@ public class BlobLibInventoryAPI {
                                           @Nullable Consumer<Player> onReturn,
                                           @Nullable Consumer<Player> onClose,
                                           @Nullable String clickSound) {
-        BlobInventory inventory = buildInventory(blobInventoryKey, player);
+        BlobInventory inventory = getInventoryManager().cloneInventory(blobInventoryKey, player.getLocale());
         Uber<BlobEditor<T>> uber = Uber.fly();
         uber.talk(BlobEditor.build(inventory, player.getUniqueId(),
                 dataType, owner -> {
@@ -668,6 +333,7 @@ public class BlobLibInventoryAPI {
                 viewCollection,
                 removeDisplay,
                 onRemove,
+                null,
                 null,
                 null);
     }

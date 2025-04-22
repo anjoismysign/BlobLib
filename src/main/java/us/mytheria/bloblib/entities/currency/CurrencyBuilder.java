@@ -23,7 +23,8 @@ public class CurrencyBuilder extends ObjectBuilder<Currency> {
     public static CurrencyBuilder build(UUID builderId,
                                         ObjectDirector<Currency> objectDirector) {
         return new CurrencyBuilder(
-                BlobLibInventoryAPI.getInstance().buildInventory("CurrencyBuilder"), builderId,
+                BlobLibInventoryAPI.getInstance().getInventoryManager()
+                        .cloneInventory("CurrencyBuilder"), builderId,
                 objectDirector);
     }
 

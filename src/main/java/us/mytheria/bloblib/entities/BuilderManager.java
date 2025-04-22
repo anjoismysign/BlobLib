@@ -12,7 +12,12 @@ import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.api.BlobLibInventoryAPI;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
 import us.mytheria.bloblib.entities.inventory.BlobObjectBuilder;
-import us.mytheria.bloblib.managers.*;
+import us.mytheria.bloblib.managers.ChatListenerManager;
+import us.mytheria.bloblib.managers.DropListenerManager;
+import us.mytheria.bloblib.managers.Manager;
+import us.mytheria.bloblib.managers.ManagerDirector;
+import us.mytheria.bloblib.managers.SelPosListenerManager;
+import us.mytheria.bloblib.managers.SelectorListenerManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -74,7 +79,7 @@ public abstract class BuilderManager<T extends BlobObject, B extends BlobObjectB
     public void update() {
         this.builders = new HashMap<>();
         this.inventories = new HashMap<>();
-        BlobInventory inventory = BlobLibInventoryAPI.getInstance().getBlobInventory(fileKey);
+        BlobInventory inventory = BlobLibInventoryAPI.getInstance().getInventoryManager().getInventory(fileKey);
         if (inventory == null)
             throw new RuntimeException("Inventory file '" + fileKey + "' not found.");
         this.title = inventory.getTitle();

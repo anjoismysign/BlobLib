@@ -27,20 +27,21 @@ public class BlobSoundReader {
         if (section.contains("Category"))
             try {
                 category = Optional.of(SoundCategory.valueOf(section.getString("Category")));
-            } catch (IllegalArgumentException e) {
+            } catch ( IllegalArgumentException e ) {
                 throw new ConfigurationFieldException("Invalid Sound's Category: " + section.getString("Category"));
             }
         MessageAudience audience = MessageAudience.PLAYER;
         if (section.contains("Audience"))
             try {
                 audience = MessageAudience.valueOf(section.getString("Audience"));
-            } catch (IllegalArgumentException e) {
+            } catch ( IllegalArgumentException e ) {
                 throw new ConfigurationFieldException("Invalid Sound's Audience: " + section.getString("Audience"));
             }
         return new BlobSound(
                 Sound.valueOf(section.getString("Sound")),
                 (float) section.getDouble("Volume"),
                 (float) section.getDouble("Pitch"),
+                (Long) section.get("Seed", null),
                 category.orElse(null),
                 audience,
                 key
@@ -64,13 +65,13 @@ public class BlobSoundReader {
                 MessageAudience audience;
                 try {
                     audience = MessageAudience.valueOf(split[1]);
-                } catch (IllegalArgumentException e) {
+                } catch ( IllegalArgumentException e ) {
                     BlobLib.getAnjoLogger().singleError("Invalid Sound's Audience: " + split[1]);
                     return Optional.empty();
                 }
                 BlobSound blobSound = optional.get();
                 return Optional.of(new BlobSound(blobSound.sound(), blobSound.volume(),
-                        blobSound.pitch(), blobSound.soundCategory(), audience, reference));
+                        blobSound.pitch(), blobSound.seed(), blobSound.soundCategory(), audience, reference));
             }
         }
         Objects.requireNonNull(key, "Key must be provided when parsing a BlobSound");

@@ -15,7 +15,7 @@ public class MetaBlobInventoryTracker extends InventoryTracker<MetaBlobInventory
                                        String locale,
                                        InventoryDataRegistry<MetaInventoryButton> registry) {
         super(metaBlobInventory, locale, registry,
-                string -> BlobLibInventoryAPI.getInstance()
-                        .buildMetaInventory(registry.getKey(), string));
+                string -> BlobLibInventoryAPI.getInstance().getInventoryManager()
+                        .cloneMetaInventory(registry.getKey(), string));
     }
 }

@@ -69,7 +69,7 @@ public class ItemStackReader {
         if (!inputMaterial.startsWith("HEAD-")) {
             Material material = Material.getMaterial(inputMaterial);
             if (material == null)
-                throw new ConfigurationFieldException("'Material' field is not a valid material");
+                throw new ConfigurationFieldException("'" + inputMaterial + "' is not a valid material");
             builder = ItemStackBuilder.build(material);
         } else {
             builder = ItemStackBuilder.build(Material.PLAYER_HEAD);

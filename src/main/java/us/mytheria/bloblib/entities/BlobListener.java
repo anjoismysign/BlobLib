@@ -3,15 +3,10 @@ package us.mytheria.bloblib.entities;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import us.mytheria.bloblib.BlobLib;
 
 public interface BlobListener extends Listener {
-    /**
-     * Will get the listener manager that this listener is registered to.
-     *
-     * @return the listener manager that this listener is registered to.
-     */
-    ListenerManager getListenerManager();
-
+    
     /**
      * Will reload the listener.
      * It will register if needed or unregister otherwise.
@@ -34,7 +29,7 @@ public interface BlobListener extends Listener {
      * Note: This will not check if the listener should be registered.
      */
     default void register() {
-        Bukkit.getPluginManager().registerEvents(this, getListenerManager().getPlugin());
+        Bukkit.getPluginManager().registerEvents(this, BlobLib.getInstance());
     }
 
     /**

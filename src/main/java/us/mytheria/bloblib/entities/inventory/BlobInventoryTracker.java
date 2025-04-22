@@ -21,6 +21,7 @@ public class BlobInventoryTracker extends InventoryTracker<BlobInventory, Invent
                                    InventoryDataRegistry<InventoryButton> registry) {
         super(blobInventory, locale, registry,
                 string -> BlobLibInventoryAPI.getInstance()
-                        .buildInventory(registry.getKey(), string));
+                        .getInventoryManager()
+                        .cloneInventory(registry.getKey(), string));
     }
 }

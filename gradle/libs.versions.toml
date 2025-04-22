@@ -9,8 +9,8 @@ com-mojang-authlib = "1.5.21"
 com-sk89q-worldguard-worldguard-bukkit = "7.0.8-SNAPSHOT"
 commons-io-commons-io = "2.7"
 de-oliver-fancyholograms = "2.3.0"
-io-papermc-paper-paper-api = "1.21.4-R0.1-SNAPSHOT"
-libsdisguises-libsdisguises = "10.0.29"
+io-papermc-paper-paper-api = "1.21.5-R0.1-SNAPSHOT"
+libsdisguises-libsdisguises = "11.0.0"
 me-anjoismysign-aesthetic = "1.0"
 me-anjoismysign-anjo-anjo = "0.3.14"
 me-anjoismysign-holoworld = "1.0-SNAPSHOT"
@@ -35,7 +35,7 @@ com-sk89q-worldguard-worldguard-bukkit = { module = "com.sk89q.worldguard:worldg
 commons-io-commons-io = { module = "commons-io:commons-io", version.ref = "commons-io-commons-io" }
 de-oliver-fancyholograms = { module = "de.oliver:FancyHolograms", version.ref = "de-oliver-fancyholograms" }
 io-papermc-paper-paper-api = { module = "io.papermc.paper:paper-api", version.ref = "io-papermc-paper-paper-api" }
-libsdisguises-libsdisguises = { module = "LibsDisguises:LibsDisguises", version.ref = "libsdisguises-libsdisguises" }
+libsdisguises-libsdisguises = { module = "me.libraryaddict.disguises:libsdisguises", version.ref = "libsdisguises-libsdisguises" }
 me-anjoismysign-aesthetic = { module = "me.anjoismysign:aesthetic", version.ref = "me-anjoismysign-aesthetic" }
 me-anjoismysign-anjo-anjo = { module = "me.anjoismysign.anjo:anjo", version.ref = "me-anjoismysign-anjo-anjo" }
 me-anjoismysign-holoworld = { module = "me.anjoismysign:holoworld", version.ref = "me-anjoismysign-holoworld" }

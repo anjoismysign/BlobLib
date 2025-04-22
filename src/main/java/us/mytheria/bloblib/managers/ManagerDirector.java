@@ -47,6 +47,7 @@ import java.util.function.Function;
 
 public abstract class ManagerDirector implements IManagerDirector {
     private final BlobPlugin plugin;
+    private final BDirector<?> bDirector;
     private final HashMap<String, Manager> managers;
     private final ChatListenerManager chatListenerManager;
     private final SelectorListenerManager selectorListenerManager;
@@ -63,8 +64,8 @@ public abstract class ManagerDirector implements IManagerDirector {
      * @param plugin The BlobPlugin
      */
     public ManagerDirector(BlobPlugin plugin) {
-        this.namespacedKeys = new HashMap<>();
         this.plugin = plugin;
+        this.namespacedKeys = new HashMap<>();
         reloadNamespacedKeys();
         this.pluginOperator = () -> plugin;
         this.blobFileManager = new BlobFileManager(this,
@@ -77,27 +78,8 @@ public abstract class ManagerDirector implements IManagerDirector {
         dropListenerManager = BlobLib.getInstance().getDropListenerManager();
         managers = new HashMap<>();
         plugin.registerToBlobLib(this);
-    }
-
-    /**
-     * Constructs a new manager director by providing a specific BlobFileManager.
-     *
-     * @param plugin      The plugin
-     * @param fileManager The fileManager
-     */
-    public ManagerDirector(BlobPlugin plugin, BlobFileManager fileManager) {
-        this.namespacedKeys = new HashMap<>();
-        this.plugin = plugin;
-        reloadNamespacedKeys();
-        this.pluginOperator = () -> plugin;
-        this.blobFileManager = Objects.requireNonNull(fileManager, "BlobFileManager cannot be null!");
-        this.proxiedFileManager = BlobProxifier.PROXY(blobFileManager);
-        chatListenerManager = BlobLib.getInstance().getChatManager();
-        selectorListenerManager = BlobLib.getInstance().getSelectorManager();
-        positionListenerManager = BlobLib.getInstance().getPositionManager();
-        dropListenerManager = BlobLib.getInstance().getDropListenerManager();
-        managers = new HashMap<>();
-        plugin.registerToBlobLib(this);
+        bDirector = new BDirector<>(this);
+        bDirector.reload();
     }
 
     public NamespacedKey getNamespacedKey(String key) {
@@ -418,6 +400,7 @@ public abstract class ManagerDirector implements IManagerDirector {
     public void reloadAll() {
         reloadNamespacedKeys();
         reload();
+        bDirector.reload();
     }
 
     /**
@@ -499,6 +482,11 @@ public abstract class ManagerDirector implements IManagerDirector {
      * Logic that should run when plugin is unloading.
      */
     public void unload() {
+    }
+
+    public void realUnload() {
+        unload();
+        bDirector.unload();
     }
 
     /**

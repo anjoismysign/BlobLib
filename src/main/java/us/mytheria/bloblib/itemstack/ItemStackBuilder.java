@@ -1,20 +1,15 @@
 package us.mytheria.bloblib.itemstack;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
-import io.papermc.paper.datacomponent.DataComponentType;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.Consumable;
 import io.papermc.paper.datacomponent.item.DamageResistant;
-import io.papermc.paper.datacomponent.item.DyedItemColor;
 import io.papermc.paper.datacomponent.item.Equippable;
 import io.papermc.paper.datacomponent.item.FoodProperties;
 import io.papermc.paper.datacomponent.item.ItemAdventurePredicate;
-import io.papermc.paper.datacomponent.item.ItemAttributeModifiers;
-import io.papermc.paper.datacomponent.item.ItemEnchantments;
 import io.papermc.paper.datacomponent.item.ResolvableProfile;
-import io.papermc.paper.datacomponent.item.ShownInTooltip;
 import io.papermc.paper.datacomponent.item.Tool;
-import io.papermc.paper.datacomponent.item.Unbreakable;
+import io.papermc.paper.datacomponent.item.TooltipDisplay;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -231,23 +226,11 @@ public final class ItemStackBuilder {
     }
 
     public ItemStackBuilder hideAll() {
-        hideInTooltip(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.itemAttributes().build());
-        hideInTooltip(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments().build());
-        hideInTooltip(DataComponentTypes.UNBREAKABLE, Unbreakable.unbreakable().build());
-        hideInTooltip(DataComponentTypes.TRIM, null);
-        hideInTooltip(DataComponentTypes.JUKEBOX_PLAYABLE, null);
-        hideInTooltip(DataComponentTypes.CAN_PLACE_ON, ItemAdventurePredicate.itemAdventurePredicate().build());
-        hideInTooltip(DataComponentTypes.CAN_BREAK, ItemAdventurePredicate.itemAdventurePredicate().build());
-        hideInTooltip(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor().build());
-        return flag(ALL_CONSTANTS);
-    }
+        @Nullable var modifiers = itemStack.getDataOrDefault(DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplay.tooltipDisplay().hideTooltip(true).build());
 
-    private <T extends ShownInTooltip<T>> void hideInTooltip(@NotNull DataComponentType.@NotNull Valued<T> type,
-                                                             @Nullable T fallback) {
-        @Nullable var modifiers = itemStack.getDataOrDefault(type, fallback);
-        if (modifiers == null)
-            return;
-        itemStack.setData(type, modifiers.showInTooltip(false));
+        itemStack.setData(DataComponentTypes.TOOLTIP_DISPLAY, modifiers);
+
+        return this;
     }
 
     public ItemStackBuilder showAll() {

@@ -14,3 +14,4 @@ libraries:
   - org.mongodb:mongodb-driver-sync:4.10.2
   - net.lingala.zip4j:zip4j:2.11.5
   - org.apache.commons:commons-lang3:3.17.0
+  - io.github.classgraph:classgraph:4.8.157

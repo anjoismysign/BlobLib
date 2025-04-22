@@ -2,7 +2,7 @@ package us.mytheria.bloblib.utilities;
 
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Base64;
@@ -61,15 +61,14 @@ public class ItemStackUtil {
         itemStack.setItemMeta(itemMeta);
     }
 
-    @Nullable
-    public static String itemStackArrayToBase64(ItemStack[] itemStacks) {
+    @NotNull
+    public static String itemStackArrayToBase64(@NotNull ItemStack[] itemStacks) {
         byte[] byteArray = ItemStack.serializeItemsAsBytes(itemStacks);
-        Base64.getEncoder().encodeToString(byteArray);
-        return null;
+        return Base64.getEncoder().encodeToString(byteArray);
     }
 
-    @Nullable
-    public static ItemStack[] itemStackArrayFromBase64(String serialized) {
+    @NotNull
+    public static ItemStack[] itemStackArrayFromBase64(@NotNull String serialized) {
         byte[] byteArray = Base64.getDecoder().decode(serialized);
         return ItemStack.deserializeItemsFromBytes(byteArray);
     }

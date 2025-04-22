@@ -331,7 +331,7 @@ public enum BlobLibCommand {
         Command open = command.child("open");
         CommandTarget<Player> onlinePlayers = BukkitCommandTarget.ONLINE_PLAYERS();
         open.setParameters(BukkitCommandTarget.OF_MAP(() -> BlobLibInventoryAPI.getInstance()
-                .getBlobInventories()), onlinePlayers);
+                .getInventoryManager().getBlobInventories()), onlinePlayers);
         open.onExecute(((permissionMessenger, args) -> {
             CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
             int length = args.length;

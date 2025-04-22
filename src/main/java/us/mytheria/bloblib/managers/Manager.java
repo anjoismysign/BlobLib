@@ -3,9 +3,16 @@ package us.mytheria.bloblib.managers;
 import us.mytheria.bloblib.entities.Reloadable;
 
 public abstract class Manager implements Reloadable {
-    private final ManagerDirector managerDirector;
+    private ManagerDirector managerDirector;
 
     public Manager(ManagerDirector managerDirector) {
+        this.managerDirector = managerDirector;
+    }
+
+    public Manager() {
+    }
+
+    protected void setManagerDirector(ManagerDirector managerDirector) {
         this.managerDirector = managerDirector;
     }
 

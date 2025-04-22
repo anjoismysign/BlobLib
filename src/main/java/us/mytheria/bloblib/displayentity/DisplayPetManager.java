@@ -16,7 +16,12 @@ import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.managers.Manager;
 import us.mytheria.bloblib.managers.ManagerDirector;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 
 public class DisplayPetManager<T extends DisplayPet<?, ?>> extends Manager implements Listener {

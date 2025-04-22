@@ -12,7 +12,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.BlobLib;
 import us.mytheria.bloblib.api.BlobLibTranslatableAPI;
-import us.mytheria.bloblib.entities.inventory.*;
+import us.mytheria.bloblib.entities.inventory.BlobInventory;
+import us.mytheria.bloblib.entities.inventory.BlobInventoryTracker;
+import us.mytheria.bloblib.entities.inventory.ClickEventProcessor;
+import us.mytheria.bloblib.entities.inventory.InventoryButton;
+import us.mytheria.bloblib.entities.inventory.InventoryDataRegistry;
+import us.mytheria.bloblib.entities.inventory.InventoryTracker;
+import us.mytheria.bloblib.entities.inventory.MetaBlobInventory;
+import us.mytheria.bloblib.entities.inventory.MetaBlobInventoryTracker;
+import us.mytheria.bloblib.entities.inventory.MetaInventoryButton;
+import us.mytheria.bloblib.entities.inventory.SharableInventory;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -41,6 +50,7 @@ public class InventoryTrackerManager implements Listener {
     @Nullable
     public BlobInventoryTracker trackInventory(@NotNull Player player, @NotNull String key) {
         Objects.requireNonNull(player, "player cannot be null");
+        Objects.requireNonNull(player, "'" + key + "' is not a valid BlobInventory");
         String locale = player.getLocale();
         locale = BlobLibTranslatableAPI.getInstance().getRealLocale(locale);
         InventoryDataRegistry<InventoryButton> registry = plugin.getInventoryManager().getInventoryDataRegistry(key);
@@ -50,6 +60,7 @@ public class InventoryTrackerManager implements Listener {
         BlobInventoryTracker tracker = BlobInventoryTracker.of(inventory, locale, registry);
         this.tracker.put(inventory.getInventory(), tracker);
         this.playerTracker.put(player.getUniqueId(), tracker);
+        inventory.open(player);
         return tracker;
     }
 
@@ -73,6 +84,7 @@ public class InventoryTrackerManager implements Listener {
         MetaBlobInventoryTracker tracker = MetaBlobInventoryTracker.of(inventory, locale, registry);
         this.tracker.put(inventory.getInventory(), tracker);
         this.playerTracker.put(player.getUniqueId(), tracker);
+        inventory.open(player);
         return tracker;
     }
 

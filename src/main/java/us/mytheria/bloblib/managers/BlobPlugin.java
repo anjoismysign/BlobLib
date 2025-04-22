@@ -43,7 +43,11 @@ public abstract class BlobPlugin extends JavaPlugin implements PermissionDecorat
      */
     @Override
     public void onDisable() {
-        getManagerDirector().unload();
+        if (getManagerDirector() instanceof ManagerDirector managerDirector) {
+            managerDirector.realUnload();
+        } else {
+            getManagerDirector().unload();
+        }
         unregisterFromBlobLib();
     }
 
@@ -79,7 +83,7 @@ public abstract class BlobPlugin extends JavaPlugin implements PermissionDecorat
      * Currently, it is called inside ManagerDirector
      * initialization.
      */
-    protected void registerToBlobLib(@NotNull IManagerDirector director) {
+    protected void registerToBlobLib(@NotNull ManagerDirector director) {
         PluginManager.registerPlugin(this, director);
     }
 

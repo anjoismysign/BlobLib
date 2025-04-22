@@ -10,7 +10,15 @@ import us.mytheria.bloblib.api.BlobLibInventoryAPI;
 import us.mytheria.bloblib.entities.VariableFiller;
 import us.mytheria.bloblib.entities.VariableValue;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -46,7 +54,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
      * @return the new VariableSelector
      */
     public static BlobInventory DEFAULT(@NotNull Player player) {
-        return BlobLibInventoryAPI.getInstance().getBlobInventory("VariableSelector", player);
+        return BlobLibInventoryAPI.getInstance().getInventoryManager().getInventory("VariableSelector", player.getLocale());
     }
 
     /**
@@ -56,7 +64,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
      * @return the new VariableSelector
      */
     public static BlobInventory DEFAULT() {
-        return BlobLibInventoryAPI.getInstance().getBlobInventory("VariableSelector");
+        return BlobLibInventoryAPI.getInstance().getInventoryManager().getInventory("VariableSelector");
     }
 
     /**
@@ -450,7 +458,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
                 if (itemStack == null)
                     continue;
                 values.add(new VariableValue<>(itemStack, get));
-            } catch (IndexOutOfBoundsException e) {
+            } catch ( IndexOutOfBoundsException e ) {
                 break;
             }
         }

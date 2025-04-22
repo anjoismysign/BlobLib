@@ -2,6 +2,7 @@ package us.mytheria.bloblib.managers.serializablemanager;
 
 import me.anjoismysign.psa.lehmapp.LehmappSerializable;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.entities.BlobListener;
 import us.mytheria.bloblib.managers.BlobPlugin;
@@ -11,8 +12,10 @@ import java.util.Objects;
 public interface SerializableListener<T extends LehmappSerializable> extends BlobListener {
     Class<T> serializableClass();
 
+    @NotNull Plugin plugin();
+
     default String pluginName() {
-        return getListenerManager().getPlugin().getName();
+        return plugin().getName();
     }
 
     @NotNull

@@ -16,7 +16,10 @@ import us.mytheria.bloblib.entities.DataAssetType;
 
 import java.util.Objects;
 
-public record BlobSound(Sound sound, float volume, float pitch,
+public record BlobSound(Sound sound,
+                        float volume,
+                        float pitch,
+                        @Nullable Long seed,
                         @Nullable SoundCategory soundCategory,
                         @NotNull MessageAudience audience,
                         @NotNull String identifier)
@@ -41,10 +44,17 @@ public record BlobSound(Sound sound, float volume, float pitch,
      * @param location The location to play the sound at
      */
     public void play(Player player, Location location) {
-        if (soundCategory == null)
-            player.playSound(location, sound, volume, pitch);
-        else
-            player.playSound(location, sound, soundCategory, volume, pitch);
+        if (soundCategory == null) {
+            if (seed == null)
+                player.playSound(location, sound, volume, pitch);
+            else
+                player.playSound(location, sound, SoundCategory.MASTER, volume, pitch, seed);
+        } else {
+            if (seed == null)
+                player.playSound(location, sound, soundCategory, volume, pitch);
+            else
+                player.playSound(location, sound, soundCategory, volume, pitch, seed);
+        }
     }
 
     /**
@@ -62,10 +72,17 @@ public record BlobSound(Sound sound, float volume, float pitch,
      * @param location The location to play the sound at
      */
     public void playInWorld(Location location) {
-        if (soundCategory == null)
-            location.getWorld().playSound(location, sound, volume, pitch);
-        else
-            location.getWorld().playSound(location, sound, soundCategory, volume, pitch);
+        if (soundCategory == null) {
+            if (seed == null)
+                location.getWorld().playSound(location, sound, volume, pitch);
+            else
+                location.getWorld().playSound(location, sound, SoundCategory.MASTER, volume, pitch, seed);
+        } else {
+            if (seed == null)
+                location.getWorld().playSound(location, sound, soundCategory, volume, pitch);
+            else
+                location.getWorld().playSound(location, sound, soundCategory, volume, pitch, seed);
+        }
     }
 
     /**
