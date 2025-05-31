@@ -135,7 +135,13 @@ public class SoundManager {
                 addDuplicate(reference);
                 return;
             }
-            sounds.put(reference, BlobSoundReader.read(section, reference));
+            try {
+                BlobSound sound = BlobSoundReader.read(section, reference);
+                sounds.put(reference, sound);
+            } catch (Throwable throwable){
+                main.getLogger().severe(throwable.getMessage() + "\nAt: " + file.getPath());
+                return;
+            }
         });
     }
 

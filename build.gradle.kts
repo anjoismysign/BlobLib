@@ -6,12 +6,13 @@ plugins {
 
 repositories {
     mavenLocal()
+
     maven {
-        url = uri("https://repo.maven.apache.org/maven2/")
+        url = uri("https://repo.extendedclip.com/releases/")
     }
 
     maven {
-        url = uri("https://maven.pkg.github.com/anjoismysign/REPOSITORY")
+        url = uri("https://repo.maven.apache.org/maven2/")
     }
 
     maven {
@@ -28,10 +29,6 @@ repositories {
 
     maven {
         url = uri("https://jitpack.io")
-    }
-
-    maven {
-        url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
     }
 
     maven {

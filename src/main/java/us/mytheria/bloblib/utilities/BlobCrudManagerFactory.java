@@ -207,7 +207,7 @@ public class BlobCrudManagerFactory {
                     primaryKeyLength, crudableName.toUpperCase(Locale.ROOT), function);
     }
 
-    private static String tableNamingConvention(String name) {
+    public static String tableNamingConvention(String name) {
         name = NamingConventions.toPascalCase(name);
         name = "tbl" + name + "s";
         return name;

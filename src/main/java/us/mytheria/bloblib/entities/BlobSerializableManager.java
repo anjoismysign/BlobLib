@@ -50,7 +50,8 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
                 joinEvent, quitEvent, EventPriority.NORMAL, EventPriority.NORMAL);
     }
 
-    protected BlobSerializableManager(ManagerDirector managerDirector, Function<BlobCrudable, BlobCrudable> newBorn,
+    protected BlobSerializableManager(ManagerDirector managerDirector,
+                                      Function<BlobCrudable, BlobCrudable> newBorn,
                                       Function<BlobCrudable, T> generator,
                                       String crudableName, boolean logActivity,
                                       @Nullable Function<T, Event> joinEvent,

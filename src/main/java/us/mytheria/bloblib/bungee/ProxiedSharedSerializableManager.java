@@ -39,7 +39,8 @@ public class ProxiedSharedSerializableManager<T extends SharedSerializable<?>>
     private final @Nullable Function<T, Event> joinEvent;
     private final @Nullable Function<T, Event> quitEvent;
 
-    protected ProxiedSharedSerializableManager(ManagerDirector managerDirector, Function<BlobCrudable, BlobCrudable> newBorn,
+    protected ProxiedSharedSerializableManager(ManagerDirector managerDirector,
+                                               Function<BlobCrudable, BlobCrudable> newBorn,
                                                Function<BlobCrudable, T> generator,
                                                String crudableName, boolean logActivity,
                                                @Nullable Function<T, Event> joinEvent,

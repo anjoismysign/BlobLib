@@ -1,5 +1,9 @@
 package us.mytheria.bloblib.entities;
 
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.configuration.ConfigurationSection;
@@ -15,6 +19,14 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class BlobSoundReader {
+
+    @Nullable
+    private static Sound getSound(@NotNull String name){
+        RegistryAccess access = RegistryAccess.registryAccess();
+        Registry<Sound> registry = access.getRegistry(RegistryKey.SOUND_EVENT);
+        return registry.get(NamespacedKey.minecraft(name));
+    }
+
     public static BlobSound read(@NotNull ConfigurationSection section,
                                  @NotNull String key) {
         if (!section.contains("Sound"))
@@ -38,7 +50,7 @@ public class BlobSoundReader {
                 throw new ConfigurationFieldException("Invalid Sound's Audience: " + section.getString("Audience"));
             }
         return new BlobSound(
-                Sound.valueOf(section.getString("Sound")),
+                getSound(section.getString("Sound")),
                 (float) section.getDouble("Volume"),
                 (float) section.getDouble("Pitch"),
                 (Long) section.get("Seed", null),

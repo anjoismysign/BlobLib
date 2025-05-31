@@ -7,6 +7,7 @@ import io.papermc.paper.entity.TeleportFlag;
 import me.anjoismysign.skeramidcommands.command.Command;
 import me.anjoismysign.skeramidcommands.command.CommandTarget;
 import me.anjoismysign.skeramidcommands.commandtarget.BukkitCommandTarget;
+import me.anjoismysign.skeramidcommands.commandtarget.CommandTargetBuilder;
 import me.anjoismysign.skeramidcommands.server.bukkit.BukkitAdapter;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -81,7 +82,7 @@ public enum BlobLibCommand {
     public void update(@NotNull Command bloblib) {
         Command command = bloblib.child("update");
         PluginManager pluginManager = main.getPluginManager();
-        CommandTarget<BlobPlugin> target = BukkitCommandTarget.OF_MAP(() -> pluginManager.getPluginsAsMap().entrySet().stream()
+        CommandTarget<BlobPlugin> target = CommandTargetBuilder.fromMap(() -> pluginManager.getPluginsAsMap().entrySet().stream()
                 .filter(entry -> {
                     @Nullable PluginUpdater pluginUpdater = entry.getValue().getPluginUpdater();
                     if (pluginUpdater == null)
@@ -169,13 +170,12 @@ public enum BlobLibCommand {
                 }
             }
         }));
-
     }
 
     public void translatableitem(@NotNull Command bloblib) {
         Command command = bloblib.child("translatableitem");
         ItemMaterialManager materialManager = ItemMaterialManager.getInstance();
-        CommandTarget<ItemMaterial> target = BukkitCommandTarget.OF_MAP(materialManager::getItems);
+        CommandTarget<ItemMaterial> target = CommandTargetBuilder.fromMap(materialManager::getItems);
         Command get = command.child("get");
         get.setParameters(target);
         get.onExecute(((permissionMessenger, args) -> {
@@ -258,7 +258,7 @@ public enum BlobLibCommand {
         }));
         Command teleport = command.child("teleport");
         CommandTarget<Player> onlinePlayers = BukkitCommandTarget.ONLINE_PLAYERS();
-        CommandTarget<TranslatablePositionable> target = BukkitCommandTarget.OF_MAP(() -> main.getTranslatablePositionableManager().getDefault());
+        CommandTarget<TranslatablePositionable> target = CommandTargetBuilder.fromMap(() -> main.getTranslatablePositionableManager().getDefault());
         teleport.setParameters(target, onlinePlayers);
         teleport.onExecute(((permissionMessenger, args) -> {
             CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
@@ -330,7 +330,7 @@ public enum BlobLibCommand {
         Command command = bloblib.child("blobinventory");
         Command open = command.child("open");
         CommandTarget<Player> onlinePlayers = BukkitCommandTarget.ONLINE_PLAYERS();
-        open.setParameters(BukkitCommandTarget.OF_MAP(() -> BlobLibInventoryAPI.getInstance()
+        open.setParameters(CommandTargetBuilder.fromMap(() -> BlobLibInventoryAPI.getInstance()
                 .getInventoryManager().getBlobInventories()), onlinePlayers);
         open.onExecute(((permissionMessenger, args) -> {
             CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
@@ -390,7 +390,7 @@ public enum BlobLibCommand {
     public void blobmessage(@NotNull Command bloblib) {
         Command command = bloblib.child("blobmessage");
         Command send = command.child("send");
-        CommandTarget<BlobMessage> target = BukkitCommandTarget.OF_MAP(() -> BlobLibMessageAPI.getInstance().getDefault());
+        CommandTarget<BlobMessage> target = CommandTargetBuilder.fromMap(() -> BlobLibMessageAPI.getInstance().getDefault());
         CommandTarget<Player> onlinePlayers = BukkitCommandTarget.ONLINE_PLAYERS();
         send.setParameters(target, onlinePlayers);
         send.onExecute(((permissionMessenger, args) -> {
