@@ -1,9 +1,0 @@
-BlobLib:
-  Boolean-True:
-    Snippet: 'true'
-  Boolean-False:
-    Snippet: 'false'
-  Player-Not-Online:
-    Snippet: not online
-  Wilderness:
-    Snippet: Wilderness
