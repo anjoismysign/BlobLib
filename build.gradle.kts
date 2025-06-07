@@ -69,7 +69,8 @@ dependencies {
 group = "us.mytheria"
 version = "1.698.31"
 description = "bloblib"
-java.sourceCompatibility = JavaVersion.VERSION_21
+java.sourceCompatibility = JavaVersion.VERSION_16
+java.targetCompatibility = JavaVersion.VERSION_16
 
 publishing {
     publications.create<MavenPublication>("maven") {

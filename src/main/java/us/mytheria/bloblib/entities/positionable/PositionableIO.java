@@ -172,6 +172,7 @@ public enum PositionableIO {
             };
         }
         String worldName = section.getString("World");
+        Objects.requireNonNull(worldName, "'World' cannot be null");
         return new Locatable() {
             @NotNull
             public World getWorld() {

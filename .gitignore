@@ -115,3 +115,6 @@ run/
 /.vscode/
 /.gradle/
 /build/tmp/shadowJar/MANIFEST.MF
+/build/
+/.gradle/
+/.gradle/
