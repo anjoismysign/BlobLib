@@ -2,6 +2,7 @@ package us.mytheria.bloblib.entities.inventory;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import us.mytheria.bloblib.api.BlobLibInventoryAPI;
 
 import java.util.Objects;
 
@@ -15,6 +16,16 @@ public class BlobInventory extends SharableInventory<InventoryButton> {
                 carrier.buttonManager().copy(),
                 carrier.reference(),
                 carrier.locale());
+    }
+
+    @NotNull
+    public static BlobInventory fromBlobInventoryOrFail(@NotNull String key,
+                                                        @Nullable String locale){
+        locale = locale == null ? "en_us" : locale;
+        InventoryBuilderCarrier<InventoryButton> carrier = BlobLibInventoryAPI.getInstance()
+                .getInventoryBuilderCarrier(key, locale);
+        Objects.requireNonNull(carrier, "'"+key+"' doesn't point to a BlobInventory");
+        return fromInventoryBuilderCarrier(carrier);
     }
 
     public BlobInventory(@NotNull String title,
