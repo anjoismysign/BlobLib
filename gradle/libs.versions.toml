@@ -4,7 +4,7 @@
 [versions]
 com-fasterxml-jackson-core-jackson-databind = "2.15.2"
 com-fasterxml-jackson-dataformat-jackson-dataformat-yaml = "2.15.2"
-com-github-decentsoftware-eu-decentholograms = "2.8.0"
+com-github-decentsoftware-eu-decentholograms = "2.8.17"
 com-mojang-authlib = "1.5.21"
 com-sk89q-worldguard-worldguard-bukkit = "7.0.8-SNAPSHOT"
 commons-io-commons-io = "2.7"
