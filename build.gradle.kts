@@ -78,15 +78,16 @@ publishing {
     }
 }
 
-tasks.withType<JavaCompile>() {
+tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
 
-tasks.withType<Javadoc>() {
+tasks.withType<Javadoc> {
     options.encoding = "UTF-8"
 }
 
 tasks.shadowJar {
     minimize()
     archiveClassifier.set("")
+    archiveFileName.set("${project.name}-${project.version}.jar")
 }
