@@ -10,6 +10,17 @@ import java.util.UUID;
 
 public interface PlayerAddress extends Address<Player> {
 
+    static PlayerAddress of(@NotNull String address) {
+        Objects.requireNonNull(address, "'address' cannot be null");
+        int length = address.length();
+        Builder builder = builder();
+        if (length == 36) {
+            UUID uuid = UUID.fromString(address);
+            return builder.setUUID(uuid).build();
+        }
+        return builder.setName(address).build();
+    }
+
     static Builder builder() {
         return new Builder();
     }
@@ -18,13 +29,13 @@ public interface PlayerAddress extends Address<Player> {
         private @Nullable String name;
         private @Nullable UUID uuid;
 
-        public PlayerAddress build(){
+        public PlayerAddress build() {
             if (name == null && uuid == null) {
                 throw new IllegalStateException("Both name and UUID cannot be null");
             }
             return () -> {
                 Player player;
-                if (uuid != null){
+                if (uuid != null) {
                     player = Bukkit.getPlayer(uuid);
                 } else {
                     player = Bukkit.getPlayer(name);
@@ -38,30 +49,10 @@ public interface PlayerAddress extends Address<Player> {
             return this;
         }
 
-        public Builder setUuid(@Nullable UUID uuid) {
+        public Builder setUUID(@Nullable UUID uuid) {
             this.uuid = uuid;
             return this;
         }
-    }
-
-    static PlayerAddress of(@NotNull String address) {
-        Objects.requireNonNull(address, "'address' cannot be null");
-        int length = address.length();
-        if (length == 36) {
-            UUID uuid = UUID.fromString(address);
-            return new PlayerAddress() {
-                @Override
-                public @Nullable Player look() {
-                    return Bukkit.getPlayer(uuid);
-                }
-            };
-        }
-        return new PlayerAddress() {
-            @Override
-            public @Nullable Player look() {
-                return Bukkit.getPlayer(address);
-            }
-        };
     }
 
 }
