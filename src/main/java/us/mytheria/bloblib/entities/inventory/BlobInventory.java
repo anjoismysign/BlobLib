@@ -1,8 +1,12 @@
 package us.mytheria.bloblib.entities.inventory;
 
+import net.kyori.adventure.translation.Translator;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.api.BlobLibInventoryAPI;
+import us.mytheria.bloblib.entities.PlayerAddress;
+import us.mytheria.bloblib.entities.PlayerAddressBuilder;
 
 import java.util.Objects;
 
@@ -26,6 +30,15 @@ public class BlobInventory extends SharableInventory<InventoryButton> {
                 .getInventoryBuilderCarrier(key, locale);
         Objects.requireNonNull(carrier, "'"+key+"' doesn't point to a BlobInventory");
         return fromInventoryBuilderCarrier(carrier);
+    }
+
+    @NotNull
+    public static BlobInventory fromBlobInventoryOrFail(@NotNull String key,
+                                                        @NotNull PlayerAddress address){
+        Objects.requireNonNull(address, "'address' cannot be null");
+        @Nullable Player player = address.look();
+        Objects.requireNonNull(player, "'address' must point to a valid Player");
+        return fromBlobInventoryOrFail(key, player.getLocale());
     }
 
     public BlobInventory(@NotNull String title,
