@@ -35,6 +35,48 @@ public class InventoryManager {
     private HashMap<String, Set<String>> pluginMetaInventories;
     private HashMap<String, Integer> duplicates;
 
+    public static void loadBlobPlugin(BlobPlugin plugin, IManagerDirector director) {
+        InventoryManager manager = BlobLib.getInstance().getInventoryManager();
+        manager.load(plugin, director);
+    }
+
+    public static void loadBlobPlugin(BlobPlugin plugin) {
+        loadBlobPlugin(plugin, plugin.getManagerDirector());
+    }
+
+    public static void unloadBlobPlugin(BlobPlugin plugin) {
+        InventoryManager manager = BlobLib.getInstance().getInventoryManager();
+        manager.unload(plugin);
+    }
+
+    public static void continueLoadingBlobInventories(BlobPlugin plugin, boolean warnDuplicates, File... files) {
+        InventoryManager manager = BlobLib.getInstance().getInventoryManager();
+        manager.duplicates.clear();
+        for (File file : files)
+            manager.loadBlobInventory(plugin, file);
+        if (warnDuplicates)
+            manager.duplicates.forEach((key, value) -> plugin.getAnjoLogger()
+                    .log("Duplicate BlobInventory: '" + key + "' (found " + value + " instances)"));
+    }
+
+    public static void continueLoadingBlobInventories(BlobPlugin plugin, File... files) {
+        continueLoadingBlobInventories(plugin, true, files);
+    }
+
+    public static void continueLoadingMetaInventories(BlobPlugin plugin, boolean warnDuplicates, File... files) {
+        InventoryManager manager = BlobLib.getInstance().getInventoryManager();
+        manager.duplicates.clear();
+        for (File file : files)
+            manager.loadMetaInventory(plugin, file);
+        if (warnDuplicates)
+            manager.duplicates.forEach((key, value) -> plugin.getAnjoLogger()
+                    .log("Duplicate MetaBlobInventory: '" + key + "' (found " + value + " instances)"));
+    }
+
+    public static void continueLoadingMetaInventories(BlobPlugin plugin, File... files) {
+        continueLoadingMetaInventories(plugin, true, files);
+    }
+
     public InventoryManager() {
         this.main = BlobLib.getInstance();
     }
@@ -72,15 +114,6 @@ public class InventoryManager {
                 .log("Duplicate Inventory: '" + key + "' (found " + value + " instances)"));
     }
 
-    public static void loadBlobPlugin(BlobPlugin plugin, IManagerDirector director) {
-        InventoryManager manager = BlobLib.getInstance().getInventoryManager();
-        manager.load(plugin, director);
-    }
-
-    public static void loadBlobPlugin(BlobPlugin plugin) {
-        loadBlobPlugin(plugin, plugin.getManagerDirector());
-    }
-
     public void unload(BlobPlugin plugin) {
         String pluginName = plugin.getName();
         Set<String> blobInventories = pluginBlobInventories.get(pluginName);
@@ -103,11 +136,6 @@ public class InventoryManager {
         pluginMetaInventories.remove(pluginName);
     }
 
-    public static void unloadBlobPlugin(BlobPlugin plugin) {
-        InventoryManager manager = BlobLib.getInstance().getInventoryManager();
-        manager.unload(plugin);
-    }
-
     private void loadBlobInventories(File directory) {
         @Nullable File[] listOfFiles = directory.listFiles();
         if (listOfFiles == null)
@@ -118,10 +146,10 @@ public class InventoryManager {
                     continue;
                 try {
                     loadBlobInventory(file);
-                } catch ( ConfigurationFieldException exception ) {
+                } catch (ConfigurationFieldException exception) {
                     main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
                     continue;
-                } catch ( Throwable throwable ) {
+                } catch (Throwable throwable) {
                     throwable.printStackTrace();
                     continue;
                 }
@@ -141,10 +169,10 @@ public class InventoryManager {
                     continue;
                 try {
                     loadMetaInventory(file);
-                } catch ( ConfigurationFieldException exception ) {
+                } catch (ConfigurationFieldException exception) {
                     main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
                     continue;
-                } catch ( Throwable throwable ) {
+                } catch (Throwable throwable) {
                     throwable.printStackTrace();
                     continue;
                 }
@@ -198,34 +226,6 @@ public class InventoryManager {
             addMetaInventory(reference, carrier);
             pluginMetaInventories.get(plugin.getName()).add(reference);
         });
-    }
-
-    public static void continueLoadingBlobInventories(BlobPlugin plugin, boolean warnDuplicates, File... files) {
-        InventoryManager manager = BlobLib.getInstance().getInventoryManager();
-        manager.duplicates.clear();
-        for (File file : files)
-            manager.loadBlobInventory(plugin, file);
-        if (warnDuplicates)
-            manager.duplicates.forEach((key, value) -> plugin.getAnjoLogger()
-                    .log("Duplicate BlobInventory: '" + key + "' (found " + value + " instances)"));
-    }
-
-    public static void continueLoadingBlobInventories(BlobPlugin plugin, File... files) {
-        continueLoadingBlobInventories(plugin, true, files);
-    }
-
-    public static void continueLoadingMetaInventories(BlobPlugin plugin, boolean warnDuplicates, File... files) {
-        InventoryManager manager = BlobLib.getInstance().getInventoryManager();
-        manager.duplicates.clear();
-        for (File file : files)
-            manager.loadMetaInventory(plugin, file);
-        if (warnDuplicates)
-            manager.duplicates.forEach((key, value) -> plugin.getAnjoLogger()
-                    .log("Duplicate MetaBlobInventory: '" + key + "' (found " + value + " instances)"));
-    }
-
-    public static void continueLoadingMetaInventories(BlobPlugin plugin, File... files) {
-        continueLoadingMetaInventories(plugin, true, files);
     }
 
     private void loadBlobInventory(File file) {
@@ -318,37 +318,14 @@ public class InventoryManager {
     }
 
     @Nullable
-    public BlobInventory getInventory(String key, String locale) {
-        InventoryBuilderCarrier<InventoryButton> carrier = getInventoryBuilderCarrier(key, locale);
-        if (carrier == null)
-            return null;
-        locale = BlobLibTranslatableAPI.getInstance().getRealLocale(locale);
-        return BlobInventory.fromInventoryBuilderCarrier(carrier);
-    }
-
-    @Nullable
-    public BlobInventory getInventory(String key) {
-        InventoryDataRegistry<InventoryButton> registry = getInventoryDataRegistry(key);
-        if (registry == null)
-            return null;
-        return BlobInventory.fromInventoryBuilderCarrier(registry.getDefault());
-    }
-
-    @Nullable
     public BlobInventory cloneInventory(String key, String locale) {
-        BlobInventory inventory = getInventory(key, locale);
-        if (inventory == null)
-            return null;
-        locale = BlobLibTranslatableAPI.getInstance().getRealLocale(locale);
+        BlobInventory inventory = BlobInventory.ofKeyOrThrow(key, locale);
         return inventory.copy();
     }
 
     @Nullable
     public BlobInventory cloneInventory(String key) {
-        BlobInventory inventory = getInventory(key);
-        if (inventory == null)
-            return null;
-        return inventory.copy();
+        return cloneInventory(key, null);
     }
 
     @Nullable

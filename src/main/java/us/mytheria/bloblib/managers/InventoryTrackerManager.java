@@ -56,7 +56,7 @@ public class InventoryTrackerManager implements Listener {
         InventoryDataRegistry<InventoryButton> registry = plugin.getInventoryManager().getInventoryDataRegistry(key);
         if (registry == null)
             return null;
-        BlobInventory inventory = BlobInventory.fromInventoryBuilderCarrier(registry.get(locale));
+        BlobInventory inventory = BlobInventory.ofInventoryBuilderCarrier(registry.get(locale));
         BlobInventoryTracker tracker = BlobInventoryTracker.of(inventory, locale, registry);
         this.tracker.put(inventory.getInventory(), tracker);
         this.playerTracker.put(player.getUniqueId(), tracker);

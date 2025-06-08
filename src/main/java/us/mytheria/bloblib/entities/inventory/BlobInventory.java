@@ -10,7 +10,7 @@ import java.util.Objects;
 
 public class BlobInventory extends SharableInventory<InventoryButton> {
 
-    public static BlobInventory fromInventoryBuilderCarrier(InventoryBuilderCarrier<InventoryButton> carrier) {
+    public static BlobInventory ofInventoryBuilderCarrier(InventoryBuilderCarrier<InventoryButton> carrier) {
         String title = Objects.requireNonNull(carrier.title(), "title cannot be null");
         return new BlobInventory(
                 title,
@@ -21,22 +21,29 @@ public class BlobInventory extends SharableInventory<InventoryButton> {
     }
 
     @NotNull
-    public static BlobInventory fromBlobInventoryOrFail(@NotNull String key,
-                                                        @Nullable String locale){
+    public static BlobInventory ofKeyOrThrow(@NotNull String key,
+                                             @Nullable String locale) {
         locale = locale == null ? "en_us" : locale;
         InventoryBuilderCarrier<InventoryButton> carrier = BlobLibInventoryAPI.getInstance()
                 .getInventoryBuilderCarrier(key, locale);
-        Objects.requireNonNull(carrier, "'"+key+"' doesn't point to a BlobInventory");
-        return fromInventoryBuilderCarrier(carrier);
+        Objects.requireNonNull(carrier, "'" + key + "' doesn't point to a BlobInventory");
+
+        String title = Objects.requireNonNull(carrier.title(), "title cannot be null");
+        return new BlobInventory(
+                title,
+                carrier.size(),
+                carrier.buttonManager().copy(),
+                carrier.reference(),
+                carrier.locale());
     }
 
     @NotNull
-    public static BlobInventory fromBlobInventoryOrFail(@NotNull String key,
-                                                        @NotNull PlayerAddress address){
+    public static BlobInventory ofKeyAddressOrThrow(@NotNull String key,
+                                                    @NotNull PlayerAddress address) {
         Objects.requireNonNull(address, "'address' cannot be null");
         @Nullable Player player = address.look();
         Objects.requireNonNull(player, "'address' must point to a valid Player");
-        return fromBlobInventoryOrFail(key, player.getLocale());
+        return ofKeyOrThrow(key, player.getLocale());
     }
 
     public BlobInventory(@NotNull String title,

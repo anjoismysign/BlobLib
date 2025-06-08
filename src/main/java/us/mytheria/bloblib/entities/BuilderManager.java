@@ -9,7 +9,6 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
-import us.mytheria.bloblib.api.BlobLibInventoryAPI;
 import us.mytheria.bloblib.entities.inventory.BlobInventory;
 import us.mytheria.bloblib.entities.inventory.BlobObjectBuilder;
 import us.mytheria.bloblib.managers.ChatListenerManager;
@@ -25,15 +24,14 @@ import java.util.Objects;
 import java.util.UUID;
 
 public abstract class BuilderManager<T extends BlobObject, B extends BlobObjectBuilder<T>> extends Manager implements Listener {
-    protected String title;
-
-    protected Map<UUID, B> builders;
-    protected Map<Inventory, B> inventories;
     private final ChatListenerManager chatManager;
     private final DropListenerManager dropListenerManager;
     private final SelectorListenerManager selectorListenerManager;
     private final SelPosListenerManager selPosListenerManager;
-    private final String fileKey;
+    private final String key;
+    protected String title;
+    protected Map<UUID, B> builders;
+    protected Map<Inventory, B> inventories;
 
     public BuilderManager(ManagerDirector managerDirector,
                           String fileKey) {
@@ -43,7 +41,7 @@ public abstract class BuilderManager<T extends BlobObject, B extends BlobObjectB
         chatManager = getManagerDirector().getChatListenerManager();
         dropListenerManager = getManagerDirector().getDropListenerManager();
         selectorListenerManager = getManagerDirector().getSelectorManager();
-        this.fileKey = Objects.requireNonNull(fileKey, "File key cannot be null.");
+        this.key = Objects.requireNonNull(fileKey, "File key cannot be null.");
         update();
     }
 
@@ -79,9 +77,7 @@ public abstract class BuilderManager<T extends BlobObject, B extends BlobObjectB
     public void update() {
         this.builders = new HashMap<>();
         this.inventories = new HashMap<>();
-        BlobInventory inventory = BlobLibInventoryAPI.getInstance().getInventoryManager().getInventory(fileKey);
-        if (inventory == null)
-            throw new RuntimeException("Inventory file '" + fileKey + "' not found.");
+        BlobInventory inventory = BlobInventory.ofKeyOrThrow(key, (String) null);
         this.title = inventory.getTitle();
     }
 
@@ -124,8 +120,8 @@ public abstract class BuilderManager<T extends BlobObject, B extends BlobObjectB
     }
 
     @NotNull
-    public String getFileKey() {
-        return fileKey;
+    public String getKey() {
+        return key;
     }
 
     @NotNull

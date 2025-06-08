@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.mytheria.bloblib.api.BlobLibInventoryAPI;
+import us.mytheria.bloblib.entities.PlayerAddress;
 import us.mytheria.bloblib.entities.VariableFiller;
 import us.mytheria.bloblib.entities.VariableValue;
 
@@ -54,7 +54,9 @@ public abstract class VariableSelector<T> extends BlobInventory {
      * @return the new VariableSelector
      */
     public static BlobInventory DEFAULT(@NotNull Player player) {
-        return BlobLibInventoryAPI.getInstance().getInventoryManager().getInventory("VariableSelector", player.getLocale());
+        return BlobInventory
+                .ofKeyAddressOrThrow("VariableSelector", PlayerAddress.builder()
+                        .setPlayer(player).build());
     }
 
     /**
@@ -64,7 +66,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
      * @return the new VariableSelector
      */
     public static BlobInventory DEFAULT() {
-        return BlobLibInventoryAPI.getInstance().getInventoryManager().getInventory("VariableSelector");
+        return BlobInventory.ofKeyOrThrow("VariableSelector", null);
     }
 
     /**
@@ -268,6 +270,21 @@ public abstract class VariableSelector<T> extends BlobInventory {
     }
 
     /**
+     * goes/opens to specific page
+     *
+     * @param page the page to go to
+     */
+    public void setPage(int page) {
+        if (page < 1)
+            return;
+        if (page > getTotalPages()) {
+            return;
+        }
+        this.page = page;
+        loadPage(page);
+    }
+
+    /**
      * @return player matching builderId.
      * null if no player is found.
      */
@@ -358,19 +375,8 @@ public abstract class VariableSelector<T> extends BlobInventory {
         return itemsPerPage;
     }
 
-    /**
-     * goes/opens to specific page
-     *
-     * @param page the page to go to
-     */
-    public void setPage(int page) {
-        if (page < 1)
-            return;
-        if (page > getTotalPages()) {
-            return;
-        }
-        this.page = page;
-        loadPage(page);
+    public void setItemsPerPage(int itemsPerPage) {
+        this.itemsPerPage = itemsPerPage;
     }
 
     /**
@@ -425,10 +431,6 @@ public abstract class VariableSelector<T> extends BlobInventory {
         addValues(collection, false);
     }
 
-    public void setItemsPerPage(int itemsPerPage) {
-        this.itemsPerPage = itemsPerPage;
-    }
-
     /**
      * @return the list
      */
@@ -458,7 +460,7 @@ public abstract class VariableSelector<T> extends BlobInventory {
                 if (itemStack == null)
                     continue;
                 values.add(new VariableValue<>(itemStack, get));
-            } catch ( IndexOutOfBoundsException e ) {
+            } catch (IndexOutOfBoundsException e) {
                 break;
             }
         }
@@ -475,13 +477,13 @@ public abstract class VariableSelector<T> extends BlobInventory {
         this.collectionSupplier = collectionSupplier;
     }
 
-    public void setButtonRangeKey(@NotNull String buttonRangeKey) {
-        Objects.requireNonNull(buttonRangeKey, "whiteBackgroundName cannot be null");
-        this.buttonRangeKey = buttonRangeKey;
-    }
-
     @NotNull
     private String getButtonRangeKey() {
         return buttonRangeKey == null ? "White-Background" : buttonRangeKey;
+    }
+
+    public void setButtonRangeKey(@NotNull String buttonRangeKey) {
+        Objects.requireNonNull(buttonRangeKey, "whiteBackgroundName cannot be null");
+        this.buttonRangeKey = buttonRangeKey;
     }
 }
