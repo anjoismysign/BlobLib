@@ -66,6 +66,14 @@ System:
     Title: '&f&lDONE'
     Subtitle: '&7Reload complete'
     BlobSound: System.Done
+  Search:
+    Type: TITLE
+    Title: '&f&lSEARCH'
+    Subtitle: '&7Type in to search'
+  Search-Timeout:
+    Type: TITLE
+    Title: '&c&lTIMEOUT!'
+    Subtitle: '&7Took too long!'
 Algorithm:
   Adjacent-Null:
     Type: ACTIONBAR_TITLE
