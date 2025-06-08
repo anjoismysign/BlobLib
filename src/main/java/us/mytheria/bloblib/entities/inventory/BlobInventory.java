@@ -1,12 +1,10 @@
 package us.mytheria.bloblib.entities.inventory;
 
-import net.kyori.adventure.translation.Translator;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.mytheria.bloblib.api.BlobLibInventoryAPI;
 import us.mytheria.bloblib.entities.PlayerAddress;
-import us.mytheria.bloblib.entities.PlayerAddressBuilder;
 
 import java.util.Objects;
 
