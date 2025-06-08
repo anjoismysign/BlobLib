@@ -10,6 +10,10 @@ import java.util.UUID;
 
 public interface PlayerAddress extends Address<Player> {
 
+    static PlayerAddressBuilder builder() {
+        return new PlayerAddressBuilder();
+    }
+
     static PlayerAddress of(@NotNull String address) {
         Objects.requireNonNull(address, "'address' cannot be null");
         int length = address.length();
