@@ -53,6 +53,11 @@ public interface PlayerAddress extends Address<Player> {
             this.uuid = uuid;
             return this;
         }
+
+        public Builder setPlayer(@NotNull Player player) {
+            Objects.requireNonNull(player, "'player' cannot be null");
+            return setUUID(player.getUniqueId());
+        }
     }
 
 }
