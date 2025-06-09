@@ -21,9 +21,9 @@ import java.util.Optional;
 public class BlobSoundReader {
 
     @Nullable
-    private static Sound getSound(@NotNull String name){
+    private static Sound getSound(@NotNull String name) {
         RegistryAccess access = RegistryAccess.registryAccess();
-        Registry<Sound> registry = access.getRegistry(RegistryKey.SOUND_EVENT);
+        Registry<@NotNull Sound> registry = access.getRegistry(RegistryKey.SOUND_EVENT);
         return registry.get(NamespacedKey.minecraft(name));
     }
 
@@ -39,14 +39,14 @@ public class BlobSoundReader {
         if (section.contains("Category"))
             try {
                 category = Optional.of(SoundCategory.valueOf(section.getString("Category")));
-            } catch ( IllegalArgumentException e ) {
+            } catch (IllegalArgumentException e) {
                 throw new ConfigurationFieldException("Invalid Sound's Category: " + section.getString("Category"));
             }
         MessageAudience audience = MessageAudience.PLAYER;
         if (section.contains("Audience"))
             try {
                 audience = MessageAudience.valueOf(section.getString("Audience"));
-            } catch ( IllegalArgumentException e ) {
+            } catch (IllegalArgumentException e) {
                 throw new ConfigurationFieldException("Invalid Sound's Audience: " + section.getString("Audience"));
             }
         return new BlobSound(
@@ -77,7 +77,7 @@ public class BlobSoundReader {
                 MessageAudience audience;
                 try {
                     audience = MessageAudience.valueOf(split[1]);
-                } catch ( IllegalArgumentException e ) {
+                } catch (IllegalArgumentException e) {
                     BlobLib.getAnjoLogger().singleError("Invalid Sound's Audience: " + split[1]);
                     return Optional.empty();
                 }
