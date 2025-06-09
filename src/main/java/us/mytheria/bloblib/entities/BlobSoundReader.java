@@ -15,6 +15,7 @@ import us.mytheria.bloblib.entities.message.BlobSound;
 import us.mytheria.bloblib.entities.message.MessageAudience;
 import us.mytheria.bloblib.exception.ConfigurationFieldException;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -24,7 +25,7 @@ public class BlobSoundReader {
     private static Sound getSound(@NotNull String name) {
         RegistryAccess access = RegistryAccess.registryAccess();
         Registry<@NotNull Sound> registry = access.getRegistry(RegistryKey.SOUND_EVENT);
-        return registry.get(NamespacedKey.minecraft(name));
+        return registry.get(NamespacedKey.minecraft(name.toLowerCase(Locale.ROOT).replace("_", ".")));
     }
 
     public static BlobSound read(@NotNull ConfigurationSection section,
