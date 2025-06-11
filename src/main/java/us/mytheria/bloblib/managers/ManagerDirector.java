@@ -82,10 +82,6 @@ public abstract class ManagerDirector implements IManagerDirector {
         bDirector.reload();
     }
 
-    public NamespacedKey getNamespacedKey(String key) {
-        return namespacedKeys.get(key);
-    }
-
     /**
      * Will proxy this ManagerDirector to a new instance of ManagerDirector.
      *
@@ -395,15 +391,6 @@ public abstract class ManagerDirector implements IManagerDirector {
     }
 
     /**
-     * Will reload ManagerDirector's defaults and do reload logic.
-     */
-    public void reloadAll() {
-        reloadNamespacedKeys();
-        reload();
-        bDirector.reload();
-    }
-
-    /**
      * Will retrieve a manager by providing a String 'key'.
      *
      * @param key the key of the manager
@@ -484,16 +471,34 @@ public abstract class ManagerDirector implements IManagerDirector {
     public void unload() {
     }
 
-    public void realUnload() {
-        unload();
-        bDirector.unload();
-    }
-
     /**
      * Logic that should run after the world has been loaded.
      * Called synchronously.
      */
     public void postWorld() {
+    }
+
+    /**
+     * Will reload ManagerDirector's defaults and do reload logic.
+     */
+    public void reloadAll() {
+        reloadNamespacedKeys();
+        reload();
+        bDirector.reload();
+    }
+
+    public IFileManager getFileManager() {
+        return proxiedFileManager;
+    }
+
+    // a ManagerDirector can override this method and do their own logic
+    public boolean isReloading() {
+        return false;
+    }
+
+    public void realUnload() {
+        unload();
+        bDirector.unload();
     }
 
     /**
@@ -522,10 +527,6 @@ public abstract class ManagerDirector implements IManagerDirector {
      */
     public DropListenerManager getDropListenerManager() {
         return dropListenerManager;
-    }
-
-    public IFileManager getFileManager() {
-        return proxiedFileManager;
     }
 
     /**
@@ -891,6 +892,11 @@ public abstract class ManagerDirector implements IManagerDirector {
         return namespacedKey;
     }
 
+    public NamespacedKey getNamespacedKey(String key) {
+        NamespacedKey namespacedKey = namespacedKeys.get(key);
+        return namespacedKey == null ? createNamespacedKey(key) : namespacedKey;
+    }
+
     /**
      * Reloads all namespaced keys.
      */
@@ -920,7 +926,7 @@ public abstract class ManagerDirector implements IManagerDirector {
             outputFile.mkdirs();
         try (ZipFile zipFile = new ZipFile(expansion)) {
             zipFile.extractAll(outputFile.getAbsolutePath());
-        } catch ( Exception e ) {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
@@ -944,17 +950,12 @@ public abstract class ManagerDirector implements IManagerDirector {
                 assetType.getContinueLoading().accept(plugin, files);
                 try {
                     FileUtils.deleteDirectory(assetsDirectory.get(assetType));
-                } catch ( IOException e ) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
         return true;
-    }
-
-    // a ManagerDirector can override this method and do their own logic
-    public boolean isReloading() {
-        return false;
     }
 
     protected Set<Map.Entry<String, Manager>> getManagerEntry() {
