@@ -66,6 +66,7 @@ public enum BlobLibCommand {
         blobinventory(bloblib);
         closeinventory(bloblib);
         blobmessage(bloblib);
+        teleport(bloblib);
     }
 
     public void reload(@NotNull Command bloblib) {
@@ -430,27 +431,6 @@ public enum BlobLibCommand {
         }));
     }
 
-    private record RepositoryDownload(@Nullable String fileName,
-                                      @NotNull BlobLibCommand.DownloadError error) {
-        private static BlobLibCommand.RepositoryDownload FAIL(BlobLibCommand.DownloadError error) {
-            return new BlobLibCommand.RepositoryDownload(null, error);
-        }
-
-        public boolean successful() {
-            return error == BlobLibCommand.DownloadError.NONE;
-        }
-    }
-
-    private enum DownloadError {
-        NO_CONNECTION,
-        REPO_NOT_FOUND,
-        NO_PERMISSION,
-        MALFORMED_URL,
-        PROTOCOL_ERROR,
-        NONE,
-        UNKNOWN
-    }
-
     /**
      * Downloads a plugin from GitHub. It's expected that
      * file does not exist in the plugins' folder.
@@ -465,24 +445,24 @@ public enum BlobLibCommand {
         URL url;
         try {
             url = new URL(repoUrl);
-        } catch ( MalformedURLException exception ) {
+        } catch (MalformedURLException exception) {
             return BlobLibCommand.RepositoryDownload.FAIL(BlobLibCommand.DownloadError.MALFORMED_URL);
         }
         HttpURLConnection connection;
         try {
             connection = (HttpURLConnection) url.openConnection();
-        } catch ( IOException exception ) {
+        } catch (IOException exception) {
             return BlobLibCommand.RepositoryDownload.FAIL(BlobLibCommand.DownloadError.NO_CONNECTION);
         }
         try {
             connection.setRequestMethod("GET");
-        } catch ( ProtocolException exception ) {
+        } catch (ProtocolException exception) {
             return BlobLibCommand.RepositoryDownload.FAIL(BlobLibCommand.DownloadError.PROTOCOL_ERROR);
         }
         BufferedReader reader;
         try {
             reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        } catch ( IOException exception ) {
+        } catch (IOException exception) {
             BlobLib.getAnjoLogger().singleError("Repo not found: " + repoUrl);
             return BlobLibCommand.RepositoryDownload.FAIL(BlobLibCommand.DownloadError.REPO_NOT_FOUND);
         }
@@ -493,7 +473,7 @@ public enum BlobLibCommand {
                 response.append(line);
             }
             reader.close();
-        } catch ( IOException exception ) {
+        } catch (IOException exception) {
             return BlobLibCommand.RepositoryDownload.FAIL(BlobLibCommand.DownloadError.UNKNOWN);
         }
         Gson gson = new Gson();
@@ -503,15 +483,91 @@ public enum BlobLibCommand {
         String fileName = latestUrl.substring(latestUrl.lastIndexOf("/") + 1);
         try {
             url = new URL(latestUrl);
-        } catch ( MalformedURLException exception ) {
+        } catch (MalformedURLException exception) {
             return BlobLibCommand.RepositoryDownload.FAIL(BlobLibCommand.DownloadError.MALFORMED_URL);
         }
         Path targetPath = Path.of("plugins", fileName);
         try (InputStream inputStream = url.openStream()) {
             Files.copy(inputStream, targetPath);
             return new BlobLibCommand.RepositoryDownload(fileName, BlobLibCommand.DownloadError.NONE);
-        } catch ( IOException exception ) {
+        } catch (IOException exception) {
             return BlobLibCommand.RepositoryDownload.FAIL(BlobLibCommand.DownloadError.UNKNOWN);
+        }
+    }
+
+    @SuppressWarnings("DataFlowIssue")
+    public void teleport(@NotNull Command bloblib) {
+        Command command = bloblib.child("teleport");
+        var playerTarget = BukkitCommandTarget.ONLINE_PLAYERS();
+        CommandTarget<Double> coordinateTarget = new CommandTarget<Double>() {
+            @Override
+            public List<String> get() {
+                return List.of("0.0");
+            }
+
+            @Override
+            public @Nullable Double parse(String s) {
+                double value;
+                try {
+                    value = Double.parseDouble(s);
+                    return value;
+                } catch (NumberFormatException exception) {
+                    return null;
+                }
+            }
+        };
+        command.setParameters(coordinateTarget, coordinateTarget, coordinateTarget, playerTarget);
+        command.onExecute(((permissionMessenger, args) -> {
+            int length = args.length;
+            CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
+            Player player;
+
+            if (length < 4) {
+                if (!(sender instanceof Player)) {
+                    BlobLibMessageAPI.getInstance()
+                            .getMessage("System.Console-Not-Allowed-Command", sender)
+                            .toCommandSender(sender);
+                    return;
+                }
+                player = (Player) sender;
+            } else {
+                player = playerTarget.parse(args[3]);
+                if (player == null) {
+                    BlobLibMessageAPI.getInstance()
+                            .getMessage("Player.Not-Found", sender)
+                            .toCommandSender(sender);
+                    return;
+                }
+            }
+
+            double x, y, z;
+            x = coordinateTarget.parse(args[0]);
+            y = coordinateTarget.parse(args[1]);
+            z = coordinateTarget.parse(args[2]);
+
+            Location playerLocation = player.getLocation();
+            player.teleport(new Location(player.getWorld(), x, y, z, playerLocation.getYaw(), playerLocation.getPitch()));
+        }));
+    }
+
+    private enum DownloadError {
+        NO_CONNECTION,
+        REPO_NOT_FOUND,
+        NO_PERMISSION,
+        MALFORMED_URL,
+        PROTOCOL_ERROR,
+        NONE,
+        UNKNOWN
+    }
+
+    private record RepositoryDownload(@Nullable String fileName,
+                                      @NotNull BlobLibCommand.DownloadError error) {
+        private static BlobLibCommand.RepositoryDownload FAIL(BlobLibCommand.DownloadError error) {
+            return new BlobLibCommand.RepositoryDownload(null, error);
+        }
+
+        public boolean successful() {
+            return error == BlobLibCommand.DownloadError.NONE;
         }
     }
 }
