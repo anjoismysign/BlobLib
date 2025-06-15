@@ -29,7 +29,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>us.mytheria</groupId>
+            <groupId>io.github.anjoismysign</groupId>
             <artifactId>bloblib</artifactId>
             <version>1.698.31</version>
         </dependency>

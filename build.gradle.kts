@@ -66,7 +66,7 @@ dependencies {
     compileOnly(libs.de.oliver.fancyholograms)
 }
 
-group = "us.mytheria"
+group = "io.github.anjoismysign"
 version = "1.698.31"
 description = "bloblib"
 java.sourceCompatibility = JavaVersion.VERSION_16
