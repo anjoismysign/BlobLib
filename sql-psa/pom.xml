@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>me.anjoismysign</groupId>
+    <groupId>io.github.anjoismysign</groupId>
     <artifactId>sql-psa</artifactId>
     <version>1.0</version>
 
@@ -45,12 +45,12 @@
             <version>5.0.1</version>
         </dependency>
         <dependency>
-            <groupId>me.anjoismysign.anjo</groupId>
+            <groupId>io.github.anjoismysign</groupId>
             <artifactId>anjo</artifactId>
             <version>0.3.15</version>
         </dependency>
         <dependency>
-            <groupId>me.anjoismysign</groupId>
+            <groupId>io.github.anjoismysign</groupId>
             <artifactId>psa-api</artifactId>
             <version>1.0</version>
         </dependency>

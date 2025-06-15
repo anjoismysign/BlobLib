@@ -11,12 +11,12 @@ commons-io-commons-io = "2.7"
 de-oliver-fancyholograms = "2.3.0"
 io-papermc-paper-paper-api = "1.21.5-R0.1-SNAPSHOT"
 libsdisguises-libsdisguises = "11.0.0"
-me-anjoismysign-aesthetic = "1.0"
-me-anjoismysign-anjo-anjo = "0.3.15"
-me-anjoismysign-holoworld = "1.0-SNAPSHOT"
-me-anjoismysign-psa-api = "1.0"
-me-anjoismysign-skeramidcommands = "1.0.6"
-me-anjoismysign-winona = "1.0"
+io-github-anjoismysign-aesthetic = "1.0"
+io-github-anjoismysign-anjo = "0.3.15"
+io-github-anjoismysign-holoworld = "1.0-SNAPSHOT"
+io-github-anjoismysign-psa-api = "1.0"
+io-github-anjoismysign-skeramidcommands = "1.0.6"
+io-github-anjoismysign-winona = "1.0"
 me-clip-placeholderapi = "2.11.6"
 net-lingala-zip4j-zip4j = "2.11.5"
 net-md-v5-bungeecord-api = "1.20-R0.2-SNAPSHOT"
@@ -35,12 +35,12 @@ commons-io-commons-io = { module = "commons-io:commons-io", version.ref = "commo
 de-oliver-fancyholograms = { module = "de.oliver:FancyHolograms", version.ref = "de-oliver-fancyholograms" }
 io-papermc-paper-paper-api = { module = "io.papermc.paper:paper-api", version.ref = "io-papermc-paper-paper-api" }
 libsdisguises-libsdisguises = { module = "me.libraryaddict.disguises:libsdisguises", version.ref = "libsdisguises-libsdisguises" }
-me-anjoismysign-aesthetic = { module = "me.anjoismysign:aesthetic", version.ref = "me-anjoismysign-aesthetic" }
-me-anjoismysign-anjo-anjo = { module = "me.anjoismysign.anjo:anjo", version.ref = "me-anjoismysign-anjo-anjo" }
-me-anjoismysign-holoworld = { module = "me.anjoismysign:holoworld", version.ref = "me-anjoismysign-holoworld" }
-me-anjoismysign-psa-api = { module = "me.anjoismysign:psa-api", version.ref = "me-anjoismysign-psa-api" }
-me-anjoismysign-skeramidcommands = { module = "me.anjoismysign:skeramidcommands", version.ref = "me-anjoismysign-skeramidcommands" }
-me-anjoismysign-winona = { module = "me.anjoismysign:winona", version.ref = "me-anjoismysign-winona" }
+io-github-anjoismysign-aesthetic = { module = "io.github.anjoismysign:aesthetic", version.ref = "io-github-anjoismysign-aesthetic" }
+io-github-anjoismysign-anjo = { module = "io.github.anjoismysign:anjo", version.ref = "io-github-anjoismysign-anjo" }
+io-github-anjoismysign-holoworld = { module = "io.github.anjoismysign:holoworld", version.ref = "io-github-anjoismysign-holoworld" }
+io-github-anjoismysign-psa-api = { module = "io.github.anjoismysign:psa-api", version.ref = "io-github-anjoismysign-psa-api" }
+io-github-anjoismysign-skeramidcommands = { module = "io.github.anjoismysign:skeramidcommands", version.ref = "io-github-anjoismysign-skeramidcommands" }
+io-github-anjoismysign-winona = { module = "io.github.anjoismysign:winona", version.ref = "io-github-anjoismysign-winona" }
 me-clip-placeholderapi = { module = "me.clip:placeholderapi", version.ref = "me-clip-placeholderapi" }
 net-lingala-zip4j-zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "net-lingala-zip4j-zip4j" }
 net-md-v5-bungeecord-api = { module = "net.md-5:bungeecord-api", version.ref = "net-md-v5-bungeecord-api" }
