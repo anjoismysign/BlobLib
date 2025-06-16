@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.managers.asset;
 
-import io.github.anjoismysign.bloblib.managers.BlobLibConfigManager;
 import io.github.anjoismysign.aesthetic.NamingConventions;
+import io.github.anjoismysign.bloblib.managers.BlobLibConfigManager;
 import io.github.anjoismysign.holoworld.asset.DataAsset;
 import io.github.anjoismysign.holoworld.asset.DataAssetEntry;
 import io.github.anjoismysign.holoworld.manager.AssetManager;
@@ -21,10 +21,15 @@ public record SimpleBukkitAssetManager<T extends DataAsset>(
     public static <T extends DataAsset> SimpleBukkitAssetManager<T> of(
             @NotNull Class<T> clazz,
             @NotNull Plugin plugin,
-            @NotNull String name) {
+            @NotNull String name,
+            boolean failOnNullField) {
         File parentDirectory = new File(plugin.getDataFolder(), NamingConventions.toSnakeCase(name));
         boolean verbose = BlobLibConfigManager.getInstance().isVerbose();
-        return new SimpleBukkitAssetManager<>(plugin, SingletonManagerFactory.INSTANCE.assetManager(clazz, parentDirectory, verbose ? plugin.getLogger() : null));
+        return new SimpleBukkitAssetManager<>(plugin, SingletonManagerFactory.INSTANCE.assetManager(
+                clazz,
+                parentDirectory,
+                verbose ? plugin.getLogger() : null,
+                failOnNullField));
     }
 
     @Override

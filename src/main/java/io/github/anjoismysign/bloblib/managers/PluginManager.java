@@ -183,16 +183,24 @@ public class PluginManager {
         postWorld.remove(name);
     }
 
-    public <T extends DataAsset> BukkitAssetManager<T> addAssetManager(@NotNull Class<T> clazz,
-                                                                       @NotNull BlobPlugin plugin) {
-        return addAssetManager(clazz, plugin, clazz.getSimpleName());
+    public <T extends DataAsset> BukkitAssetManager<T> addAssetManager(
+            @NotNull Class<T> clazz,
+            @NotNull BlobPlugin plugin,
+            boolean failOnNullField) {
+        return addAssetManager(clazz, plugin, clazz.getSimpleName(), failOnNullField);
     }
 
-    public <T extends DataAsset> BukkitAssetManager<T> addAssetManager(@NotNull Class<T> assetClass,
-                                                                       @NotNull BlobPlugin plugin,
-                                                                       @NotNull String name) {
+    public <T extends DataAsset> BukkitAssetManager<T> addAssetManager(
+            @NotNull Class<T> assetClass,
+            @NotNull BlobPlugin plugin,
+            @NotNull String name,
+            boolean failOnNullField) {
         Objects.requireNonNull(assetClass, "'clazz' cannot be null");
-        BukkitAssetManager<T> manager = SimpleBukkitAssetManager.of(assetClass, plugin, name);
+        BukkitAssetManager<T> manager = SimpleBukkitAssetManager.of(
+                assetClass,
+                plugin,
+                name,
+                failOnNullField);
         String className = assetClass.getName();
         managers.put(className, manager);
         assetManagers.put(assetClass, manager);
@@ -210,16 +218,22 @@ public class PluginManager {
 
     public <T extends DataAsset> BukkitGeneratorManager<T> addGeneratorManager(
             @NotNull Class<? extends AssetGenerator<T>> generatorClass,
-            @NotNull BlobPlugin plugin) {
-        return addGeneratorManager(generatorClass, plugin, generatorClass.getSimpleName());
+            @NotNull BlobPlugin plugin,
+            boolean failOnNullField) {
+        return addGeneratorManager(generatorClass, plugin, generatorClass.getSimpleName(), failOnNullField);
     }
 
     public <T extends DataAsset> BukkitGeneratorManager<T> addGeneratorManager(
             @NotNull Class<? extends AssetGenerator<T>> generatorClass,
             @NotNull BlobPlugin plugin,
-            @NotNull String name) {
+            @NotNull String name,
+            boolean failOnNullField) {
         Objects.requireNonNull(generatorClass, "'generatorClass' cannot be null");
-        BukkitGeneratorManager<T> manager = SimpleBukkitGeneratorManager.of(generatorClass, plugin, name);
+        BukkitGeneratorManager<T> manager = SimpleBukkitGeneratorManager.of(
+                generatorClass,
+                plugin,
+                name,
+                failOnNullField);
         String className = generatorClass.getName();
         generatorManagers.put(generatorClass, manager);
         managers.put(className, manager);
@@ -239,9 +253,14 @@ public class PluginManager {
     public <T extends DataAsset> BukkitIdentityManager<T> addIdentityManager(
             @NotNull Class<? extends IdentityGenerator<T>> generatorClass,
             @NotNull BlobPlugin plugin,
-            @NotNull String name) {
+            @NotNull String name,
+            boolean failOnNullField) {
         Objects.requireNonNull(generatorClass, "'generatorClass' cannot be null");
-        BukkitIdentityManager<T> manager = SimpleBukkitIdentityManager.of(generatorClass, plugin, name);
+        BukkitIdentityManager<T> manager = SimpleBukkitIdentityManager.of(
+                generatorClass,
+                plugin,
+                name,
+                failOnNullField);
         String className = generatorClass.getName();
         identityManagers.put(generatorClass, manager);
         managers.put(className, manager);
