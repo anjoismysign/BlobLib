@@ -8,11 +8,10 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * A registry for InventoryBuilderCarrier objects.
- * Holds a default locale and a map of locales to InventoryBuilderCarrier objects.
- * It also holds a ClickEvent object consumed when a button is clicked.
+ * A registry for Translatable objects.
+ * Holds a default locale and a map of locales to Translatable objects.
  *
- * @param <T> the type of InventoryButton
+ * @param <T> the type of Translatable
  */
 public class TranslatableRegistry<T extends Translatable<?>> {
     @NotNull
@@ -20,11 +19,11 @@ public class TranslatableRegistry<T extends Translatable<?>> {
     private final Map<String, T> translatables;
 
     /**
-     * Will instantiate a new InventoryDataRegistry with the specified default locale.
+     * Will instantiate a new TranslatableRegistry with the specified default locale.
      *
      * @param defaultLocale the default locale
-     * @param <T>           the type of InventoryButton
-     * @return a new InventoryDataRegistry with the specified default locale
+     * @param <T>           the type of Translatable
+     * @return a new TranslatableRegistry with the specified default locale
      */
     public static <T extends Translatable<?>> TranslatableRegistry<T> of(
             @NotNull String defaultLocale, @NotNull String key) {
@@ -40,10 +39,10 @@ public class TranslatableRegistry<T extends Translatable<?>> {
     }
 
     /**
-     * Will process the carrier and add it to the registry.
+     * Will process the Translatable and add it to the registry.
      *
-     * @param translatable the carrier to process
-     * @return true if the carrier was added, false if it already exists
+     * @param translatable the Translatable to process
+     * @return true if the Translatable was added, false if it already exists
      */
     public boolean process(@NotNull T translatable) {
         Objects.requireNonNull(translatable, "carrier cannot be null");
@@ -55,10 +54,10 @@ public class TranslatableRegistry<T extends Translatable<?>> {
     }
 
     /**
-     * Will get the carrier for the specified locale, or the default if it doesn't exist.
+     * Will get the Translatable for the specified locale, or the default if it doesn't exist.
      *
-     * @param locale the locale to get the carrier for
-     * @return the carrier for the specified locale, or the default if it doesn't exist
+     * @param locale the locale to get the Translatable for
+     * @return the Translatable for the specified locale, or the default if it doesn't exist
      */
     @Nullable
     public T get(String locale) {
@@ -69,9 +68,9 @@ public class TranslatableRegistry<T extends Translatable<?>> {
     }
 
     /**
-     * Will get the default carrier.
+     * Will get the default Translatable.
      *
-     * @return the default carrier
+     * @return the Translatable carrier
      */
     @NotNull
     public T getDefault() {

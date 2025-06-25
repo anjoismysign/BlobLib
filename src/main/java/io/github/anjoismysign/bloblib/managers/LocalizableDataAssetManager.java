@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
@@ -29,9 +30,10 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
     private final Predicate<ConfigurationSection> filter;
 
     private final BlobLib main;
-    private HashMap<String, Set<String>> assets;
-    private HashMap<String, Integer> duplicates;
-    private HashMap<String, Map<String, T>> locales;
+    private final @Nullable BiConsumer<YamlConfiguration, T> saveConsumer;
+    private Map<String, Set<String>> assets;
+    private Map<String, Integer> duplicates;
+    private Map<String, Map<String, T>> locales;
 
     /**
      * Creates a new instance of the LocalizableDataAssetManager
@@ -42,13 +44,17 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
      * @param filter         The filter that if true will load the asset.
      *                       Think of it as checks that once met, the ConfigurationSection
      *                       is considered from an asset.
+     * @param saveConsumer   Accepts the YamlConfiguration where it is being saved and the asset.
+     *                       There's no need to save the file.
+     *                       There's no need to save the locale.
      * @param <T>            The type of the asset
      * @return The new instance of the LocalizableDataAssetManager
      */
     public static <T extends DataAsset & Localizable> LocalizableDataAssetManager<T> of(@NotNull File assetDirectory,
                                                                                         @NotNull TriFunction<ConfigurationSection, String, String, T> readFunction,
                                                                                         @NotNull DataAssetType type,
-                                                                                        @NotNull Predicate<ConfigurationSection> filter) {
+                                                                                        @NotNull Predicate<ConfigurationSection> filter,
+                                                                                        @Nullable BiConsumer<YamlConfiguration, T> saveConsumer) {
         Objects.requireNonNull(assetDirectory, "Asset directory cannot be null");
         Objects.requireNonNull(readFunction, "Read function cannot be null");
         Objects.requireNonNull(type, "Data asset type cannot be null");
@@ -56,14 +62,16 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
         if (!assetDirectory.isDirectory())
             throw new IllegalArgumentException("File '" + assetDirectory.getPath() + "' is not a directory");
         return new LocalizableDataAssetManager<>(assetDirectory,
-                readFunction, type, filter);
+                readFunction, type, filter, saveConsumer);
     }
 
     LocalizableDataAssetManager(@NotNull File assetDirectory,
                                 @NotNull TriFunction<ConfigurationSection, String, String, T> readFunction,
                                 @NotNull DataAssetType type,
-                                Predicate<ConfigurationSection> filter) {
+                                @NotNull Predicate<ConfigurationSection> filter,
+                                @Nullable BiConsumer<YamlConfiguration, T> saveConsumer) {
         this.main = BlobLib.getInstance();
+        this.saveConsumer = saveConsumer;
         this.assetDirectory = assetDirectory;
         this.readFunction = readFunction;
         this.type = type;
@@ -75,8 +83,8 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
         assets = new HashMap<>();
         duplicates = new HashMap<>();
         loadFiles(assetDirectory);
-        duplicates.forEach((key, value) -> BlobLib.getAnjoLogger()
-                .log("Duplicate " + type.name() + ": '" + key + "' (found " + value + " instances)"));
+        duplicates.forEach((identifier, value) -> BlobLib.getAnjoLogger()
+                .log("Duplicate " + type.name() + ": '" + identifier + "' (found " + value + " instances)"));
     }
 
     public void reload(BlobPlugin plugin, IManagerDirector director) {
@@ -89,13 +97,39 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
         if (directory == null)
             throw new NullPointerException("Directory for " + type.name() + " is null");
         loadFiles(directory);
-        duplicates.forEach((key, value) -> plugin.getAnjoLogger()
-                .log("Duplicate " + type.name() + ": '" + key + "' (found " + value + " instances)"));
+        duplicates.forEach((identifier, value) -> plugin.getAnjoLogger()
+                .log("Duplicate " + type.name() + ": '" + identifier + "' (found " + value + " instances)"));
     }
 
     public void unload(BlobPlugin plugin) {
         String pluginName = plugin.getName();
         this.assets.remove(pluginName);
+    }
+
+    public void saveAsset(@NotNull File file,
+                          @NotNull T asset) {
+        if (saveConsumer == null)
+            return;
+        Objects.requireNonNull(file, "'file' cannot be null");
+        Objects.requireNonNull(asset, "'asset' cannot be null");
+        if (!file.getName().endsWith(".yml"))
+            return;
+        File directory = file.getParentFile();
+        if (!directory.isDirectory())
+            directory.mkdirs();
+        try {
+            if (!file.isFile()) {
+                file.createNewFile();
+            }
+            String identifier = file.getName().replace(".yml", "");
+            YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+            configuration.set("Locale", asset.locale());
+            saveConsumer.accept(configuration, asset);
+            configuration.save(file);
+            addOrCreateLocale(asset, identifier);
+        } catch (Throwable throwable) {
+            main.getLogger().severe(throwable.getMessage() + "\nAt: " + file.getPath());
+        }
     }
 
     private void loadFiles(File directory) {
@@ -203,24 +237,24 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
         for (File file : files)
             loadYamlConfiguration(file, plugin);
         if (warnDuplicates)
-            duplicates.forEach((key, value) -> plugin.getAnjoLogger()
-                    .log("Duplicate " + type.name() + ": '" + key + "' (found " + value + " instances)"));
+            duplicates.forEach((identifier, value) -> plugin.getAnjoLogger()
+                    .log("Duplicate " + type.name() + ": '" + identifier + "' (found " + value + " instances)"));
     }
 
-    private void addDuplicate(String key) {
-        if (duplicates.containsKey(key))
-            duplicates.put(key, duplicates.get(key) + 1);
+    private void addDuplicate(String identifier) {
+        if (duplicates.containsKey(identifier))
+            duplicates.put(identifier, duplicates.get(identifier) + 1);
         else
-            duplicates.put(key, 2);
+            duplicates.put(identifier, 2);
     }
 
     @Nullable
-    public T getAsset(@NotNull String key) {
-        Objects.requireNonNull(key);
+    public T getAsset(@NotNull String identifier) {
+        Objects.requireNonNull(identifier);
         Map<String, T> map = locales.get("en_us");
         if (map == null)
             return null;
-        return map.get(key);
+        return map.get(identifier);
     }
 
     public List<T> getAssets(@NotNull String locale) {
@@ -248,17 +282,17 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
     }
 
     @Nullable
-    public T getAsset(@NotNull String key,
+    public T getAsset(@NotNull String identifier,
                       @NotNull String locale) {
-        Objects.requireNonNull(key);
+        Objects.requireNonNull(identifier);
         Objects.requireNonNull(locale);
         locale = BlobLibTranslatableAPI.getInstance().getRealLocale(locale);
         Map<String, T> localeMap = locales.get(locale);
-        if (localeMap == null || !localeMap.containsKey(key))
+        if (localeMap == null || !localeMap.containsKey(identifier))
             localeMap = locales.get("en_us");
         if (localeMap == null)
             return null;
-        return localeMap.get(key);
+        return localeMap.get(identifier);
     }
 
     @NotNull

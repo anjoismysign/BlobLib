@@ -8,10 +8,11 @@ import io.github.anjoismysign.bloblib.entities.translatable.TranslatableBlock;
 import io.github.anjoismysign.bloblib.entities.translatable.TranslatableReader;
 import io.github.anjoismysign.bloblib.entities.translatable.TranslatableRegistry;
 import io.github.anjoismysign.bloblib.entities.translatable.TranslatableSnippet;
-import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import org.apache.commons.io.FilenameUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -29,6 +30,59 @@ public class TranslatableManager {
     private HashMap<String, Set<String>> pluginBlocks;
     private HashMap<String, Integer> duplicates;
 
+    public static void loadBlobPlugin(BlobPlugin plugin, IManagerDirector director) {
+        TranslatableManager manager = BlobLib.getInstance().getTranslatableManager();
+        manager.load(plugin, director);
+    }
+
+    public static void loadBlobPlugin(BlobPlugin plugin) {
+        loadBlobPlugin(plugin, plugin.getManagerDirector());
+    }
+
+    public static void unloadBlobPlugin(BlobPlugin plugin) {
+        TranslatableManager manager = BlobLib.getInstance().getTranslatableManager();
+        manager.unload(plugin);
+    }
+
+    public static void continueLoadingSnippets(BlobPlugin plugin, boolean warnDuplicates, File... files) {
+        TranslatableManager manager = BlobLib.getInstance().getTranslatableManager();
+        manager.duplicates.clear();
+        for (File file : files) {
+            try {
+                manager.loadSnippet(plugin, file);
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }
+        if (warnDuplicates)
+            manager.duplicates.forEach((identifier, value) -> plugin.getAnjoLogger()
+                    .log("Duplicate BlobInventory: '" + identifier + "' (found " + value + " instances)"));
+    }
+
+    public static void continueLoadingSnippets(BlobPlugin plugin, File... files) {
+        continueLoadingSnippets(plugin, true, files);
+    }
+
+    public static void continueLoadingBlocks(BlobPlugin plugin, boolean warnDuplicates, File... files) {
+        TranslatableManager manager = BlobLib.getInstance().getTranslatableManager();
+        manager.duplicates.clear();
+        for (File file : files) {
+            try {
+                manager.loadBlock(plugin, file);
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }
+        if (warnDuplicates)
+            manager.duplicates.forEach((identifier, value) -> plugin.getAnjoLogger()
+                    .log("Duplicate MetaBlobInventory: '" + identifier + "' (found " + value + " instances)"));
+
+    }
+
+    public static void continueLoadingBlocks(BlobPlugin plugin, File... files) {
+        continueLoadingBlocks(plugin, true, files);
+    }
+
     public TranslatableManager() {
         this.main = BlobLib.getInstance();
     }
@@ -45,8 +99,8 @@ public class TranslatableManager {
         duplicates = new HashMap<>();
         loadSnippets(main.getFileManager().getDirectory(DataAssetType.TRANSLATABLE_SNIPPET));
         loadBlocks(main.getFileManager().getDirectory(DataAssetType.TRANSLATABLE_BLOCK));
-        duplicates.forEach((key, value) -> BlobLib.getAnjoLogger()
-                .log("Duplicate Inventory: '" + key + "' (found " + value + " instances)"));
+        duplicates.forEach((identifier, value) -> BlobLib.getAnjoLogger()
+                .log("Duplicate translatable: '" + identifier + "' (found " + value + " instances)"));
     }
 
     public void load(BlobPlugin plugin, IManagerDirector director) {
@@ -61,17 +115,8 @@ public class TranslatableManager {
         loadSnippets(snippetsDirectory);
         File blocksDirectory = fileManager.getDirectory(DataAssetType.TRANSLATABLE_BLOCK);
         loadBlocks(blocksDirectory);
-        duplicates.forEach((key, value) -> plugin.getAnjoLogger()
-                .log("Duplicate translatable: '" + key + "' (found " + value + " instances)"));
-    }
-
-    public static void loadBlobPlugin(BlobPlugin plugin, IManagerDirector director) {
-        TranslatableManager manager = BlobLib.getInstance().getTranslatableManager();
-        manager.load(plugin, director);
-    }
-
-    public static void loadBlobPlugin(BlobPlugin plugin) {
-        loadBlobPlugin(plugin, plugin.getManagerDirector());
+        duplicates.forEach((identifier, value) -> plugin.getAnjoLogger()
+                .log("Duplicate translatable: '" + identifier + "' (found " + value + " instances)"));
     }
 
     public void unload(BlobPlugin plugin) {
@@ -96,9 +141,52 @@ public class TranslatableManager {
         pluginBlocks.remove(pluginName);
     }
 
-    public static void unloadBlobPlugin(BlobPlugin plugin) {
-        TranslatableManager manager = BlobLib.getInstance().getTranslatableManager();
-        manager.unload(plugin);
+    public void saveSnippet(@NotNull File file,
+                            @NotNull TranslatableSnippet snippet) {
+        Objects.requireNonNull(file, "'file' cannot be null");
+        Objects.requireNonNull(snippet, "'snippet' cannot be null");
+        if (!file.getName().endsWith(".yml"))
+            return;
+        File directory = file.getParentFile();
+        if (!directory.isDirectory())
+            directory.mkdirs();
+        try {
+            if (!file.isFile()) {
+                file.createNewFile();
+            }
+            String identifier = file.getName().replace(".yml", "");
+            YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+            configuration.set("Locale", snippet.locale());
+            configuration.set("Snippet", snippet.get().replace(ChatColor.COLOR_CHAR, '&'));
+            configuration.save(file);
+            addSnippet(identifier, snippet);
+        } catch (Throwable throwable) {
+            main.getLogger().severe(throwable.getMessage() + "\nAt: " + file.getPath());
+        }
+    }
+
+    public void saveBlock(@NotNull File file,
+                          @NotNull TranslatableBlock block) {
+        Objects.requireNonNull(file, "'file' cannot be null");
+        Objects.requireNonNull(block, "'block' cannot be null");
+        if (!file.getName().endsWith(".yml"))
+            return;
+        File directory = file.getParentFile();
+        if (!directory.isDirectory())
+            directory.mkdirs();
+        try {
+            if (!file.isFile()) {
+                file.createNewFile();
+            }
+            String identifier = file.getName().replace(".yml", "");
+            YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+            configuration.set("Locale", block.locale());
+            configuration.set("Block", block.get().stream().map(line -> line.replace(ChatColor.COLOR_CHAR, '&')).toList());
+            configuration.save(file);
+            addBlock(identifier, block);
+        } catch (Throwable throwable) {
+            main.getLogger().severe(throwable.getMessage() + "\nAt: " + file.getPath());
+        }
     }
 
     private void loadSnippets(File directory) {
@@ -111,11 +199,8 @@ public class TranslatableManager {
                     continue;
                 try {
                     loadSnippet(file);
-                } catch ( ConfigurationFieldException exception ) {
-                    main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
-                    continue;
-                } catch ( Throwable throwable ) {
-                    throwable.printStackTrace();
+                } catch (Throwable throwable) {
+                    main.getLogger().severe(throwable.getMessage() + "\nAt: " + file.getPath());
                     continue;
                 }
             }
@@ -134,11 +219,8 @@ public class TranslatableManager {
                     continue;
                 try {
                     loadBlock(file);
-                } catch ( ConfigurationFieldException exception ) {
-                    main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
-                    continue;
-                } catch ( Throwable throwable ) {
-                    throwable.printStackTrace();
+                } catch (Throwable throwable) {
+                    main.getLogger().severe(throwable.getMessage() + "\nAt: " + file.getPath());
                     continue;
                 }
             }
@@ -188,45 +270,6 @@ public class TranslatableManager {
         });
     }
 
-    public static void continueLoadingSnippets(BlobPlugin plugin, boolean warnDuplicates, File... files) {
-        TranslatableManager manager = BlobLib.getInstance().getTranslatableManager();
-        manager.duplicates.clear();
-        for (File file : files) {
-            try {
-                manager.loadSnippet(plugin, file);
-            } catch ( Throwable e ) {
-                e.printStackTrace();
-            }
-        }
-        if (warnDuplicates)
-            manager.duplicates.forEach((key, value) -> plugin.getAnjoLogger()
-                    .log("Duplicate BlobInventory: '" + key + "' (found " + value + " instances)"));
-    }
-
-    public static void continueLoadingSnippets(BlobPlugin plugin, File... files) {
-        continueLoadingSnippets(plugin, true, files);
-    }
-
-    public static void continueLoadingBlocks(BlobPlugin plugin, boolean warnDuplicates, File... files) {
-        TranslatableManager manager = BlobLib.getInstance().getTranslatableManager();
-        manager.duplicates.clear();
-        for (File file : files) {
-            try {
-                manager.loadBlock(plugin, file);
-            } catch ( Throwable e ) {
-                e.printStackTrace();
-            }
-        }
-        if (warnDuplicates)
-            manager.duplicates.forEach((key, value) -> plugin.getAnjoLogger()
-                    .log("Duplicate MetaBlobInventory: '" + key + "' (found " + value + " instances)"));
-
-    }
-
-    public static void continueLoadingBlocks(BlobPlugin plugin, File... files) {
-        continueLoadingBlocks(plugin, true, files);
-    }
-
     private void loadSnippet(File file) {
         String fileName = FilenameUtils.removeExtension(file.getName());
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
@@ -264,86 +307,86 @@ public class TranslatableManager {
     }
 
 
-    private void addDuplicate(String key) {
-        if (duplicates.containsKey(key))
-            duplicates.put(key, duplicates.get(key) + 1);
+    private void addDuplicate(String identifier) {
+        if (duplicates.containsKey(identifier))
+            duplicates.put(identifier, duplicates.get(identifier) + 1);
         else
-            duplicates.put(key, 2);
+            duplicates.put(identifier, 2);
     }
 
     @Nullable
-    public TranslatableRegistry<TranslatableSnippet> getSnippetRegistry(String key) {
-        return snippets.get(key);
+    public TranslatableRegistry<TranslatableSnippet> getSnippetRegistry(String identifier) {
+        return snippets.get(identifier);
     }
 
     @Nullable
-    public TranslatableSnippet getSnippet(String key, String locale) {
-        TranslatableRegistry<TranslatableSnippet> registry = getSnippetRegistry(key);
+    public TranslatableSnippet getSnippet(String identifier, String locale) {
+        TranslatableRegistry<TranslatableSnippet> registry = getSnippetRegistry(identifier);
         if (registry == null)
             return null;
         locale = BlobLibTranslatableAPI.getInstance().getRealLocale(locale);
         TranslatableSnippet snippet = registry.get(locale);
         if (snippet == null)
             return registry.getDefault();
-        Objects.requireNonNull(snippet, "Snippet '" + key + "' does not have a default locale and is not available in '" + locale + "'");
+        Objects.requireNonNull(snippet, "Snippet '" + identifier + "' does not have a default locale and is not available in '" + locale + "'");
         return snippet;
     }
 
     @Nullable
-    public TranslatableSnippet getSnippet(String key) {
-        TranslatableRegistry<TranslatableSnippet> registry = getSnippetRegistry(key);
+    public TranslatableSnippet getSnippet(String identifier) {
+        TranslatableRegistry<TranslatableSnippet> registry = getSnippetRegistry(identifier);
         if (registry == null)
             return null;
         return registry.getDefault();
     }
 
     @Nullable
-    public TranslatableRegistry<TranslatableBlock> getBlockRegistry(String key) {
-        return blocks.get(key);
+    public TranslatableRegistry<TranslatableBlock> getBlockRegistry(String identifier) {
+        return blocks.get(identifier);
     }
 
     @Nullable
-    public TranslatableBlock getBlock(String key, String locale) {
-        TranslatableRegistry<TranslatableBlock> registry = getBlockRegistry(key);
+    public TranslatableBlock getBlock(String identifier, String locale) {
+        TranslatableRegistry<TranslatableBlock> registry = getBlockRegistry(identifier);
         if (registry == null)
             return null;
         locale = BlobLibTranslatableAPI.getInstance().getRealLocale(locale);
         TranslatableBlock block = registry.get(locale);
         if (block == null)
             return registry.getDefault();
-        Objects.requireNonNull(block, "Block '" + key + "' does not have a default locale and is not available in '" + locale + "'");
+        Objects.requireNonNull(block, "Block '" + identifier + "' does not have a default locale and is not available in '" + locale + "'");
         return block;
     }
 
     @Nullable
-    public TranslatableBlock getBlock(String key) {
-        TranslatableRegistry<TranslatableBlock> registry = getBlockRegistry(key);
+    public TranslatableBlock getBlock(String identifier) {
+        TranslatableRegistry<TranslatableBlock> registry = getBlockRegistry(identifier);
         if (registry == null)
             return null;
         return registry.getDefault();
     }
 
-    private void addSnippet(String key, TranslatableSnippet snippet) {
-        TranslatableRegistry<TranslatableSnippet> registry = snippets.get(key);
+    private void addSnippet(String identifier, TranslatableSnippet snippet) {
+        TranslatableRegistry<TranslatableSnippet> registry = snippets.get(identifier);
         if (registry == null)
-            registry = TranslatableRegistry.of("en_us", key);
+            registry = TranslatableRegistry.of("en_us", identifier);
         if (!registry.process(snippet)) {
-            addDuplicate(key);
+            addDuplicate(identifier);
             return;
         }
-        BlobLib.getAnjoLogger().debug("loaded Snippet: " + key + " with locale: " + snippet.locale());
-        snippets.put(key, registry);
+        BlobLib.getAnjoLogger().debug("loaded Snippet: " + identifier + " with locale: " + snippet.locale());
+        snippets.put(identifier, registry);
     }
 
-    private void addBlock(String key, TranslatableBlock block) {
-        TranslatableRegistry<TranslatableBlock> registry = blocks.get(key);
+    private void addBlock(String identifier, TranslatableBlock block) {
+        TranslatableRegistry<TranslatableBlock> registry = blocks.get(identifier);
         if (registry == null)
-            registry = TranslatableRegistry.of("en_us", key);
+            registry = TranslatableRegistry.of("en_us", identifier);
         if (!registry.process(block)) {
-            addDuplicate(key);
+            addDuplicate(identifier);
             return;
         }
-        BlobLib.getAnjoLogger().debug("loaded Block: " + key + " with locale: " + block.locale());
-        blocks.put(key, registry);
+        BlobLib.getAnjoLogger().debug("loaded Block: " + identifier + " with locale: " + block.locale());
+        blocks.put(identifier, registry);
     }
 }

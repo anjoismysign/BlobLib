@@ -8,7 +8,7 @@ import io.github.anjoismysign.bloblib.entities.logger.BlobPluginLogger;
 import io.github.anjoismysign.bloblib.entities.positionable.Positionable;
 import io.github.anjoismysign.bloblib.entities.positionable.PositionableIO;
 import io.github.anjoismysign.bloblib.entities.tag.TagSet;
-import io.github.anjoismysign.bloblib.entities.tag.TagSetReader;
+import io.github.anjoismysign.bloblib.entities.tag.TagSetIO;
 import io.github.anjoismysign.bloblib.entities.translatable.BlobTranslatablePositionable;
 import io.github.anjoismysign.bloblib.entities.translatable.TranslatableItem;
 import io.github.anjoismysign.bloblib.entities.translatable.TranslatablePositionable;
@@ -51,12 +51,10 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class BlobLib extends JavaPlugin {
     private static BlobPluginLogger anjoLogger;
-
+    private static BlobLib instance;
     private SerializationLib serializationLib;
-
     private BlobLibUpdater bloblibupdater;
     private BlobLibAPI api;
-
     private ScriptManager scriptManager;
     private VaultManager vaultManager;
     private EngineHubManager engineHubManager;
@@ -79,19 +77,15 @@ public class BlobLib extends JavaPlugin {
     private BlobLibListenerManager listenerManager;
     private InventoryTrackerManager inventoryTrackerManager;
     private TranslatableManager translatableManager;
-
     private LocalizableDataAssetManager<TranslatableItem> translatableItemManager;
     private LocalizableDataAssetManager<TranslatablePositionable> translatablePositionableManager;
     private TranslatableAreaManager translatableAreaManager;
     private DataAssetManager<TagSet> tagSetManager;
-
     private MinecraftVersion running;
     private SoulAPI soulAPI;
     private UniqueAPI uniqueAPI;
     private FluidPressureAPI fluidPressureAPI;
     private ProjectileDamageAPI projectileDamageAPI;
-
-    private static BlobLib instance;
 
     /**
      * Will retrieve the instance of the plugin
@@ -109,6 +103,15 @@ public class BlobLib extends JavaPlugin {
      */
     public static BlobPluginLogger getAnjoLogger() {
         return anjoLogger;
+    }
+
+    /**
+     * Will retrieve the VaultManager
+     *
+     * @return The VaultManager
+     */
+    public static VaultManager vaultManager() {
+        return getInstance().getVaultManager();
     }
 
     /**
@@ -138,15 +141,17 @@ public class BlobLib extends JavaPlugin {
         inventoryTrackerManager = new InventoryTrackerManager();
         translatableManager = new TranslatableManager();
         tagSetManager = DataAssetManager.of(fileManager.getDirectory(DataAssetType.TAG_SET),
-                TagSetReader::READ,
+                TagSetIO::READ,
                 DataAssetType.TAG_SET,
                 section -> section.isList("Inclusions") ||
-                        !section.getStringList("Include-Set").isEmpty());
+                        !section.getStringList("Include-Set").isEmpty(),
+                TagSetIO::WRITE);
         translatableItemManager = LocalizableDataAssetManager
                 .of(fileManager.getDirectory(DataAssetType.TRANSLATABLE_ITEM),
                         TranslatableReader::ITEM,
                         DataAssetType.TRANSLATABLE_ITEM,
-                        section -> section.isConfigurationSection("ItemStack"));
+                        section -> section.isConfigurationSection("ItemStack"),
+                        null);
         translatablePositionableManager = LocalizableDataAssetManager
                 .of(fileManager.getDirectory(DataAssetType.TRANSLATABLE_POSITIONABLE),
                         (section, locale, key) -> {
@@ -157,7 +162,8 @@ public class BlobLib extends JavaPlugin {
                             return BlobTranslatablePositionable.of(key, locale, display, positionable);
                         },
                         DataAssetType.TRANSLATABLE_POSITIONABLE,
-                        section -> section.isDouble("X") && section.isDouble("Y") && section.isDouble("Z"));
+                        section -> section.isDouble("X") && section.isDouble("Y") && section.isDouble("Z"),
+                        PositionableIO.INSTANCE::write);
         translatableAreaManager = TranslatableAreaManager.of();
         messageManager = new MessageManager();
         actionManager = new ActionManager();
@@ -318,15 +324,6 @@ public class BlobLib extends JavaPlugin {
      */
     public VaultManager getVaultManager() {
         return vaultManager;
-    }
-
-    /**
-     * Will retrieve the VaultManager
-     *
-     * @return The VaultManager
-     */
-    public static VaultManager vaultManager() {
-        return getInstance().getVaultManager();
     }
 
     /**

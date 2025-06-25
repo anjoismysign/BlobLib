@@ -1,15 +1,14 @@
 name: BlobLib
 version: 1.698.31
-main: us.mytheria.bloblib.BlobLib
-api-version: 1.21.4
+main: io.github.anjoismysign.bloblib.BlobLib
+api-version: 1.21.5
 load: STARTUP
 loadbefore: [ Vault, LibsDisguises, ProtocolLib, WorldEdit, WorldGuard ]
-authors: [ promorrom, j0ach1mmall3, Dean B, SmallCode ]
+authors: [ promorrom, j0ach1mmall3, SmallCode ]
 commands:
   bloblib:
     usage: "/bloblib reload"
 libraries:
-  - com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.2
   - commons-io:commons-io:2.7
   - org.mongodb:mongodb-driver-sync:4.10.2
   - net.lingala.zip4j:zip4j:2.11.5

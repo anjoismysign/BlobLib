@@ -53,8 +53,6 @@ dependencies {
     compileOnly(libs.org.apache.commons.commons.lang3)
     compileOnly(libs.io.papermc.paper.paper.api)
     compileOnly(libs.com.mojang.authlib)
-    compileOnly(libs.com.fasterxml.jackson.core.jackson.databind)
-    compileOnly(libs.com.fasterxml.jackson.dataformat.jackson.dataformat.yaml)
     compileOnly(libs.org.mongodb.mongodb.driver.sync)
     compileOnly(libs.com.sk89q.worldguard.worldguard.bukkit)
     compileOnly(libs.commons.io.commons.io)

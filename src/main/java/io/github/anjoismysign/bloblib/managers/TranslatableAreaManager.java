@@ -47,7 +47,7 @@ public class TranslatableAreaManager extends LocalizableDataAssetManager<Transla
     }
 
     TranslatableAreaManager(@NotNull File assetDirectory, @NotNull TriFunction<ConfigurationSection, String, String, TranslatableArea> readFunction, @NotNull DataAssetType type, Predicate<ConfigurationSection> filter) {
-        super(assetDirectory, readFunction, type, filter);
+        super(assetDirectory, readFunction, type, filter, null);
     }
 
     public List<TranslatableArea> unorderedContains(@NotNull Location location) {

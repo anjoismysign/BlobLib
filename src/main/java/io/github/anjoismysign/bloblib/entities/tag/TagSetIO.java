@@ -10,7 +10,14 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class TagSetReader {
+public class TagSetIO {
+
+    public static void WRITE(@NotNull ConfigurationSection section,
+                             @NotNull TagSet tagSet) {
+        Objects.requireNonNull(section);
+        Objects.requireNonNull(tagSet);
+        section.set("Inclusions", tagSet.getInclusions());
+    }
 
     @NotNull
     public static TagSet READ(@NotNull ConfigurationSection section,

@@ -2,8 +2,6 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
-com-fasterxml-jackson-core-jackson-databind = "2.15.2"
-com-fasterxml-jackson-dataformat-jackson-dataformat-yaml = "2.15.2"
 com-github-decentsoftware-eu-decentholograms = "2.8.17"
 com-mojang-authlib = "1.5.21"
 com-sk89q-worldguard-worldguard-bukkit = "7.0.8-SNAPSHOT"
@@ -26,8 +24,6 @@ org-mongodb-bson = "4.10.2"
 org-mongodb-mongodb-driver-sync = "4.10.2"
 
 [libraries]
-com-fasterxml-jackson-core-jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "com-fasterxml-jackson-core-jackson-databind" }
-com-fasterxml-jackson-dataformat-jackson-dataformat-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml", version.ref = "com-fasterxml-jackson-dataformat-jackson-dataformat-yaml" }
 com-github-decentsoftware-eu-decentholograms = { module = "com.github.decentsoftware-eu:decentholograms", version.ref = "com-github-decentsoftware-eu-decentholograms" }
 com-mojang-authlib = { module = "com.mojang:authlib", version.ref = "com-mojang-authlib" }
 com-sk89q-worldguard-worldguard-bukkit = { module = "com.sk89q.worldguard:worldguard-bukkit", version.ref = "com-sk89q-worldguard-worldguard-bukkit" }
