@@ -15,7 +15,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -25,7 +24,7 @@ public class BlobSoundReader {
     private static Sound getSound(@NotNull String name) {
         RegistryAccess access = RegistryAccess.registryAccess();
         Registry<@NotNull Sound> registry = access.getRegistry(RegistryKey.SOUND_EVENT);
-        return registry.get(NamespacedKey.minecraft(name.toLowerCase(Locale.ROOT).replace("_", ".")));
+        return registry.get(NamespacedKey.minecraft(name));
     }
 
     public static BlobSound read(@NotNull ConfigurationSection section,
