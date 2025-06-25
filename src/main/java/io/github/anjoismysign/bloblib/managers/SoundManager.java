@@ -14,13 +14,42 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 public class SoundManager {
     private final BlobLib main;
-    private HashMap<String, BlobSound> sounds;
-    private HashMap<String, Set<String>> pluginSounds;
-    private HashMap<String, Integer> duplicates;
+    private Map<String, BlobSound> sounds;
+    private Map<String, Set<String>> pluginSounds;
+    private Map<String, Integer> duplicates;
+
+    public static void loadBlobPlugin(BlobPlugin plugin, IManagerDirector director) {
+        SoundManager manager = BlobLib.getInstance().getSoundManager();
+        manager.load(plugin, director);
+    }
+
+    public static void unloadBlobPlugin(BlobPlugin plugin) {
+        SoundManager manager = BlobLib.getInstance().getSoundManager();
+        manager.unload(plugin);
+    }
+
+    public static boolean loadAndRegisterYamlConfiguration(BlobPlugin plugin, File file) {
+        SoundManager manager = BlobLib.getInstance().getSoundManager();
+        manager.loadYamlConfiguration(plugin, file);
+        manager.duplicates.forEach((key, value) -> BlobLib.getAnjoLogger()
+                .log("Duplicate BlobSound: '" + key + "' (found " + value + " instances)"));
+        return true;
+    }
+
+    public static void continueLoadingSounds(BlobPlugin plugin, boolean warnDuplicates, File... files) {
+        SoundManager manager = BlobLib.getInstance().getSoundManager();
+        manager.duplicates.clear();
+        for (File file : files)
+            manager.loadYamlConfiguration(plugin, file);
+        if (warnDuplicates)
+            manager.duplicates.forEach((key, value) -> plugin.getAnjoLogger()
+                    .log("Duplicate BlobSound: '" + key + "' (found " + value + " instances)"));
+    }
 
     public SoundManager() {
         this.main = BlobLib.getInstance();
@@ -51,11 +80,6 @@ public class SoundManager {
                 .severe("Duplicate BlobSound: '" + key + "' (found " + value + " instances)"));
     }
 
-    public static void loadBlobPlugin(BlobPlugin plugin, IManagerDirector director) {
-        SoundManager manager = BlobLib.getInstance().getSoundManager();
-        manager.load(plugin, director);
-    }
-
     public void unload(BlobPlugin plugin) {
         String pluginName = plugin.getName();
         Set<String> sounds = this.pluginSounds.get(pluginName);
@@ -70,11 +94,6 @@ public class SoundManager {
         pluginSounds.remove(pluginName);
     }
 
-    public static void unloadBlobPlugin(BlobPlugin plugin) {
-        SoundManager manager = BlobLib.getInstance().getSoundManager();
-        manager.unload(plugin);
-    }
-
     private void loadFiles(File directory) {
         @Nullable File[] listOfFiles = directory.listFiles();
         if (listOfFiles == null)
@@ -85,10 +104,10 @@ public class SoundManager {
                     continue;
                 try {
                     loadYamlConfiguration(file);
-                } catch ( ConfigurationFieldException exception ) {
+                } catch (ConfigurationFieldException exception) {
                     main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
                     continue;
-                } catch ( Throwable throwable ) {
+                } catch (Throwable throwable) {
                     throwable.printStackTrace();
                     continue;
                 }
@@ -115,14 +134,6 @@ public class SoundManager {
         });
     }
 
-    public static boolean loadAndRegisterYamlConfiguration(BlobPlugin plugin, File file) {
-        SoundManager manager = BlobLib.getInstance().getSoundManager();
-        manager.loadYamlConfiguration(plugin, file);
-        manager.duplicates.forEach((key, value) -> BlobLib.getAnjoLogger()
-                .log("Duplicate BlobSound: '" + key + "' (found " + value + " instances)"));
-        return true;
-    }
-
     private void loadYamlConfiguration(File file) {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         yamlConfiguration.getKeys(true).forEach(reference -> {
@@ -138,21 +149,10 @@ public class SoundManager {
             try {
                 BlobSound sound = BlobSoundReader.read(section, reference);
                 sounds.put(reference, sound);
-            } catch (Throwable throwable){
+            } catch (Throwable throwable) {
                 main.getLogger().severe(throwable.getMessage() + "\nAt: " + file.getPath());
-                return;
             }
         });
-    }
-
-    public static void continueLoadingSounds(BlobPlugin plugin, boolean warnDuplicates, File... files) {
-        SoundManager manager = BlobLib.getInstance().getSoundManager();
-        manager.duplicates.clear();
-        for (File file : files)
-            manager.loadYamlConfiguration(plugin, file);
-        if (warnDuplicates)
-            manager.duplicates.forEach((key, value) -> plugin.getAnjoLogger()
-                    .log("Duplicate BlobSound: '" + key + "' (found " + value + " instances)"));
     }
 
     private void addDuplicate(String key) {
@@ -172,5 +172,9 @@ public class SoundManager {
         if (sound == null)
             throw new NullPointerException("Sound '" + key + "' does not exist!");
         sound.play(player);
+    }
+
+    public Map<String, BlobSound> getSounds() {
+        return Map.copyOf(sounds);
     }
 }

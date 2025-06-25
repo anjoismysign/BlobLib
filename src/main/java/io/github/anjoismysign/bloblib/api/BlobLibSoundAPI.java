@@ -6,13 +6,11 @@ import io.github.anjoismysign.bloblib.managers.SoundManager;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
+
 public class BlobLibSoundAPI {
     private static BlobLibSoundAPI instance;
     private final BlobLib plugin;
-
-    private BlobLibSoundAPI(BlobLib plugin) {
-        this.plugin = plugin;
-    }
 
     public static BlobLibSoundAPI getInstance(BlobLib plugin) {
         if (instance == null) {
@@ -25,6 +23,10 @@ public class BlobLibSoundAPI {
 
     public static BlobLibSoundAPI getInstance() {
         return getInstance(null);
+    }
+
+    private BlobLibSoundAPI(BlobLib plugin) {
+        this.plugin = plugin;
     }
 
     /**
@@ -49,5 +51,9 @@ public class BlobLibSoundAPI {
      */
     public void playSound(String key, Player player) {
         getSoundManager().play(player, key);
+    }
+
+    public Map<String, BlobSound> getDefault() {
+        return getSoundManager().getSounds();
     }
 }

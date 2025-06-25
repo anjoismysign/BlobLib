@@ -6,11 +6,13 @@ import com.google.gson.JsonObject;
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.api.BlobLibInventoryAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
+import io.github.anjoismysign.bloblib.api.BlobLibSoundAPI;
 import io.github.anjoismysign.bloblib.component.textbubble.TextBubbleComponent;
 import io.github.anjoismysign.bloblib.entities.PluginUpdater;
 import io.github.anjoismysign.bloblib.entities.area.AreaIO;
 import io.github.anjoismysign.bloblib.entities.inventory.BlobInventoryTracker;
 import io.github.anjoismysign.bloblib.entities.message.BlobMessage;
+import io.github.anjoismysign.bloblib.entities.message.BlobSound;
 import io.github.anjoismysign.bloblib.entities.positionable.Positionable;
 import io.github.anjoismysign.bloblib.entities.positionable.PositionableIO;
 import io.github.anjoismysign.bloblib.entities.translatable.TranslatableItem;
@@ -21,12 +23,12 @@ import io.github.anjoismysign.bloblib.managers.BlobPlugin;
 import io.github.anjoismysign.bloblib.managers.PluginManager;
 import io.github.anjoismysign.bloblib.utilities.PlayerUtil;
 import io.github.anjoismysign.bloblib.utilities.TextColor;
-import io.papermc.paper.entity.TeleportFlag;
 import io.github.anjoismysign.skeramidcommands.command.Command;
 import io.github.anjoismysign.skeramidcommands.command.CommandTarget;
 import io.github.anjoismysign.skeramidcommands.commandtarget.BukkitCommandTarget;
 import io.github.anjoismysign.skeramidcommands.commandtarget.CommandTargetBuilder;
 import io.github.anjoismysign.skeramidcommands.server.bukkit.BukkitAdapter;
+import io.papermc.paper.entity.TeleportFlag;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -419,15 +421,48 @@ public enum BlobLibCommand {
             }
             BlobMessage message = target.parse(key);
             if (message == null) {
-                BlobLibMessageAPI.getInstance()
-                        .getMessage("BlobMessage.Not-Found", sender)
-                        .modder()
-                        .replace("%key%", key)
-                        .get()
-                        .toCommandSender(sender);
+                sender.sendMessage("BlobMessage not found: '" + key + "'");
                 return;
             }
             message.handle(player);
+        }));
+    }
+
+    public void blobsound(@NotNull Command bloblib) {
+        Command command = bloblib.child("blobsound");
+        Command send = command.child("send");
+        CommandTarget<BlobSound> target = CommandTargetBuilder.fromMap(() -> BlobLibSoundAPI.getInstance().getDefault());
+        CommandTarget<Player> onlinePlayers = BukkitCommandTarget.ONLINE_PLAYERS();
+        send.setParameters(target, onlinePlayers);
+        send.onExecute(((permissionMessenger, args) -> {
+            CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
+            int length = args.length;
+
+            String key = args[0];
+            Player player;
+            if (length < 2) {
+                if (!(sender instanceof Player)) {
+                    BlobLibMessageAPI.getInstance()
+                            .getMessage("System.Console-Not-Allowed-Command", sender)
+                            .toCommandSender(sender);
+                    return;
+                }
+                player = (Player) sender;
+            } else {
+                player = onlinePlayers.parse(args[1]);
+                if (player == null) {
+                    BlobLibMessageAPI.getInstance()
+                            .getMessage("Player.Not-Found", sender)
+                            .toCommandSender(sender);
+                    return;
+                }
+            }
+            BlobSound sound = target.parse(key);
+            if (sound == null) {
+                sender.sendMessage("BlobSound not found: '" + key + "'");
+                return;
+            }
+            sound.handle(player);
         }));
     }
 
