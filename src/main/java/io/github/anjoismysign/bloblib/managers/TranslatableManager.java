@@ -50,8 +50,8 @@ public class TranslatableManager {
         for (File file : files) {
             try {
                 manager.loadSnippet(plugin, file);
-            } catch (Throwable e) {
-                e.printStackTrace();
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
             }
         }
         if (warnDuplicates)
@@ -69,8 +69,8 @@ public class TranslatableManager {
         for (File file : files) {
             try {
                 manager.loadBlock(plugin, file);
-            } catch (Throwable e) {
-                e.printStackTrace();
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
             }
         }
         if (warnDuplicates)

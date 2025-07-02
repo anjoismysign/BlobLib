@@ -31,8 +31,8 @@ import java.util.UUID;
 public class GitHubPluginUpdater implements PluginUpdater {
     private final JavaPlugin plugin;
     private final String currentVersion, pluginName, author, repository;
-    private boolean updateAvailable;
     private final UpdaterListener listener;
+    private boolean updateAvailable;
     private String latestVersion;
 
     public GitHubPluginUpdater(JavaPlugin plugin,
@@ -65,10 +65,6 @@ public class GitHubPluginUpdater implements PluginUpdater {
         return latestVersion;
     }
 
-    private boolean isLatestVersion() {
-        return currentVersion.equals(latestVersion);
-    }
-
     public boolean download() {
         if (!updateAvailable)
             return false;
@@ -83,22 +79,26 @@ public class GitHubPluginUpdater implements PluginUpdater {
         Path existentPath = Path.of("plugins", pluginName + "-" + currentVersion + ".jar");
         try {
             Files.deleteIfExists(existentPath);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            exception.printStackTrace();
             return false;
         }
         Path targetPath = Path.of("plugins", pluginName + "-" + latestVersion + ".jar");
         try (InputStream inputStream = url.openStream()) {
             Files.copy(inputStream, targetPath);
             return true;
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            exception.printStackTrace();
             return false;
         }
     }
 
     public JavaPlugin getPlugin() {
         return plugin;
+    }
+
+    private boolean isLatestVersion() {
+        return currentVersion.equals(latestVersion);
     }
 
     @NotNull
@@ -108,8 +108,8 @@ public class GitHubPluginUpdater implements PluginUpdater {
         URL url;
         try {
             url = new URL(repoUrl);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+        } catch (MalformedURLException exception) {
+            exception.printStackTrace();
             return ReleaseFetch.INVALID();
         }
         HttpURLConnection connection;
@@ -121,14 +121,14 @@ public class GitHubPluginUpdater implements PluginUpdater {
         }
         try {
             connection.setRequestMethod("GET");
-        } catch (ProtocolException e) {
-            e.printStackTrace();
+        } catch (ProtocolException exception) {
+            exception.printStackTrace();
             return ReleaseFetch.INVALID();
         }
         BufferedReader reader;
         try {
             reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        } catch (IOException e) {
+        } catch (IOException exception) {
             plugin.getLogger().severe("Repository does not exist or is not visible");
             return ReleaseFetch.INVALID();
         }
@@ -139,8 +139,8 @@ public class GitHubPluginUpdater implements PluginUpdater {
                 response.append(line);
             }
             reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            exception.printStackTrace();
             return ReleaseFetch.INVALID();
         }
 

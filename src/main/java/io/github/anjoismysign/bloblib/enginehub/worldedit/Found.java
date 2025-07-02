@@ -35,8 +35,8 @@ public class Found implements WorldEditWorker {
             context.setRestricted(false);
             context.setTryLegacy(false);
             return factory.parseFromInput(string, context);
-        } catch (InputParseException e) {
-            e.printStackTrace();
+        } catch (InputParseException exception) {
+            exception.printStackTrace();
             return null;
         }
     }
@@ -54,8 +54,8 @@ public class Found implements WorldEditWorker {
             Operation operation = session.commit();
             Operations.complete(operation);
             return true;
-        } catch (WorldEditException e) {
-            e.printStackTrace();
+        } catch (WorldEditException exception) {
+            exception.printStackTrace();
             return false;
         }
     }

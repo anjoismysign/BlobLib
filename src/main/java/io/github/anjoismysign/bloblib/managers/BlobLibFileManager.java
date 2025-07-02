@@ -69,8 +69,8 @@ public class BlobLibFileManager implements IFileManager {
                     ResourceUtil.updateYml(getDirectory(assetType), File.separator + "temp" + path, path, file, plugin);
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
     }
 
@@ -101,12 +101,12 @@ public class BlobLibFileManager implements IFileManager {
                     file.createNewFile();
                     ResourceUtil.updateYml(directory, File.separator + "temp" + fileName + ".yml",
                             fileName + ".yml", file, plugin);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (IOException exception) {
+                    exception.printStackTrace();
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
     }
 

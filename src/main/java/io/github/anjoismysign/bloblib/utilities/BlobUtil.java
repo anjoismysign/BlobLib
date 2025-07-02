@@ -13,13 +13,13 @@ public class BlobUtil {
         try {
             inputStream = blob.getBinaryStream();
             return inputStream;
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
         } finally {
             try {
                 blob.free();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            } catch (SQLException exception) {
+                exception.printStackTrace();
             }
         }
         return null;
@@ -28,8 +28,8 @@ public class BlobUtil {
     public static Blob byteArrayOutputStreamToBlob(ByteArrayOutputStream out) {
         try {
             return new SerialBlob(out.toByteArray());
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
         }
         return null;
     }

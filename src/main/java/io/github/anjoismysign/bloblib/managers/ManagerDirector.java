@@ -1,5 +1,6 @@
 package io.github.anjoismysign.bloblib.managers;
 
+import io.github.anjoismysign.anjo.logger.Logger;
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.entities.BlobCrudable;
 import io.github.anjoismysign.bloblib.entities.BlobFileManager;
@@ -22,7 +23,6 @@ import io.github.anjoismysign.bloblib.entities.proxy.BlobProxifier;
 import io.github.anjoismysign.bloblib.exception.KeySharingException;
 import io.github.anjoismysign.bloblib.utilities.HandyDirectory;
 import io.github.anjoismysign.bloblib.utilities.ResourceUtil;
-import io.github.anjoismysign.anjo.logger.Logger;
 import net.lingala.zip4j.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -926,8 +926,8 @@ public abstract class ManagerDirector implements IManagerDirector {
             outputFile.mkdirs();
         try (ZipFile zipFile = new ZipFile(expansion)) {
             zipFile.extractAll(outputFile.getAbsolutePath());
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
             return false;
         }
         HandyDirectory handyDirectory = HandyDirectory.of(outputFile);
@@ -950,8 +950,8 @@ public abstract class ManagerDirector implements IManagerDirector {
                 assetType.getContinueLoading().accept(plugin, files);
                 try {
                     FileUtils.deleteDirectory(assetsDirectory.get(assetType));
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (IOException exception) {
+                    exception.printStackTrace();
                 }
             }
         }

@@ -29,8 +29,8 @@ import java.util.UUID;
 public class BlobLibUpdater implements PluginUpdater {
     private final BlobLib plugin;
     private final String currentVersion;
-    private boolean updateAvailable;
     private final UpdaterListener listener;
+    private boolean updateAvailable;
     private String latestVersion;
 
     protected BlobLibUpdater(BlobLib plugin) {
@@ -62,10 +62,6 @@ public class BlobLibUpdater implements PluginUpdater {
         return latestVersion;
     }
 
-    private boolean isLatestVersion() {
-        return currentVersion.equals(latestVersion);
-    }
-
     /**
      * Will attempt to download latest version of BlobLib
      *
@@ -85,16 +81,16 @@ public class BlobLibUpdater implements PluginUpdater {
         Path existentPath = Path.of("plugins", "BlobLib-" + currentVersion + ".jar");
         try {
             Files.deleteIfExists(existentPath);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            exception.printStackTrace();
             return false;
         }
         Path targetPath = Path.of("plugins", "BlobLib-" + latestVersion + ".jar");
         try (InputStream inputStream = url.openStream()) {
             Files.copy(inputStream, targetPath);
             return true;
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            exception.printStackTrace();
             return false;
         }
     }
@@ -103,13 +99,17 @@ public class BlobLibUpdater implements PluginUpdater {
         return plugin;
     }
 
+    private boolean isLatestVersion() {
+        return currentVersion.equals(latestVersion);
+    }
+
     private String getLatestUrl() {
         String repoUrl = "https://api.github.com/repos/anjoismysign/BlobLib/releases";
         URL url;
         try {
             url = new URL(repoUrl);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+        } catch (MalformedURLException exception) {
+            exception.printStackTrace();
             return null;
         }
         HttpURLConnection connection;
@@ -121,8 +121,8 @@ public class BlobLibUpdater implements PluginUpdater {
         }
         try {
             connection.setRequestMethod("GET");
-        } catch (ProtocolException e) {
-            e.printStackTrace();
+        } catch (ProtocolException exception) {
+            exception.printStackTrace();
             return null;
         }
         BufferedReader reader;
@@ -130,8 +130,8 @@ public class BlobLibUpdater implements PluginUpdater {
             reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         } catch (UnknownHostException ignored) {
             return null;
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            exception.printStackTrace();
             return null;
         }
         StringBuilder response = new StringBuilder();
@@ -141,8 +141,8 @@ public class BlobLibUpdater implements PluginUpdater {
                 response.append(line);
             }
             reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            exception.printStackTrace();
             return null;
         }
 

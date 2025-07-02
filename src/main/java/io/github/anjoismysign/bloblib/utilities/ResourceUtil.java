@@ -29,8 +29,8 @@ public class ResourceUtil {
             byte[] ba = inputStream.readAllBytes();
             fos.write(ba);
             fos.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
     }
 
@@ -48,8 +48,8 @@ public class ResourceUtil {
         if (existingYamlConfig.getKeys(true).isEmpty()) {
             try {
                 updateYamlConfiguration.save(existingFile);
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException exception) {
+                exception.printStackTrace();
             }
             return;
         }
@@ -86,8 +86,8 @@ public class ResourceUtil {
         });
         try {
             existingYamlConfig.save(existingFile);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
     }
 
@@ -102,8 +102,8 @@ public class ResourceUtil {
                 fileOutputStream.write(ba);
                 fileOutputStream.flush();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
     }
 

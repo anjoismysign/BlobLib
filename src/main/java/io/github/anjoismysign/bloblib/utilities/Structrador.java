@@ -1,8 +1,8 @@
 package io.github.anjoismysign.bloblib.utilities;
 
+import io.github.anjoismysign.anjo.entities.Uber;
 import io.github.anjoismysign.bloblib.entities.ChainedTask;
 import io.github.anjoismysign.bloblib.entities.ChainedTaskProgress;
-import io.github.anjoismysign.anjo.entities.Uber;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -352,9 +352,9 @@ public class Structrador {
                 };
                 chainedTask.setTask(entityTask.runTaskTimer(plugin, 1L, period));
             });
-        } catch (Throwable e) {
-            future.completeExceptionally(e);
-            e.printStackTrace();
+        } catch (Throwable throwable) {
+            future.completeExceptionally(throwable);
+            throwable.printStackTrace();
         }
         return chainedTask;
     }
