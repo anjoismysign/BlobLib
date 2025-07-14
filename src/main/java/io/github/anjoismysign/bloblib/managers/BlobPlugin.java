@@ -34,7 +34,7 @@ import java.util.function.Supplier;
 public abstract class BlobPlugin extends JavaPlugin implements PermissionDecorator, ComponentConsumer {
     private final BlobPluginLogger logger = new BlobPluginLogger(this);
     private final Map<Class<? extends LehmappSerializable>, BukkitSerializableManager<? extends LehmappSerializable>> serializableManagers = new HashMap<>();
-    private BlobScheduler scheduler = new BlobScheduler(this);
+    private final BlobScheduler scheduler = new BlobScheduler(this);
     private Permission permission;
 
     /**

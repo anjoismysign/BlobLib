@@ -164,7 +164,7 @@ public class PluginManager {
         Objects.requireNonNull(managerDirector, "ManagerDirector is null!");
         String name = plugin.getName();
         if (plugins.containsKey(name))
-            throw new IllegalArgumentException("BlobPlugin " + name + " is already registered!");
+            throw new IllegalArgumentException("BlobPlugin '" + name + "' is already registered!");
         Debug.log(ColorManager.getRandomColor() + "<{BlobLib}> --> successfully registered "
                 + ColorManager.getRandomColor() + name);
         plugins.put(name, plugin);

@@ -321,6 +321,7 @@ public class Structrador {
                         Uber<Integer> placed = Uber.drive(0);
                         while (entityIterator.hasNext() && placed.thanks() < maxPlacedPerPeriod) {
                             Entity next = entityIterator.next();
+                            next.copy();
                             Location nextLocation = next.getLocation();
                             Vector nextVector = nextLocation.toVector();
                             Vector result = VectorUtil.floatRotateVector(nextVector, degree);
@@ -331,8 +332,7 @@ public class Structrador {
                             entityLocation.setYaw(nextLocation.getYaw() + extraYaw);
                             boolean isSilent = next.isSilent();
                             next.setSilent(true);
-                            Entity added = world.addEntity(next);
-                            added.teleport(entityLocation);
+                            Entity added = next.copy(entityLocation);
                             if (added instanceof Hanging hanging) {
                                 BlockFace facing = hanging.getFacing();
                                 hanging.setFacingDirection(
