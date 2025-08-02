@@ -14,6 +14,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * A specialized {@link Map} implementation that uses Bukkit {@link Block} instances
+ * as keys, storing values in a two-level structure: first by world name, then by
+ * block coordinates (as {@link BlockVector}). This allows efficient lookup, insertion,
+ * and removal of values associated with specific blocks across multiple worlds.
+ *
+ * @param <T> the type of values stored in this map
+ */
 public class BlockMap<T> implements Map<Block, T> {
 
     private final Map<String, Map<BlockVector, T>> outer = new HashMap<>();
@@ -94,6 +102,12 @@ public class BlockMap<T> implements Map<Block, T> {
         outer.clear();
     }
 
+    /**
+     * Returns a {@link Set} view of the {@link Block} keys contained in this map.
+     * The set is a snapshot copy and is not backed by the map.
+     *
+     * @return a set of all blocks that have mappings in this map
+     */
     @Override
     public @NotNull Set<Block> keySet() {
         Set<Block> result = new HashSet<>();
@@ -108,9 +122,15 @@ public class BlockMap<T> implements Map<Block, T> {
                 result.add(block);
             });
         });
-        return Set.copyOf(result);
+        return result;
     }
 
+    /**
+     * Returns a {@link Collection} view of the values contained in this map.
+     * The collection is a snapshot copy and is not backed by the map.
+     *
+     * @return a collection of all mapped values
+     */
     @Override
     public @NotNull Collection<T> values() {
         Collection<T> result = new ArrayList<>();
@@ -120,6 +140,13 @@ public class BlockMap<T> implements Map<Block, T> {
         return result;
     }
 
+    /**
+     * Returns a {@link Set} view of the mappings contained in this map.
+     * Each entry maps a {@link Block} to its associated value.
+     * The set is a snapshot copy and is not backed by the map.
+     *
+     * @return a set of block-value entries
+     */
     @Override
     public @NotNull Set<Entry<Block, T>> entrySet() {
         Set<Entry<Block, T>> set = new HashSet<>();
@@ -136,6 +163,6 @@ public class BlockMap<T> implements Map<Block, T> {
                 set.add(mapEntry);
             }));
         }
-        return Set.copyOf(set);
+        return set;
     }
 }
