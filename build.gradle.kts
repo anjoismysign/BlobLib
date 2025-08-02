@@ -65,7 +65,7 @@ dependencies {
 }
 
 group = "io.github.anjoismysign"
-version = "1.698.31"
+version = "1.698.32"
 description = "bloblib"
 java.sourceCompatibility = JavaVersion.VERSION_16
 java.targetCompatibility = JavaVersion.VERSION_16
