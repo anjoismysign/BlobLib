@@ -7,11 +7,8 @@ import io.github.anjoismysign.bloblib.entities.GitHubPluginUpdater;
 import io.github.anjoismysign.bloblib.entities.PermissionDecorator;
 import io.github.anjoismysign.bloblib.entities.PluginUpdater;
 import io.github.anjoismysign.bloblib.entities.logger.BlobPluginLogger;
-import io.github.anjoismysign.bloblib.managers.serializablemanager.AbstractBukkitSerializableManager;
 import io.github.anjoismysign.bloblib.managers.serializablemanager.BukkitSerializableEvent;
 import io.github.anjoismysign.bloblib.managers.serializablemanager.BukkitSerializableManager;
-import io.github.anjoismysign.bloblib.psa.BukkitDatabaseProvider;
-import io.github.anjoismysign.psa.crud.CrudDatabaseCredentials;
 import io.github.anjoismysign.psa.lehmapp.LehmappCrudable;
 import io.github.anjoismysign.psa.lehmapp.LehmappSerializable;
 import org.bukkit.Bukkit;
@@ -171,25 +168,11 @@ public abstract class BlobPlugin extends JavaPlugin implements PermissionDecorat
             @Nullable Function<T, S> quitEvent,
             @Nullable Supplier<Boolean> eventsRegistrationSupplier) {
         Objects.requireNonNull(deserializer, "'deserializeFunction' cannot be null");
-        CrudDatabaseCredentials crudDatabaseCredentials = BukkitDatabaseProvider.INSTANCE.getDatabaseProvider().of(this);
-        PermissionDecorator proxy = proxyPermissionDecorator();
-        BukkitSerializableManager<T> serializableManager = new AbstractBukkitSerializableManager<>(
-                crudDatabaseCredentials,
-                deserializer,
-                joinEvent,
-                quitEvent,
-                this,
-                eventsRegistrationSupplier) {
-            @Override
-            public @NotNull BlobScheduler getScheduler() {
-                return scheduler;
-            }
-
-            @Override
-            public @NotNull PermissionDecorator getPermissionDecorator() {
-                return proxy;
-            }
-        };
+        BukkitSerializableManager<T> serializableManager = BukkitSerializableManager.of(
+                        deserializer,
+                        joinEvent,
+                        quitEvent,
+                        eventsRegistrationSupplier,this);
         serializableManagers.put(serializableClass, serializableManager);
         return serializableManager;
     }

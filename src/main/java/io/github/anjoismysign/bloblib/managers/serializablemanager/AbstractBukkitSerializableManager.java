@@ -1,6 +1,7 @@
 package io.github.anjoismysign.bloblib.managers.serializablemanager;
 
 import io.github.anjoismysign.bloblib.entities.BlobScheduler;
+import io.github.anjoismysign.bloblib.entities.PermissionDecorator;
 import io.github.anjoismysign.bloblib.managers.BlobPlugin;
 import io.github.anjoismysign.psa.crud.CrudDatabaseCredentials;
 import io.github.anjoismysign.psa.crud.DatabaseCredentials;
@@ -14,7 +15,9 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,8 +31,10 @@ public abstract class AbstractBukkitSerializableManager
         implements BukkitSerializableManager<T>, Listener {
     private final @Nullable Listener joinEvent;
     private final @Nullable Listener quitEvent;
-    private final @NotNull BlobPlugin plugin;
+    private final @NotNull JavaPlugin plugin;
     private final @Nullable Supplier<Boolean> eventsRegistrationSupplier;
+    private final @NotNull BlobScheduler scheduler;
+    private final @NotNull PermissionDecorator permissionDecorator;
     private final Function<Player, String> identifier = identifying -> databaseCredentials.getIdentifier() == DatabaseCredentials.Identifier.UUID ? identifying.getUniqueId().toString() : identifying.getName();
 
     public AbstractBukkitSerializableManager(
@@ -37,12 +42,21 @@ public abstract class AbstractBukkitSerializableManager
             @NotNull Function<LehmappCrudable, T> deserializer,
             @Nullable Function<T, S> joinEvent,
             @Nullable Function<T, S> quitEvent,
-            @NotNull BlobPlugin plugin,
+            @NotNull JavaPlugin plugin,
             @Nullable Supplier<Boolean> eventsRegistrationSupplier) {
         super(credentials, deserializer);
+        scheduler = new BlobScheduler(plugin);
+        permissionDecorator = new PermissionDecorator() {
+            Permission permission;
+            @Override
+            public @NotNull Permission getPermission() {
+                if (permission == null)
+                    permission = new Permission(plugin.getName());
+                return permission;
+            }
+        };
         Bukkit.getOnlinePlayers().forEach(player -> {
             String id = identifier.apply(player);
-            BlobScheduler scheduler = plugin.getScheduler();
             scheduler.async(() -> {
                 LehmappCrudable crudable = controller.getCrudManager().read(id);
                 scheduler.sync(() -> {
@@ -60,7 +74,7 @@ public abstract class AbstractBukkitSerializableManager
             public void onJoin(PlayerJoinEvent event) {
                 Player player = event.getPlayer();
                 String id = identifier.apply(player);
-                BlobScheduler scheduler = plugin.getScheduler();
+                BlobScheduler scheduler = getScheduler();
                 scheduler.async(() -> {
                     LehmappCrudable crudable = controller.getCrudManager().read(id);
                     scheduler.sync(() -> {
@@ -83,7 +97,7 @@ public abstract class AbstractBukkitSerializableManager
                 S serializableEvent = quitEvent.apply(stored);
                 Bukkit.getPluginManager().callEvent(serializableEvent);
                 LehmappCrudable crudable = stored.serialize();
-                plugin.getScheduler().async(() -> {
+                getScheduler().async(() -> {
                     controller.getCrudManager().update(crudable);
                 });
             }
@@ -133,5 +147,15 @@ public abstract class AbstractBukkitSerializableManager
         map().values().forEach(serializable -> {
             controller.getCrudManager().update(serializable.serialize());
         });
+    }
+
+    @Override
+    public @NotNull BlobScheduler getScheduler(){
+        return scheduler;
+    }
+
+    @Override
+    public @NotNull PermissionDecorator getPermissionDecorator(){
+        return permissionDecorator;
     }
 }
