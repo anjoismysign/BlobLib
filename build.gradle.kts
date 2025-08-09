@@ -47,6 +47,7 @@ dependencies {
     api(libs.io.github.anjoismysign.skeramidcommands)
     api(libs.io.github.anjoismysign.holoworld)
     api(libs.io.github.anjoismysign.psa.api)
+    api(libs.io.github.anjoismysign.psa.sql)
     api(libs.io.github.anjoismysign.winona)
     api(libs.io.github.anjoismysign.aesthetic)
     compileOnly("io.github.classgraph:classgraph:4.8.157")
