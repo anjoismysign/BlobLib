@@ -14,6 +14,7 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
@@ -29,37 +30,18 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class BlobCruder<T extends Crudable> extends Manager implements BlobSerializableHandler {
+public class BlobCruder<T extends Crudable> implements BlobSerializableHandler {
     protected final Map<UUID, T> serializables;
     private final Map<UUID, BukkitTask> autoSave;
     private final Set<UUID> saving;
     protected Cruder<T> cruder;
-    private final BlobPlugin plugin;
+    private final JavaPlugin plugin;
     private final @Nullable Function<T, Event> joinEvent;
     private final @Nullable Function<T, Event> quitEvent;
     private final @Nullable Consumer<T> onRead;
     private final @Nullable Consumer<T> onUpdate;
 
-    /**
-     * Constructs a new BlobCruder instance for managing Crudable objects.
-     *
-     * @param managerDirector The instance of ManagerDirector responsible for management activities.
-     * @param clazz The class type of the Crudable object.
-     * @param createFunction A function to create instances of the Crudable object.
-     * @param joinEvent A function to map Crudable objects to join events, can be null.
-     * @param quitEvent A function to map Crudable objects to quit events, can be null.
-     * @param joinPriority The priority of the join listener, can be null.
-     * @param quitPriority The priority of the quit listener, can be null.
-     * @param onRead A consumer function executed when an object is read, can be null.
-     *               <p><b>Threading Note:</b> This consumer may be called both synchronously (on the main thread)
-     *               and asynchronously (on a background thread). You must manually check the thread context
-     *               using {@code Bukkit.isPrimaryThread()} and handle thread-sensitive operations accordingly.</p>
-     * @param onUpdate A consumer function executed when an object is updated, can be null.
-     *                 <p><b>Threading Note:</b> This consumer may be called both synchronously (on the main thread)
-     *                 and asynchronously (on a background thread). You must manually check the thread context
-     *                 using {@code Bukkit.isPrimaryThread()} and handle thread-sensitive operations accordingly.</p>
-     */
-    protected BlobCruder(ManagerDirector managerDirector,
+    protected BlobCruder(JavaPlugin plugin,
                          Class<T> clazz,
                          Function<String, T> createFunction,
                          @Nullable Function<T, Event> joinEvent,
@@ -68,8 +50,7 @@ public class BlobCruder<T extends Crudable> extends Manager implements BlobSeria
                          @Nullable EventPriority quitPriority,
                          @Nullable Consumer<T> onRead,
                          @Nullable Consumer<T> onUpdate) {
-        super(managerDirector);
-        plugin = managerDirector.getPlugin();
+        this.plugin = plugin;
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(this, plugin);
         if (joinPriority != null)
@@ -86,21 +67,16 @@ public class BlobCruder<T extends Crudable> extends Manager implements BlobSeria
         this.onUpdate = onUpdate;
     }
 
-    @Override
-    public void unload() {
-        saveAll();
-    }
-
-    @Override
-    public void reload() {
-        unload();
-    }
-
     @EventHandler
     public void onPrejoin(AsyncPlayerPreLoginEvent event) {
         UUID uuid = event.getUniqueId();
         if (saving.contains(uuid))
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "You are already saving your data, please try again in a few seconds.");
+    }
+
+    @Override
+    public JavaPlugin getPlugin() {
+        return plugin;
     }
 
     public void onJoin(PlayerJoinEvent event) {
