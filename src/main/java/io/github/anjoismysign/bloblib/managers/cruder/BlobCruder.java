@@ -1,12 +1,10 @@
-package io.github.anjoismysign.bloblib.entities;
+package io.github.anjoismysign.bloblib.managers.cruder;
 
+import io.github.anjoismysign.bloblib.entities.BlobSerializableHandler;
 import io.github.anjoismysign.bloblib.managers.BlobPlugin;
 import io.github.anjoismysign.bloblib.managers.Manager;
 import io.github.anjoismysign.bloblib.managers.ManagerDirector;
-import io.github.anjoismysign.bloblib.storage.BlobCrudManager;
-import io.github.anjoismysign.bloblib.storage.IdentifierType;
-import io.github.anjoismysign.bloblib.storage.StorageType;
-import io.github.anjoismysign.bloblib.utilities.BlobCrudManagerFactory;
+import io.github.anjoismysign.psa.crud.Crudable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -31,33 +29,45 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class BlobSerializableManager<T extends BlobSerializable> extends Manager implements BlobSerializableHandler {
+public class BlobCruder<T extends Crudable> extends Manager implements BlobSerializableHandler {
     protected final Map<UUID, T> serializables;
     private final Map<UUID, BukkitTask> autoSave;
     private final Set<UUID> saving;
-    protected BlobCrudManager<BlobCrudable> crudManager;
+    protected Cruder<T> cruder;
     private final BlobPlugin plugin;
-    private final Function<BlobCrudable, T> generator;
     private final @Nullable Function<T, Event> joinEvent;
     private final @Nullable Function<T, Event> quitEvent;
+    private final @Nullable Consumer<T> onRead;
+    private final @Nullable Consumer<T> onUpdate;
 
-    protected BlobSerializableManager(ManagerDirector managerDirector, Function<BlobCrudable, BlobCrudable> newBorn,
-                                      Function<BlobCrudable, T> generator,
-                                      String crudableName, boolean logActivity,
-                                      @Nullable Function<T, Event> joinEvent,
-                                      @Nullable Function<T, Event> quitEvent) {
-        this(managerDirector, newBorn, generator, crudableName, logActivity,
-                joinEvent, quitEvent, EventPriority.NORMAL, EventPriority.NORMAL);
-    }
-
-    protected BlobSerializableManager(ManagerDirector managerDirector,
-                                      Function<BlobCrudable, BlobCrudable> newBorn,
-                                      Function<BlobCrudable, T> generator,
-                                      String crudableName, boolean logActivity,
-                                      @Nullable Function<T, Event> joinEvent,
-                                      @Nullable Function<T, Event> quitEvent,
-                                      @Nullable EventPriority joinPriority,
-                                      @Nullable EventPriority quitPriority) {
+    /**
+     * Constructs a new BlobCruder instance for managing Crudable objects.
+     *
+     * @param managerDirector The instance of ManagerDirector responsible for management activities.
+     * @param clazz The class type of the Crudable object.
+     * @param createFunction A function to create instances of the Crudable object.
+     * @param joinEvent A function to map Crudable objects to join events, can be null.
+     * @param quitEvent A function to map Crudable objects to quit events, can be null.
+     * @param joinPriority The priority of the join listener, can be null.
+     * @param quitPriority The priority of the quit listener, can be null.
+     * @param onRead A consumer function executed when an object is read, can be null.
+     *               <p><b>Threading Note:</b> This consumer may be called both synchronously (on the main thread)
+     *               and asynchronously (on a background thread). You must manually check the thread context
+     *               using {@code Bukkit.isPrimaryThread()} and handle thread-sensitive operations accordingly.</p>
+     * @param onUpdate A consumer function executed when an object is updated, can be null.
+     *                 <p><b>Threading Note:</b> This consumer may be called both synchronously (on the main thread)
+     *                 and asynchronously (on a background thread). You must manually check the thread context
+     *                 using {@code Bukkit.isPrimaryThread()} and handle thread-sensitive operations accordingly.</p>
+     */
+    protected BlobCruder(ManagerDirector managerDirector,
+                         Class<T> clazz,
+                         Function<String, T> createFunction,
+                         @Nullable Function<T, Event> joinEvent,
+                         @Nullable Function<T, Event> quitEvent,
+                         @Nullable EventPriority joinPriority,
+                         @Nullable EventPriority quitPriority,
+                         @Nullable Consumer<T> onRead,
+                         @Nullable Consumer<T> onUpdate) {
         super(managerDirector);
         plugin = managerDirector.getPlugin();
         PluginManager pluginManager = Bukkit.getPluginManager();
@@ -68,11 +78,12 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
             registerQuitListener(pluginManager, quitPriority);
         serializables = new HashMap<>();
         autoSave = new HashMap<>();
-        this.generator = generator;
         this.joinEvent = joinEvent;
         this.quitEvent = quitEvent;
         saving = new HashSet<>();
-        crudManager = BlobCrudManagerFactory.PLAYER(plugin, crudableName, newBorn, logActivity);
+        cruder = Cruder.of(plugin, clazz, createFunction);
+        this.onRead = onRead;
+        this.onUpdate = onUpdate;
     }
 
     @Override
@@ -98,18 +109,19 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             if (player != Bukkit.getPlayer(uuid))
                 return;
-            BlobCrudable crudable = crudManager.read(uuid.toString());
+            T serializable = cruder.readOrGenerate(uuid.toString());
+            if (onRead != null) {
+                onRead.accept(serializable);
+            }
             Bukkit.getScheduler().runTask(plugin, () -> {
                 if (player != Bukkit.getPlayer(uuid))
                     return;
-                T applied = generator.apply(crudable);
-                BlobCrudable serialized = applied.serializeAllAttributes();
                 Bukkit.getScheduler().runTaskAsynchronously(getPlugin(),
-                        () -> crudManager.update(serialized));
-                serializables.put(uuid, applied);
+                        () -> cruder.update(serializable));
+                serializables.put(uuid, serializable);
                 if (joinEvent == null)
                     return;
-                Bukkit.getPluginManager().callEvent(joinEvent.apply(applied));
+                Bukkit.getPluginManager().callEvent(joinEvent.apply(serializable));
                 autoSave.put(uuid, new BukkitRunnable() {
                     @Override
                     public void run() {
@@ -117,9 +129,13 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
                             cancel();
                             return;
                         }
-                        BlobCrudable serialized = applied.serializeAllAttributes();
                         Bukkit.getScheduler().runTaskAsynchronously(getPlugin(),
-                                () -> crudManager.update(serialized));
+                                () -> {
+                                    cruder.update(serializable);
+                                    if (onUpdate != null) {
+                                        onUpdate.accept(serializable);
+                                    }
+                                });
                     }
                 }.runTaskTimer(getPlugin(), 20 * 60 * 5,
                         20 * 60 * 5));
@@ -127,10 +143,10 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
         });
     }
 
-    public void onQuit(PlayerQuitEvent e) {
-        Player player = e.getPlayer();
+    public void onQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
-        Optional<T> optional = isBlobSerializable(uuid);
+        Optional<T> optional = isCrudable(uuid);
         if (optional.isEmpty())
             return;
         T serializable = optional.get();
@@ -138,9 +154,11 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
             Bukkit.getPluginManager().callEvent(quitEvent.apply(serializable));
         saving.add(uuid);
         autoSave.remove(uuid);
-        BlobCrudable crudable = serializable.serializeAllAttributes();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            crudManager.update(crudable);
+            cruder.update(serializable);
+            if (onUpdate != null) {
+                onUpdate.accept(serializable);
+            }
             removeObject(uuid);
             saving.remove(uuid);
         });
@@ -170,27 +188,30 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
         removeObject(player.getUniqueId());
     }
 
-    public Optional<T> isBlobSerializable(UUID uuid) {
+    public Optional<T> isCrudable(UUID uuid) {
         return Optional.ofNullable(serializables.get(uuid));
     }
 
-    public Optional<T> isBlobSerializable(Player player) {
-        return isBlobSerializable(player.getUniqueId());
+    public Optional<T> isCrudable(Player player) {
+        return isCrudable(player.getUniqueId());
     }
 
     public void ifIsOnline(UUID uuid, Consumer<T> consumer) {
-        Optional<T> optional = isBlobSerializable(uuid);
+        Optional<T> optional = isCrudable(uuid);
         optional.ifPresent(consumer);
     }
 
     public void ifIsOnlineThenUpdateElse(UUID uuid, Consumer<T> consumer,
                                          Runnable runnable) {
-        Optional<T> optional = isBlobSerializable(uuid);
+        Optional<T> optional = isCrudable(uuid);
         boolean isPresent = optional.isPresent();
         if (isPresent) {
             T serializable = optional.get();
             consumer.accept(serializable);
-            crudManager.update(serializable.serializeAllAttributes());
+            cruder.update(serializable);
+            if (onUpdate != null) {
+                onUpdate.accept(serializable);
+            }
         } else {
             runnable.run();
         }
@@ -203,38 +224,40 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
 
     public CompletableFuture<T> readAsynchronously(String key) {
         CompletableFuture<T> future = new CompletableFuture<>();
-        Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () ->
-                future.complete(generator.apply(crudManager.read(key))));
+        Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () -> {
+            T serializable = cruder.readOrGenerate(key);
+            if (onUpdate != null) {
+                onUpdate.accept(serializable);
+            }
+            future.complete(serializable);
+        });
         return future;
     }
 
     public void readThenUpdate(String key, Consumer<T> consumer) {
-        T serializable = generator.apply(crudManager.read(key));
+        T serializable = cruder.readOrGenerate(key);
         consumer.accept(serializable);
-        crudManager.update(serializable.serializeAllAttributes());
-    }
-
-    public void update(BlobCrudable crudable) {
-        crudManager.update(crudable);
+        cruder.update(serializable);
+        if (onUpdate != null) {
+            onUpdate.accept(serializable);
+        }
     }
 
     public boolean exists(String key) {
-        return crudManager.exists(key);
+        return cruder.exists(key);
     }
 
     private void saveAll() {
-        serializables.values().forEach(serializable -> crudManager.update(serializable.serializeAllAttributes()));
+        serializables.values().forEach(serializable -> {
+            cruder.update(serializable);
+            if (onUpdate != null) {
+                onUpdate.accept(serializable);
+            }
+        });
     }
 
     public Collection<T> getAll() {
         return serializables.values();
     }
 
-    public StorageType getStorageType() {
-        return crudManager.getStorageType();
-    }
-
-    public IdentifierType getIdentifierType() {
-        return crudManager.getIdentifierType();
-    }
 }

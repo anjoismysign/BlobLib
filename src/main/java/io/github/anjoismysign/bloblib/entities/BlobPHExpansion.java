@@ -1,8 +1,10 @@
 package io.github.anjoismysign.bloblib.entities;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import me.clip.placeholderapi.expansion.Relational;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,17 +16,19 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class BlobPHExpansion extends PlaceholderExpansion {
+public class BlobPHExpansion extends PlaceholderExpansion implements Relational {
     private final JavaPlugin plugin;
     private final String identifier;
 
     private final Map<String, Function<OfflinePlayer, String>> simple;
+    private final Map<String, BiFunction<Player, Player, String>> simpleRelational;
     private final Map<String, BiFunction<OfflinePlayer, String, String>> startsWith;
 
     public BlobPHExpansion(JavaPlugin plugin, String identifier) {
         this.plugin = plugin;
         this.identifier = identifier.toLowerCase(Locale.ROOT);
         simple = new HashMap<>();
+        simpleRelational = new HashMap<>();
         startsWith = new HashMap<>();
         Bukkit.getScheduler().runTask(plugin, this::register);
     }
@@ -38,6 +42,10 @@ public class BlobPHExpansion extends PlaceholderExpansion {
      */
     public Function<OfflinePlayer, String> putSimple(String key, Function<OfflinePlayer, String> function) {
         return simple.put(key, function);
+    }
+
+    public BiFunction<Player, Player, String> putSimpleRelational(String key, BiFunction<Player, Player, String> biFunction){
+        return simpleRelational.put(key, biFunction);
     }
 
     /**
@@ -90,5 +98,16 @@ public class BlobPHExpansion extends PlaceholderExpansion {
     private String dynamicKey(String key, String identifier) {
         int keyLength = key.length();
         return identifier.substring(keyLength);
+    }
+
+    @Override
+    public String onPlaceholderRequest(Player one, Player two, String identifier) {
+        if (one == null || two == null) {
+            return null;
+        }
+        BiFunction<Player, Player, String> simpleFunction = simpleRelational.get(identifier);
+        if (simpleFunction != null)
+            return simpleFunction.apply(one, two);
+        return null;
     }
 }
