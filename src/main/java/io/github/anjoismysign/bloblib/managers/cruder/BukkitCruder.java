@@ -234,17 +234,38 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
         }
     }
 
-    public T read(String identification){
-        T serializable = cruder.readOrGenerate(identification);
-        cruder.update(serializable);
-        return serializable;
+    public void loadAll(){
+        Bukkit.getOnlinePlayers().forEach(player -> {
+            UUID uuid = player.getUniqueId();
+            String identification = uuid.toString();
+            T serializable = cruder.readOrGenerate(identification);
+            cruder.update(serializable);
+
+            autoSave.put(uuid, new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (Bukkit.getPlayer(uuid) == null) {
+                        cancel();
+                        return;
+                    }
+                    Bukkit.getScheduler().runTaskAsynchronously(getPlugin(),
+                            () -> {
+                                cruder.update(serializable);
+                                if (onUpdate != null) {
+                                    onUpdate.accept(serializable);
+                                }
+                            });
+                }
+            }.runTaskTimer(getPlugin(), 20 * 60 * 5,
+                    20 * 60 * 5));
+        });
     }
 
     public boolean exists(String identification) {
         return cruder.exists(identification);
     }
 
-    private void saveAll() {
+    public void saveAll() {
         serializables.values().forEach(serializable -> {
             cruder.update(serializable);
             if (onUpdate != null) {
