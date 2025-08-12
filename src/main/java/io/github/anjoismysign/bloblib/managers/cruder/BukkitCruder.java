@@ -64,6 +64,9 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
         cruder = Cruder.of(plugin, clazz, createFunction);
         this.onRead = onRead;
         this.onUpdate = onUpdate;
+        Bukkit.getOnlinePlayers().forEach(player -> {
+            String identification = player.getUniqueId().toString();
+        });
     }
 
     @EventHandler
@@ -82,15 +85,17 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            if (player != Bukkit.getPlayer(uuid))
+            if (Bukkit.getPlayer(uuid) == null){
                 return;
+                }
             T serializable = cruder.readOrGenerate(uuid.toString());
             if (onRead != null) {
                 onRead.accept(serializable);
             }
             Bukkit.getScheduler().runTask(plugin, () -> {
-                if (player != Bukkit.getPlayer(uuid))
+                if (Bukkit.getPlayer(uuid) == null) {
                     return;
+                }
                 Bukkit.getScheduler().runTaskAsynchronously(getPlugin(),
                         () -> cruder.update(serializable));
                 serializables.put(uuid, serializable);
@@ -100,7 +105,7 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
                 autoSave.put(uuid, new BukkitRunnable() {
                     @Override
                     public void run() {
-                        if (player != Bukkit.getPlayer(uuid)) {
+                        if (Bukkit.getPlayer(uuid) == null) {
                             cancel();
                             return;
                         }
@@ -208,10 +213,10 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
         });
     }
 
-    public CompletableFuture<T> readAsynchronously(String key) {
+    public CompletableFuture<T> readAsynchronously(String identification) {
         CompletableFuture<T> future = new CompletableFuture<>();
         Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () -> {
-            T serializable = cruder.readOrGenerate(key);
+            T serializable = cruder.readOrGenerate(identification);
             if (onUpdate != null) {
                 onUpdate.accept(serializable);
             }
@@ -220,8 +225,8 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
         return future;
     }
 
-    public void readThenUpdate(String key, Consumer<T> consumer) {
-        T serializable = cruder.readOrGenerate(key);
+    public void readThenUpdate(String identification, Consumer<T> consumer) {
+        T serializable = cruder.readOrGenerate(identification);
         consumer.accept(serializable);
         cruder.update(serializable);
         if (onUpdate != null) {
@@ -229,8 +234,14 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
         }
     }
 
-    public boolean exists(String key) {
-        return cruder.exists(key);
+    public T read(String identification){
+        T serializable = cruder.readOrGenerate(identification);
+        cruder.update(serializable);
+        return serializable;
+    }
+
+    public boolean exists(String identification) {
+        return cruder.exists(identification);
     }
 
     private void saveAll() {
