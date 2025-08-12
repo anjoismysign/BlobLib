@@ -1,5 +1,5 @@
 name: BlobLib
-version: 1.698.31
+version: 1.698.32
 main: io.github.anjoismysign.bloblib.BlobLib
 api-version: 1.21.5
 load: STARTUP

@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class BlobCruderBuilder<T extends Crudable> {
+public class BukkitCruderBuilder<T extends Crudable> {
 
     private JavaPlugin plugin;
     private Class<T> crudableClass;
@@ -68,7 +68,7 @@ public class BlobCruderBuilder<T extends Crudable> {
      * @param plugin The JavaPlugin instance to use
      * @return This builder instance for method chaining
      */
-    public BlobCruderBuilder<T> plugin(JavaPlugin plugin) {
+    public BukkitCruderBuilder<T> plugin(JavaPlugin plugin) {
         this.plugin = plugin;
         return this;
     }
@@ -83,7 +83,7 @@ public class BlobCruderBuilder<T extends Crudable> {
      * @param crudableClass The class type that extends Crudable
      * @return This builder instance for method chaining
      */
-    public BlobCruderBuilder<T> crudableClass(Class<T> crudableClass) {
+    public BukkitCruderBuilder<T> crudableClass(Class<T> crudableClass) {
         this.crudableClass = crudableClass;
         return this;
     }
@@ -102,7 +102,7 @@ public class BlobCruderBuilder<T extends Crudable> {
      *                       the default reflection-based approach
      * @return This builder instance for method chaining
      */
-    public BlobCruderBuilder<T> createFunction(@Nullable Function<String, T> createFunction) {
+    public BukkitCruderBuilder<T> createFunction(@Nullable Function<String, T> createFunction) {
         this.createFunction = createFunction;
         return this;
     }
@@ -121,7 +121,7 @@ public class BlobCruderBuilder<T extends Crudable> {
      *                  if no event should be fired
      * @return This builder instance for method chaining
      */
-    public BlobCruderBuilder<T> joinEvent(@Nullable Function<T, Event> joinEvent) {
+    public BukkitCruderBuilder<T> joinEvent(@Nullable Function<T, Event> joinEvent) {
         this.joinEvent = joinEvent;
         return this;
     }
@@ -140,7 +140,7 @@ public class BlobCruderBuilder<T extends Crudable> {
      *                  if no event should be fired
      * @return This builder instance for method chaining
      */
-    public BlobCruderBuilder<T> quitEvent(@Nullable Function<T, Event> quitEvent) {
+    public BukkitCruderBuilder<T> quitEvent(@Nullable Function<T, Event> quitEvent) {
         this.quitEvent = quitEvent;
         return this;
     }
@@ -156,7 +156,7 @@ public class BlobCruderBuilder<T extends Crudable> {
      * @param joinPriority The event priority for player join handling
      * @return This builder instance for method chaining
      */
-    public BlobCruderBuilder<T> joinPriority(@NotNull EventPriority joinPriority) {
+    public BukkitCruderBuilder<T> joinPriority(@NotNull EventPriority joinPriority) {
         this.joinPriority = joinPriority;
         return this;
     }
@@ -172,7 +172,7 @@ public class BlobCruderBuilder<T extends Crudable> {
      * @param quitPriority The event priority for player quit handling
      * @return This builder instance for method chaining
      */
-    public BlobCruderBuilder<T> quitPriority(@NotNull EventPriority quitPriority) {
+    public BukkitCruderBuilder<T> quitPriority(@NotNull EventPriority quitPriority) {
         this.quitPriority = quitPriority;
         return this;
     }
@@ -195,7 +195,7 @@ public class BlobCruderBuilder<T extends Crudable> {
      *               or null if no post-read processing is needed
      * @return This builder instance for method chaining
      */
-    public BlobCruderBuilder<T> onRead(@Nullable Consumer<T> onRead) {
+    public BukkitCruderBuilder<T> onRead(@Nullable Consumer<T> onRead) {
         this.onRead = onRead;
         return this;
     }
@@ -217,7 +217,7 @@ public class BlobCruderBuilder<T extends Crudable> {
      *                 or null if no post-update processing is needed
      * @return This builder instance for method chaining
      */
-    public BlobCruderBuilder<T> onUpdate(@Nullable Consumer<T> onUpdate) {
+    public BukkitCruderBuilder<T> onUpdate(@Nullable Consumer<T> onUpdate) {
         this.onUpdate = onUpdate;
         return this;
     }
@@ -242,11 +242,11 @@ public class BlobCruderBuilder<T extends Crudable> {
      * @return A new BlobCruder instance configured with the builder's settings
      * @throws NullPointerException if plugin or crudableClass is null
      */
-    public BlobCruder<T> build() {
+    public BukkitCruder<T> build() {
         Objects.requireNonNull(plugin, "'plugin' cannot be null");
         Objects.requireNonNull(crudableClass, "'crudableClass' cannot be null");
         createFunction = createFunction == null ? this::createInstance : createFunction;
-        return new BlobCruder<>(
+        return new BukkitCruder<>(
                 plugin,
                 crudableClass,
                 createFunction,

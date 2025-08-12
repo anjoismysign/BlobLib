@@ -1,9 +1,6 @@
 package io.github.anjoismysign.bloblib.managers.cruder;
 
 import io.github.anjoismysign.bloblib.entities.BlobSerializableHandler;
-import io.github.anjoismysign.bloblib.managers.BlobPlugin;
-import io.github.anjoismysign.bloblib.managers.Manager;
-import io.github.anjoismysign.bloblib.managers.ManagerDirector;
 import io.github.anjoismysign.psa.crud.Crudable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -17,12 +14,14 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -30,7 +29,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class BlobCruder<T extends Crudable> implements BlobSerializableHandler {
+public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler {
     protected final Map<UUID, T> serializables;
     private final Map<UUID, BukkitTask> autoSave;
     private final Set<UUID> saving;
@@ -41,15 +40,15 @@ public class BlobCruder<T extends Crudable> implements BlobSerializableHandler {
     private final @Nullable Consumer<T> onRead;
     private final @Nullable Consumer<T> onUpdate;
 
-    protected BlobCruder(JavaPlugin plugin,
-                         Class<T> clazz,
-                         Function<String, T> createFunction,
-                         @Nullable Function<T, Event> joinEvent,
-                         @Nullable Function<T, Event> quitEvent,
-                         @Nullable EventPriority joinPriority,
-                         @Nullable EventPriority quitPriority,
-                         @Nullable Consumer<T> onRead,
-                         @Nullable Consumer<T> onUpdate) {
+    protected BukkitCruder(JavaPlugin plugin,
+                           Class<T> clazz,
+                           Function<String, T> createFunction,
+                           @Nullable Function<T, Event> joinEvent,
+                           @Nullable Function<T, Event> quitEvent,
+                           @Nullable EventPriority joinPriority,
+                           @Nullable EventPriority quitPriority,
+                           @Nullable Consumer<T> onRead,
+                           @Nullable Consumer<T> onUpdate) {
         this.plugin = plugin;
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(this, plugin);
@@ -138,6 +137,17 @@ public class BlobCruder<T extends Crudable> implements BlobSerializableHandler {
             removeObject(uuid);
             saving.remove(uuid);
         });
+    }
+
+    @Nullable
+    public T lookFor(@NotNull Player player){
+        Objects.requireNonNull(player, "'player' cannot be null");
+        UUID uuid = player.getUniqueId();
+        return serializables.get(uuid);
+    }
+
+    public T get(@NotNull Player player){
+        return Objects.requireNonNull(lookFor(player), player.getName() + " doesn't seem to be cached");
     }
 
     public void addSaving(UUID uuid) {
