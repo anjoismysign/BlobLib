@@ -3,6 +3,7 @@ package io.github.anjoismysign.bloblib.utilities;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Base64;
@@ -62,7 +63,7 @@ public class ItemStackUtil {
     }
 
     @NotNull
-    public static String itemStackArrayToBase64(@NotNull ItemStack[] itemStacks) {
+    public static String itemStackArrayToBase64(@Nullable ItemStack[] itemStacks) {
         byte[] byteArray = ItemStack.serializeItemsAsBytes(itemStacks);
         return Base64.getEncoder().encodeToString(byteArray);
     }
