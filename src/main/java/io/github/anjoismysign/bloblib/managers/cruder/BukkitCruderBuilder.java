@@ -25,6 +25,7 @@ public class BukkitCruderBuilder<T extends Crudable> {
     private @Nullable Consumer<T> onRead;
     private @Nullable Consumer<T> onUpdate;
     private @Nullable Consumer<T> onAutoSave;
+    private @Nullable Consumer<T> onJoin;
     private @Nullable Consumer<T> onQuit;
 
     private T createInstance(String identification) {
@@ -235,9 +236,24 @@ public class BukkitCruderBuilder<T extends Crudable> {
      *                   or null if no auto-save processing is needed
      * @return This builder instance for method chaining
      */
-
     public BukkitCruderBuilder<T> onAutoSave(@Nullable Consumer<T> onAutoSave) {
         this.onAutoSave = onAutoSave;
+        return this;
+    }
+
+    /**
+     * Sets the consumer function to be executed when a Crudable object joins.
+     * <p>
+     * The consumer will be called asynchronously during PlayerJoinEvent,
+     * before onRead
+     * </p>
+     *
+     * @param onJoin A consumer that processes the Crudable object on join,
+     *               or null if no processing is needed
+     * @return This builder instance for method chaining
+     */
+    public BukkitCruderBuilder<T> onJoin(@Nullable Consumer<T> onJoin){
+        this.onJoin = onJoin;
         return this;
     }
 
@@ -246,9 +262,6 @@ public class BukkitCruderBuilder<T extends Crudable> {
      * <p>
      * The consumer will be called on the main thread during PlayerQuitEvent,
      * before onUpdate, which is called asynchronously.
-     * </p>
-     * <p>
-     * <b>Threading Note:</b> This consumer is always run synchronously on the main server thread.
      * </p>
      *
      * @param onQuit A consumer that processes the Crudable object on auto-save,
@@ -276,6 +289,7 @@ public class BukkitCruderBuilder<T extends Crudable> {
      *   <li>onRead: No post-read processing if not provided</li>
      *   <li>onUpdate: No post-update processing if not provided</li>
      *   <li>onAutoSave: no pre-update processing if not provided</li>
+     *   <li>onJoin: no pre-read processing if not provided</li>
      *   <li>onQuit: no pre-update processing if not provided</li>
      * </ul>
      *
@@ -297,6 +311,7 @@ public class BukkitCruderBuilder<T extends Crudable> {
                 onRead,
                 onUpdate,
                 onAutoSave,
+                onJoin,
                 onQuit
         );
     }

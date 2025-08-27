@@ -40,6 +40,7 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
     private final @Nullable Consumer<T> onRead;
     private final @Nullable Consumer<T> onUpdate;
     private final @Nullable Consumer<T> onAutoSave;
+    private final @Nullable Consumer<T> onJoin;
     private final @Nullable Consumer<T> onQuit;
 
     protected BukkitCruder(JavaPlugin plugin,
@@ -52,6 +53,7 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
                            @Nullable Consumer<T> onRead,
                            @Nullable Consumer<T> onUpdate,
                            @Nullable Consumer<T> onAutoSave,
+                           @Nullable Consumer<T> onJoin,
                            @Nullable Consumer<T> onQuit) {
         this.plugin = plugin;
         PluginManager pluginManager = Bukkit.getPluginManager();
@@ -69,6 +71,7 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
         this.onRead = onRead;
         this.onUpdate = onUpdate;
         this.onAutoSave = onAutoSave;
+        this.onJoin = onJoin;
         this.onQuit = onQuit;
         loadAll();
     }
@@ -93,6 +96,9 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
                 return;
                 }
             T serializable = cruder.readOrGenerate(uuid.toString());
+            if (onJoin != null){
+                onJoin.accept(serializable);
+            }
             if (onRead != null) {
                 onRead.accept(serializable);
             }
