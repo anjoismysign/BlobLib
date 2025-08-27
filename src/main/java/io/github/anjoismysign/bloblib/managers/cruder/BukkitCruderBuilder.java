@@ -24,6 +24,8 @@ public class BukkitCruderBuilder<T extends Crudable> {
     private @NotNull EventPriority quitPriority = EventPriority.NORMAL;
     private @Nullable Consumer<T> onRead;
     private @Nullable Consumer<T> onUpdate;
+    private @Nullable Consumer<T> onAutoSave;
+    private @Nullable Consumer<T> onQuit;
 
     private T createInstance(String identification) {
         try {
@@ -223,6 +225,44 @@ public class BukkitCruderBuilder<T extends Crudable> {
     }
 
     /**
+     * Sets the consumer function to be executed when a Crudable object is auto-saved.
+     * <p>
+     * This consumer is called on the main thread, before onUpdate,
+     * which is called later asynchronously.
+     * </p>
+     *
+     * @param onAutoSave A consumer that processes the Crudable object on auto-save,
+     *                   or null if no auto-save processing is needed
+     * @return This builder instance for method chaining
+     */
+
+    public BukkitCruderBuilder<T> onAutoSave(@Nullable Consumer<T> onAutoSave) {
+        this.onAutoSave = onAutoSave;
+        return this;
+    }
+
+    /**
+     * Sets the function to generate a Bukkit Event when Player quits the game
+     * <p>
+     * The provided function will be called on the main thread during PlayerQuitEvent,
+     * before onUpdate, which is called asynchronously.
+     * </p>
+     * <p>
+     * <b>Threading Note:</b> This function is always run synchronously on the main server thread.
+     * </p>
+     *
+     * @param quitEvent A function that takes the Crudable object and returns an Event to fire,
+     *                  or null if no quit event should be fired
+     * @return This builder instance for method chaining
+     */
+    public BukkitCruderBuilder<T> onQuit(@Nullable Function<T, Event> quitEvent) {
+        this.quitEvent = quitEvent;
+        return this;
+    }
+
+
+
+    /**
      * Builds and returns a new BlobCruder instance with the configured settings.
      * <p>
      * This method creates a BlobCruder that manages Crudable objects of the specified type.
@@ -237,6 +277,8 @@ public class BukkitCruderBuilder<T extends Crudable> {
      *   <li>quitPriority: {@link EventPriority#NORMAL} if not provided</li>
      *   <li>onRead: No post-read processing if not provided</li>
      *   <li>onUpdate: No post-update processing if not provided</li>
+     *   <li>onAutoSave: no pre-update processing if not provided</li>
+     *   <li>onQuit: no pre-update processing if not provided</li>
      * </ul>
      *
      * @return A new BlobCruder instance configured with the builder's settings
@@ -255,7 +297,9 @@ public class BukkitCruderBuilder<T extends Crudable> {
                 joinPriority,
                 quitPriority,
                 onRead,
-                onUpdate
+                onUpdate,
+                onAutoSave,
+                onQuit
         );
     }
 

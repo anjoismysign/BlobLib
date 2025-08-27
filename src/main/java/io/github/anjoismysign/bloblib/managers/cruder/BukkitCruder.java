@@ -39,6 +39,8 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
     private final @Nullable Function<T, Event> quitEvent;
     private final @Nullable Consumer<T> onRead;
     private final @Nullable Consumer<T> onUpdate;
+    private final @Nullable Consumer<T> onAutoSave;
+    private final @Nullable Consumer<T> onQuit;
 
     protected BukkitCruder(JavaPlugin plugin,
                            Class<T> clazz,
@@ -48,7 +50,9 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
                            @Nullable EventPriority joinPriority,
                            @Nullable EventPriority quitPriority,
                            @Nullable Consumer<T> onRead,
-                           @Nullable Consumer<T> onUpdate) {
+                           @Nullable Consumer<T> onUpdate,
+                           @Nullable Consumer<T> onAutoSave,
+                           @Nullable Consumer<T> onQuit) {
         this.plugin = plugin;
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(this, plugin);
@@ -64,9 +68,9 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
         cruder = Cruder.of(plugin, clazz, createFunction);
         this.onRead = onRead;
         this.onUpdate = onUpdate;
-        Bukkit.getOnlinePlayers().forEach(player -> {
-            String identification = player.getUniqueId().toString();
-        });
+        this.onAutoSave = onAutoSave;
+        this.onQuit = onQuit;
+        loadAll();
     }
 
     @EventHandler
@@ -109,6 +113,9 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
                             cancel();
                             return;
                         }
+                        if (onAutoSave != null){
+                            onAutoSave.accept(serializable);
+                        }
                         Bukkit.getScheduler().runTaskAsynchronously(getPlugin(),
                                 () -> {
                                     cruder.update(serializable);
@@ -134,6 +141,9 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
             Bukkit.getPluginManager().callEvent(quitEvent.apply(serializable));
         saving.add(uuid);
         autoSave.remove(uuid);
+        if (onQuit != null){
+            onQuit.accept(serializable);
+        }
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             cruder.update(serializable);
             if (onUpdate != null) {
