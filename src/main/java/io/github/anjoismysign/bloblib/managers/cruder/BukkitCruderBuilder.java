@@ -260,8 +260,6 @@ public class BukkitCruderBuilder<T extends Crudable> {
         return this;
     }
 
-
-
     /**
      * Builds and returns a new BlobCruder instance with the configured settings.
      * <p>
