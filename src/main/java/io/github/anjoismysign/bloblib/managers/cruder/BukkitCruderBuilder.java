@@ -242,21 +242,21 @@ public class BukkitCruderBuilder<T extends Crudable> {
     }
 
     /**
-     * Sets the function to generate a Bukkit Event when Player quits the game
+     * Sets the consumer function to be executed when a Player quits the game
      * <p>
-     * The provided function will be called on the main thread during PlayerQuitEvent,
+     * The consumer will be called on the main thread during PlayerQuitEvent,
      * before onUpdate, which is called asynchronously.
      * </p>
      * <p>
-     * <b>Threading Note:</b> This function is always run synchronously on the main server thread.
+     * <b>Threading Note:</b> This consumer is always run synchronously on the main server thread.
      * </p>
      *
-     * @param quitEvent A function that takes the Crudable object and returns an Event to fire,
-     *                  or null if no quit event should be fired
+     * @param onQuit A consumer that processes the Crudable object on auto-save,
+     *      *                   or null if no auto-save processing is needed
      * @return This builder instance for method chaining
      */
-    public BukkitCruderBuilder<T> onQuit(@Nullable Function<T, Event> quitEvent) {
-        this.quitEvent = quitEvent;
+    public BukkitCruderBuilder<T> onQuit(@Nullable Consumer<T> onQuit) {
+        this.onQuit = onQuit;
         return this;
     }
 
