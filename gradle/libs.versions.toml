@@ -24,7 +24,6 @@ org-apache-commons-commons-lang3 = "3.17.0"
 org-mongodb-bson = "4.10.2"
 org-mongodb-mongodb-driver-sync = "4.10.2"
 
-
 [libraries]
 com-github-decentsoftware-eu-decentholograms = { module = "com.github.decentsoftware-eu:decentholograms", version.ref = "com-github-decentsoftware-eu-decentholograms" }
 com-mojang-authlib = { module = "com.mojang:authlib", version.ref = "com-mojang-authlib" }

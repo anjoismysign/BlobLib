@@ -3,6 +3,7 @@ package io.github.anjoismysign.bloblib.itemstack;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import io.github.anjoismysign.bloblib.utilities.TextColor;
+import io.github.anjoismysign.bloblib.weaponmechanics.WeaponMechanicsMiddleman;
 import io.papermc.paper.datacomponent.item.Consumable;
 import io.papermc.paper.datacomponent.item.Equippable;
 import io.papermc.paper.datacomponent.item.FoodProperties;
@@ -66,15 +67,19 @@ public class ItemStackReader {
         RegistryAccess registryAccess = RegistryAccess.registryAccess();
         ItemStackBuilder builder;
         @Nullable String inputMaterial = section.getString("Material");
-        if (!inputMaterial.startsWith("HEAD-")) {
+        if (!inputMaterial.startsWith("HEAD-") && !inputMaterial.startsWith("WM-")) {
             Material material = Material.getMaterial(inputMaterial);
             if (material == null)
                 throw new ConfigurationFieldException("'" + inputMaterial + "' is not a valid material");
             builder = ItemStackBuilder.build(material);
-        } else {
+        } else if (inputMaterial.startsWith("HEAD-")) {
             builder = ItemStackBuilder.build(Material.PLAYER_HEAD);
             String url = inputMaterial.substring(5);
             builder.playerProfile(profile(url));
+        }
+        else {
+            String weaponTitle = inputMaterial.substring(3);
+            builder = ItemStackBuilder.build(WeaponMechanicsMiddleman.getInstance().generateWeapon(weaponTitle));
         }
         if (section.isInt("Amount")) {
             int amount = section.getInt("Amount");

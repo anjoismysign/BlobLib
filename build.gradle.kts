@@ -63,6 +63,14 @@ dependencies {
     compileOnly(libs.libsdisguises.libsdisguises)
     compileOnly(libs.net.lingala.zip4j.zip4j)
     compileOnly(libs.de.oliver.fancyholograms)
+//    mvn install:install-file \
+//    -Dfile=weaponmechanics-4.1.5.jar \
+//    -DpomFile=weaponmechanics-4.1.5.pom.xml
+    compileOnly("com.cjcrafter:weaponmechanics:4.1.5")
+//    mvn install:install-file \
+//    -Dfile=mechanicscore-4.1.5.jar \
+//    -DpomFile=mechanicscore-4.1.5.pom.xml
+    compileOnly("com.cjcrafter:mechanicscore:4.1.5")
 }
 
 group = "io.github.anjoismysign"

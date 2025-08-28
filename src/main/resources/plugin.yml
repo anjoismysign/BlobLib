@@ -4,6 +4,8 @@ main: io.github.anjoismysign.bloblib.BlobLib
 api-version: 1.21.5
 load: STARTUP
 loadbefore: [ Vault, LibsDisguises, ProtocolLib, WorldEdit, WorldGuard ]
+softdepend:
+  - WeaponMechanics
 authors: [ promorrom, j0ach1mmall3, SmallCode ]
 commands:
   bloblib:
