@@ -10,7 +10,6 @@ import io.github.anjoismysign.bloblib.itemstack.ItemStackReader;
 import io.github.anjoismysign.bloblib.utilities.IntegerRange;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * @author anjoismysign
@@ -49,7 +49,7 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
      */
     public static MetaBlobMultiSlotable read(ConfigurationSection section, String key,
                                              String locale) {
-        ItemStack itemStack;
+        final Supplier<ItemStack> readSupplier;
         if (section.isString("ItemStack")) {
             String reference = section.getString("ItemStack");
             TranslatableItem translatableItem = BlobLibTranslatableAPI.getInstance()
@@ -57,17 +57,23 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
                             locale);
             if (translatableItem == null)
                 throw new ConfigurationFieldException("TranslatableItem not found: " + reference);
-            itemStack = translatableItem.getClone();
+            readSupplier = () -> translatableItem.getClone();
         } else {
             ConfigurationSection itemStackSection = section.getConfigurationSection("ItemStack");
-            if (itemStackSection == null) {
+            if (itemStackSection == null)
                 throw new ConfigurationFieldException("'ItemStack' ConfigurationSection is null");
-            }
-            itemStack = ItemStackReader.READ_OR_FAIL_FAST(itemStackSection).build();
+            readSupplier = () -> ItemStackReader.OMNI_STACK(itemStackSection).getCopy();
         }
+        final Supplier<ItemStack> supplier;
         if (section.isInt("Amount")) {
             int amount = section.getInt("Amount");
-            itemStack.setAmount(amount);
+            supplier = () -> {
+                ItemStack itemStack = readSupplier.get();
+                itemStack.setAmount(amount);
+                return itemStack;
+            };
+        } else {
+            supplier = readSupplier;
         }
         String read = section.getString("Slot", "-1");
         Set<Integer> set = IntegerRange.getInstance().parse(read);
@@ -152,7 +158,7 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
         }
         if (action != null)
             actions.add(new ActionMemo(action, actionType));
-        return new MetaBlobMultiSlotable(set, itemStack, key, meta, subMeta,
+        return new MetaBlobMultiSlotable(set, supplier, key, meta, subMeta,
                 hasPermission, hasMoney, priceCurrency, actions,
                 hasTranslatableItem, isPermissionInverted, isMoneyInverted,
                 isTranslatableItemInverted);
@@ -162,7 +168,7 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
      * Constructor for MetaBlobMultiSlotable
      *
      * @param slots                      The slots to add the item to
-     * @param itemStack                  The item to add
+     * @param supplier                   The ItemStack supplier to add
      * @param meta                       The meta to use for the item
      * @param subMeta                    The subMeta to use for the item
      * @param key                        The key to use for the item
@@ -176,7 +182,7 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
      * @param isTranslatableItemInverted If the TranslatableItem check is inverted.
      */
     public MetaBlobMultiSlotable(@NotNull Set<Integer> slots,
-                                 @NotNull ItemStack itemStack,
+                                 @NotNull Supplier<ItemStack> supplier,
                                  @NotNull String key,
                                  @NotNull String meta,
                                  @Nullable String subMeta,
@@ -188,25 +194,12 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
                                  boolean isPermissionInverted,
                                  boolean isMoneyInverted,
                                  boolean isTranslatableItemInverted) {
-        super(slots, itemStack, hasPermission, hasMoney, priceCurrency, actions,
+        super(slots, supplier, hasPermission, hasMoney, priceCurrency, actions,
                 hasTranslatableItem, isPermissionInverted, isMoneyInverted,
                 isTranslatableItemInverted);
         this.key = key;
         this.meta = meta;
         this.subMeta = subMeta;
-    }
-
-    /**
-     * Will insert the BlobMultiSlotable into the given Inventory.
-     * The ItemStack is not cloned, so they all should be references
-     * in case of retrieving in the future.
-     *
-     * @param inventory The inventory to insert the ItemStacks
-     */
-    public void setInInventory(Inventory inventory) {
-        for (Integer slot : getSlots()) {
-            inventory.setItem(slot, getItemStack());
-        }
     }
 
     public MetaInventoryButton toMetaInventoryButton() {

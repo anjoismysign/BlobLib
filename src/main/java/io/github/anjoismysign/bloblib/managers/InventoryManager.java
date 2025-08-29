@@ -6,7 +6,6 @@ import io.github.anjoismysign.bloblib.entities.DataAssetType;
 import io.github.anjoismysign.bloblib.entities.IFileManager;
 import io.github.anjoismysign.bloblib.entities.inventory.BlobInventory;
 import io.github.anjoismysign.bloblib.entities.inventory.InventoryBuilderCarrier;
-import static io.github.anjoismysign.bloblib.entities.inventory.InventoryBuilderCarrier.BLOB_FROM_CONFIGURATION_SECTION;
 import io.github.anjoismysign.bloblib.entities.inventory.InventoryButton;
 import io.github.anjoismysign.bloblib.entities.inventory.InventoryDataRegistry;
 import io.github.anjoismysign.bloblib.entities.inventory.MetaBlobInventory;
@@ -25,6 +24,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
+import static io.github.anjoismysign.bloblib.entities.inventory.InventoryBuilderCarrier.BLOB_FROM_CONFIGURATION_SECTION;
 
 public class InventoryManager {
     private final BlobLib main;

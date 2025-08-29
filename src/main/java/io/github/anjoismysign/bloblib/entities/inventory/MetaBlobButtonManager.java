@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * @author anjoismysign
@@ -27,7 +28,7 @@ public class MetaBlobButtonManager extends ButtonManager<MetaInventoryButton> {
      * Uses HashMap to store buttons.
      *
      * @param section configuration section which contains all the buttons
-     * @return a non abstract ButtonManager.
+     * @return a non-abstract ButtonManager.
      */
     public static MetaBlobButtonManager fromConfigurationSection(@NotNull ConfigurationSection section,
                                                                  @NotNull String locale) {
@@ -39,7 +40,7 @@ public class MetaBlobButtonManager extends ButtonManager<MetaInventoryButton> {
     }
 
     /**
-     * Builds a non abstract ButtonManager without any buttons stored yet.
+     * Builds a non-abstract ButtonManager without any buttons stored yet.
      */
     public MetaBlobButtonManager() {
         this(new ButtonManagerData<>(new HashMap<>(),
@@ -101,7 +102,7 @@ public class MetaBlobButtonManager extends ButtonManager<MetaInventoryButton> {
      */
     @Override
     public ItemStack get(int slot) {
-        return getIntegerKeys().get(slot);
+        return getIntegerKeys().get(slot).get();
     }
 
     /**
@@ -111,7 +112,7 @@ public class MetaBlobButtonManager extends ButtonManager<MetaInventoryButton> {
      */
     @Override
     public Collection<ItemStack> buttons() {
-        return getIntegerKeys().values();
+        return getIntegerKeys().values().stream().map(Supplier::get).toList();
     }
 
     /**
@@ -140,8 +141,8 @@ public class MetaBlobButtonManager extends ButtonManager<MetaInventoryButton> {
      * adds all buttons inside a configuration section through parsing
      *
      * @param section configuration section which contains all the buttons
-     * @return true if at least one button was succesfully added.
-     * this is determined in case the being called after the first add call
+     * @return true if at least one button was successfully added.
+     * this is determined in case being called after the first adding call
      */
     public boolean add(ConfigurationSection section, String locale) {
         Set<String> set = section.getKeys(false);

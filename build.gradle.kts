@@ -38,10 +38,24 @@ repositories {
     maven {
         url = uri("https://repo.fancyplugins.de/releases")
     }
+
+    maven {
+        url = uri("https://maven.devs.beer/")
+        name = "matteodev"
+    }
+
+    maven {
+        url = uri("https://repo.oraxen.com/releases")
+    }
 }
 
 dependencies {
     api(libs.org.mongodb.bson)
+    /*
+     * Compile projects from github.com/anjoismysign
+     * Install in maven local
+     * TODO: Automate process for new contributors
+     */
     api(libs.io.github.anjoismysign.anjo)
     api(libs.net.milkbowl.vault.vaultapi)
     api(libs.io.github.anjoismysign.skeramidcommands)
@@ -63,6 +77,8 @@ dependencies {
     compileOnly(libs.libsdisguises.libsdisguises)
     compileOnly(libs.net.lingala.zip4j.zip4j)
     compileOnly(libs.de.oliver.fancyholograms)
+    compileOnly("dev.lone:api-itemsadder:4.0.10")
+    compileOnly("io.th0rgal:oraxen:1.192.1")
 //    mvn install:install-file \
 //    -Dfile=weaponmechanics-4.1.5.jar \
 //    -DpomFile=weaponmechanics-4.1.5.pom.xml

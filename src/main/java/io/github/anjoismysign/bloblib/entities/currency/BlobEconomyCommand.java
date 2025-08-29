@@ -1,11 +1,11 @@
 package io.github.anjoismysign.bloblib.entities.currency;
 
+import io.github.anjoismysign.anjo.entities.Result;
 import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
 import io.github.anjoismysign.bloblib.entities.BlobChildCommand;
 import io.github.anjoismysign.bloblib.entities.BlobExecutor;
 import io.github.anjoismysign.bloblib.entities.ExecutorData;
 import io.github.anjoismysign.bloblib.entities.ObjectManager;
-import io.github.anjoismysign.anjo.entities.Result;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

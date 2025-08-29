@@ -1,5 +1,6 @@
 package io.github.anjoismysign.bloblib.api;
 
+import io.github.anjoismysign.anjo.entities.Uber;
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.entities.BlobEditor;
 import io.github.anjoismysign.bloblib.entities.BlobSelector;
@@ -14,7 +15,6 @@ import io.github.anjoismysign.bloblib.entities.inventory.MetaInventoryButton;
 import io.github.anjoismysign.bloblib.managers.InventoryManager;
 import io.github.anjoismysign.bloblib.managers.InventoryTrackerManager;
 import io.github.anjoismysign.bloblib.managers.MetaInventoryShard;
-import io.github.anjoismysign.anjo.entities.Uber;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;

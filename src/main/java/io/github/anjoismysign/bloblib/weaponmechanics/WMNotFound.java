@@ -15,6 +15,6 @@ public class WMNotFound implements WeaponMechanicsMiddleman {
 
     @Override
     public @NotNull ItemStack generateWeapon(@NotNull String weaponTitle) {
-        return ItemStackBuilder.build(Material.DIRT).build();
+        return ItemStackBuilder.build(Material.POISONOUS_POTATO).itemName("&cWeaponMechanics{"+weaponTitle+"}").build();
     }
 }

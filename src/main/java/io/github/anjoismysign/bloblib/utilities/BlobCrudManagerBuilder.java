@@ -1,5 +1,11 @@
 package io.github.anjoismysign.bloblib.utilities;
 
+import io.github.anjoismysign.anjo.crud.CrudManagerBuilder;
+import io.github.anjoismysign.anjo.crud.Crudable;
+import io.github.anjoismysign.anjo.crud.MySQLCrudManager;
+import io.github.anjoismysign.anjo.crud.SQLiteCrudManager;
+import io.github.anjoismysign.anjo.entities.NamingConventions;
+import io.github.anjoismysign.anjo.entities.Result;
 import io.github.anjoismysign.bloblib.entities.BlobCrudable;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import io.github.anjoismysign.bloblib.managers.BlobPlugin;
@@ -8,12 +14,6 @@ import io.github.anjoismysign.bloblib.storage.IdentifierType;
 import io.github.anjoismysign.bloblib.storage.MongoCrudManager;
 import io.github.anjoismysign.bloblib.storage.MongoDB;
 import io.github.anjoismysign.bloblib.storage.StorageType;
-import io.github.anjoismysign.anjo.crud.CrudManagerBuilder;
-import io.github.anjoismysign.anjo.crud.Crudable;
-import io.github.anjoismysign.anjo.crud.MySQLCrudManager;
-import io.github.anjoismysign.anjo.crud.SQLiteCrudManager;
-import io.github.anjoismysign.anjo.entities.NamingConventions;
-import io.github.anjoismysign.anjo.entities.Result;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.Locale;

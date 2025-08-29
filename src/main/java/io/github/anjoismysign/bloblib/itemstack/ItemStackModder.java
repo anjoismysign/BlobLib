@@ -82,6 +82,10 @@ public final class ItemStackModder {
         return unflag(flags.toArray(new ItemFlag[0]));
     }
 
+    public ItemStackModder itemName(String name) {
+        return itemMeta(itemMeta -> itemMeta.setItemName(TextColor.PARSE(name)));
+    }
+
     public ItemStackModder displayName(String name, char colorChar) {
         return itemMeta(itemMeta -> itemMeta.setDisplayName(TextColor.CUSTOM_PARSE(colorChar, name)));
     }

@@ -106,12 +106,12 @@ public class InventoryButton {
     }
 
     public void setDisplay(ItemStack display, ButtonManager<?> manager) {
-        slots.forEach(slot -> manager.getIntegerKeys().put(slot, display));
+        slots.forEach(slot -> manager.getIntegerKeys().put(slot, ()->display));
     }
 
     public void setDisplay(ItemStack display, SharableInventory<?> inventory) {
         slots.forEach(slot -> {
-            inventory.getButtonManager().getIntegerKeys().put(slot, display);
+            inventory.getButtonManager().getIntegerKeys().put(slot, ()->display);
             inventory.setButton(slot, display);
         });
     }

@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * @author anjoismysign
@@ -19,7 +20,7 @@ public abstract class MultiSlotable {
     @NotNull
     private final Collection<Integer> slots;
     @NotNull
-    private final ItemStack itemStack;
+    private final Supplier<ItemStack> supplier;
     private final boolean isPermissionInverted;
     @Nullable
     private final String hasPermission;
@@ -34,7 +35,7 @@ public abstract class MultiSlotable {
 
     /**
      * @param slots                      The slots to be used.
-     * @param itemStack                  The ItemStack to be used.
+     * @param supplier                   The ItemStack supplier to be used.
      * @param hasPermission              If the player needs to have a permission.
      * @param hasMoney                   If the player needs to have money.
      * @param priceCurrency              The price currency to be used.
@@ -45,7 +46,7 @@ public abstract class MultiSlotable {
      * @param isTranslatableItemInverted If the TranslatableItem check is inverted.
      */
     public MultiSlotable(@NotNull Collection<Integer> slots,
-                         @NotNull ItemStack itemStack,
+                         @NotNull Supplier<ItemStack> supplier,
                          @Nullable String hasPermission,
                          double hasMoney,
                          @Nullable String priceCurrency,
@@ -55,7 +56,7 @@ public abstract class MultiSlotable {
                          boolean isMoneyInverted,
                          boolean isTranslatableItemInverted) {
         this.slots = slots;
-        this.itemStack = itemStack;
+        this.supplier = supplier;
         this.hasPermission = hasPermission;
         this.hasMoney = hasMoney;
         this.moneyCurrency = priceCurrency;
@@ -78,8 +79,8 @@ public abstract class MultiSlotable {
     /**
      * @return The ItemStack of this MultiSlotable.
      */
-    public ItemStack getItemStack() {
-        return itemStack;
+    public Supplier<ItemStack> getItemStack() {
+        return supplier;
     }
 
     @Nullable

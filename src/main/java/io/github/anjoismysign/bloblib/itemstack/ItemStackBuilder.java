@@ -197,7 +197,7 @@ public final class ItemStackBuilder {
     }
 
     public ItemStackBuilder itemName(String name) {
-        return itemMeta(itemMeta -> itemMeta.setItemName(name));
+        return itemMeta(itemMeta -> itemMeta.setItemName(TextColor.PARSE(name)));
     }
 
     public ItemStackBuilder hideToolTip(boolean hideToolTip) {

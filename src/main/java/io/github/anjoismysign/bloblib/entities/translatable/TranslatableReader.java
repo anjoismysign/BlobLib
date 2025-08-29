@@ -6,6 +6,7 @@ import io.github.anjoismysign.bloblib.SoulAPI;
 import io.github.anjoismysign.bloblib.UniqueAPI;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import io.github.anjoismysign.bloblib.itemstack.ItemStackReader;
+import io.github.anjoismysign.bloblib.itemstack.OmniStack;
 import io.github.anjoismysign.bloblib.utilities.TextColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
@@ -17,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public class TranslatableReader {
 
@@ -30,29 +32,33 @@ public class TranslatableReader {
             throw new ConfigurationFieldException("'ItemStack' is missing or not set");
         boolean isSoul = section.getBoolean("Is-Soul", false);
         boolean isUnique = section.getBoolean("Is-Unique", false);
-        ItemStack itemStack = ItemStackReader.READ_OR_FAIL_FAST(section.getConfigurationSection("ItemStack")).build();
-        @Nullable ItemMeta itemMeta = itemStack.getItemMeta();
-        Objects.requireNonNull(itemMeta, "'itemMeta' cannot be null");
-        CustomModelDataComponent dataComponent = itemMeta.getCustomModelDataComponent();
-        List<String> list = new ArrayList<>(dataComponent.getStrings());
-        list.add(TranslatableItem.KEY_PREFIX + key);
-        list.add(TranslatableItem.LOCALE_PREFIX + locale);
-        dataComponent.setStrings(list);
-        itemMeta.setCustomModelDataComponent(dataComponent);
-        itemStack.setItemMeta(itemMeta);
-        if (isSoul)
-            SoulAPI.getInstance().set(itemStack);
-        if (isUnique)
-            UniqueAPI.getInstance().set(itemStack);
-        if (section.isDouble("Fluid-Pressure")) {
-            double pressure = section.getDouble("Fluid-Pressure");
-            FluidPressureAPI.getInstance().set(itemStack, pressure);
-        }
-        if (section.isDouble("Projectile-Damage")) {
-            double damage = section.getDouble("Projectile-Damage");
-            ProjectileDamageAPI.getInstance().set(itemStack, damage);
-        }
-        return BlobTranslatableItem.of(key, locale, itemStack);
+        OmniStack omniStack = ItemStackReader.OMNI_STACK(section.getConfigurationSection("ItemStack"));
+        final Supplier<ItemStack> supplier = () -> {
+            ItemStack itemStack = omniStack.getCopy();
+            @Nullable ItemMeta itemMeta = itemStack.getItemMeta();
+            Objects.requireNonNull(itemMeta, "'itemMeta' cannot be null");
+            CustomModelDataComponent dataComponent = itemMeta.getCustomModelDataComponent();
+            List<String> list = new ArrayList<>(dataComponent.getStrings());
+            list.add(TranslatableItem.KEY_PREFIX + key);
+            list.add(TranslatableItem.LOCALE_PREFIX + locale);
+            dataComponent.setStrings(list);
+            itemMeta.setCustomModelDataComponent(dataComponent);
+            itemStack.setItemMeta(itemMeta);
+            if (isSoul)
+                SoulAPI.getInstance().set(itemStack);
+            if (isUnique)
+                UniqueAPI.getInstance().set(itemStack);
+            if (section.isDouble("Fluid-Pressure")) {
+                double pressure = section.getDouble("Fluid-Pressure");
+                FluidPressureAPI.getInstance().set(itemStack, pressure);
+            }
+            if (section.isDouble("Projectile-Damage")) {
+                double damage = section.getDouble("Projectile-Damage");
+                ProjectileDamageAPI.getInstance().set(itemStack, damage);
+            }
+            return itemStack;
+        };
+        return BlobTranslatableItem.of(key, locale, supplier);
     }
 
     public static TranslatableSnippet SNIPPET(@NotNull ConfigurationSection section,

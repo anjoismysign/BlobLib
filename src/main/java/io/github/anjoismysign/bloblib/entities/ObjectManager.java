@@ -1,9 +1,9 @@
 package io.github.anjoismysign.bloblib.entities;
 
+import io.github.anjoismysign.anjo.entities.Result;
 import io.github.anjoismysign.bloblib.entities.logger.BlobPluginLogger;
 import io.github.anjoismysign.bloblib.managers.Manager;
 import io.github.anjoismysign.bloblib.managers.ManagerDirector;
-import io.github.anjoismysign.anjo.entities.Result;
 import io.github.anjoismysign.skeramidcommands.command.CommandTarget;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;

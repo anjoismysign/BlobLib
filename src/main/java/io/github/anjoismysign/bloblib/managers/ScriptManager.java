@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.managers;
 
-import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.anjo.entities.Result;
+import io.github.anjoismysign.bloblib.BlobLib;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;

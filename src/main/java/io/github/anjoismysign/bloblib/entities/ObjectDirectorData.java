@@ -1,8 +1,8 @@
 package io.github.anjoismysign.bloblib.entities;
 
+import io.github.anjoismysign.anjo.entities.NamingConventions;
 import io.github.anjoismysign.bloblib.managers.BlobPlugin;
 import io.github.anjoismysign.bloblib.managers.InventoryManager;
-import io.github.anjoismysign.anjo.entities.NamingConventions;
 
 import java.io.File;
 

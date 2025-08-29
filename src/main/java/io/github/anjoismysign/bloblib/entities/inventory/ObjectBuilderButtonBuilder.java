@@ -1,5 +1,6 @@
 package io.github.anjoismysign.bloblib.entities.inventory;
 
+import io.github.anjoismysign.anjo.entities.NamingConventions;
 import io.github.anjoismysign.bloblib.BlobLibAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibListenerAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
@@ -8,7 +9,6 @@ import io.github.anjoismysign.bloblib.entities.BlobEditor;
 import io.github.anjoismysign.bloblib.entities.message.BlobMessage;
 import io.github.anjoismysign.bloblib.utilities.BukkitUtil;
 import io.github.anjoismysign.bloblib.utilities.ItemStackUtil;
-import io.github.anjoismysign.anjo.entities.NamingConventions;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;

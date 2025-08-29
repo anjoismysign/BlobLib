@@ -1,10 +1,7 @@
 package io.github.anjoismysign.bloblib.psa;
 
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.aesthetic.DependencyLoader;
 import org.jetbrains.annotations.NotNull;
-
-import java.io.File;
 
 public enum BukkitPSA {
     INSTANCE;

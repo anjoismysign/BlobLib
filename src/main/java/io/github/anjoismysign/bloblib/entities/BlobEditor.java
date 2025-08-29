@@ -1,5 +1,6 @@
 package io.github.anjoismysign.bloblib.entities;
 
+import io.github.anjoismysign.anjo.entities.Uber;
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.entities.inventory.BlobInventory;
 import io.github.anjoismysign.bloblib.entities.inventory.ObjectBuilder;
@@ -7,7 +8,6 @@ import io.github.anjoismysign.bloblib.entities.inventory.VariableSelector;
 import io.github.anjoismysign.bloblib.entities.listeners.BlobEditorListener;
 import io.github.anjoismysign.bloblib.entities.listeners.BlobSelectorListener;
 import io.github.anjoismysign.bloblib.managers.SelectorListenerManager;
-import io.github.anjoismysign.anjo.entities.Uber;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -54,23 +54,6 @@ public class BlobEditor<T> extends VariableSelector<T> implements VariableEditor
                                           @Nullable Consumer<Player> onReturn) {
         return new BlobEditor<>(blobInventory, builderId,
                 dataType, collection, addConsumer, onReturn);
-    }
-
-    /**
-     * Creates a new BlobEditor passing a BlobInventory for VariableSelector
-     *
-     * @param <T>           the type of the collection
-     * @param blobInventory the BlobInventory
-     * @param builderId     the id of the builder
-     * @param dataType      the data type of the editor
-     * @param addConsumer   the consumer to add a new element
-     * @return the new BlobEditor
-     */
-    public static <T> BlobEditor<T> build(BlobInventory blobInventory, UUID builderId,
-                                          String dataType, Consumer<Player> addConsumer,
-                                          @Nullable Consumer<Player> onReturn) {
-        return new BlobEditor<>(blobInventory, builderId,
-                dataType, addConsumer, onReturn);
     }
 
     /**

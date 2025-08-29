@@ -2,8 +2,8 @@ package io.github.anjoismysign.bloblib.bungee;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import io.github.anjoismysign.bloblib.entities.DocumentDecorator;
 import io.github.anjoismysign.anjo.entities.Uber;
+import io.github.anjoismysign.bloblib.entities.DocumentDecorator;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.Connection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
