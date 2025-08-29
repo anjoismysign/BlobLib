@@ -44,9 +44,6 @@ repositories {
         name = "matteodev"
     }
 
-    maven {
-        url = uri("https://repo.oraxen.com/releases")
-    }
 }
 
 dependencies {
@@ -78,7 +75,6 @@ dependencies {
     compileOnly(libs.net.lingala.zip4j.zip4j)
     compileOnly(libs.de.oliver.fancyholograms)
     compileOnly("dev.lone:api-itemsadder:4.0.10")
-    compileOnly("io.th0rgal:oraxen:1.192.1")
 //    mvn install:install-file \
 //    -Dfile=weaponmechanics-4.1.5.jar \
 //    -DpomFile=weaponmechanics-4.1.5.pom.xml

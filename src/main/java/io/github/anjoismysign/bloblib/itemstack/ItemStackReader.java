@@ -4,7 +4,6 @@ import com.destroystokyo.paper.profile.PlayerProfile;
 import io.github.anjoismysign.anjo.entities.Uber;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import io.github.anjoismysign.bloblib.itemsadder.ItemsAdderMiddleman;
-import io.github.anjoismysign.bloblib.oraxen.OraxenMiddleman;
 import io.github.anjoismysign.bloblib.utilities.TextColor;
 import io.github.anjoismysign.bloblib.weaponmechanics.WeaponMechanicsMiddleman;
 import io.papermc.paper.datacomponent.item.Consumable;
@@ -79,8 +78,7 @@ public class ItemStackReader {
         final Supplier<ItemStack> stackSupplier;
         if (!inputMaterial.startsWith("HEAD-")
                 && !inputMaterial.startsWith("WM-")
-                && !inputMaterial.startsWith("IA-")
-                && !inputMaterial.startsWith("ORAXEN-")) {
+                && !inputMaterial.startsWith("IA-")) {
             Material material = Material.getMaterial(inputMaterial);
             if (material == null)
                 throw new ConfigurationFieldException("'" + inputMaterial + "' is not a valid material");
@@ -93,12 +91,9 @@ public class ItemStackReader {
         } else if (inputMaterial.startsWith("WM-")) {
             String weaponTitle = inputMaterial.substring(3);
             stackSupplier = () -> WeaponMechanicsMiddleman.getInstance().generateWeapon(weaponTitle);
-        } else if (inputMaterial.startsWith("IA-")){
+        } else {
             String namespacedId = inputMaterial.substring(3);
             stackSupplier = () -> ItemsAdderMiddleman.getInstance().itemStackOfCustomStack(namespacedId);
-        } else {
-            String id = inputMaterial.substring(7);
-            stackSupplier = () -> OraxenMiddleman.getInstance().buildItem(id);
         }
         final Consumer<ItemStackBuilder> builderConsumer = builder -> {
             if (section.isInt("Amount")) {
