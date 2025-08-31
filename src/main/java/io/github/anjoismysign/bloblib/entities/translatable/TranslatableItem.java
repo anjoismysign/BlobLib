@@ -2,6 +2,7 @@ package io.github.anjoismysign.bloblib.entities.translatable;
 
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
 import io.github.anjoismysign.bloblib.events.TranslatableItemCloneEvent;
+import io.github.anjoismysign.bloblib.utilities.ItemStackUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -11,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -71,8 +73,11 @@ public interface TranslatableItem extends Translatable<ItemStack> {
     static void localize(@Nullable ItemStack itemStack,
                          @NotNull String locale) {
         TranslatableItem translatableItem = TranslatableItem.byItemStack(itemStack);
-        if (translatableItem == null)
+        if (translatableItem == null) {
+            if (itemStack != null && !itemStack.getType().isAir()){
+            }
             return;
+        }
         TranslatableItem localized = translatableItem.localize(locale);
         ItemStack toStack = localized.getClone();
         ItemMeta from = itemStack.getItemMeta();
