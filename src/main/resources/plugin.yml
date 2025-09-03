@@ -4,6 +4,7 @@ main: io.github.anjoismysign.bloblib.BlobLib
 api-version: 1.21.5
 load: STARTUP
 loadbefore:
+  - Skript
   - Vault
   - LibsDisguises
   - ProtocolLib
