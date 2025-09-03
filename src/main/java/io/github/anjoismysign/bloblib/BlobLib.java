@@ -40,6 +40,7 @@ import io.github.anjoismysign.bloblib.managers.fillermanager.FillerManager;
 import io.github.anjoismysign.bloblib.placeholderapi.TranslatablePH;
 import io.github.anjoismysign.bloblib.placeholderapi.WorldGuardPH;
 import io.github.anjoismysign.bloblib.psa.BukkitPSA;
+import io.github.anjoismysign.bloblib.skript.BlobLibSkriptAddon;
 import io.github.anjoismysign.bloblib.utilities.MinecraftVersion;
 import io.github.anjoismysign.bloblib.utilities.SerializationLib;
 import io.github.anjoismysign.bloblib.vault.VaultManager;
@@ -189,6 +190,9 @@ public class BlobLib extends JavaPlugin {
             if (engineHubManager.isWorldGuardInstalled())
                 WorldGuardPH.getInstance(this);
             disguiseManager.load();
+            if (Bukkit.getPluginManager().isPluginEnabled("Skript")){
+                new BlobLibSkriptAddon();
+            }
         });
     }
 

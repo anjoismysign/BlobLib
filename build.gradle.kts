@@ -44,6 +44,10 @@ repositories {
         name = "matteodev"
     }
 
+    maven {
+        url = uri("https://repo.skriptlang.org/releases")
+    }
+
 }
 
 dependencies {
@@ -83,6 +87,7 @@ dependencies {
 //    -Dfile=mechanicscore-4.1.5.jar \
 //    -DpomFile=mechanicscore-4.1.5.pom.xml
     compileOnly("com.cjcrafter:mechanicscore:4.1.5")
+    compileOnly("com.github.SkriptLang:Skript:2.12.2")
 }
 
 group = "io.github.anjoismysign"
