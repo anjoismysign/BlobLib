@@ -74,6 +74,16 @@ System:
     Type: TITLE
     Title: '&c&lTIMEOUT!'
     Subtitle: '&7Took too long!'
+  Welcome:
+    Type: CHAT
+    Message: '&7Welcome, &f%player%'
+    BlobSound: System.Welcome
+  Join:
+    Type: CHAT
+    Message: '&7%player% &fjoined the game'
+  Quit:
+    Type: CHAT
+    Message: '&7%player% &fleft the game'
 Algorithm:
   Adjacent-Null:
     Type: ACTIONBAR_TITLE
