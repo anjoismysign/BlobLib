@@ -1,4 +1,4 @@
-package io.github.anjoismysign.bloblib.enginehub.worldedit;
+package io.github.anjoismysign.bloblib.middleman.enginehub.worldedit;
 
 import org.bukkit.Location;
 import org.bukkit.World;

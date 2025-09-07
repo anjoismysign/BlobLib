@@ -1,4 +1,4 @@
-package io.github.anjoismysign.bloblib.itemstack;
+package io.github.anjoismysign.bloblib.middleman.itemstack;
 
 import io.github.anjoismysign.bloblib.utilities.ItemStackUtil;
 import io.github.anjoismysign.bloblib.utilities.TextColor;

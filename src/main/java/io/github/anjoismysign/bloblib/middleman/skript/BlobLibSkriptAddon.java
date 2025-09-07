@@ -1,4 +1,4 @@
-package io.github.anjoismysign.bloblib.skript;
+package io.github.anjoismysign.bloblib.middleman.skript;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptAddon;

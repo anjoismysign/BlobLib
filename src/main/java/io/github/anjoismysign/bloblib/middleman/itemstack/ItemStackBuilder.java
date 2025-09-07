@@ -1,4 +1,4 @@
-package io.github.anjoismysign.bloblib.itemstack;
+package io.github.anjoismysign.bloblib.middleman.itemstack;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import io.github.anjoismysign.bloblib.BlobLib;

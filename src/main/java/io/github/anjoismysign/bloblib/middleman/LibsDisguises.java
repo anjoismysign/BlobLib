@@ -1,5 +1,7 @@
-package io.github.anjoismysign.bloblib.disguises;
+package io.github.anjoismysign.bloblib.middleman;
 
+import io.github.anjoismysign.bloblib.disguises.DisguiseEngine;
+import io.github.anjoismysign.bloblib.disguises.Disguiser;
 import me.libraryaddict.disguise.DisguiseAPI;
 import me.libraryaddict.disguise.disguisetypes.Disguise;
 import me.libraryaddict.disguise.utilities.parser.DisguiseParser;

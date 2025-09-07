@@ -65,6 +65,8 @@ dependencies {
     api(libs.io.github.anjoismysign.psa.sql)
     api(libs.io.github.anjoismysign.winona)
     api(libs.io.github.anjoismysign.aesthetic)
+    compileOnly("io.github.anjoismysign:alternativesaving:1.0")
+    compileOnly("io.github.anjoismysign:blobtycoon:2.0-SNAPSHOT")
     compileOnly("io.github.classgraph:classgraph:4.8.157")
     compileOnly(libs.org.apache.commons.commons.lang3)
     compileOnly(libs.io.papermc.paper.paper.api)

@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.entities.inventory;
 
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.itemstack.ItemStackModder;
+import io.github.anjoismysign.bloblib.middleman.itemstack.ItemStackModder;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;

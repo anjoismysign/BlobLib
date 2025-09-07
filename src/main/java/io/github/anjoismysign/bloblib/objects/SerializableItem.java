@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.objects;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
-import io.github.anjoismysign.bloblib.itemstack.ItemStackReader;
+import io.github.anjoismysign.bloblib.middleman.itemstack.ItemStackReader;
 import io.github.anjoismysign.bloblib.utilities.TextColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;

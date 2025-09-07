@@ -1,6 +1,6 @@
 package io.github.anjoismysign.bloblib.entities.translatable;
 
-import io.github.anjoismysign.bloblib.itemstack.ItemStackModder;
+import io.github.anjoismysign.bloblib.middleman.itemstack.ItemStackModder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;

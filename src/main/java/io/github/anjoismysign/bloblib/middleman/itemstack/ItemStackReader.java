@@ -1,9 +1,9 @@
-package io.github.anjoismysign.bloblib.itemstack;
+package io.github.anjoismysign.bloblib.middleman.itemstack;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import io.github.anjoismysign.anjo.entities.Uber;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
-import io.github.anjoismysign.bloblib.itemsadder.ItemsAdderMiddleman;
+import io.github.anjoismysign.bloblib.middleman.itemsadder.ItemsAdderMiddleman;
 import io.github.anjoismysign.bloblib.utilities.TextColor;
 import io.github.anjoismysign.bloblib.weaponmechanics.WeaponMechanicsMiddleman;
 import io.papermc.paper.datacomponent.item.Consumable;

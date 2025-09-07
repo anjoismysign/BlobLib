@@ -4,7 +4,7 @@ import io.github.anjoismysign.anjo.entities.Uber;
 import io.github.anjoismysign.bloblib.entities.BlobObject;
 import io.github.anjoismysign.bloblib.entities.message.BlobMessage;
 import io.github.anjoismysign.bloblib.entities.message.BlobSound;
-import io.github.anjoismysign.bloblib.itemstack.ItemStackModder;
+import io.github.anjoismysign.bloblib.middleman.itemstack.ItemStackModder;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;

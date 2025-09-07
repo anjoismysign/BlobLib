@@ -3,7 +3,7 @@ package io.github.anjoismysign.bloblib.entities.currency;
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
 import io.github.anjoismysign.bloblib.entities.BlobObject;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
-import io.github.anjoismysign.bloblib.itemstack.ItemStackReader;
+import io.github.anjoismysign.bloblib.middleman.itemstack.ItemStackReader;
 import io.github.anjoismysign.bloblib.managers.BlobPlugin;
 import io.github.anjoismysign.bloblib.managers.ManagerDirector;
 import io.github.anjoismysign.bloblib.utilities.Formatter;

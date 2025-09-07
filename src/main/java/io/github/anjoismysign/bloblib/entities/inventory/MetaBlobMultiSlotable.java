@@ -6,7 +6,7 @@ import io.github.anjoismysign.bloblib.api.BlobLibActionAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
 import io.github.anjoismysign.bloblib.entities.translatable.TranslatableItem;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
-import io.github.anjoismysign.bloblib.itemstack.ItemStackReader;
+import io.github.anjoismysign.bloblib.middleman.itemstack.ItemStackReader;
 import io.github.anjoismysign.bloblib.utilities.IntegerRange;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;

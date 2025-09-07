@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.entities.area;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import io.github.anjoismysign.bloblib.enginehub.EngineHubManager;
+import io.github.anjoismysign.bloblib.middleman.enginehub.EngineHubManager;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.BlockVector;

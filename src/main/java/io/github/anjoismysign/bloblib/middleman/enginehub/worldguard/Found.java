@@ -1,4 +1,4 @@
-package io.github.anjoismysign.bloblib.enginehub.worldguard;
+package io.github.anjoismysign.bloblib.middleman.enginehub.worldguard;
 
 import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -8,7 +8,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
-import io.github.anjoismysign.bloblib.enginehub.worldedit.WorldEditWorker;
+import io.github.anjoismysign.bloblib.middleman.enginehub.worldedit.WorldEditWorker;
 import org.bukkit.Location;
 import org.bukkit.World;
 

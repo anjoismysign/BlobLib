@@ -1,4 +1,4 @@
-package io.github.anjoismysign.bloblib.enginehub.worldedit;
+package io.github.anjoismysign.bloblib.middleman.enginehub.worldedit;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEditException;

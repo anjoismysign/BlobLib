@@ -2,7 +2,7 @@ package io.github.anjoismysign.bloblib;
 
 import io.github.anjoismysign.bloblib.command.BlobLibCommand;
 import io.github.anjoismysign.bloblib.disguises.DisguiseManager;
-import io.github.anjoismysign.bloblib.enginehub.EngineHubManager;
+import io.github.anjoismysign.bloblib.middleman.enginehub.EngineHubManager;
 import io.github.anjoismysign.bloblib.entities.DataAssetType;
 import io.github.anjoismysign.bloblib.entities.logger.BlobPluginLogger;
 import io.github.anjoismysign.bloblib.entities.positionable.Positionable;
@@ -40,7 +40,7 @@ import io.github.anjoismysign.bloblib.managers.fillermanager.FillerManager;
 import io.github.anjoismysign.bloblib.placeholderapi.TranslatablePH;
 import io.github.anjoismysign.bloblib.placeholderapi.WorldGuardPH;
 import io.github.anjoismysign.bloblib.psa.BukkitPSA;
-import io.github.anjoismysign.bloblib.skript.BlobLibSkriptAddon;
+import io.github.anjoismysign.bloblib.middleman.skript.BlobLibSkriptAddon;
 import io.github.anjoismysign.bloblib.utilities.MinecraftVersion;
 import io.github.anjoismysign.bloblib.utilities.SerializationLib;
 import io.github.anjoismysign.bloblib.vault.VaultManager;

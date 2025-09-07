@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.entities.area;
 
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.enginehub.EngineHubManager;
+import io.github.anjoismysign.bloblib.middleman.enginehub.EngineHubManager;
 import io.github.anjoismysign.bloblib.entities.translatable.BlobTranslatableArea;
 import io.github.anjoismysign.bloblib.entities.translatable.TranslatableArea;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;

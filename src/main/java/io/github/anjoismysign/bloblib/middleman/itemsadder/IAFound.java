@@ -1,7 +1,7 @@
-package io.github.anjoismysign.bloblib.itemsadder;
+package io.github.anjoismysign.bloblib.middleman.itemsadder;
 
 import dev.lone.itemsadder.api.CustomStack;
-import io.github.anjoismysign.bloblib.itemstack.ItemStackBuilder;
+import io.github.anjoismysign.bloblib.middleman.itemstack.ItemStackBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;

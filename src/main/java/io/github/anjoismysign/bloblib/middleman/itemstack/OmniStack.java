@@ -1,4 +1,4 @@
-package io.github.anjoismysign.bloblib.itemstack;
+package io.github.anjoismysign.bloblib.middleman.itemstack;
 
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;

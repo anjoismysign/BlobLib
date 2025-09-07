@@ -1,9 +1,9 @@
-package io.github.anjoismysign.bloblib.enginehub;
+package io.github.anjoismysign.bloblib.middleman.enginehub;
 
-import io.github.anjoismysign.bloblib.enginehub.worldedit.Absent;
-import io.github.anjoismysign.bloblib.enginehub.worldedit.Found;
-import io.github.anjoismysign.bloblib.enginehub.worldedit.WorldEditWorker;
-import io.github.anjoismysign.bloblib.enginehub.worldguard.WorldGuardWorker;
+import io.github.anjoismysign.bloblib.middleman.enginehub.worldedit.Absent;
+import io.github.anjoismysign.bloblib.middleman.enginehub.worldedit.Found;
+import io.github.anjoismysign.bloblib.middleman.enginehub.worldedit.WorldEditWorker;
+import io.github.anjoismysign.bloblib.middleman.enginehub.worldguard.WorldGuardWorker;
 import org.bukkit.Bukkit;
 
 public class EngineHubManager {
@@ -30,9 +30,9 @@ public class EngineHubManager {
         }
         if (Bukkit.getPluginManager().getPlugin("WorldGuard") == null) {
             Bukkit.getLogger().info("[BlobLib] WorldGuard not found, disabling its features.");
-            worldGuard = new io.github.anjoismysign.bloblib.enginehub.worldguard.Absent();
+            worldGuard = new io.github.anjoismysign.bloblib.middleman.enginehub.worldguard.Absent();
         } else {
-            worldGuard = new io.github.anjoismysign.bloblib.enginehub.worldguard.Found(worldEdit);
+            worldGuard = new io.github.anjoismysign.bloblib.middleman.enginehub.worldguard.Found(worldEdit);
             worldGuardInstalled = true;
         }
     }

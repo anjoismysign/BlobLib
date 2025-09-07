@@ -1,5 +1,6 @@
 package io.github.anjoismysign.bloblib.disguises;
 
+import io.github.anjoismysign.bloblib.middleman.LibsDisguises;
 import org.bukkit.Bukkit;
 
 public class DisguiseManager {

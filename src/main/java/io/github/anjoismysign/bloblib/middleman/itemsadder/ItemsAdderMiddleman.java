@@ -1,4 +1,4 @@
-package io.github.anjoismysign.bloblib.itemsadder;
+package io.github.anjoismysign.bloblib.middleman.itemsadder;
 
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;

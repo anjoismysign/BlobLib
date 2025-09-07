@@ -1,6 +1,6 @@
-package io.github.anjoismysign.bloblib.itemsadder;
+package io.github.anjoismysign.bloblib.middleman.itemsadder;
 
-import io.github.anjoismysign.bloblib.itemstack.ItemStackBuilder;
+import io.github.anjoismysign.bloblib.middleman.itemstack.ItemStackBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
