@@ -9,6 +9,7 @@ import io.papermc.paper.datacomponent.item.DamageResistant;
 import io.papermc.paper.datacomponent.item.Equippable;
 import io.papermc.paper.datacomponent.item.FoodProperties;
 import io.papermc.paper.datacomponent.item.ItemAdventurePredicate;
+import io.papermc.paper.datacomponent.item.ItemAttributeModifiers;
 import io.papermc.paper.datacomponent.item.ResolvableProfile;
 import io.papermc.paper.datacomponent.item.Tool;
 import io.papermc.paper.datacomponent.item.TooltipDisplay;
@@ -129,6 +130,11 @@ public final class ItemStackBuilder {
         return this;
     }
 
+    public ItemStackBuilder attributeModifiers(@NotNull ItemAttributeModifiers modifiers){
+        itemStack.setData(DataComponentTypes.ATTRIBUTE_MODIFIERS, modifiers);
+        return this;
+    }
+
     public ItemStackBuilder glider() {
         itemStack.setData(DataComponentTypes.GLIDER);
         return this;
@@ -226,10 +232,20 @@ public final class ItemStackBuilder {
     }
 
     public ItemStackBuilder hideAll() {
-        @Nullable var modifiers = itemStack.getDataOrDefault(DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplay.tooltipDisplay().hideTooltip(true).build());
+        var display = TooltipDisplay.tooltipDisplay()
+                .addHiddenComponents(DataComponentTypes.ATTRIBUTE_MODIFIERS)
+                .addHiddenComponents(DataComponentTypes.ENCHANTMENTS)
+                .addHiddenComponents(DataComponentTypes.CAN_BREAK)
+                .addHiddenComponents(DataComponentTypes.CAN_PLACE_ON)
+                .addHiddenComponents(DataComponentTypes.POTION_CONTENTS)
+                .addHiddenComponents(DataComponentTypes.POTION_DURATION_SCALE)
+                .addHiddenComponents(DataComponentTypes.DYED_COLOR)
+                .addHiddenComponents(DataComponentTypes.TRIM)
+                .addHiddenComponents(DataComponentTypes.UNBREAKABLE)
+                .addHiddenComponents(DataComponentTypes.STORED_ENCHANTMENTS)
+                .build();
 
-        itemStack.setData(DataComponentTypes.TOOLTIP_DISPLAY, modifiers);
-
+        itemStack.setData(DataComponentTypes.TOOLTIP_DISPLAY, display);
         return this;
     }
 

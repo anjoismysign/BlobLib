@@ -12,7 +12,7 @@ public class LibsDisguises implements Disguiser {
     private final DisguiseEngine engine;
 
     public LibsDisguises() {
-        engine = DisguiseEngine.NONE;
+        engine = DisguiseEngine.LIBS_DISGUISES;
     }
 
 

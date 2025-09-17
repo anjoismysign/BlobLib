@@ -2,6 +2,7 @@ package io.github.anjoismysign.bloblib.middleman.itemstack;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import io.github.anjoismysign.anjo.entities.Uber;
+import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import io.github.anjoismysign.bloblib.middleman.itemsadder.ItemsAdderMiddleman;
 import io.github.anjoismysign.bloblib.utilities.TextColor;
@@ -9,10 +10,16 @@ import io.github.anjoismysign.bloblib.weaponmechanics.WeaponMechanicsMiddleman;
 import io.papermc.paper.datacomponent.item.Consumable;
 import io.papermc.paper.datacomponent.item.Equippable;
 import io.papermc.paper.datacomponent.item.FoodProperties;
+import io.papermc.paper.datacomponent.item.ItemAttributeModifiers;
 import io.papermc.paper.datacomponent.item.Tool;
+import io.papermc.paper.datacomponent.item.consumable.ConsumeEffect;
 import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
+import io.papermc.paper.registry.TypedKey;
+import io.papermc.paper.registry.keys.MobEffectKeys;
+import io.papermc.paper.registry.set.RegistryKeySet;
+import io.papermc.paper.registry.set.RegistrySet;
 import io.papermc.paper.registry.tag.Tag;
 import io.papermc.paper.registry.tag.TagKey;
 import net.kyori.adventure.key.Key;
@@ -20,6 +27,7 @@ import net.kyori.adventure.util.TriState;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -33,6 +41,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.bukkit.inventory.meta.trim.TrimPattern;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.profile.PlayerTextures;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -249,6 +259,93 @@ public class ItemStackReader {
                         throw new ConfigurationFieldException("Consumable.Animation is not a valid ItemUseAnimation");
                     }
                 }
+                if (consumableSection.isConfigurationSection("ConsumeEffects")) {
+                    ConfigurationSection effectsSection = consumableSection.getConfigurationSection("ConsumeEffects");
+                    effectsSection.getKeys(false).forEach(effectName -> {
+                        ConfigurationSection effectSection = effectsSection.getConfigurationSection(effectName);
+                        if (effectSection == null) return;
+
+                        String effectType = effectSection.getString("Type");
+                        if (effectType == null) {
+                            throw new ConfigurationFieldException("ConsumeEffect '" + effectName + "' is missing 'Type' field");
+                        }
+
+                        switch (effectType.toUpperCase()) {
+                            case "APPLY_STATUS_EFFECTS": {
+                                List<PotionEffect> potionEffects = new ArrayList<>();
+                                float probability = (float) effectSection.getDouble("Probability", 1.0);
+
+                                if (effectSection.isList("Effects")) {
+                                    List<String> effectStrings = effectSection.getStringList("Effects");
+                                    for (String effectString : effectStrings) {
+                                        String[] parts = effectString.split(" ");
+                                        if (parts.length < 3) {
+                                            throw new ConfigurationFieldException("Invalid potion effect format: " + effectString);
+                                        }
+                                        String[] namespacedKey = parts[0].split(":");
+                                        if (namespacedKey.length < 2) {
+                                            throw new ConfigurationFieldException("Invalid NamespacedKey: "+parts[0]);
+                                        }
+                                        @Nullable PotionEffectType type = RegistryAccess.registryAccess().getRegistry(RegistryKey.MOB_EFFECT).get(Key.key(namespacedKey[0],namespacedKey[1]));
+                                        if (type == null) {
+                                            throw new ConfigurationFieldException("Invalid potion effect type: " + parts[0]);
+                                        }
+
+                                        try {
+                                            PotionEffect potionEffect = getPotionEffect(parts, type);
+                                            potionEffects.add(potionEffect);
+                                        } catch (NumberFormatException e) {
+                                            throw new ConfigurationFieldException("Invalid potion effect parameters in: " + effectString);
+                                        }
+                                    }
+                                }
+
+                                consumable.addEffect(ConsumeEffect.applyStatusEffects(potionEffects, probability));
+                                break;
+                            }
+                            case "REMOVE_STATUS_EFFECTS": {
+                                if (effectSection.isList("Effects")) {
+                                    List<String> effectNames = effectSection.getStringList("Effects");
+                                    List<TypedKey<PotionEffectType>> list = new ArrayList<>();
+
+                                    for (String effectNameStr : effectNames) {
+                                        TypedKey<PotionEffectType> typeTypedKey = TypedKey.create(RegistryKey.MOB_EFFECT, Key.key(effectNameStr));
+                                        list.add(typeTypedKey);
+                                    }
+
+                                    var x = RegistrySet.keySet(RegistryKey.MOB_EFFECT, list);
+
+                                    consumable.addEffect(ConsumeEffect.removeEffects(x));
+                                }
+                                break;
+                            }
+                            case "CLEAR_ALL_STATUS_EFFECTS": {
+                                consumable.addEffect(ConsumeEffect.clearAllStatusEffects());
+                                break;
+                            }
+                            case "PLAY_SOUND": {
+                                String sound = effectSection.getString("Sound");
+                                if (sound == null) {
+                                    throw new ConfigurationFieldException("PlaySound effect '" + effectName + "' is missing 'Sound' field");
+                                }
+                                String[] split = sound.split(":");
+                                if (split.length != 2) {
+                                    throw new ConfigurationFieldException("Invalid sound format: " + sound);
+                                }
+                                Key soundKey = Key.key(split[0], split[1]);
+                                consumable.addEffect(ConsumeEffect.playSoundConsumeEffect(soundKey));
+                                break;
+                            }
+                            case "TELEPORT_RANDOMLY": {
+                                double diameter = effectSection.getDouble("Diameter", 16.0);
+                                consumable.addEffect(ConsumeEffect.teleportRandomlyEffect((float) diameter));
+                                break;
+                            }
+                            default:
+                                throw new ConfigurationFieldException("Unknown consume effect type: " + effectType);
+                        }
+                    });
+                }
                 builder.consumable(consumable.build());
             }
             if (section.isConfigurationSection("Tool")) {
@@ -327,39 +424,45 @@ public class ItemStackReader {
             }
             if (section.isConfigurationSection("Attributes")) {
                 ConfigurationSection attributes = section.getConfigurationSection("Attributes");
-                Uber<ItemStackBuilder> uber = Uber.drive(builder);
+                ItemAttributeModifiers.Builder attributesBuilder = ItemAttributeModifiers.itemAttributes();
                 attributes.getKeys(false).forEach(key -> {
                     String attributeKey = key.toLowerCase(Locale.ROOT);
                     if (!attributes.isConfigurationSection(key))
                         throw new ConfigurationFieldException("Attribute '" + key + "' is not valid");
                     ConfigurationSection attributeSection = attributes.getConfigurationSection(key);
                     try {
-                        String name = attributes.getString("Name", UUID.randomUUID().toString());
                         Attribute attribute = registryAccess.getRegistry(RegistryKey.ATTRIBUTE).get(Key.key(attributeKey));
+                        if (attribute == null){
+                            throw new ConfigurationFieldException("No Attribute found by: "+attributeKey);
+                        }
                         if (!attributeSection.isDouble("Amount"))
                             throw new ConfigurationFieldException("Attribute '" + key + "' has an invalid amount (DECIMAL NUMBER)");
+                        String name = attributes.getString("Name", UUID.randomUUID().toString());
                         double amount = attributeSection.getDouble("Amount");
                         if (!attributeSection.isString("Operation"))
                             throw new ConfigurationFieldException("Attribute '" + key + "' is missing 'Operation' field");
                         EquipmentSlotGroup equipmentSlot;
                         String readEquipmentSlotGroup = attributeSection.getString("EquipmentSlotGroup");
-                        if (readEquipmentSlotGroup == null)
-                            readEquipmentSlotGroup = attributeSection.getString("EquipmentSlot");
                         if (readEquipmentSlotGroup != null) {
                             try {
                                 equipmentSlot = EquipmentSlotGroup.getByName(readEquipmentSlotGroup);
                             } catch (IllegalArgumentException exception) {
                                 throw new ConfigurationFieldException("EquipmentSlot '" + readEquipmentSlotGroup + "' is not valid");
                             }
-                        } else
+                        } else {
                             equipmentSlot = null;
+                        }
+                        if (equipmentSlot == null){
+                            throw new ConfigurationFieldException("EquipmentSlot not set for 'Attributes' section");
+                        }
                         AttributeModifier.Operation operation = AttributeModifier.Operation.valueOf(attributeSection.getString("Operation"));
-                        uber.talk(uber.thanks().attribute(attribute, name, amount, operation, equipmentSlot));
+                        NamespacedKey namespacedKey = new NamespacedKey(BlobLib.getInstance(), name);
+                        attributesBuilder.addModifier(attribute, new AttributeModifier(namespacedKey, amount,operation,equipmentSlot));
+//                        uber.talk(uber.thanks().attribute(attribute, name, amount, operation, equipmentSlot));
                     } catch (IllegalArgumentException exception) {
                         throw new ConfigurationFieldException("Attribute '" + key + "' has an invalid Operation");
                     }
                 });
-                uber.thanks();
             }
             builder.hideAll();
             boolean showAll = section.getBoolean("ShowAllItemFlags", false);
@@ -371,6 +474,17 @@ public class ItemStackReader {
             }
         };
         return new OmniStack(stackSupplier, builderConsumer);
+    }
+
+    private static @NotNull PotionEffect getPotionEffect(String[] parts, PotionEffectType type) {
+        int duration = Integer.parseInt(parts[1]);
+        int amplifier = Integer.parseInt(parts[2]);
+        boolean ambient = parts.length > 3 && Boolean.parseBoolean(parts[3]);
+        boolean particles = parts.length > 4 ? Boolean.parseBoolean(parts[4]) : true;
+        boolean icon = parts.length > 5 ? Boolean.parseBoolean(parts[5]) : true;
+
+        PotionEffect potionEffect = new PotionEffect(type, duration, amplifier, ambient, particles, icon);
+        return potionEffect;
     }
 
     public static Color parseColor(String color) {
