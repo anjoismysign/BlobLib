@@ -56,15 +56,12 @@ public class BlobLibFileManager implements IFileManager {
     public void loadFiles() {
         try {
             for (DataAssetType assetType : DataAssetType.values()) {
-                @Nullable File directory = getDirectory(assetType);
-                Objects.requireNonNull(directory, "No directory for DataAssetType: " + assetType.name());
-                if (!directory.exists())
-                    directory.mkdir();
                 String path = LOWERCASED + assetType.getDefaultFilePath();
                 Optional<InputStream> optional = Optional.ofNullable(plugin.getResource(path));
                 if (optional.isPresent()) {
                     @Nullable File file = getFile(assetType.getDefaultFileKey());
                     Objects.requireNonNull(file, "No default file for DataAssetType: " + assetType.name());
+                    file.getParentFile().mkdirs();
                     file.createNewFile();
                     ResourceUtil.updateYml(getDirectory(assetType), File.separator + "temp" + path, path, file, plugin);
                 }

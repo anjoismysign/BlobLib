@@ -56,8 +56,9 @@ public class DataAssetManager<T extends DataAsset> {
         Objects.requireNonNull(readFunction, "Read function cannot be null");
         Objects.requireNonNull(type, "Data asset type cannot be null");
         Objects.requireNonNull(filter, "Filter cannot be null");
-        if (!assetDirectory.isDirectory())
-            throw new IllegalArgumentException("File '" + assetDirectory.getPath() + "' is not a directory");
+        if (!assetDirectory.isDirectory()){
+            assetDirectory.mkdirs();
+        }
         return new DataAssetManager<>(assetDirectory,
                 readFunction, type, filter, saveConsumer);
     }
