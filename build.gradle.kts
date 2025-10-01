@@ -7,6 +7,8 @@ plugins {
 repositories {
     mavenLocal()
 
+    maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
+
     maven {
         url = uri("https://repo.extendedclip.com/releases/")
     }
@@ -75,7 +77,6 @@ dependencies {
     compileOnly(libs.com.sk89q.worldguard.worldguard.bukkit)
     compileOnly(libs.commons.io.commons.io)
     compileOnly(libs.com.github.decentsoftware.eu.decentholograms)
-    compileOnly(libs.net.md.v5.bungeecord.api)
     compileOnly(libs.me.clip.placeholderapi)
     compileOnly(libs.libsdisguises.libsdisguises)
     compileOnly(libs.net.lingala.zip4j.zip4j)

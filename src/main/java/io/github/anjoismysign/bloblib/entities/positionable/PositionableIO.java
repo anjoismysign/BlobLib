@@ -38,16 +38,14 @@ public enum PositionableIO {
     }
 
     /**
-     * Serializes a Location randomly
+     * Serializes a Location with a key
      *
      * @param location The location in context
-     * @return The randomly generated reference
      */
-    public String writeRandom(@NotNull Location location) {
+    public void writeWithKey(@NotNull Location location,
+                             @NotNull String key){
         Objects.requireNonNull(location, "'location' cannot be null");
         File directory = BlobLib.getInstance().getTranslatablePositionableManager().getAssetDirectory();
-        UUID random = UUID.randomUUID();
-        String key = random.toString();
         Positionable positionable = Positionable.of(location);
         BlobTranslatablePositionable blobTranslatablePositionable = new BlobTranslatablePositionable(
                 key,
@@ -69,6 +67,17 @@ public enum PositionableIO {
         } catch ( IOException exception ) {
             throw new RuntimeException(exception);
         }
+    }
+
+    /**
+     * Serializes a Location randomly
+     *
+     * @param location The location in context
+     * @return The randomly generated reference
+     */
+    public String writeRandom(@NotNull Location location) {
+        String key = UUID.randomUUID().toString();
+        writeWithKey(location, key);
         return key;
     }
 

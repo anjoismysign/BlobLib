@@ -343,6 +343,12 @@ Deposit:
     Type: CHAT
     Message: You have deposited %display%
 TranslatablePositionable:
+  Key-Cannot-Be-Empty:
+    Type: CHAT
+    Message: '&cKey cannot be empty'
+  Save:
+    Type: CHAT
+    Message: '&f%reference% &7was successfully added'
   Random:
     Type: CHAT
     Message: '&f%reference% &7was successfully added'

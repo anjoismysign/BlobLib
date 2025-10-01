@@ -48,6 +48,7 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -241,6 +242,32 @@ public enum BlobLibCommand {
 
     public void translatablepositionable(@NotNull Command bloblib) {
         Command command = bloblib.child("translatablepositionable");
+        Command save = command.child("save");
+        save.setParameters(CommandTargetBuilder.fromMap(()->Map.of("Type the key you wanna use","")));
+        save.onExecute(((permissionMessenger, args) -> {
+            CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
+            if (!(sender instanceof Player player)) {
+                BlobLibMessageAPI.getInstance()
+                        .getMessage("System.Console-Not-Allowed-Command", sender)
+                        .toCommandSender(sender);
+                return;
+            }
+            String key = args[0];
+            if (key.isEmpty()){
+                BlobLibMessageAPI.getInstance()
+                        .getMessage("TranslatablePositionable.Key-Cannot-Be-Empty", player)
+                        .handle(player);
+                return;
+            }
+            Location location = player.getLocation();
+            PositionableIO.INSTANCE.writeWithKey(location, key);
+            BlobLibMessageAPI.getInstance()
+                    .getMessage("TranslatablePositionable.Save", player)
+                    .modder()
+                    .replace("%reference%", key)
+                    .get()
+                    .handle(player);
+        }));
         Command random = command.child("random");
         random.onExecute(((permissionMessenger, args) -> {
             CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
@@ -251,11 +278,11 @@ public enum BlobLibCommand {
                 return;
             }
             Location location = player.getLocation();
-            String reference = PositionableIO.INSTANCE.writeRandom(location);
+            String key = PositionableIO.INSTANCE.writeRandom(location);
             BlobLibMessageAPI.getInstance()
                     .getMessage("TranslatablePositionable.Random", player)
                     .modder()
-                    .replace("%reference%", reference)
+                    .replace("%reference%", key)
                     .get()
                     .handle(player);
         }));

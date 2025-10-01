@@ -18,7 +18,6 @@ io-github-anjoismysign-skeramidcommands = "1.0.6"
 io-github-anjoismysign-winona = "1.0"
 me-clip-placeholderapi = "2.11.6"
 net-lingala-zip4j-zip4j = "2.11.5"
-net-md-v5-bungeecord-api = "1.20-R0.2-SNAPSHOT"
 net-milkbowl-vault-vaultapi = "1.7.6"
 org-apache-commons-commons-lang3 = "3.17.0"
 org-mongodb-bson = "4.10.2"
@@ -41,7 +40,6 @@ io-github-anjoismysign-skeramidcommands = { module = "io.github.anjoismysign:ske
 io-github-anjoismysign-winona = { module = "io.github.anjoismysign:winona", version.ref = "io-github-anjoismysign-winona" }
 me-clip-placeholderapi = { module = "me.clip:placeholderapi", version.ref = "me-clip-placeholderapi" }
 net-lingala-zip4j-zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "net-lingala-zip4j-zip4j" }
-net-md-v5-bungeecord-api = { module = "net.md-5:bungeecord-api", version.ref = "net-md-v5-bungeecord-api" }
 net-milkbowl-vault-vaultapi = { module = "net.milkbowl.vault:vaultapi", version.ref = "net-milkbowl-vault-vaultapi" }
 org-apache-commons-commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "org-apache-commons-commons-lang3" }
 org-mongodb-bson = { module = "org.mongodb:bson", version.ref = "org-mongodb-bson" }
