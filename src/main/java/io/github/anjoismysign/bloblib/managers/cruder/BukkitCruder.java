@@ -109,9 +109,6 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
                 Bukkit.getScheduler().runTaskAsynchronously(getPlugin(),
                         () -> cruder.update(serializable));
                 serializables.put(uuid, serializable);
-                if (joinEvent == null)
-                    return;
-                Bukkit.getPluginManager().callEvent(joinEvent.apply(serializable));
                 autoSave.put(uuid, new BukkitRunnable() {
                     @Override
                     public void run() {
@@ -132,6 +129,10 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
                     }
                 }.runTaskTimer(getPlugin(), 20 * 60 * 5,
                         20 * 60 * 5));
+                if (joinEvent == null) {
+                    return;
+                }
+                Bukkit.getPluginManager().callEvent(joinEvent.apply(serializable));
             });
         });
     }
