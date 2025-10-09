@@ -410,3 +410,7 @@ Soul:
     Type: TITLE
     Title: '&f&lDONE'
     Subtitle: '&7Attempted to soul all items in your inventory'
+WeaponMechanics:
+  Weapon-Info-Display:
+    Type: ACTIONBAR
+    Message: '%name% &8<<&7%ammo%87>>'

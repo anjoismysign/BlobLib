@@ -58,7 +58,7 @@ public class BlobMultiSlotable extends MultiSlotable {
             ConfigurationSection itemStackSection = section.getConfigurationSection("ItemStack");
             if (itemStackSection == null)
                 throw new ConfigurationFieldException("'ItemStack' ConfigurationSection is null");
-            readSupplier = () -> ItemStackReader.OMNI_STACK(itemStackSection).getCopy();
+            readSupplier = () -> ItemStackReader.OMNI_STACK(itemStackSection, null).getCopy();
         }
         final Supplier<ItemStack> supplier;
         if (section.isInt("Amount")) {

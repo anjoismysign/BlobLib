@@ -45,122 +45,123 @@ public class BlobLibTranslatableAPI {
     }
 
     /**
-     * Will get a TranslatableBlock by its key and locale.
+     * Will get a TranslatableBlock by its identifier and locale.
      * If locale is not available, it will return the default locale.
      *
-     * @param key    The key of the translatable
+     * @param identifier The identifier of the translatable
      * @param locale The locale of the translatable
      * @return The TranslatableBlock
      */
     @Nullable
-    public TranslatableBlock getTranslatableBlock(@NotNull String key,
+    public TranslatableBlock getTranslatableBlock(@NotNull String identifier,
                                                   @NotNull String locale) {
-        return getTranslatableManager().getBlock(key, locale);
+        return getTranslatableManager().getBlock(identifier, locale);
     }
 
     /**
-     * Will get a TranslatableBlock by its key and the default locale.
+     * Will get a TranslatableBlock by its identifier and the default locale.
      *
-     * @param key The key of the translatable
+     * @param identifier The identifier of the translatable
      * @return The TranslatableBlock
      */
     @Nullable
-    public TranslatableBlock getTranslatableBlock(@NotNull String key) {
-        return getTranslatableManager().getBlock(key);
+    public TranslatableBlock getTranslatableBlock(@NotNull String identifier) {
+        return getTranslatableManager().getBlock(identifier);
     }
 
     /**
-     * Will get a TranslatableBlock by its key and the player's locale.
+     * Will get a TranslatableBlock by its identifier and the player's locale.
      *
-     * @param key    The key of the translatable
+     * @param identifier The identifier of the translatable
      * @param player The player to get the locale from
      * @return The TranslatableBlock
      */
     @Nullable
-    public TranslatableBlock getTranslatableBlock(@NotNull String key,
+    public TranslatableBlock getTranslatableBlock(@NotNull String identifier,
                                                   @NotNull Player player) {
         Objects.requireNonNull(player);
-        return getTranslatableManager().getBlock(key, player.getLocale());
+        return getTranslatableManager().getBlock(identifier, player.getLocale());
     }
 
     /**
-     * Will get a TranslatableSnippet by its key and locale.
+     * Will get a TranslatableSnippet by its identifier and locale.
      * If locale is not available, it will return the default locale.
      *
+     * @param identifier The identifier of the translatable
      * @param locale The locale of the translatable
      * @return The TranslatableSnippet
      */
     @Nullable
-    public TranslatableSnippet getTranslatableSnippet(@NotNull String key,
+    public TranslatableSnippet getTranslatableSnippet(@NotNull String identifier,
                                                       @NotNull String locale) {
-        return getTranslatableManager().getSnippet(key, locale);
+        return getTranslatableManager().getSnippet(identifier, locale);
     }
 
     /**
-     * Will get a TranslatableSnippet by its key and the default locale.
+     * Will get a TranslatableSnippet by its identifier and the default locale.
      *
-     * @param key The key of the translatable
+     * @param identifier The identifier of the translatable
      * @return The TranslatableSnippet
      */
     @Nullable
-    public TranslatableSnippet getTranslatableSnippet(@NotNull String key) {
-        return getTranslatableManager().getSnippet(key);
+    public TranslatableSnippet getTranslatableSnippet(@NotNull String identifier) {
+        return getTranslatableManager().getSnippet(identifier);
     }
 
     /**
-     * Will get a TranslatableSnippet by its key and the player's locale.
+     * Will get a TranslatableSnippet by its identifier and the player's locale.
      *
-     * @param key    The key of the translatable
+     * @param identifier The identifier of the translatable
      * @param player The player to get the locale from
      * @return The TranslatableSnippet
      */
     @Nullable
-    public TranslatableSnippet getTranslatableSnippet(@NotNull String key,
+    public TranslatableSnippet getTranslatableSnippet(@NotNull String identifier,
                                                       @NotNull Player player) {
         Objects.requireNonNull(player);
-        return getTranslatableManager().getSnippet(key, player.getLocale());
+        return getTranslatableManager().getSnippet(identifier, player.getLocale());
     }
 
     /**
-     * Will get a TranslatableItem by its key and locale.
+     * Will get a TranslatableItem by its identifier and locale.
      *
-     * @param key    The key of the translatable
+     * @param identifier The identifier of the translatable
      * @param locale The locale of the translatable
      * @return The TranslatableItem
      */
     @Nullable
-    public TranslatableItem getTranslatableItem(@NotNull String key,
+    public TranslatableItem getTranslatableItem(@NotNull String identifier,
                                                 @NotNull String locale) {
-        return plugin.getTranslatableItemManager().getAsset(key, locale);
+        return plugin.getTranslatableItemManager().getAsset(identifier, locale);
     }
 
     /**
-     * Will get a TranslatableItem by its key and the default locale.
+     * Will get a TranslatableItem by its identifier and the default locale.
      *
-     * @param key The key of the translatable
+     * @param identifier The identifier of the translatable
      * @return The TranslatableItem
      */
     @Nullable
-    public TranslatableItem getTranslatableItem(@NotNull String key) {
-        return plugin.getTranslatableItemManager().getAsset(key);
+    public TranslatableItem getTranslatableItem(@NotNull String identifier) {
+        return plugin.getTranslatableItemManager().getAsset(identifier);
     }
 
     /**
-     * Will get a TranslatableItem by its key and the player's locale.
+     * Will get a TranslatableItem by its identifier and the player's locale.
      *
-     * @param key    The key of the translatable
+     * @param identifier The identifier of the translatable
      * @param player The player to get the locale from
      * @return The TranslatableItem
      */
     @Nullable
-    public TranslatableItem getTranslatableItem(@NotNull String key,
+    public TranslatableItem getTranslatableItem(@NotNull String identifier,
                                                 @NotNull Player player) {
         Objects.requireNonNull(player);
-        return plugin.getTranslatableItemManager().getAsset(key, player.getLocale());
+        return plugin.getTranslatableItemManager().getAsset(identifier, player.getLocale());
     }
 
     /**
-     * Get all the TranslatableItems by their key.
+     * Get all the TranslatableItems by their locale.
      *
      * @param locale The locale for the TranslatableItems
      * @return The list of TranslatableItem
@@ -171,41 +172,41 @@ public class BlobLibTranslatableAPI {
     }
 
     /**
-     * Will get a TranslatablePositionable by its key and locale.
+     * Will get a TranslatablePositionable by its identifier and locale.
      *
-     * @param key    The key of the translatable
+     * @param identifier The identifier of the translatable
      * @param locale The locale of the translatable
      * @return The TranslatablePositionable
      */
     @Nullable
-    public TranslatablePositionable getTranslatablePositionable(@NotNull String key,
+    public TranslatablePositionable getTranslatablePositionable(@NotNull String identifier,
                                                                 @NotNull String locale) {
-        return plugin.getTranslatablePositionableManager().getAsset(key, locale);
+        return plugin.getTranslatablePositionableManager().getAsset(identifier, locale);
     }
 
     /**
-     * Will get a TranslatablePositionable by its key and the default locale.
+     * Will get a TranslatablePositionable by its identifier and the default locale.
      *
-     * @param key The key of the translatable
+     * @param identifier The identifier of the translatable
      * @return The TranslatablePositionable
      */
     @Nullable
-    public TranslatablePositionable getTranslatablePositionable(@NotNull String key) {
-        return plugin.getTranslatablePositionableManager().getAsset(key);
+    public TranslatablePositionable getTranslatablePositionable(@NotNull String identifier) {
+        return plugin.getTranslatablePositionableManager().getAsset(identifier);
     }
 
     /**
-     * Will get a TranslatablePositionable by its key and the player's locale.
+     * Will get a TranslatablePositionable by its identifier and the player's locale.
      *
-     * @param key    The key of the translatable
+     * @param identifier The identifier of the translatable
      * @param player The player to get the locale from
      * @return The TranslatablePositionable
      */
     @Nullable
-    public TranslatablePositionable getTranslatablePositionable(@NotNull String key,
+    public TranslatablePositionable getTranslatablePositionable(@NotNull String identifier,
                                                                 @NotNull Player player) {
         Objects.requireNonNull(player);
-        return plugin.getTranslatablePositionableManager().getAsset(key, player.getLocale());
+        return plugin.getTranslatablePositionableManager().getAsset(identifier, player.getLocale());
     }
 
     /**
@@ -220,45 +221,45 @@ public class BlobLibTranslatableAPI {
     }
 
     /**
-     * Will get a TranslatableArea by its key and locale.
+     * Will get a TranslatableArea by its identifier and locale.
      *
-     * @param key    The key of the translatable
+     * @param identifier The identifier of the translatable
      * @param locale The locale of the translatable
      * @return The TranslatableArea
      */
     @Nullable
-    public TranslatableArea getTranslatableArea(@NotNull String key,
+    public TranslatableArea getTranslatableArea(@NotNull String identifier,
                                                 @NotNull String locale) {
-        return plugin.getTranslatableAreaManager().getAsset(key, locale);
+        return plugin.getTranslatableAreaManager().getAsset(identifier, locale);
     }
 
     /**
-     * Will get a TranslatableArea by its key and the default locale.
+     * Will get a TranslatableArea by its identifier and the default locale.
      *
-     * @param key The key of the translatable
+     * @param identifier The identifier of the translatable
      * @return The TranslatableArea
      */
     @Nullable
-    public TranslatableArea getTranslatableArea(@NotNull String key) {
-        return plugin.getTranslatableAreaManager().getAsset(key);
+    public TranslatableArea getTranslatableArea(@NotNull String identifier) {
+        return plugin.getTranslatableAreaManager().getAsset(identifier);
     }
 
     /**
-     * Will get a TranslatableArea by its key and the player's locale.
+     * Will get a TranslatableArea by its identifier and the player's locale.
      *
-     * @param key    The key of the translatable
+     * @param identifier The identifier of the translatable
      * @param player The player to get the locale from
      * @return The TranslatableArea
      */
     @Nullable
-    public TranslatableArea getTranslatableArea(@NotNull String key,
+    public TranslatableArea getTranslatableArea(@NotNull String identifier,
                                                 @NotNull Player player) {
         Objects.requireNonNull(player);
-        return plugin.getTranslatableAreaManager().getAsset(key, player.getLocale());
+        return plugin.getTranslatableAreaManager().getAsset(identifier, player.getLocale());
     }
 
     /**
-     * Get all the TranslatableAreas by their key.
+     * Get all the TranslatableAreas by their locale.
      *
      * @param locale The locale for the TranslatableAreas
      * @return The list of TranslatableArea

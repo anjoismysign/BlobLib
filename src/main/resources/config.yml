@@ -15,3 +15,5 @@ Locale:
       - pt_br
     fr_fr:
       - fr_ca
+WeaponMechanics:
+  Actionbar-Weapon-Info-Display: false

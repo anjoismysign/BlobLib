@@ -2,6 +2,7 @@ package io.github.anjoismysign.bloblib;
 
 import io.github.anjoismysign.bloblib.command.BlobLibCommand;
 import io.github.anjoismysign.bloblib.disguises.DisguiseManager;
+import io.github.anjoismysign.bloblib.events.BlobLibPreReloadEvent;
 import io.github.anjoismysign.bloblib.middleman.enginehub.EngineHubManager;
 import io.github.anjoismysign.bloblib.entities.DataAssetType;
 import io.github.anjoismysign.bloblib.entities.logger.BlobPluginLogger;
@@ -200,6 +201,10 @@ public class BlobLib extends JavaPlugin {
      * Will reload all the managers
      */
     public void reload() {
+        org.bukkit.plugin.PluginManager pluginManager = Bukkit.getPluginManager();
+        BlobLibPreReloadEvent preReloadEvent = new BlobLibPreReloadEvent();
+        pluginManager.callEvent(preReloadEvent);
+
         configManager.reload();
         listenerManager.reload();
         soundManager.reload();
@@ -215,7 +220,7 @@ public class BlobLib extends JavaPlugin {
         getPluginManager().reload();
 
         BlobLibReloadEvent reloadEvent = new BlobLibReloadEvent();
-        Bukkit.getPluginManager().callEvent(reloadEvent);
+        pluginManager.callEvent(reloadEvent);
     }
 
     public BlobLibAPI getAPI() {

@@ -32,7 +32,7 @@ public class TranslatableReader {
             throw new ConfigurationFieldException("'ItemStack' is missing or not set");
         boolean isSoul = section.getBoolean("Is-Soul", false);
         boolean isUnique = section.getBoolean("Is-Unique", false);
-        OmniStack omniStack = ItemStackReader.OMNI_STACK(section.getConfigurationSection("ItemStack"));
+        OmniStack omniStack = ItemStackReader.OMNI_STACK(section.getConfigurationSection("ItemStack"), key);
         final Supplier<ItemStack> supplier = () -> {
             ItemStack itemStack = omniStack.getCopy();
             @Nullable ItemMeta itemMeta = itemStack.getItemMeta();

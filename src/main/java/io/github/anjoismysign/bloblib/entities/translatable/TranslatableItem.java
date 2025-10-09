@@ -2,7 +2,6 @@ package io.github.anjoismysign.bloblib.entities.translatable;
 
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
 import io.github.anjoismysign.bloblib.events.TranslatableItemCloneEvent;
-import io.github.anjoismysign.bloblib.utilities.ItemStackUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -12,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -52,15 +50,15 @@ public interface TranslatableItem extends Translatable<ItemStack> {
     }
 
     /**
-     * Gets a TranslatableItem by its key. Key is the same as identifier.
+     * Gets a TranslatableItem by its identifier. Key is the same as identifier.
      *
-     * @param key The key to get the tag set by.
+     * @param identifier The identifier to get the tag set by.
      * @return The TranslatableItem, or null if it doesn't exist.
      */
     @Nullable
-    static TranslatableItem by(@NotNull String key) {
-        Objects.requireNonNull(key);
-        return BlobLibTranslatableAPI.getInstance().getTranslatableItem(key);
+    static TranslatableItem by(@NotNull String identifier) {
+        Objects.requireNonNull(identifier);
+        return BlobLibTranslatableAPI.getInstance().getTranslatableItem(identifier);
     }
 
     /**

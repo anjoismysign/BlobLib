@@ -6,6 +6,7 @@ import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import io.github.anjoismysign.bloblib.middleman.itemsadder.ItemsAdderMiddleman;
 import io.github.anjoismysign.bloblib.utilities.TextColor;
+import io.github.anjoismysign.bloblib.weaponmechanics.WeaponInfoDisplay;
 import io.github.anjoismysign.bloblib.weaponmechanics.WeaponMechanicsMiddleman;
 import io.papermc.paper.datacomponent.item.Consumable;
 import io.papermc.paper.datacomponent.item.Equippable;
@@ -77,11 +78,19 @@ public class ItemStackReader {
 
     @Deprecated
     public static ItemStackBuilder READ_OR_FAIL_FAST(ConfigurationSection section){
-        return ItemStackBuilder.build(OMNI_STACK(section).getCopy());
+        return ItemStackBuilder.build(OMNI_STACK(section, null).getCopy());
     }
 
+    /**
+     * Creates an OmniStack.
+     * It supports using multiple item providers
+     * @param section The ConfigurationSection to read the OmniStack from
+     * @param identifier An optional TranslatableItem identifier in case it is linked to a TranslatableItem
+     * @return The OmniStack
+     */
     @NotNull
-    public static OmniStack OMNI_STACK(ConfigurationSection section) {
+    public static OmniStack OMNI_STACK(@NotNull ConfigurationSection section,
+                                       @Nullable String identifier) {
         RegistryAccess registryAccess = RegistryAccess.registryAccess();
         @Nullable String inputMaterial = section.getString("Material");
         Objects.requireNonNull(inputMaterial, "'Material' is not set");
@@ -100,6 +109,9 @@ public class ItemStackReader {
             stackSupplier = builder::build;
         } else if (inputMaterial.startsWith("WM-")) {
             String weaponTitle = inputMaterial.substring(3);
+            if (identifier != null){
+                WeaponInfoDisplay.INSTANCE.map(weaponTitle, identifier);
+            }
             stackSupplier = () -> WeaponMechanicsMiddleman.getInstance().generateWeapon(weaponTitle);
         } else {
             String namespacedId = inputMaterial.substring(3);
