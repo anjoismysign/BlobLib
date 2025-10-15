@@ -48,7 +48,7 @@ public enum AreaIO {
                 key,
                 "en_us",
                 "Change me later!",
-                new BoxArea(boundingBox, world.getName(), null)
+                new BoxArea(boundingBox, world.getName(), boundingBox.getCenter().toBlockVector())
         );
         File file = new File(directory, key + ".yml");
         directory.mkdirs();
