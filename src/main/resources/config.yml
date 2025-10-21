@@ -1,3 +1,5 @@
+Settings:
+  Verbose: false
 Listeners:
   TinyListeners:
     Display-Unriding: false

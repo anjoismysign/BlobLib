@@ -32,6 +32,7 @@ public class TranslatableReader {
             throw new ConfigurationFieldException("'ItemStack' is missing or not set");
         boolean isSoul = section.getBoolean("Is-Soul", false);
         boolean isUnique = section.getBoolean("Is-Unique", false);
+        String rarityName = section.getString("Rarity", "common");
         OmniStack omniStack = ItemStackReader.OMNI_STACK(section.getConfigurationSection("ItemStack"), key);
         final Supplier<ItemStack> supplier = () -> {
             ItemStack itemStack = omniStack.getCopy();
@@ -58,7 +59,7 @@ public class TranslatableReader {
             }
             return itemStack;
         };
-        return BlobTranslatableItem.of(key, locale, supplier);
+        return BlobTranslatableItem.of(key, locale, supplier, rarityName);
     }
 
     public static TranslatableSnippet SNIPPET(@NotNull ConfigurationSection section,

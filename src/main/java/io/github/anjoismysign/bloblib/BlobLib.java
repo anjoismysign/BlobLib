@@ -138,6 +138,7 @@ public class BlobLib extends JavaPlugin {
         fileManager = new BlobLibFileManager();
         fileManager.unpackYamlFile("/BlobInventory", "CurrencyBuilder", false);
         engineHubManager = EngineHubManager.getInstance();
+        configManager = BlobLibConfigManager.getInstance(this);
 
         inventoryManager = new InventoryManager();
         inventoryTrackerManager = new InventoryTrackerManager();
@@ -179,7 +180,6 @@ public class BlobLib extends JavaPlugin {
         selectorManager = new SelectorListenerManager();
         variableSelectorManager = new VariableSelectorManager();
         dropListenerManager = new DropListenerManager();
-        configManager = BlobLibConfigManager.getInstance(this);
         listenerManager = BlobLibListenerManager.getInstance(configManager);
 
         //Load reloadable managers

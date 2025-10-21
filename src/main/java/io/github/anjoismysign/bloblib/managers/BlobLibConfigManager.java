@@ -6,7 +6,9 @@ import io.github.anjoismysign.bloblib.entities.ListenersSection;
 import io.github.anjoismysign.bloblib.entities.LocaleDefault;
 import io.github.anjoismysign.bloblib.entities.TinyEventListener;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +35,7 @@ public class BlobLibConfigManager {
     private String consoleLocale;
     private Map<String, String> defaultLocale;
     private boolean verbose;
+    private TranslatableRarities rarities;
 
     private BlobLibConfigManager(BlobLib plugin) {
         this.plugin = plugin;
@@ -55,7 +58,7 @@ public class BlobLibConfigManager {
             List<String> from = localeDefault.from();
             from.forEach(fromLocale -> {
                 if (defaultLocale.containsKey(fromLocale)) {
-                    BlobLib.getAnjoLogger().singleError("Duplicate default locale for " + fromLocale);
+                    BlobLib.getAnjoLogger().singleError("Duplicate default description for " + fromLocale);
                     return;
                 }
                 defaultLocale.put(fromLocale, to);
@@ -63,6 +66,10 @@ public class BlobLibConfigManager {
         });
         ListenersSection listenersSection = configDecorator.reloadAndGetListeners();
         displayRiding = listenersSection.tinyEventListener("Display-Unriding");
+
+        plugin.saveResource("rarity.yml", false);
+        File rarity = new File(plugin.getDataFolder(), "rarity.yml");
+        rarities = TranslatableRarities.of(YamlConfiguration.loadConfiguration(rarity));
     }
 
     public TinyEventListener getDisplayRiding() {
@@ -90,5 +97,9 @@ public class BlobLibConfigManager {
 
     public boolean isVerbose() {
         return verbose;
+    }
+
+    public TranslatableRarities getRarities() {
+        return rarities;
     }
 }

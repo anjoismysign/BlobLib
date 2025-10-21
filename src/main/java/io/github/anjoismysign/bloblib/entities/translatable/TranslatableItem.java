@@ -1,6 +1,7 @@
 package io.github.anjoismysign.bloblib.entities.translatable;
 
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
+import io.github.anjoismysign.bloblib.entities.TranslatableRarity;
 import io.github.anjoismysign.bloblib.events.TranslatableItemCloneEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -136,6 +137,8 @@ public interface TranslatableItem extends Translatable<ItemStack> {
     default TranslatableItemModder modder() {
         return TranslatableItemModder.mod(this);
     }
+
+    TranslatableRarity getRarity();
 
     /**
      * Will get a clone of the TranslatableItem, allowing

@@ -1,0 +1,30 @@
+minecraft:
+  common:
+    color: "FFFFFF"
+    descriptions:
+      en_us: "<white><b>COMMON</b></white>"
+      es_es: "<white><b>COMÚN</b></white>"
+      pt_pt: "<white><b>COMUM</b></white>"
+      fr_fr: "<white><b>COMMUN</b></white>"
+  uncommon:
+    color: "FFFF55"
+    descriptions:
+      en_us: "<yellow><b>UNCOMMON</b></yellow>"
+      es_es: "<yellow><b>INUSUAL</b></yellow>"
+      pt_pt: "<yellow><b>INUSITADO</b></yellow>"
+      fr_fr: "<yellow><b>INUSUEL</b></yellow>"
+  rare:
+    color: "55FFFF"
+    descriptions:
+      en_us: "<blue><b>RARE</b></blue>"
+      es_es: "<blue><b>RARO</b></blue>"
+      pt_pt: "<blue><b>RARO</b></blue>"
+      fr_fr: "<blue><b>RARE</b></blue>"
+  epic:
+    color: "FF55FF"
+    descriptions:
+      en_us: "<light_purple><b>EPIC</b></light_purple>"
+      es_es: "<light_purple><b>ÉPICO</b></light_purple>"
+      pt_pt: "<light_purple><b>ÉPICO</b></light_purple>"
+      fr_fr: "<light_purple><b>ÉPIQUE</b></light_purple>"
+custom: {}
