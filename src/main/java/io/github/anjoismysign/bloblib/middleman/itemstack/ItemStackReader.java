@@ -1,11 +1,9 @@
 package io.github.anjoismysign.bloblib.middleman.itemstack;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
-import io.github.anjoismysign.anjo.entities.Uber;
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import io.github.anjoismysign.bloblib.middleman.itemsadder.ItemsAdderMiddleman;
-import io.github.anjoismysign.bloblib.utilities.TextColor;
 import io.github.anjoismysign.bloblib.weaponmechanics.WeaponInfoDisplay;
 import io.github.anjoismysign.bloblib.weaponmechanics.WeaponMechanicsMiddleman;
 import io.papermc.paper.datacomponent.item.Consumable;
@@ -18,8 +16,6 @@ import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import io.papermc.paper.registry.TypedKey;
-import io.papermc.paper.registry.keys.MobEffectKeys;
-import io.papermc.paper.registry.set.RegistryKeySet;
 import io.papermc.paper.registry.set.RegistrySet;
 import io.papermc.paper.registry.tag.Tag;
 import io.papermc.paper.registry.tag.TagKey;
@@ -77,20 +73,25 @@ public class ItemStackReader {
     }
 
     @Deprecated
-    public static ItemStackBuilder READ_OR_FAIL_FAST(ConfigurationSection section){
+    public static ItemStackBuilder READ_OR_FAIL_FAST(ConfigurationSection section) {
         return ItemStackBuilder.build(OMNI_STACK(section, null).getCopy());
     }
 
     /**
      * Creates an OmniStack.
      * It supports using multiple item providers
-     * @param section The ConfigurationSection to read the OmniStack from
+     *
+     * @param section    The ConfigurationSection to read the OmniStack from
      * @param identifier An optional TranslatableItem identifier in case it is linked to a TranslatableItem
      * @return The OmniStack
      */
     @NotNull
     public static OmniStack OMNI_STACK(@NotNull ConfigurationSection section,
                                        @Nullable String identifier) {
+        boolean isMiniMessage = section.getBoolean("minimessage", false);
+        @Nullable List<String> readLore = section.isList("Lore") ? section.getStringList("Lore") : null;
+        @Nullable String readDisplayName = section.getString("DisplayName", null);
+        @Nullable String readItemName = section.getString("ItemName", null);
         RegistryAccess registryAccess = RegistryAccess.registryAccess();
         @Nullable String inputMaterial = section.getString("Material");
         Objects.requireNonNull(inputMaterial, "'Material' is not set");
@@ -109,7 +110,7 @@ public class ItemStackReader {
             stackSupplier = builder::build;
         } else if (inputMaterial.startsWith("WM-")) {
             String weaponTitle = inputMaterial.substring(3);
-            if (identifier != null){
+            if (identifier != null) {
                 WeaponInfoDisplay.INSTANCE.map(weaponTitle, identifier);
             }
             stackSupplier = () -> WeaponMechanicsMiddleman.getInstance().generateWeapon(weaponTitle);
@@ -151,10 +152,6 @@ public class ItemStackReader {
                 if (pattern == null)
                     throw new ConfigurationFieldException("'" + trimPattern + "' is not a valid TrimPattern");
                 builder.armorTrim(new ArmorTrim(material, pattern));
-            }
-            if (section.isString("ItemName")) {
-                String itemName = section.getString("ItemName");
-                builder.itemName(TextColor.PARSE(itemName));
             }
             if (section.isBoolean("HideToolTip")) {
                 boolean hideToolTip = section.getBoolean("HideToolTip");
@@ -296,9 +293,9 @@ public class ItemStackReader {
                                         }
                                         String[] namespacedKey = parts[0].split(":");
                                         if (namespacedKey.length < 2) {
-                                            throw new ConfigurationFieldException("Invalid NamespacedKey: "+parts[0]);
+                                            throw new ConfigurationFieldException("Invalid NamespacedKey: " + parts[0]);
                                         }
-                                        @Nullable PotionEffectType type = RegistryAccess.registryAccess().getRegistry(RegistryKey.MOB_EFFECT).get(Key.key(namespacedKey[0],namespacedKey[1]));
+                                        @Nullable PotionEffectType type = RegistryAccess.registryAccess().getRegistry(RegistryKey.MOB_EFFECT).get(Key.key(namespacedKey[0], namespacedKey[1]));
                                         if (type == null) {
                                             throw new ConfigurationFieldException("Invalid potion effect type: " + parts[0]);
                                         }
@@ -414,16 +411,6 @@ public class ItemStackReader {
                     properties.canAlwaysEat(foodSection.getBoolean("CanAlwaysEat"));
                 builder.food(properties.build());
             }
-            if (section.isString("DisplayName")) {
-                builder.displayName(TextColor.PARSE(section
-                        .getString("DisplayName")));
-            }
-            if (section.isList("Lore")) {
-                List<String> input = section.getStringList("Lore");
-                List<String> lore = new ArrayList<>();
-                input.forEach(string -> lore.add(TextColor.PARSE(string)));
-                builder.lore(lore);
-            }
             if (section.isBoolean("Unbreakable")) {
                 builder.unbreakable(section.getBoolean("Unbreakable"));
             }
@@ -433,6 +420,18 @@ public class ItemStackReader {
             if (section.isList("Enchantments")) {
                 List<String> enchantNames = section.getStringList("Enchantments");
                 builder.deserializeAndEnchant(enchantNames);
+            }
+            if (section.isInt("CustomModelData")){
+                int data = section.getInt("CustomModelData");
+                builder.customModelData(data);
+            }
+            if (section.isString("ItemModel")){
+                String text = section.getString("ItemModel");
+                String[] split = text.split(":");
+                if (split.length > 1){
+                    NamespacedKey key = new NamespacedKey(split[0],split[1]);
+                    builder.itemModel(key);
+                }
             }
             if (section.isConfigurationSection("Attributes")) {
                 ConfigurationSection attributes = section.getConfigurationSection("Attributes");
@@ -444,8 +443,8 @@ public class ItemStackReader {
                     ConfigurationSection attributeSection = attributes.getConfigurationSection(key);
                     try {
                         Attribute attribute = registryAccess.getRegistry(RegistryKey.ATTRIBUTE).get(Key.key(attributeKey));
-                        if (attribute == null){
-                            throw new ConfigurationFieldException("No Attribute found by: "+attributeKey);
+                        if (attribute == null) {
+                            throw new ConfigurationFieldException("No Attribute found by: " + attributeKey);
                         }
                         if (!attributeSection.isDouble("Amount"))
                             throw new ConfigurationFieldException("Attribute '" + key + "' has an invalid amount (DECIMAL NUMBER)");
@@ -464,17 +463,17 @@ public class ItemStackReader {
                         } else {
                             equipmentSlot = null;
                         }
-                        if (equipmentSlot == null){
+                        if (equipmentSlot == null) {
                             throw new ConfigurationFieldException("EquipmentSlot not set for 'Attributes' section");
                         }
                         AttributeModifier.Operation operation = AttributeModifier.Operation.valueOf(attributeSection.getString("Operation"));
                         NamespacedKey namespacedKey = new NamespacedKey(BlobLib.getInstance(), name);
-                        attributesBuilder.addModifier(attribute, new AttributeModifier(namespacedKey, amount,operation,equipmentSlot));
-//                        uber.talk(uber.thanks().attribute(attribute, name, amount, operation, equipmentSlot));
+                        attributesBuilder.addModifier(attribute, new AttributeModifier(namespacedKey, amount, operation, equipmentSlot));
                     } catch (IllegalArgumentException exception) {
                         throw new ConfigurationFieldException("Attribute '" + key + "' has an invalid Operation");
                     }
                 });
+                builder.attributeModifiers(attributesBuilder.build());
             }
             builder.hideAll();
             boolean showAll = section.getBoolean("ShowAllItemFlags", false);
@@ -485,7 +484,7 @@ public class ItemStackReader {
                 builder.deserializeAndFlag(flagNames);
             }
         };
-        return new OmniStack(stackSupplier, builderConsumer);
+        return new OmniStack(stackSupplier, builderConsumer, identifier, isMiniMessage, readLore, readDisplayName, readItemName);
     }
 
     private static @NotNull PotionEffect getPotionEffect(String[] parts, PotionEffectType type) {

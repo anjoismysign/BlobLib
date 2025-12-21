@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 /**
  * Called when a TranslatableItem is cloned.
  */
+@Deprecated
 public class TranslatableItemCloneEvent extends TranslatableItemEvent {
     private ItemStack clone;
 

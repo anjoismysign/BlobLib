@@ -44,10 +44,11 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
      * Parses/reads from a ConfigurationSection using ItemStackReader.
      *
      * @param section The ConfigurationSection to read from.
-     * @param key     The key of the BlobMultiSlotable which was intended to read from.
+     * @param identifier The identifier of the BlobMultiSlotable which was intended to read from.
      * @return The BlobMultiSlotable which was read from the ConfigurationSection.
      */
-    public static MetaBlobMultiSlotable read(ConfigurationSection section, String key,
+    public static MetaBlobMultiSlotable read(ConfigurationSection section,
+                                             String identifier,
                                              String locale) {
         final Supplier<ItemStack> readSupplier;
         if (section.isString("ItemStack")) {
@@ -120,14 +121,14 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
         ConfigurationSection singleActionSection = section.getConfigurationSection("Action");
         if (singleActionSection != null) {
             if (!singleActionSection.isString("Action"))
-                Bukkit.getLogger().info("'Action' field is missing in 'Action' ConfigurationSection (" + key + ".Action.Action)");
+                Bukkit.getLogger().info("'Action' field is missing in 'Action' ConfigurationSection (" + identifier + ".Action.Action)");
             if (!singleActionSection.isString("Action-Type"))
-                Bukkit.getLogger().info("'Action-Type' field is missing in 'Action' ConfigurationSection (" + key + ".Action.Action-Type)");
+                Bukkit.getLogger().info("'Action-Type' field is missing in 'Action' ConfigurationSection (" + identifier + ".Action.Action-Type)");
             action = singleActionSection.getString("Action");
             try {
                 actionType = ActionType.valueOf(singleActionSection.getString("Action-Type"));
             } catch (IllegalArgumentException exception) {
-                throw new ConfigurationFieldException("Invalid 'ActionType' for " + key + ".Action.Action-Type");
+                throw new ConfigurationFieldException("Invalid 'ActionType' for " + identifier + ".Action.Action-Type");
             }
         }
         List<ActionMemo> actions = new ArrayList<>();
@@ -138,7 +139,7 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
                 String reference;
                 ActionType type = null;
                 if (actionSection != null) {
-                    String path = key + ".Actions." + key1;
+                    String path = identifier + ".Actions." + key1;
                     if (!actionSection.isString("Action"))
                         Bukkit.getLogger().info("'Action' field is missing in 'Action' ConfigurationSection (" + path + ")");
                     if (!actionSection.isString("Action-Type"))
@@ -147,7 +148,7 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
                     try {
                         type = ActionType.valueOf(actionSection.getString("Action-Type"));
                     } catch (IllegalArgumentException exception) {
-                        throw new ConfigurationFieldException("Invalid 'ActionType' for " + key + ".Action.Action-Type");
+                        throw new ConfigurationFieldException("Invalid 'ActionType' for " + identifier + ".Action.Action-Type");
                     }
                     actions.add(new ActionMemo(reference, type));
                 } else if (actionsSection.isString(key1)) {
@@ -158,7 +159,7 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
         }
         if (action != null)
             actions.add(new ActionMemo(action, actionType));
-        return new MetaBlobMultiSlotable(set, supplier, key, meta, subMeta,
+        return new MetaBlobMultiSlotable(set, supplier, identifier, meta, subMeta,
                 hasPermission, hasMoney, priceCurrency, actions,
                 hasTranslatableItem, isPermissionInverted, isMoneyInverted,
                 isTranslatableItemInverted);
