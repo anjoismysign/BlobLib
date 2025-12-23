@@ -1,6 +1,6 @@
 package io.github.anjoismysign.bloblib.entities.currency;
 
-public interface BankHolder {
+public interface Bank {
     /**
      * Should not interact with the bank directly, use the methods below.
      *
@@ -15,8 +15,8 @@ public interface BankHolder {
      * @param currency the currency
      * @param amount   the amount
      */
-    default void bankDeposit(Currency currency, double amount) {
-        bankDeposit(currency.getKey(), amount);
+    default void deposit(Currency currency, double amount) {
+        deposit(currency.getKey(), amount);
     }
 
     /**
@@ -26,7 +26,7 @@ public interface BankHolder {
      * @param key    the key
      * @param amount the amount
      */
-    default void bankDeposit(String key, double amount) {
+    default void deposit(String key, double amount) {
         getBank().add(key, amount);
     }
 
@@ -37,8 +37,8 @@ public interface BankHolder {
      * @param currency the currency
      * @param amount   the amount
      */
-    default void bankWithdraw(Currency currency, double amount) {
-        bankWithdraw(currency.getKey(), amount);
+    default void withdraw(Currency currency, double amount) {
+        withdraw(currency.getKey(), amount);
     }
 
     /**
@@ -48,7 +48,7 @@ public interface BankHolder {
      * @param key    the key
      * @param amount the amount
      */
-    default void bankWithdraw(String key, double amount) {
+    default void withdraw(String key, double amount) {
         getBank().subtract(key, amount);
     }
 
@@ -60,8 +60,8 @@ public interface BankHolder {
      * @param amount   the amount
      * @return true if the bank has the amount
      */
-    default boolean bankHas(Currency currency, double amount) {
-        return bankHas(currency.getKey(), amount);
+    default boolean has(Currency currency, double amount) {
+        return has(currency.getKey(), amount);
     }
 
     /**
@@ -72,7 +72,7 @@ public interface BankHolder {
      * @param amount the amount
      * @return true if the bank has the amount
      */
-    default boolean bankHas(String key, double amount) {
+    default boolean has(String key, double amount) {
         return getBank().has(key, amount);
     }
 
@@ -83,8 +83,8 @@ public interface BankHolder {
      * @param currency the currency
      * @return the balance
      */
-    default double bankGetBalance(Currency currency) {
-        return bankGetBalance(currency.getKey());
+    default double getBalance(Currency currency) {
+        return getBalance(currency.getKey());
     }
 
     /**
@@ -94,7 +94,7 @@ public interface BankHolder {
      * @param key the key
      * @return the balance
      */
-    default double bankGetBalance(String key) {
+    default double getBalance(String key) {
         return getBank().balance(key);
     }
 
@@ -105,8 +105,8 @@ public interface BankHolder {
      * @param currency the currency
      * @param amount   the amount
      */
-    default void bankSetBalance(Currency currency, double amount) {
-        bankSetBalance(currency.getKey(), amount);
+    default void setBalance(Currency currency, double amount) {
+        setBalance(currency.getKey(), amount);
     }
 
     /**
@@ -116,7 +116,7 @@ public interface BankHolder {
      * @param key    the key
      * @param amount the amount
      */
-    default void bankSetBalance(String key, double amount) {
+    default void setBalance(String key, double amount) {
         getBank().put(key, amount);
     }
 
@@ -126,7 +126,7 @@ public interface BankHolder {
      *
      * @param currency the currency
      */
-    default void bankReset(Currency currency) {
-        bankSetBalance(currency.getKey(), currency.getInitialBalance());
+    default void reset(Currency currency) {
+        setBalance(currency.getKey(), currency.getInitialBalance());
     }
 }
