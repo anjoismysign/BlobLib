@@ -63,4 +63,14 @@ public interface WalletHolder {
     default void setBalance(String key, double amount) {
         getWallet().put(key, amount);
     }
+
+    /**
+     * Resets the wallet to the initial balance.
+     * <p>
+     *
+     * @param currency the currency
+     */
+    default void reset(Currency currency) {
+        setBalance(currency.getKey(), currency.getInitialBalance());
+    }
 }

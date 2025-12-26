@@ -137,7 +137,7 @@ public class BlobEconomyCommand<T extends WalletOwner> {
             double amount = context.amount();
             T walletOwner = context.walletOwner();
             Player player = context.player();
-            walletOwner.deposit(currency, amount);
+            walletOwner.deposit(currency.getKey(), amount);
             BlobLibMessageAPI.getInstance()
                     .getMessage("Economy.Deposit", sender)
                     .modify(s -> s.replace("%display%", currency.display(amount))
@@ -157,8 +157,8 @@ public class BlobEconomyCommand<T extends WalletOwner> {
             double amount = context.amount();
             T walletOwner = context.walletOwner();
             Player player = context.player();
-            if (!walletOwner.has(currency, amount)) {
-                double missing = amount - walletOwner.getBalance(currency);
+            if (!walletOwner.has(currency.getKey(), amount)) {
+                double missing = amount - walletOwner.getBalance(currency.getKey());
                 BlobLibMessageAPI.getInstance()
                         .getMessage("Economy.Cannot-Bankrupt-Others", sender)
                         .modify(s -> s.replace("%display%", currency.display(missing))
@@ -167,7 +167,7 @@ public class BlobEconomyCommand<T extends WalletOwner> {
                         .toCommandSender(sender);
                 return true;
             }
-            walletOwner.withdraw(currency, amount);
+            walletOwner.withdraw(currency.getKey(), amount);
             BlobLibMessageAPI.getInstance().getMessage("Economy.Withdraw", sender)
                     .modify(s -> s.replace("%display%", currency.display(amount))
                             .replace("%currency%", currency.getDisplayName(player))
@@ -184,7 +184,7 @@ public class BlobEconomyCommand<T extends WalletOwner> {
             Currency currency = context.currency();
             double amount = context.amount();
             Player player = context.player();
-            context.walletOwner().setBalance(currency, amount);
+            context.walletOwner().setBalance(currency.getKey(), amount);
             BlobLibMessageAPI.getInstance().getMessage("Economy.Set", sender)
                     .modify(s -> s.replace("%display%", currency.display(amount))
                             .replace("%currency%", currency.getDisplayName(player))

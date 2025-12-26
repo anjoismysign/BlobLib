@@ -3,6 +3,7 @@ package io.github.anjoismysign.bloblib.entities.currency;
 import io.github.anjoismysign.bloblib.entities.BlobCrudable;
 import io.github.anjoismysign.bloblib.entities.BlobSerializable;
 import org.bson.Document;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,25 +28,11 @@ public interface WalletOwner extends BlobSerializable, WalletHolder {
     BlobCrudable blobCrudable();
 
     /**
-     * This method should write all the transient
-     * attributes to the BlobCrudable that are
-     * stored inside the WalletOwner.
-     * An example of this would be calling
-     * {@link WalletOwner#serializeWallet()}.
-     * <p>
-     * Note, it needs to return the updated BlobCrudable
-     * so that it can be used in the next method.
-     *
-     * @return the updated BlobCrudable
-     */
-    @Override
-    BlobCrudable serializeAllAttributes();
-
-    /**
      * Serializes the wallet into the BlobCrudable.
      */
-    default void serializeWallet() {
-        getWallet().serializeInDocument(blobCrudable().getDocument());
+    default void serializeWallet(@NotNull Wallet wallet,
+                                 @NotNull String key) {
+        wallet.serializeInDocument(blobCrudable().getDocument(), key);
     }
 
     /**
@@ -54,18 +41,19 @@ public interface WalletOwner extends BlobSerializable, WalletHolder {
      *
      * @return the wallet
      */
-    default Wallet deserializeWallet() {
+    default Wallet deserializeWallet(@NotNull String key) {
         Document document = blobCrudable().getDocument();
         Wallet wallet = new Wallet();
-        if (!document.containsKey("Wallet"))
+        if (!document.containsKey(key))
             return wallet;
-        List<String> list = document.getList("Wallet", String.class, new ArrayList<>());
-        if (list.size() == 0)
+        List<String> list = document.getList(key, String.class, new ArrayList<>());
+        if (list.isEmpty()) {
             return wallet;
+        }
         list.forEach(string -> {
             String[] split = string.split(":");
-            String key = split[0];
-            wallet.put(key, Double.parseDouble(split[1]));
+            String currency = split[0];
+            wallet.put(currency, Double.parseDouble(split[1]));
         });
         return wallet;
     }

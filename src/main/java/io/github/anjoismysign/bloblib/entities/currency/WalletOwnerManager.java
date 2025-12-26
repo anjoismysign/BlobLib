@@ -54,6 +54,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
     @Nullable
     private EconomyPHExpansion<T> economyPHExpansion;
     private Map<String, CurrencyEconomy> implementations;
+    private @Nullable Function<NotEnoughBalance, Boolean> notEnoughEvent;
 
     protected WalletOwnerManager(ManagerDirector managerDirector, Function<BlobCrudable, BlobCrudable> newBorn,
                                  Function<BlobCrudable, T> generator,
@@ -394,5 +395,13 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
 
     public IdentifierType getIdentifierType() {
         return crudManager.getIdentifierType();
+    }
+
+    public @Nullable Function<NotEnoughBalance, Boolean> getNotEnoughEvent() {
+        return notEnoughEvent;
+    }
+
+    public void setNotEnoughEvent(@Nullable Function<NotEnoughBalance, Boolean> notEnoughEvent) {
+        this.notEnoughEvent = notEnoughEvent;
     }
 }
