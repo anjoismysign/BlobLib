@@ -5,6 +5,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Color;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,6 +13,11 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface TranslatableRarity {
+
+    static TranslatableRarity of(@NotNull ItemStack itemStack){
+        var rarities = BlobLibConfigManager.getInstance().getRarities();
+        return rarities.getRarity(itemStack);
+    }
 
     @NotNull
     String getIdentifier();
