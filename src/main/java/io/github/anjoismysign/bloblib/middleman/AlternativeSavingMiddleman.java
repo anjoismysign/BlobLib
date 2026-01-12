@@ -21,7 +21,7 @@ public class AlternativeSavingMiddleman implements ProfileProvider {
 
         @Override
         public @NotNull String getIdentification() {
-            return serialPlayer.getIdentification()+":"+serialProfile.getProfileName();
+            return serialPlayer.getIdentification()+":"+serialProfile.getIdentification();
         }
 
         @Override
