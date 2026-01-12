@@ -22,9 +22,10 @@ public record TinyEventListener(boolean register) {
      * @throws RuntimeException If the ConfigurationSection does not point to a boolean
      */
     public static TinyEventListener READ(ConfigurationSection section, String name) {
-        if (!section.isBoolean(name))
+        if (section.contains(name) && !section.isBoolean(name)) {
             throw new RuntimeException("Not a TinyEventListener");
-        boolean register = section.getBoolean(name);
+        }
+        boolean register = section.getBoolean(name, false);
         return new TinyEventListener(register);
     }
 
