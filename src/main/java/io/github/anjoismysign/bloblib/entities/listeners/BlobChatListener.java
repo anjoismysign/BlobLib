@@ -72,8 +72,9 @@ public class BlobChatListener extends ChatListener {
                     String input = inputListener.getInput();
                     chatManager.removeChatListener(owner);
                     Bukkit.getScheduler().runTask(main, () -> {
-                        if (owner != Bukkit.getPlayer(uuid))
+                        if (!owner.isConnected()) {
                             return;
+                        }
                         consumer.accept(input);
                     });
                 },
@@ -108,11 +109,10 @@ public class BlobChatListener extends ChatListener {
     public void runTasks() {
         super.runTasks();
         Player player = Bukkit.getPlayer(getOwner());
-        UUID uuid = player.getUniqueId();
         BukkitRunnable bukkitRunnable = new BukkitRunnable() {
             @Override
             public void run() {
-                if (player != Bukkit.getPlayer(uuid)) {
+                if (!player.isConnected()) {
                     this.cancel();
                     return;
                 }

@@ -110,11 +110,11 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
         Player player = e.getPlayer();
         UUID uuid = player.getUniqueId();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            if (player != Bukkit.getPlayer(uuid))
+            if (!player.isConnected())
                 return;
             BlobCrudable crudable = read(uuid.toString());
             Bukkit.getScheduler().runTask(plugin, () -> {
-                if (player != Bukkit.getPlayer(uuid))
+                if (!player.isConnected())
                     return;
                 T applied = generator.apply(crudable);
                 BlobCrudable serialized = applied.serializeAllAttributes();
@@ -127,7 +127,7 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
                 autoSave.put(uuid, new BukkitRunnable() {
                     @Override
                     public void run() {
-                        if (player != Bukkit.getPlayer(uuid)) {
+                        if (!player.isConnected()) {
                             cancel();
                             return;
                         }

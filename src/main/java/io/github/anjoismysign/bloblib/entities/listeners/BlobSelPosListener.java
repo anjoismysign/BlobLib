@@ -53,13 +53,12 @@ public class BlobSelPosListener extends SelPosListener {
         Optional<BlobMessage> timeoutMessage = Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(timeoutMessageKey, player));
         Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(timerMessageKey, player));
         List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
-        UUID uuid = player.getUniqueId();
         return new BlobSelPosListener(player.getName(), timeout,
                 inputListener -> {
                     Block input = inputListener.getInput();
                     selPosManager.removePositionListener(player);
                     Bukkit.getScheduler().runTask(main, () -> {
-                        if (player != Bukkit.getPlayer(uuid))
+                        if (!player.isConnected())
                             return;
                         consumer.accept(input);
                     });
@@ -83,11 +82,10 @@ public class BlobSelPosListener extends SelPosListener {
     public void runTasks() {
         super.runTasks();
         Player player = Bukkit.getPlayer(getOwner());
-        UUID uuid = player.getUniqueId();
         BukkitRunnable bukkitRunnable = new BukkitRunnable() {
             @Override
             public void run() {
-                if (player != Bukkit.getPlayer(uuid)) {
+                if (!player.isConnected()) {
                     this.cancel();
                     return;
                 }

@@ -92,7 +92,7 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            if (Bukkit.getPlayer(uuid) == null){
+            if (!player.isConnected()){
                 return;
                 }
             T serializable = cruder.readOrGenerate(uuid.toString());
@@ -103,7 +103,7 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
                 onRead.accept(serializable);
             }
             Bukkit.getScheduler().runTask(plugin, () -> {
-                if (Bukkit.getPlayer(uuid) == null) {
+                if (!player.isConnected()) {
                     return;
                 }
                 Bukkit.getScheduler().runTaskAsynchronously(getPlugin(),
@@ -112,7 +112,7 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
                 autoSave.put(uuid, new BukkitRunnable() {
                     @Override
                     public void run() {
-                        if (Bukkit.getPlayer(uuid) == null) {
+                        if (!player.isConnected()) {
                             cancel();
                             return;
                         }
@@ -261,7 +261,7 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
             autoSave.put(uuid, new BukkitRunnable() {
                 @Override
                 public void run() {
-                    if (Bukkit.getPlayer(uuid) == null) {
+                    if (!player.isConnected()) {
                         cancel();
                         return;
                     }

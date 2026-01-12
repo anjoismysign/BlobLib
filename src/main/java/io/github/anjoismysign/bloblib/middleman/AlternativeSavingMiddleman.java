@@ -36,6 +36,11 @@ public class AlternativeSavingMiddleman implements ProfileProvider {
             }
             serialPlayer.saveCurrentProfile(Objects.requireNonNull(serialPlayer.getPlayer(), "Is SerialPlayer cached?"), serialProfile.hasPlayedBefore());
         }
+
+        @Override
+        public boolean hasPlayedBefore() {
+            return serialProfile.hasPlayedBefore();
+        }
     }
 
     private record ASProfileManagement(@NotNull SerialPlayer serialPlayer) implements ProfileManagement{

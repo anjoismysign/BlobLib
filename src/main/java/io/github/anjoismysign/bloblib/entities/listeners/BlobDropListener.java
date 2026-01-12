@@ -53,13 +53,13 @@ public class BlobDropListener extends DropListener {
         DropListenerManager dropManager = main.getDropListenerManager();
         Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(timerMessageKey, owner));
         List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
-        UUID uuid = owner.getUniqueId();
         return new BlobDropListener(owner.getName(), listener -> {
             ItemStack input = listener.getInput();
             dropManager.removeDropListener(owner);
             Bukkit.getScheduler().runTask(main, () -> {
-                if (owner != Bukkit.getPlayer(uuid))
+                if (!owner.isConnected()) {
                     return;
+                }
                 consumer.accept(input);
             });
         }, messages);
@@ -85,11 +85,10 @@ public class BlobDropListener extends DropListener {
     public void runTasks() {
         super.runTasks();
         Player player = Bukkit.getPlayer(getOwner());
-        UUID uuid = player.getUniqueId();
         BukkitRunnable bukkitRunnable = new BukkitRunnable() {
             @Override
             public void run() {
-                if (player != Bukkit.getPlayer(uuid)) {
+                if (!player.isConnected()) {
                     this.cancel();
                     return;
                 }

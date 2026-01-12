@@ -174,11 +174,11 @@ public class GitHubPluginUpdater implements PluginUpdater {
         @EventHandler
         public void handle(PlayerJoinEvent event) {
             Player player = event.getPlayer();
-            if (!player.hasPermission(pluginName.toLowerCase(Locale.ROOT) + ".admin"))
+            if (!player.hasPermission(pluginName.toLowerCase(Locale.ROOT) + ".admin")) {
                 return;
-            UUID uuid = player.getUniqueId();
+            }
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                if (player != Bukkit.getPlayer(uuid))
+                if (!player.isConnected())
                     return;
                 BlobLibMessageAPI.getInstance()
                         .getMessage("BlobLib.Updater-Available", player)

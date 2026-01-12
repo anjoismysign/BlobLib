@@ -31,6 +31,11 @@ public class BlobTycoonMiddleman implements ProfileProvider {
         public void save() {
             throw new RuntimeException("Do ProfileProvider#supportsSaving");
         }
+
+        @Override
+        public boolean hasPlayedBefore() {
+            return view.hasPlayedBefore();
+        }
     }
 
     private record BTProfileManagement(TycoonPlayer tycoonPlayer) implements ProfileManagement {

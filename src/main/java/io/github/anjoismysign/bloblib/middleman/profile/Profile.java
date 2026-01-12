@@ -23,4 +23,6 @@ public interface Profile {
      */
     void save();
 
+    boolean hasPlayedBefore();
+
 }

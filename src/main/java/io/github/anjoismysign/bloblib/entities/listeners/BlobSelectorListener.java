@@ -56,12 +56,11 @@ public class BlobSelectorListener<T> extends SelectorListener<T> {
         SelectorListenerManager selectorManager = main.getSelectorManager();
         Optional<BlobMessage> timerMessage = Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(timerMessageKey));
         List<BlobMessage> messages = timerMessage.map(Collections::singletonList).orElse(Collections.emptyList());
-        UUID uuid = player.getUniqueId();
         return new BlobSelectorListener<>(player.getName(), () -> {
             @SuppressWarnings("unchecked") T input = (T) selectorManager.getInput(player);
             selectorManager.removeSelectorListener(player);
             Bukkit.getScheduler().runTask(main, () -> {
-                if (player != Bukkit.getPlayer(uuid))
+                if (!player.isConnected())
                     return;
                 consumer.accept(input);
             });
@@ -126,8 +125,9 @@ public class BlobSelectorListener<T> extends SelectorListener<T> {
                 return;
             }
             Bukkit.getScheduler().runTask(main, () -> {
-                if (player != Bukkit.getPlayer(uuid))
+                if (!player.isConnected()) {
                     return;
+                }
                 consumer.accept(input);
             });
         }, messages, selector);
@@ -156,11 +156,10 @@ public class BlobSelectorListener<T> extends SelectorListener<T> {
     @Override
     public void runTasks() {
         Player player = Bukkit.getPlayer(getOwner());
-        UUID uuid = player.getUniqueId();
         BukkitRunnable bukkitRunnable = new BukkitRunnable() {
             @Override
             public void run() {
-                if (player != Bukkit.getPlayer(uuid)) {
+                if (!player.isConnected()) {
                     this.cancel();
                     return;
                 }

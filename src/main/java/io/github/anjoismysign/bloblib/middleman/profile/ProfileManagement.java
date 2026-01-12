@@ -1,6 +1,5 @@
 package io.github.anjoismysign.bloblib.middleman.profile;
 
-import io.github.anjoismysign.bloblib.middleman.AlternativeSavingMiddleman;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
