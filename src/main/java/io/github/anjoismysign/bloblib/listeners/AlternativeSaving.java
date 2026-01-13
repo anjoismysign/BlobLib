@@ -1,7 +1,6 @@
 package io.github.anjoismysign.bloblib.listeners;
 
-import io.github.anjoismysign.alternativesaving.entity.SerialPlayer;
-import io.github.anjoismysign.alternativesaving.event.SerialPlayerJoinEvent;
+import io.github.anjoismysign.alternativesaving.event.SerialProfileLoadEvent;
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.api.BlobLibProfileAPI;
 import io.github.anjoismysign.bloblib.events.ProfileLoadEvent;
@@ -17,12 +16,8 @@ public class AlternativeSaving implements Listener {
     }
 
     @EventHandler
-    public void onJoin(SerialPlayerJoinEvent event) {
-        SerialPlayer serialPlayer = event.getSerialPlayer();
-        Player player = serialPlayer.getPlayer();
-        if (player == null){
-            return;
-        }
+    public void onJoin(SerialProfileLoadEvent event) {
+        Player player = event.getPlayer();
         var provider = BlobLibProfileAPI.getInstance().getProvider();
         if (!provider.isValid()){
             return;
