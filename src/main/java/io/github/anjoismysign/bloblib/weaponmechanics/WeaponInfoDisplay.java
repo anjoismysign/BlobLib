@@ -6,7 +6,6 @@ import io.github.anjoismysign.bloblib.entities.translatable.TranslatableItem;
 import io.github.anjoismysign.bloblib.utilities.ItemStackUtil;
 import me.deecaad.weaponmechanics.utils.CustomTag;
 import me.deecaad.weaponmechanics.weapon.weaponevents.WeaponReloadCompleteEvent;
-import me.deecaad.weaponmechanics.weapon.weaponevents.WeaponReloadEvent;
 import me.deecaad.weaponmechanics.weapon.weaponevents.WeaponShootEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;

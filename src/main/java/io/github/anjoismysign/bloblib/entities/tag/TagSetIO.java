@@ -28,16 +28,14 @@ public class TagSetIO {
         List<String> readExclusions = section.getStringList("Exclusions");
         List<String> readIncludeSet = section.getStringList("Include-Tags");
         List<String> readExcludeSet = section.getStringList("Exclude-Tags");
-        Set<String> inclusions = new HashSet<>();
-        inclusions.addAll(readInclusions);
+        Set<String> inclusions = new HashSet<>(readInclusions);
         readIncludeSet.forEach(reference -> {
             TagSet tagSet = BlobLibTagAPI.getInstance().getTagSet(reference);
             if (tagSet == null)
                 return;
             inclusions.addAll(tagSet.getInclusions());
         });
-        Set<String> exclusions = new HashSet<>();
-        exclusions.addAll(readExclusions);
+        Set<String> exclusions = new HashSet<>(readExclusions);
         readExcludeSet.forEach(reference -> {
             TagSet tagSet = BlobLibTagAPI.getInstance().getTagSet(reference);
             if (tagSet == null)

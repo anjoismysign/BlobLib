@@ -1,5 +1,6 @@
 package io.github.anjoismysign.bloblib.managers;
 
+import io.github.anjoismysign.aesthetic.DirectoryAssistant;
 import io.github.anjoismysign.anjo.logger.Logger;
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.entities.BlobCrudable;
@@ -21,7 +22,6 @@ import io.github.anjoismysign.bloblib.entities.currency.WalletOwner;
 import io.github.anjoismysign.bloblib.entities.currency.WalletOwnerManager;
 import io.github.anjoismysign.bloblib.entities.proxy.BlobProxifier;
 import io.github.anjoismysign.bloblib.exception.KeySharingException;
-import io.github.anjoismysign.bloblib.utilities.HandyDirectory;
 import io.github.anjoismysign.bloblib.utilities.ResourceUtil;
 import net.lingala.zip4j.ZipFile;
 import org.apache.commons.io.FileUtils;
@@ -930,14 +930,14 @@ public abstract class ManagerDirector implements IManagerDirector {
             exception.printStackTrace();
             return false;
         }
-        HandyDirectory handyDirectory = HandyDirectory.of(outputFile);
+        DirectoryAssistant directoryAssistant = DirectoryAssistant.of(outputFile);
         Map<DataAssetType, List<File>> assets = new HashMap<>();
         Map<DataAssetType, File> assetsDirectory = new HashMap<>();
-        for (File directory : handyDirectory.listDirectories()) {
+        for (File directory : directoryAssistant.listDirectories()) {
             DataAssetType match = DataAssetType.byEqualsIgnoreObjectName(directory.getName());
             if (match == null)
                 continue;
-            HandyDirectory subDirectory = HandyDirectory.of(directory);
+            DirectoryAssistant subDirectory = DirectoryAssistant.of(directory);
             List<File> list = subDirectory.listRecursively("yml").stream().toList();
             assets.put(match, list);
             assetsDirectory.put(match, directory);

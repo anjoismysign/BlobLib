@@ -24,7 +24,6 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.UUID;
 
 public class BlobLibUpdater implements PluginUpdater {
     private final BlobLib plugin;

@@ -3,7 +3,6 @@ package io.github.anjoismysign.bloblib.entities.area;
 import io.github.anjoismysign.bloblib.entities.Cuboid;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.util.BlockVector;

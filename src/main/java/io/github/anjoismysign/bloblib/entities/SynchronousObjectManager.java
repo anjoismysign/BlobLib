@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.entities;
 
+import io.github.anjoismysign.aesthetic.DirectoryAssistant;
 import io.github.anjoismysign.bloblib.managers.ManagerDirector;
-import io.github.anjoismysign.bloblib.utilities.HandyDirectory;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,8 +42,8 @@ public class SynchronousObjectManager<T extends BlobObject> extends ObjectManage
     public void loadFiles(File path, CompletableFuture<Void> mainFuture) {
         if (!path.exists())
             path.mkdir();
-        HandyDirectory handyDirectory = HandyDirectory.of(path);
-        Collection<File> files = handyDirectory.listRecursively("yml");
+        DirectoryAssistant directoryAssistant = DirectoryAssistant.of(path);
+        Collection<File> files = directoryAssistant.listRecursively("yml");
         files.forEach(file -> {
             loadFile(file, mainFuture::completeExceptionally);
         });

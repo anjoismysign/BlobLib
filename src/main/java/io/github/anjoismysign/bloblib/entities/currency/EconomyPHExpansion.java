@@ -1,6 +1,5 @@
 package io.github.anjoismysign.bloblib.entities.currency;
 
-import io.github.anjoismysign.bloblib.utilities.TextColor;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;

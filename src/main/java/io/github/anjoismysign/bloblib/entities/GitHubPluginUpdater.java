@@ -26,7 +26,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
-import java.util.UUID;
 
 public class GitHubPluginUpdater implements PluginUpdater {
     private final JavaPlugin plugin;

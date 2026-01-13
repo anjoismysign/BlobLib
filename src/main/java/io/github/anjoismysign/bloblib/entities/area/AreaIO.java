@@ -1,13 +1,13 @@
 package io.github.anjoismysign.bloblib.entities.area;
 
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.middleman.enginehub.EngineHubManager;
 import io.github.anjoismysign.bloblib.entities.translatable.BlobTranslatableArea;
 import io.github.anjoismysign.bloblib.entities.translatable.TranslatableArea;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import io.github.anjoismysign.bloblib.managers.BlobLibListenerManager;
+import io.github.anjoismysign.bloblib.middleman.enginehub.EngineHubManager;
 import io.github.anjoismysign.bloblib.utilities.SerializationLib;
-import io.github.anjoismysign.bloblib.utilities.VectorUtil;
+import io.github.anjoismysign.util.VectorUtil;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;

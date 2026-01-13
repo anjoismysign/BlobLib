@@ -1,6 +1,8 @@
 package io.github.anjoismysign.bloblib.entities;
 
 import io.github.anjoismysign.anjo.entities.Uber;
+import io.github.anjoismysign.util.ChainedTask;
+import io.github.anjoismysign.util.ChainedTaskProgress;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
