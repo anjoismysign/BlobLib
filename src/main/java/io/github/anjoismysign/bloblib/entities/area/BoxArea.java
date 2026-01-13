@@ -1,6 +1,6 @@
 package io.github.anjoismysign.bloblib.entities.area;
 
-import io.github.anjoismysign.bloblib.entities.Cuboid;
+import io.github.anjoismysign.util.Cuboid;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;

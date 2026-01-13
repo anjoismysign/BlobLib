@@ -76,6 +76,8 @@ dependencies {
     api("io.github.anjoismysign:blobutil:1.0")
     api("io.github.anjoismysign:bukkit-vector:1.0")
     api("io.github.anjoismysign:bukkit-blockfaceutil:1.0")
+    api("io.github.anjoismysign:bukkit-chainedtask:1.0")
+    api("io.github.anjoismysign:bukkit-cuboid:1.0")
     api("io.github.anjoismysign:bukkit-structrador:1.0")
     compileOnly("io.github.classgraph:classgraph:4.8.157")
     compileOnly(libs.org.apache.commons.commons.lang3)
