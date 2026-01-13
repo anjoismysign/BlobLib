@@ -113,9 +113,8 @@ public abstract class VariableSelector<T> extends BlobInventory {
         this.builderId = builderId;
         this.values = new HashMap<>();
         this.dataType = dataType;
-        if (dataType != null)
-            setTitle(blobInventory.getTitle().replace("%variable%", dataType));
-        buildInventory();
+//        if (dataType != null)
+//            setTitle(blobInventory.getTitle().replace("%variable%", dataType));
         this.page = 1;
         this.itemsPerPage = 1;
         Set<Integer> slots = getSlots(getButtonRangeKey());

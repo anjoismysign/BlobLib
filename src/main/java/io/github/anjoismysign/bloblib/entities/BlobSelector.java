@@ -50,38 +50,6 @@ public class BlobSelector<T> extends VariableSelector<T> implements VariableFill
                 dataType, collection, onReturn);
     }
 
-
-    /**
-     * Creates a new BlobEditor passing a BlobInventory for VariableSelector
-     *
-     * @param <T>           the type of the collection
-     * @param blobInventory the BlobInventory
-     * @param builderId     the id of the builder
-     * @param dataType      the data type of the editor
-     * @return the new BlobEditor
-     */
-    public static <T> BlobSelector<T> build(BlobInventory blobInventory, UUID builderId,
-                                            String dataType,
-                                            @Nullable Consumer<Player> onReturn) {
-        return new BlobSelector<>(blobInventory, builderId,
-                dataType, onReturn);
-    }
-
-    /**
-     * Creates a new BlobEditor
-     *
-     * @param <T>       the type of the collection
-     * @param builderId the id of the builder
-     * @param dataType  the data type of the editor
-     * @return the new BlobEditor
-     */
-    public static <T> BlobSelector<T> DEFAULT(UUID builderId, String dataType,
-                                              @Nullable Consumer<Player> onReturn) {
-        Player player = Objects.requireNonNull(Bukkit.getPlayer(builderId));
-        return new BlobSelector<>(VariableSelector.DEFAULT(player), builderId,
-                dataType, onReturn);
-    }
-
     /**
      * Creates a new BlobEditor passing specific collection.
      *
@@ -97,14 +65,6 @@ public class BlobSelector<T> extends VariableSelector<T> implements VariableFill
         Player player = Objects.requireNonNull(Bukkit.getPlayer(builderId));
         return new BlobSelector<>(VariableSelector.DEFAULT(player), builderId,
                 dataType, collection, onReturn);
-    }
-
-    protected BlobSelector(BlobInventory blobInventory, UUID builderId,
-                           String dataType, @Nullable Consumer<Player> consumer) {
-        super(blobInventory, builderId, dataType, null, consumer);
-        this.selectorManager = BlobLib.getInstance().getSelectorManager();
-        this.list = new ArrayList<>();
-        this.collection = null;
     }
 
     protected BlobSelector(BlobInventory blobInventory, UUID builderId,

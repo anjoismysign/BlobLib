@@ -1,6 +1,6 @@
 package io.github.anjoismysign.bloblib.weaponmechanics;
 
-import io.github.anjoismysign.bloblib.itemstack.ItemStackBuilder;
+import io.github.anjoismysign.bloblib.middleman.itemstack.ItemStackBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -15,6 +15,6 @@ public class WMNotFound implements WeaponMechanicsMiddleman {
 
     @Override
     public @NotNull ItemStack generateWeapon(@NotNull String weaponTitle) {
-        return ItemStackBuilder.build(Material.DIRT).build();
+        return ItemStackBuilder.build(Material.POISONOUS_POTATO).itemName("&cWeaponMechanics{"+weaponTitle+"}").build();
     }
 }

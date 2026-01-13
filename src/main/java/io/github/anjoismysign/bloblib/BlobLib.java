@@ -2,7 +2,6 @@ package io.github.anjoismysign.bloblib;
 
 import io.github.anjoismysign.bloblib.command.BlobLibCommand;
 import io.github.anjoismysign.bloblib.disguises.DisguiseManager;
-import io.github.anjoismysign.bloblib.enginehub.EngineHubManager;
 import io.github.anjoismysign.bloblib.entities.DataAssetType;
 import io.github.anjoismysign.bloblib.entities.logger.BlobPluginLogger;
 import io.github.anjoismysign.bloblib.entities.positionable.Positionable;
@@ -13,6 +12,7 @@ import io.github.anjoismysign.bloblib.entities.translatable.BlobTranslatablePosi
 import io.github.anjoismysign.bloblib.entities.translatable.TranslatableItem;
 import io.github.anjoismysign.bloblib.entities.translatable.TranslatablePositionable;
 import io.github.anjoismysign.bloblib.entities.translatable.TranslatableReader;
+import io.github.anjoismysign.bloblib.events.BlobLibPreReloadEvent;
 import io.github.anjoismysign.bloblib.events.BlobLibReloadEvent;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import io.github.anjoismysign.bloblib.hologram.HologramManager;
@@ -37,6 +37,8 @@ import io.github.anjoismysign.bloblib.managers.TranslatableAreaManager;
 import io.github.anjoismysign.bloblib.managers.TranslatableManager;
 import io.github.anjoismysign.bloblib.managers.VariableSelectorManager;
 import io.github.anjoismysign.bloblib.managers.fillermanager.FillerManager;
+import io.github.anjoismysign.bloblib.middleman.enginehub.EngineHubManager;
+import io.github.anjoismysign.bloblib.middleman.skript.BlobLibSkriptAddon;
 import io.github.anjoismysign.bloblib.placeholderapi.TranslatablePH;
 import io.github.anjoismysign.bloblib.placeholderapi.WorldGuardPH;
 import io.github.anjoismysign.bloblib.psa.BukkitPSA;
@@ -136,6 +138,7 @@ public class BlobLib extends JavaPlugin {
         fileManager = new BlobLibFileManager();
         fileManager.unpackYamlFile("/BlobInventory", "CurrencyBuilder", false);
         engineHubManager = EngineHubManager.getInstance();
+        configManager = BlobLibConfigManager.getInstance(this);
 
         inventoryManager = new InventoryManager();
         inventoryTrackerManager = new InventoryTrackerManager();
@@ -177,7 +180,6 @@ public class BlobLib extends JavaPlugin {
         selectorManager = new SelectorListenerManager();
         variableSelectorManager = new VariableSelectorManager();
         dropListenerManager = new DropListenerManager();
-        configManager = BlobLibConfigManager.getInstance(this);
         listenerManager = BlobLibListenerManager.getInstance(configManager);
 
         //Load reloadable managers
@@ -189,6 +191,9 @@ public class BlobLib extends JavaPlugin {
             if (engineHubManager.isWorldGuardInstalled())
                 WorldGuardPH.getInstance(this);
             disguiseManager.load();
+            if (Bukkit.getPluginManager().isPluginEnabled("Skript")){
+                new BlobLibSkriptAddon();
+            }
         });
     }
 
@@ -196,6 +201,10 @@ public class BlobLib extends JavaPlugin {
      * Will reload all the managers
      */
     public void reload() {
+        org.bukkit.plugin.PluginManager pluginManager = Bukkit.getPluginManager();
+        BlobLibPreReloadEvent preReloadEvent = new BlobLibPreReloadEvent();
+        pluginManager.callEvent(preReloadEvent);
+
         configManager.reload();
         listenerManager.reload();
         soundManager.reload();
@@ -211,7 +220,7 @@ public class BlobLib extends JavaPlugin {
         getPluginManager().reload();
 
         BlobLibReloadEvent reloadEvent = new BlobLibReloadEvent();
-        Bukkit.getPluginManager().callEvent(reloadEvent);
+        pluginManager.callEvent(reloadEvent);
     }
 
     public BlobLibAPI getAPI() {

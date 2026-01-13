@@ -1,6 +1,7 @@
 package io.github.anjoismysign.bloblib.utilities;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -10,22 +11,22 @@ public class StringUtil {
         if (list == null) {
             return "null";
         }
-        String listString = "";
+        StringBuilder stringBuilder = new StringBuilder();
         for (String s : list) {
-            listString += s + "%lsc:%";
+            stringBuilder.append(s).append("%lsc:%");
         }
-        return listString;
+        return stringBuilder.toString();
     }
 
     public static String listStringCompactor(List<String> list, String key) {
         if (list == null) {
             return "null";
         }
-        String listString = "";
+        StringBuilder stringBuilder = new StringBuilder();
         for (String s : list) {
-            listString += s + key;
+            stringBuilder.append(s).append(key);
         }
-        return listString;
+        return stringBuilder.toString();
     }
 
     public static List<String> listStringDecompactor(String compactedList) {
@@ -33,9 +34,7 @@ public class StringUtil {
         if (compactedList.equals("null"))
             return list;
         String[] strings = compactedList.split("%lsc:%");
-        for (int i = 0; i < strings.length; i++) {
-            list.add(strings[i]);
-        }
+        list.addAll(Arrays.asList(strings));
         return list;
     }
 
@@ -44,9 +43,7 @@ public class StringUtil {
         if (compactedList.equals("null"))
             return list;
         String[] strings = compactedList.split(key);
-        for (int i = 0; i < strings.length; i++) {
-            list.add(strings[i]);
-        }
+        list.addAll(Arrays.asList(strings));
         return list;
     }
 

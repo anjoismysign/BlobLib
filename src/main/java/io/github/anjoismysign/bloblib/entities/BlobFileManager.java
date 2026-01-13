@@ -194,10 +194,6 @@ public class BlobFileManager extends Manager implements IFileManager {
     private void loadFiles(JavaPlugin plugin) {
         try {
             for (DataAssetType assetType : DataAssetType.values()) {
-                @Nullable File directory = getDirectory(assetType);
-                Objects.requireNonNull(directory, "No directory for DataAssetType: " + assetType.name());
-                if (!directory.isDirectory())
-                    directory.mkdir();
                 String path = lowercased + assetType.getDefaultFilePath();
                 Optional<InputStream> optional = Optional.ofNullable(plugin.getResource(path));
                 if (optional.isPresent()) {

@@ -74,6 +74,16 @@ System:
     Type: TITLE
     Title: '&c&lTIMEOUT!'
     Subtitle: '&7Took too long!'
+  Welcome:
+    Type: CHAT
+    Message: '&7Welcome, &f%player%'
+    BlobSound: System.Welcome
+  Join:
+    Type: CHAT
+    Message: '&7%player% &fjoined the game'
+  Quit:
+    Type: CHAT
+    Message: '&7%player% &fleft the game'
 Algorithm:
   Adjacent-Null:
     Type: ACTIONBAR_TITLE
@@ -333,6 +343,12 @@ Deposit:
     Type: CHAT
     Message: You have deposited %display%
 TranslatablePositionable:
+  Key-Cannot-Be-Empty:
+    Type: CHAT
+    Message: '&cKey cannot be empty'
+  Save:
+    Type: CHAT
+    Message: '&f%reference% &7was successfully added'
   Random:
     Type: CHAT
     Message: '&f%reference% &7was successfully added'
@@ -394,3 +410,7 @@ Soul:
     Type: TITLE
     Title: '&f&lDONE'
     Subtitle: '&7Attempted to soul all items in your inventory'
+WeaponMechanics:
+  Weapon-Info-Display:
+    Type: ACTIONBAR
+    Message: '%name% &8<<&7%ammo%87>>'

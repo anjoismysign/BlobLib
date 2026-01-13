@@ -6,6 +6,7 @@ import io.github.anjoismysign.bloblib.api.BlobLibHologramAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibListenerAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibPermissionAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibPetAPI;
+import io.github.anjoismysign.bloblib.api.BlobLibProfileAPI;
 
 /**
  * @author anjoismysign
@@ -21,6 +22,7 @@ public class BlobLibAPI {
     private final BlobLibDisguiseAPI disguiseAPI;
     private final BlobLibAssetAPI assetAPI;
     private final BlobLibPetAPI petAPI;
+    private final BlobLibProfileAPI profileAPI;
 
     private BlobLibAPI(BlobLib plugin) {
         this.listenerAPI = BlobLibListenerAPI.getInstance(plugin);
@@ -30,6 +32,7 @@ public class BlobLibAPI {
         this.disguiseAPI = BlobLibDisguiseAPI.getInstance(plugin);
         this.assetAPI = BlobLibAssetAPI.getInstance(plugin);
         this.petAPI = BlobLibPetAPI.getInstance(plugin);
+        this.profileAPI = BlobLibProfileAPI.getInstance();
     }
 
     public static BlobLibAPI getInstance(BlobLib plugin) {
@@ -71,5 +74,9 @@ public class BlobLibAPI {
 
     public BlobLibPetAPI getPetAPI() {
         return petAPI;
+    }
+
+    public BlobLibProfileAPI getProfileAPI() {
+        return profileAPI;
     }
 }

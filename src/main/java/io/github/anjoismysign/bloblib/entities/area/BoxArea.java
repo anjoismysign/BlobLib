@@ -1,7 +1,10 @@
 package io.github.anjoismysign.bloblib.entities.area;
 
+import io.github.anjoismysign.bloblib.entities.Cuboid;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.BoundingBox;
 import org.jetbrains.annotations.NotNull;
@@ -35,5 +38,15 @@ public record BoxArea(@NotNull BoundingBox getBoundingBox,
         if (!world.getName().equals(getWorldName))
             return false;
         return getBoundingBox.contains(location.toVector());
+    }
+
+    @Override
+    public void fill(@NotNull BlockData blockData) {
+        @Nullable World world = Bukkit.getWorld(getWorldName);
+        if (world == null){
+            return;
+        }
+        Cuboid cuboid = Cuboid.of(getBoundingBox.getMin(), getBoundingBox.getMax(), world);
+        cuboid.forEachBlock(block -> block.setBlockData(blockData));
     }
 }

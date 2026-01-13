@@ -7,3 +7,12 @@ BlobLib:
     Snippet: not online
   Wilderness:
     Snippet: Wilderness
+Rarity:
+  Common:
+    Snippet: '&f&lCOMMON'
+  Uncommon:
+    Snippet: '&e&lUNCOMMON'
+  Rare:
+    Snippet: '&b&lRARE'
+  Epic:
+    Snippet: '&d&lEPIC'

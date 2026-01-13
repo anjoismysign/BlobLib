@@ -92,7 +92,7 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            if (Bukkit.getPlayer(uuid) == null){
+            if (!player.isConnected()){
                 return;
                 }
             T serializable = cruder.readOrGenerate(uuid.toString());
@@ -103,19 +103,16 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
                 onRead.accept(serializable);
             }
             Bukkit.getScheduler().runTask(plugin, () -> {
-                if (Bukkit.getPlayer(uuid) == null) {
+                if (!player.isConnected()) {
                     return;
                 }
                 Bukkit.getScheduler().runTaskAsynchronously(getPlugin(),
                         () -> cruder.update(serializable));
                 serializables.put(uuid, serializable);
-                if (joinEvent == null)
-                    return;
-                Bukkit.getPluginManager().callEvent(joinEvent.apply(serializable));
                 autoSave.put(uuid, new BukkitRunnable() {
                     @Override
                     public void run() {
-                        if (Bukkit.getPlayer(uuid) == null) {
+                        if (!player.isConnected()) {
                             cancel();
                             return;
                         }
@@ -132,6 +129,10 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
                     }
                 }.runTaskTimer(getPlugin(), 20 * 60 * 5,
                         20 * 60 * 5));
+                if (joinEvent == null) {
+                    return;
+                }
+                Bukkit.getPluginManager().callEvent(joinEvent.apply(serializable));
             });
         });
     }
@@ -260,7 +261,7 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
             autoSave.put(uuid, new BukkitRunnable() {
                 @Override
                 public void run() {
-                    if (Bukkit.getPlayer(uuid) == null) {
+                    if (!player.isConnected()) {
                         cancel();
                         return;
                     }

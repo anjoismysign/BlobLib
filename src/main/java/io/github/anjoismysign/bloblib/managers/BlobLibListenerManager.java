@@ -1,8 +1,12 @@
 package io.github.anjoismysign.bloblib.managers;
 
+import io.github.anjoismysign.bloblib.listeners.AlternativeSaving;
+import io.github.anjoismysign.bloblib.listeners.BlobTycoon;
 import io.github.anjoismysign.bloblib.listeners.DisplayUnriding;
 import io.github.anjoismysign.bloblib.listeners.ProjectileDamage;
 import io.github.anjoismysign.bloblib.listeners.TranslatableAreaWand;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.PluginManager;
 
 public class BlobLibListenerManager {
     private static BlobLibListenerManager instance;
@@ -25,6 +29,13 @@ public class BlobLibListenerManager {
     private final TranslatableAreaWand areaWand;
 
     private BlobLibListenerManager(BlobLibConfigManager configManager) {
+        PluginManager pluginManager = Bukkit.getPluginManager();
+        if (pluginManager.isPluginEnabled("AlternativeSaving")){
+            new AlternativeSaving();
+        }
+        if (pluginManager.isPluginEnabled("BlobTycoon")){
+            new BlobTycoon();
+        }
         this.displayUnriding = new DisplayUnriding(configManager);
         this.projectileDamage = new ProjectileDamage();
         this.areaWand = new TranslatableAreaWand();

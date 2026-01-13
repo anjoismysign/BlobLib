@@ -59,8 +59,9 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
         Objects.requireNonNull(readFunction, "Read function cannot be null");
         Objects.requireNonNull(type, "Data asset type cannot be null");
         Objects.requireNonNull(filter, "Filter cannot be null");
-        if (!assetDirectory.isDirectory())
-            throw new IllegalArgumentException("File '" + assetDirectory.getPath() + "' is not a directory");
+        if (!assetDirectory.isDirectory()){
+            assetDirectory.mkdirs();
+        }
         return new LocalizableDataAssetManager<>(assetDirectory,
                 readFunction, type, filter, saveConsumer);
     }

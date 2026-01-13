@@ -6,11 +6,10 @@ import io.github.anjoismysign.bloblib.api.BlobLibActionAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
 import io.github.anjoismysign.bloblib.entities.translatable.TranslatableItem;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
-import io.github.anjoismysign.bloblib.itemstack.ItemStackReader;
+import io.github.anjoismysign.bloblib.middleman.itemstack.ItemStackReader;
 import io.github.anjoismysign.bloblib.utilities.IntegerRange;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * @author anjoismysign
@@ -40,12 +40,13 @@ public class BlobMultiSlotable extends MultiSlotable {
      * Parses/reads from a ConfigurationSection using ItemStackReader.
      *
      * @param section The ConfigurationSection to read from.
-     * @param key     The key of the BlobMultiSlotable which was intended to read from.
+     * @param identifier The identifier of the BlobMultiSlotable which was intended to read from.
      * @return The BlobMultiSlotable which was read from the ConfigurationSection.
      */
-    public static BlobMultiSlotable read(ConfigurationSection section, String key,
+    public static BlobMultiSlotable read(ConfigurationSection section,
+                                         String identifier,
                                          String locale) {
-        ItemStack itemStack;
+        final Supplier<ItemStack> readSupplier;
         if (section.isString("ItemStack")) {
             String reference = section.getString("ItemStack");
             TranslatableItem translatableItem = BlobLibTranslatableAPI.getInstance()
@@ -53,16 +54,23 @@ public class BlobMultiSlotable extends MultiSlotable {
                             locale);
             if (translatableItem == null)
                 throw new ConfigurationFieldException("TranslatableItem not found: " + reference);
-            itemStack = translatableItem.getClone();
+            readSupplier = translatableItem::getClone;
         } else {
             ConfigurationSection itemStackSection = section.getConfigurationSection("ItemStack");
             if (itemStackSection == null)
                 throw new ConfigurationFieldException("'ItemStack' ConfigurationSection is null");
-            itemStack = ItemStackReader.READ_OR_FAIL_FAST(itemStackSection).build();
+            readSupplier = () -> ItemStackReader.OMNI_STACK(itemStackSection, null).getCopy();
         }
+        final Supplier<ItemStack> supplier;
         if (section.isInt("Amount")) {
             int amount = section.getInt("Amount");
-            itemStack.setAmount(amount);
+            supplier = () -> {
+                ItemStack itemStack = readSupplier.get();
+                itemStack.setAmount(amount);
+                return itemStack;
+            };
+        } else {
+            supplier = readSupplier;
         }
         String read = section.getString("Slot", "-1");
         Set<Integer> set = IntegerRange.getInstance().parse(read);
@@ -104,14 +112,14 @@ public class BlobMultiSlotable extends MultiSlotable {
         ConfigurationSection singleActionSection = section.getConfigurationSection("Action");
         if (singleActionSection != null) {
             if (!singleActionSection.isString("Action"))
-                Bukkit.getLogger().info("'Action' field is missing in 'Action' ConfigurationSection (" + key + ".Action.Action)");
+                Bukkit.getLogger().info("'Action' field is missing in 'Action' ConfigurationSection (" + identifier + ".Action.Action)");
             if (!singleActionSection.isString("Action-Type"))
-                Bukkit.getLogger().info("'Action-Type' field is missing in 'Action' ConfigurationSection (" + key + ".Action.Action-Type)");
+                Bukkit.getLogger().info("'Action-Type' field is missing in 'Action' ConfigurationSection (" + identifier + ".Action.Action-Type)");
             action = singleActionSection.getString("Action");
             try {
                 actionType = ActionType.valueOf(singleActionSection.getString("Action-Type"));
             } catch (IllegalArgumentException exception) {
-                throw new ConfigurationFieldException("Invalid 'ActionType' for " + key + ".Action.Action-Type");
+                throw new ConfigurationFieldException("Invalid 'ActionType' for " + identifier + ".Action.Action-Type");
             }
         }
         List<ActionMemo> actions = new ArrayList<>();
@@ -122,7 +130,7 @@ public class BlobMultiSlotable extends MultiSlotable {
                 String reference;
                 ActionType type = null;
                 if (actionSection != null) {
-                    String path = key + ".Actions." + key1;
+                    String path = identifier + ".Actions." + key1;
                     if (!actionSection.isString("Action"))
                         Bukkit.getLogger().info("'Action' field is missing in 'Action' ConfigurationSection (" + path + ")");
                     if (!actionSection.isString("Action-Type"))
@@ -131,7 +139,7 @@ public class BlobMultiSlotable extends MultiSlotable {
                     try {
                         type = ActionType.valueOf(actionSection.getString("Action-Type"));
                     } catch (IllegalArgumentException exception) {
-                        throw new ConfigurationFieldException("Invalid 'ActionType' for " + key + ".Action.Action-Type");
+                        throw new ConfigurationFieldException("Invalid 'ActionType' for " + identifier + ".Action.Action-Type");
                     }
                     actions.add(new ActionMemo(reference, type));
                 } else if (actionsSection.isString(key1)) {
@@ -142,7 +150,7 @@ public class BlobMultiSlotable extends MultiSlotable {
         }
         if (action != null)
             actions.add(new ActionMemo(action, actionType));
-        return new BlobMultiSlotable(set, itemStack, key, hasPermission, hasMoney,
+        return new BlobMultiSlotable(set, supplier, identifier, hasPermission, hasMoney,
                 priceCurrency, actions, hasTranslatableItem, isPermissionInverted,
                 isMoneyInverted, isTranslatableItemInverted);
     }
@@ -205,7 +213,7 @@ public class BlobMultiSlotable extends MultiSlotable {
      * Constructor for BlobMultiSlotable
      *
      * @param slots                      The slots to add the item to
-     * @param itemStack                  The item to add
+     * @param supplier                   The ItemStack supplier to add
      * @param key                        The key to use for the item
      * @param hasPermission              If the player needs to have a permission.
      * @param hasMoney                   If the player needs to have money.
@@ -217,7 +225,7 @@ public class BlobMultiSlotable extends MultiSlotable {
      * @param isTranslatableItemInverted If the TranslatableItem check is inverted.
      */
     public BlobMultiSlotable(@NotNull Set<Integer> slots,
-                             @NotNull ItemStack itemStack,
+                             @NotNull Supplier<ItemStack> supplier,
                              @NotNull String key,
                              @Nullable String hasPermission,
                              double hasMoney,
@@ -227,22 +235,9 @@ public class BlobMultiSlotable extends MultiSlotable {
                              boolean isPermissionInverted,
                              boolean isMoneyInverted,
                              boolean isTranslatableItemInverted) {
-        super(slots, itemStack, hasPermission, hasMoney, priceCurrency, actions,
+        super(slots, supplier, hasPermission, hasMoney, priceCurrency, actions,
                 hasTranslatableItem, isPermissionInverted, isMoneyInverted, isTranslatableItemInverted);
         this.key = key;
-    }
-
-    /**
-     * Will insert the BlobMultiSlotable into the given Inventory.
-     * The ItemStack is not cloned, so they all should be references
-     * in case of retrieving in the future.
-     *
-     * @param inventory The inventory to insert the ItemStacks
-     */
-    public void setInInventory(Inventory inventory) {
-        for (Integer slot : getSlots()) {
-            inventory.setItem(slot, getItemStack());
-        }
     }
 
     public InventoryButton toInventoryButton() {

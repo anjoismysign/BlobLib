@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.entities;
 
+import io.github.anjoismysign.aesthetic.DirectoryAssistant;
 import io.github.anjoismysign.bloblib.managers.ManagerDirector;
-import io.github.anjoismysign.bloblib.utilities.HandyDirectory;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,8 +37,8 @@ public class AsynchronousObjectManager<T extends BlobObject> extends ObjectManag
         if (!path.exists())
             path.mkdir();
         Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () -> {
-            HandyDirectory handyDirectory = HandyDirectory.of(path);
-            Collection<File> files = handyDirectory.listRecursively("yml");
+            DirectoryAssistant directoryAssistant = DirectoryAssistant.of(path);
+            Collection<File> files = directoryAssistant.listRecursively("yml");
             List<CompletableFuture<Void>> futures = new ArrayList<>();
             files.forEach(file -> {
                 CompletableFuture<Void> fileFuture = CompletableFuture.runAsync(() -> {

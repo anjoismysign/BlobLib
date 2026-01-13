@@ -1,3 +1,5 @@
+Settings:
+  Verbose: false
 Listeners:
   TinyListeners:
     Display-Unriding: false
@@ -15,3 +17,5 @@ Locale:
       - pt_br
     fr_fr:
       - fr_ca
+WeaponMechanics:
+  Actionbar-Weapon-Info-Display: false

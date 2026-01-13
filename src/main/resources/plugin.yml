@@ -3,10 +3,18 @@ version: 1.698.32
 main: io.github.anjoismysign.bloblib.BlobLib
 api-version: 1.21.5
 load: STARTUP
-loadbefore: [ Vault, LibsDisguises, ProtocolLib, WorldEdit, WorldGuard ]
-softdepend:
+loadbefore:
+  - Skript
+  - Vault
+  - LibsDisguises
+  - ProtocolLib
+  - WorldEdit
+  - WorldGuard
   - WeaponMechanics
-authors: [ promorrom, j0ach1mmall3, SmallCode ]
+  - ItemsAdder
+  - BlobTycoon
+  - AlternativeSaving
+authors: [ anjoismysign ]
 commands:
   bloblib:
     usage: "/bloblib reload"

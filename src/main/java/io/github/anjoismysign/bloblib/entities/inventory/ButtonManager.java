@@ -8,20 +8,18 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public abstract class ButtonManager<T extends InventoryButton> implements ButtonManagerMethods {
     private Map<String, T> stringKeys;
-    private Map<Integer, ItemStack> integerKeys;
+    private Map<Integer, Supplier<ItemStack>> integerKeys;
 
     public ButtonManager(ButtonManagerData<T> buttonManagerData) {
         this.stringKeys = new HashMap<>(buttonManagerData.inventoryButtons());
         this.integerKeys = new HashMap<>(buttonManagerData.itemStackMap());
     }
 
-    public ButtonManager() {
-    }
-
-    public Map<Integer, ItemStack> getIntegerKeys() {
+    public Map<Integer, Supplier<ItemStack>> getIntegerKeys() {
         return integerKeys;
     }
 
@@ -29,7 +27,7 @@ public abstract class ButtonManager<T extends InventoryButton> implements Button
         return stringKeys;
     }
 
-    public void setIntegerKeys(Map<Integer, ItemStack> integerKeys) {
+    public void setIntegerKeys(Map<Integer, Supplier<ItemStack>> integerKeys) {
         this.integerKeys = integerKeys;
     }
 
@@ -88,9 +86,7 @@ public abstract class ButtonManager<T extends InventoryButton> implements Button
      *
      * @return a copy of the integerKeys map
      */
-    public Map<Integer, ItemStack> copyIntegerKeys() {
-        Map<Integer, ItemStack> map = new HashMap<>();
-        this.integerKeys.forEach((key, value) -> map.put(key, new ItemStack(value)));
-        return map;
+    public Map<Integer, Supplier<ItemStack>> copyIntegerKeys() {
+        return new HashMap<>(integerKeys);
     }
 }

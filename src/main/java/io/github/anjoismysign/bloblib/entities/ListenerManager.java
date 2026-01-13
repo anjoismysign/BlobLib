@@ -3,6 +3,7 @@ package io.github.anjoismysign.bloblib.entities;
 import io.github.anjoismysign.bloblib.managers.Manager;
 import io.github.anjoismysign.bloblib.managers.ManagerDirector;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,9 +21,7 @@ public abstract class ListenerManager extends Manager {
 
     @SuppressWarnings("ManualArrayToCollectionCopy")
     public void add(BlobListener... listeners) {
-        for (BlobListener listener : listeners) {
-            this.listeners.add(listener);
-        }
+        this.listeners.addAll(Arrays.asList(listeners));
     }
 
     public void remove(BlobListener... listeners) {

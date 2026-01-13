@@ -8,6 +8,12 @@ repositories {
     mavenLocal()
 
     maven {
+        url = uri("https://mvn.lib.co.nz/public")
+    }
+
+    maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
+
+    maven {
         url = uri("https://repo.extendedclip.com/releases/")
     }
 
@@ -38,10 +44,25 @@ repositories {
     maven {
         url = uri("https://repo.fancyplugins.de/releases")
     }
+
+    maven {
+        url = uri("https://maven.devs.beer/")
+        name = "matteodev"
+    }
+
+    maven {
+        url = uri("https://repo.skriptlang.org/releases")
+    }
+
 }
 
 dependencies {
     api(libs.org.mongodb.bson)
+    /*
+     * Compile projects from github.com/anjoismysign
+     * Install in maven local
+     * TODO: Automate process for new contributors
+     */
     api(libs.io.github.anjoismysign.anjo)
     api(libs.net.milkbowl.vault.vaultapi)
     api(libs.io.github.anjoismysign.skeramidcommands)
@@ -50,6 +71,12 @@ dependencies {
     api(libs.io.github.anjoismysign.psa.sql)
     api(libs.io.github.anjoismysign.winona)
     api(libs.io.github.anjoismysign.aesthetic)
+    compileOnly("io.github.anjoismysign:alternativesaving:1.0")
+    compileOnly("io.github.anjoismysign:blobtycoon:2.0-SNAPSHOT")
+    compileOnly("io.github.anjoismysign:blobutil:1.0")
+    compileOnly("io.github.anjoismysign:bukkit-vector:1.0")
+    compileOnly("io.github.anjoismysign:bukkit-blockfaceutil:1.0")
+    compileOnly("io.github.anjoismysign:bukkit-structrador:1.0")
     compileOnly("io.github.classgraph:classgraph:4.8.157")
     compileOnly(libs.org.apache.commons.commons.lang3)
     compileOnly(libs.io.papermc.paper.paper.api)
@@ -58,11 +85,11 @@ dependencies {
     compileOnly(libs.com.sk89q.worldguard.worldguard.bukkit)
     compileOnly(libs.commons.io.commons.io)
     compileOnly(libs.com.github.decentsoftware.eu.decentholograms)
-    compileOnly(libs.net.md.v5.bungeecord.api)
     compileOnly(libs.me.clip.placeholderapi)
-    compileOnly(libs.libsdisguises.libsdisguises)
+    implementation("me.libraryaddict.disguises:libsdisguises:11.0.13")
     compileOnly(libs.net.lingala.zip4j.zip4j)
     compileOnly(libs.de.oliver.fancyholograms)
+    compileOnly("dev.lone:api-itemsadder:4.0.10")
 //    mvn install:install-file \
 //    -Dfile=weaponmechanics-4.1.5.jar \
 //    -DpomFile=weaponmechanics-4.1.5.pom.xml
@@ -71,6 +98,7 @@ dependencies {
 //    -Dfile=mechanicscore-4.1.5.jar \
 //    -DpomFile=mechanicscore-4.1.5.pom.xml
     compileOnly("com.cjcrafter:mechanicscore:4.1.5")
+    compileOnly("com.github.SkriptLang:Skript:2.12.2")
 }
 
 group = "io.github.anjoismysign"

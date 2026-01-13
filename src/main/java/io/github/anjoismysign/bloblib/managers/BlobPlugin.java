@@ -56,6 +56,10 @@ public abstract class BlobPlugin extends JavaPlugin implements PermissionDecorat
      */
     protected void blobLibReload() {
         IManagerDirector director = getManagerDirector();
+        if (director == null){
+            System.err.println(getName()+" has null ManagerDirector");
+            return;
+        }
         if (director.isReloading()) {
             Bukkit.getLogger().severe("BlobLib tried to reload " + getName() + " while it was reloading!");
             return;

@@ -22,10 +22,4 @@ public class BlobInventoryHolder extends InventoryHolderBuilder<InventoryButton>
     public BlobInventoryHolder copy() {
         return new BlobInventoryHolder(getTitle(), getSize(), getButtonManager(), getHolder());
     }
-
-    @Override
-    @NotNull
-    public BlobInventoryHolder setHolder(@NotNull InventoryHolder holder) {
-        return new BlobInventoryHolder(getTitle(), getSize(), getButtonManager(), holder);
-    }
 }

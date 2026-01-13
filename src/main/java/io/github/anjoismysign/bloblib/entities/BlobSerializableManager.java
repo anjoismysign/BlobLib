@@ -96,11 +96,11 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            if (player != Bukkit.getPlayer(uuid))
+            if (!player.isConnected())
                 return;
             BlobCrudable crudable = crudManager.read(uuid.toString());
             Bukkit.getScheduler().runTask(plugin, () -> {
-                if (player != Bukkit.getPlayer(uuid))
+                if (!player.isConnected())
                     return;
                 T applied = generator.apply(crudable);
                 BlobCrudable serialized = applied.serializeAllAttributes();
@@ -113,7 +113,7 @@ public class BlobSerializableManager<T extends BlobSerializable> extends Manager
                 autoSave.put(uuid, new BukkitRunnable() {
                     @Override
                     public void run() {
-                        if (player != Bukkit.getPlayer(uuid)) {
+                        if (!player.isConnected()) {
                             cancel();
                             return;
                         }

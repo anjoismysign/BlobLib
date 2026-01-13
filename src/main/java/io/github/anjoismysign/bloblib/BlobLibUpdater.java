@@ -24,7 +24,6 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.UUID;
 
 public class BlobLibUpdater implements PluginUpdater {
     private final BlobLib plugin;
@@ -168,9 +167,8 @@ public class BlobLibUpdater implements PluginUpdater {
             Player player = event.getPlayer();
             if (!player.hasPermission("bloblib.admin"))
                 return;
-            UUID uuid = player.getUniqueId();
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                if (player != Bukkit.getPlayer(uuid))
+                if (!player.isConnected())
                     return;
                 BlobLibMessageAPI.getInstance()
                         .getMessage("BlobLib.Updater-Available", player)

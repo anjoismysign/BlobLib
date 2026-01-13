@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.entities;
 
-import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
 import io.github.anjoismysign.anjo.entities.Result;
+import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

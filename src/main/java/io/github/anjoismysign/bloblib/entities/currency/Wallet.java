@@ -15,12 +15,13 @@ public class Wallet extends HashMap<String, Double> implements Serializable {
         return wallet;
     }
 
-    public void serializeInDocument(Document document) {
+    public void serializeInDocument(Document document,
+                                    String key) {
         Map<String, String> map = new HashMap<>();
         forEach((k, v) -> map.put(k, v.toString()));
         List<String> list = new ArrayList<>();
         map.forEach((k, v) -> list.add(k + ":" + v));
-        document.put("Wallet", list);
+        document.put(key, list);
     }
 
     public Map<String, Object> serialize() {

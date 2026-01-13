@@ -11,7 +11,7 @@ public interface WeaponMechanicsMiddleman {
     static WeaponMechanicsMiddleman getInstance(){
         boolean isEnabled = Bukkit.getPluginManager().isPluginEnabled("WeaponMechanics");
         if (isEnabled){
-            return new WMFound();
+            return WMFound.INSTANCE;
         } else {
             return new WMNotFound();
         }

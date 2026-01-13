@@ -83,7 +83,23 @@ public enum BlobLibCommand {
     }
 
     public void update(@NotNull Command bloblib) {
-        Command command = bloblib.child("update");
+        Command selfUpdate = bloblib.child("selfupdate");
+        selfUpdate.onExecute(((permissionMessenger, args) -> {
+            CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
+            PluginUpdater updater = main.getBloblibupdater();
+
+            BlobMessage message = BlobLibMessageAPI.getInstance()
+                    .getMessage("BlobLib.Updater-Successful", sender);
+
+            message.modder()
+                    .replace("%randomColor%", main.getColorManager().randomColor().toString())
+                    .replace("%plugin%", updater.getPlugin().getName())
+                    .replace("%version%", updater.getLatestVersion())
+                    .get()
+                    .toCommandSender(sender);
+        }));
+
+        Command pluginUpdate = bloblib.child("update");
         PluginManager pluginManager = main.getPluginManager();
         CommandTarget<BlobPlugin> target = CommandTargetBuilder.fromMap(() -> pluginManager.getPluginsAsMap().entrySet().stream()
                 .filter(entry -> {
@@ -96,42 +112,31 @@ public enum BlobLibCommand {
                         Map.Entry::getKey,
                         Map.Entry::getValue
                 )));
-        command.setParameters(target);
-        command.onExecute(((permissionMessenger, args) -> {
+
+
+        pluginUpdate.setParameters(target);
+        pluginUpdate.onExecute(((permissionMessenger, args) -> {
             CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
-            int length = args.length;
             PluginUpdater updater;
-            boolean isPlugin = false;
-            if (length == 1) {
-                BlobPlugin plugin = target.parse(args[0]);
-                if (plugin != null && plugin.getPluginUpdater() != null) {
-                    updater = plugin.getPluginUpdater();
-                    isPlugin = true;
-                } else {
-                    return;
-                }
+            BlobPlugin plugin = target.parse(args[0]);
+            if (plugin != null && plugin.getPluginUpdater() != null) {
+                updater = plugin.getPluginUpdater();
             } else {
-                updater = main.getBloblibupdater();
+                return;
             }
             boolean successful = updater.download();
             if (!successful)
                 return;
             BlobMessage message = BlobLibMessageAPI.getInstance()
                     .getMessage("BlobLib.Updater-Successful", sender);
-            if (isPlugin) {
-                message.modder()
-                        .replace("%randomColor%", main.getColorManager().randomColor().toString())
-                        .replace("%plugin%", updater.getPlugin().getName())
-                        .replace("%version%", updater.getLatestVersion())
-                        .get()
-                        .toCommandSender(sender);
-            } else
-                message.modder()
-                        .replace("%randomColor%", main.getColorManager().randomColor().toString())
-                        .replace("%plugin%", updater.getPlugin().getName())
-                        .replace("%version%", updater.getLatestVersion())
-                        .get()
-                        .toCommandSender(sender);
+
+            message.modder()
+                    .replace("%randomColor%", main.getColorManager().randomColor().toString())
+                    .replace("%plugin%", updater.getPlugin().getName())
+                    .replace("%version%", updater.getLatestVersion())
+                    .get()
+                    .toCommandSender(sender);
+
         }));
     }
 
@@ -183,6 +188,12 @@ public enum BlobLibCommand {
         get.setParameters(target);
         get.onExecute(((permissionMessenger, args) -> {
             CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
+            if (args.length < 1) {
+                BlobLibMessageAPI.getInstance()
+                        .getMessage("TranslatableItem.Usage", sender)
+                        .toCommandSender(sender);
+                return;
+            }
             String key = args[0];
 
             if (!(sender instanceof Player player)) {
@@ -241,6 +252,32 @@ public enum BlobLibCommand {
 
     public void translatablepositionable(@NotNull Command bloblib) {
         Command command = bloblib.child("translatablepositionable");
+        Command save = command.child("save");
+        save.setParameters(CommandTargetBuilder.fromMap(() -> Map.of("Type the key you wanna use", "")));
+        save.onExecute(((permissionMessenger, args) -> {
+            CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
+            if (!(sender instanceof Player player)) {
+                BlobLibMessageAPI.getInstance()
+                        .getMessage("System.Console-Not-Allowed-Command", sender)
+                        .toCommandSender(sender);
+                return;
+            }
+            String key = args[0];
+            if (key.isEmpty()) {
+                BlobLibMessageAPI.getInstance()
+                        .getMessage("TranslatablePositionable.Key-Cannot-Be-Empty", player)
+                        .handle(player);
+                return;
+            }
+            Location location = player.getLocation();
+            PositionableIO.INSTANCE.writeWithKey(location, key);
+            BlobLibMessageAPI.getInstance()
+                    .getMessage("TranslatablePositionable.Save", player)
+                    .modder()
+                    .replace("%reference%", key)
+                    .get()
+                    .handle(player);
+        }));
         Command random = command.child("random");
         random.onExecute(((permissionMessenger, args) -> {
             CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
@@ -251,11 +288,11 @@ public enum BlobLibCommand {
                 return;
             }
             Location location = player.getLocation();
-            String reference = PositionableIO.INSTANCE.writeRandom(location);
+            String key = PositionableIO.INSTANCE.writeRandom(location);
             BlobLibMessageAPI.getInstance()
                     .getMessage("TranslatablePositionable.Random", player)
                     .modder()
-                    .replace("%reference%", reference)
+                    .replace("%reference%", key)
                     .get()
                     .handle(player);
         }));

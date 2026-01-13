@@ -1,38 +1,40 @@
 package io.github.anjoismysign.bloblib.entities.translatable;
 
-import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.itemstack.ItemStackModder;
-import org.bukkit.NamespacedKey;
+import io.github.anjoismysign.bloblib.entities.TranslatableRarity;
+import io.github.anjoismysign.bloblib.managers.BlobLibConfigManager;
+import io.github.anjoismysign.bloblib.middleman.itemstack.ItemStackModder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class BlobTranslatableItem implements TranslatableItem {
-    static final NamespacedKey keyKey = new NamespacedKey(BlobLib.getInstance(), "item_key");
-    static final NamespacedKey localeKey = new NamespacedKey(BlobLib.getInstance(), "item_locale");
 
     @NotNull
-    private final String locale, key;
+    private final String locale, key, rarity;
     @NotNull
-    private final ItemStack itemStack;
+    private final Supplier<ItemStack> supplier;
 
     public static BlobTranslatableItem of(@NotNull String key,
                                           @NotNull String locale,
-                                          @NotNull ItemStack itemStack) {
+                                          @NotNull Supplier<ItemStack> supplier,
+                                          @NotNull String rarity) {
         Objects.requireNonNull(locale, "'locale' cannot be null");
-        Objects.requireNonNull(itemStack, "'itemStack' cannot be null");
-        return new BlobTranslatableItem(key, locale, itemStack);
+        Objects.requireNonNull(supplier, "'supplier' cannot be null");
+        return new BlobTranslatableItem(key, locale, supplier, rarity);
     }
 
     private BlobTranslatableItem(@NotNull String key,
                                  @NotNull String locale,
-                                 @NotNull ItemStack itemStack) {
+                                 @NotNull Supplier<ItemStack> supplier,
+                                 @NotNull String rarity) {
         this.key = key;
         this.locale = locale;
-        this.itemStack = itemStack;
+        this.supplier = supplier;
+        this.rarity = rarity;
     }
 
     @NotNull
@@ -42,7 +44,7 @@ public class BlobTranslatableItem implements TranslatableItem {
 
     @NotNull
     public ItemStack get() {
-        return itemStack;
+        return supplier.get();
     }
 
     @NotNull
@@ -57,11 +59,17 @@ public class BlobTranslatableItem implements TranslatableItem {
         ItemMeta meta = clone.getItemMeta();
         Objects.requireNonNull(meta, "ItemMeta cannot be null");
         ItemStackModder modder = ItemStackModder.mod(clone);
+        modder.itemName(function.apply(meta.getItemName()));
         modder.displayName(function.apply(meta.getDisplayName()));
         if (meta.hasLore())
             modder.lore(meta.getLore().stream()
                     .map(function)
                     .toList());
-        return new BlobTranslatableItem(key, locale, clone);
+        return new BlobTranslatableItem(key, locale, ()->clone, rarity);
+    }
+
+    @Override
+    public TranslatableRarity getRarity() {
+        return BlobLibConfigManager.getInstance().getRarities().getRarity(rarity);
     }
 }

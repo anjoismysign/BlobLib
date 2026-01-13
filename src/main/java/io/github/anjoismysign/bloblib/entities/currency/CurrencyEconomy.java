@@ -6,6 +6,7 @@ import net.milkbowl.vault.economy.IdentityEconomy;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 import javax.naming.OperationNotSupportedException;
 import java.util.ArrayList;
@@ -15,10 +16,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class CurrencyEconomy implements IdentityEconomy {
     private final Currency currency;
     private final WalletOwnerManager<?> walletOwnerManager;
+
 
     protected CurrencyEconomy(Currency currency, WalletOwnerManager<?> walletOwnerManager) {
         this.currency = currency;
@@ -133,17 +136,37 @@ public class CurrencyEconomy implements IdentityEconomy {
 
     @Override
     public EconomyResponse withdraw(UUID uuid, double amount) {
-        Uber<Boolean> has = Uber.fly();
+        Uber<Boolean> has = Uber.drive(false);
         ifIsOnline(uuid, walletOwner -> {
-            if (!has(uuid, amount))
+            if (!has(uuid, amount)) {
+                @Nullable Function<NotEnoughBalance, Boolean> function = walletOwnerManager.getNotEnoughEvent();
+                if (function != null){
+                    double current = getBalance(uuid);
+                    double missing = amount - current;
+                    NotEnoughBalance event = new NotEnoughBalance(walletOwner, currency.getKey(), missing);
+                    boolean eventResult = function.apply(event);
+                    if (!eventResult){
+                        has.talk(false);
+                        return;
+                    }
+                    boolean canProceed = getBalance(uuid) >= amount;
+                    if (!canProceed){
+                        has.talk(false);
+                    }
+                    walletOwner.withdraw(currency.getKey(), amount);
+                    has.talk(true);
+                }
                 has.talk(false);
+                return;
+            }
             walletOwner.withdraw(currency.getKey(), amount);
             has.talk(true);
         });
-        if (has.thanks())
+        if (has.thanks()) {
             return new EconomyResponse(amount, getBalance(uuid), EconomyResponse.ResponseType.SUCCESS, null);
-        else
+        } else {
             return new EconomyResponse(amount, getBalance(uuid), EconomyResponse.ResponseType.FAILURE, null);
+        }
     }
 
     @Override

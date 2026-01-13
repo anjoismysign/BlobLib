@@ -9,6 +9,17 @@ System:
     Volume: 1.0
     Pitch: 0.9
     Audience: PLAYER
+  Welcome:
+    Sound: block.note_block.bell
+    Volume: 1.0
+    Pitch: 1.25
+    Audience: WORLD
+  Join:
+    Type: CHAT
+    Message: '&7%player% &fjoined the game'
+  Quit:
+    Type: CHAT
+    Message: '&7%player% &fleft the game'
 Builder:
   Button-Click:
     Sound: ui.button.click

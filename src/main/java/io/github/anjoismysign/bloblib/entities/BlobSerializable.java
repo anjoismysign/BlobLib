@@ -23,7 +23,7 @@ public interface BlobSerializable extends BinarySerializable {
         if (length == 36) {
             return Bukkit.getPlayer(UUID.fromString(blobCrudable().getIdentification()));
         } else {
-            return Bukkit.getPlayer(blobCrudable().getIdentification());
+            return Bukkit.getPlayerExact(blobCrudable().getIdentification());
         }
     }
 }

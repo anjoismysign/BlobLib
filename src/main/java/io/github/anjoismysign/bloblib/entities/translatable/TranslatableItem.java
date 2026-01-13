@@ -1,6 +1,7 @@
 package io.github.anjoismysign.bloblib.entities.translatable;
 
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
+import io.github.anjoismysign.bloblib.entities.TranslatableRarity;
 import io.github.anjoismysign.bloblib.events.TranslatableItemCloneEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -50,15 +51,15 @@ public interface TranslatableItem extends Translatable<ItemStack> {
     }
 
     /**
-     * Gets a TranslatableItem by its key. Key is the same as identifier.
+     * Gets a TranslatableItem by its identifier. Key is the same as identifier.
      *
-     * @param key The key to get the tag set by.
+     * @param identifier The identifier to get the tag set by.
      * @return The TranslatableItem, or null if it doesn't exist.
      */
     @Nullable
-    static TranslatableItem by(@NotNull String key) {
-        Objects.requireNonNull(key);
-        return BlobLibTranslatableAPI.getInstance().getTranslatableItem(key);
+    static TranslatableItem by(@NotNull String identifier) {
+        Objects.requireNonNull(identifier);
+        return BlobLibTranslatableAPI.getInstance().getTranslatableItem(identifier);
     }
 
     /**
@@ -71,8 +72,11 @@ public interface TranslatableItem extends Translatable<ItemStack> {
     static void localize(@Nullable ItemStack itemStack,
                          @NotNull String locale) {
         TranslatableItem translatableItem = TranslatableItem.byItemStack(itemStack);
-        if (translatableItem == null)
+        if (translatableItem == null) {
+            if (itemStack != null && !itemStack.getType().isAir()){
+            }
             return;
+        }
         TranslatableItem localized = translatableItem.localize(locale);
         ItemStack toStack = localized.getClone();
         ItemMeta from = itemStack.getItemMeta();
@@ -133,6 +137,8 @@ public interface TranslatableItem extends Translatable<ItemStack> {
     default TranslatableItemModder modder() {
         return TranslatableItemModder.mod(this);
     }
+
+    TranslatableRarity getRarity();
 
     /**
      * Will get a clone of the TranslatableItem, allowing

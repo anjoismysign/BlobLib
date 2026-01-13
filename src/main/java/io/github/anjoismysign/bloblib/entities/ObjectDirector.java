@@ -1,13 +1,13 @@
 package io.github.anjoismysign.bloblib.entities;
 
+import io.github.anjoismysign.anjo.entities.Result;
 import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
 import io.github.anjoismysign.bloblib.entities.inventory.ObjectBuilder;
-import io.github.anjoismysign.bloblib.itemstack.ItemStackBuilder;
 import io.github.anjoismysign.bloblib.managers.Manager;
 import io.github.anjoismysign.bloblib.managers.ManagerDirector;
+import io.github.anjoismysign.bloblib.middleman.itemstack.ItemStackBuilder;
 import io.github.anjoismysign.bloblib.utilities.ItemStackUtil;
-import io.github.anjoismysign.anjo.entities.Result;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

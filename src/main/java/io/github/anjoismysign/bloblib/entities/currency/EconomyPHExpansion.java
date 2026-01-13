@@ -50,11 +50,19 @@ public class EconomyPHExpansion<T extends WalletOwner> extends PlaceholderExpans
             String subIdentifier = split[1];
             Player player = Bukkit.getPlayer(offlinePlayer.getUniqueId());
             switch (subIdentifier) {
+                case "bankdisplay"->{
+                    if (!(walletOwner instanceof BankWalletOwner bankWalletOwner)){
+                        return currency.display(0);
+                    }
+                    Wallet bankWallet = bankWalletOwner.getBankWallet();
+                    String key = currency.getKey();
+                    return currency.display(bankWallet.balance(key));
+                }
                 case "display" -> {
-                    return currency.display(walletOwner.getBalance(currency));
+                    return currency.display(walletOwner.getBalance(currency.getKey()));
                 }
                 case "balance" -> {
-                    return walletOwner.getBalance(currency) + "";
+                    return walletOwner.getBalance(currency.getKey()) + "";
                 }
                 case "displayName" -> {
                     if (player == null)
