@@ -78,4 +78,9 @@ public class BlobTycoonMiddleman implements ProfileProvider {
         return true;
     }
 
+    @Override
+    public @NotNull String getProviderName() {
+        return "BlobTycoon";
+    }
+
 }

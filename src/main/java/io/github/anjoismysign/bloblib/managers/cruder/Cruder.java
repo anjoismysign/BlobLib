@@ -7,7 +7,9 @@ import io.github.anjoismysign.psa.crud.CrudManager;
 import io.github.anjoismysign.psa.crud.Crudable;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.util.function.Function;
 
 public interface Cruder<T extends Crudable> {
@@ -15,7 +17,18 @@ public interface Cruder<T extends Crudable> {
     static <T extends Crudable> Cruder<T> of(Plugin javaPlugin,
                                              Class<T> clazz,
                                              Function<String, T> createFunction){
-        CrudDatabaseCredentials credentials = BukkitDatabaseProvider.INSTANCE.getDatabaseProvider().of(javaPlugin);
+        return of(javaPlugin,clazz,createFunction,null);
+    }
+
+    static <T extends Crudable> Cruder<T> of(Plugin javaPlugin,
+                                             Class<T> clazz,
+                                             Function<String, T> createFunction,
+                                             @Nullable File directory){
+        var provider = BukkitDatabaseProvider.INSTANCE;
+        CrudDatabaseCredentials credentials = directory == null ?
+                provider.getDatabaseProvider().of(javaPlugin)
+                :
+                provider.getDatabaseProvider().of(javaPlugin, directory);
         @SuppressWarnings("unchecked") CrudDatabase<T> crudDatabase = credentials.getCrudDatabaseFor(clazz);
         CrudManager<T> crudManager = crudDatabase.crudManagerOf(createFunction);
         return new Cruder<>() {

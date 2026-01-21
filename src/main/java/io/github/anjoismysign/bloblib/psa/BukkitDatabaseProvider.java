@@ -1,9 +1,10 @@
 package io.github.anjoismysign.bloblib.psa;
 
+import io.github.anjoismysign.psa.crud.CrudDatabaseCredentials;
 import io.github.anjoismysign.psa.crud.DatabaseCredentials;
 import io.github.anjoismysign.psa.sql.SQLDatabaseCredentials;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.Objects;
@@ -11,13 +12,21 @@ import java.util.Objects;
 public enum BukkitDatabaseProvider {
     INSTANCE;
 
-    @Nullable
-    private PluginDatabaseProvider databaseProvider;
+    private static final PluginDatabaseProvider SQL = new PluginDatabaseProvider() {
+        @Override
+        public @NotNull CrudDatabaseCredentials of(@NotNull Plugin plugin) {
+            return  of(plugin, plugin.getDataFolder());
+        }
 
-    private static final PluginDatabaseProvider SQL = plugin -> {
-        Objects.requireNonNull(plugin, "'plugin' cannot be null");
-        File directory = plugin.getDataFolder();
-        return SQLDatabaseCredentials.at(DatabaseCredentials.Identifier.UUID, directory);
+        @Override
+        public @NotNull CrudDatabaseCredentials of(@NotNull Plugin plugin, @NotNull File directory) {
+            Objects.requireNonNull(plugin, "'plugin' cannot be null");
+            Objects.requireNonNull(directory, "'directory' cannot be null");
+            if (!directory.isDirectory()){
+                throw new RuntimeException(directory.getAbsolutePath() + "is not a directory");
+            }
+            return SQLDatabaseCredentials.at(DatabaseCredentials.Identifier.UUID, directory);
+        }
     };
 
     /**
@@ -27,18 +36,6 @@ public enum BukkitDatabaseProvider {
      */
     public @NotNull PluginDatabaseProvider getDatabaseProvider() {
         return SQL;
-    }
-
-    /**
-     * Sets the DatabaseProvider meant for use
-     *
-     * @param databaseProvider the DatabaseProvider
-     */
-    public void setDatabaseProvider(@NotNull PluginDatabaseProvider databaseProvider) {
-//        Objects.requireNonNull(databaseProvider, "'databaseProvider' cannot be null!");
-//        if (this.databaseProvider != null)
-//            return;
-//        this.databaseProvider = databaseProvider;
     }
 
 }

@@ -18,4 +18,9 @@ public class AbsentProfileProvider implements ProfileProvider{
     public boolean isValid() {
         return false;
     }
+
+    @Override
+    public @NotNull String getProviderName() {
+        return "AbsentProfileProvider";
+    }
 }

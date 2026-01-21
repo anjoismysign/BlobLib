@@ -17,15 +17,16 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -54,7 +55,8 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
                            @Nullable Consumer<T> onUpdate,
                            @Nullable Consumer<T> onAutoSave,
                            @Nullable Consumer<T> onJoin,
-                           @Nullable Consumer<T> onQuit) {
+                           @Nullable Consumer<T> onQuit,
+                           @Nullable File customDirectory) {
         this.plugin = plugin;
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(this, plugin);
@@ -66,8 +68,8 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
         autoSave = new HashMap<>();
         this.joinEvent = joinEvent;
         this.quitEvent = quitEvent;
-        saving = new HashSet<>();
-        cruder = Cruder.of(plugin, clazz, createFunction);
+        saving = ConcurrentHashMap.newKeySet();
+        cruder = Cruder.of(plugin, clazz, createFunction, customDirectory);
         this.onRead = onRead;
         this.onUpdate = onUpdate;
         this.onAutoSave = onAutoSave;
@@ -147,7 +149,8 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
         if (quitEvent != null)
             Bukkit.getPluginManager().callEvent(quitEvent.apply(serializable));
         saving.add(uuid);
-        autoSave.remove(uuid);
+        BukkitTask task = autoSave.remove(uuid);
+        task.cancel();
         if (onQuit != null){
             onQuit.accept(serializable);
         }
@@ -251,12 +254,13 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
         }
     }
 
-    public void loadAll(){
+    private void loadAll(){
         Bukkit.getOnlinePlayers().forEach(player -> {
             UUID uuid = player.getUniqueId();
             String identification = uuid.toString();
             T serializable = cruder.readOrGenerate(identification);
             cruder.update(serializable);
+            serializables.put(uuid, serializable);
 
             autoSave.put(uuid, new BukkitRunnable() {
                 @Override
@@ -280,6 +284,15 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
 
     public boolean exists(String identification) {
         return cruder.exists(identification);
+    }
+
+    public void shutdown(){
+        autoSave.values().forEach(BukkitTask::cancel);
+        autoSave.clear();
+        for (T item : serializables.values()) {
+            cruder.update(item);
+        }
+        serializables.clear();
     }
 
     public void saveAll() {

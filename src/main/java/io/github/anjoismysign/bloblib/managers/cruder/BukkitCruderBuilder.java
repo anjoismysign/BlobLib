@@ -7,6 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
@@ -27,6 +28,7 @@ public class BukkitCruderBuilder<T extends Crudable> {
     private @Nullable Consumer<T> onAutoSave;
     private @Nullable Consumer<T> onJoin;
     private @Nullable Consumer<T> onQuit;
+    private @Nullable File customDirectory;
 
     private T createInstance(String identification) {
         try {
@@ -274,6 +276,18 @@ public class BukkitCruderBuilder<T extends Crudable> {
     }
 
     /**
+     * The custom directory where the database file is stored.
+     * <p>
+     * For file-based database implementations (such as SQLite), this directory
+     * will house the resulting database file.
+     * </p>
+     */
+    public BukkitCruderBuilder<T> customDirectory(@Nullable File customDirectory){
+        this.customDirectory = customDirectory;
+        return this;
+    }
+
+    /**
      * Builds and returns a new BlobCruder instance with the configured settings.
      * <p>
      * This method creates a BlobCruder that manages Crudable objects of the specified type.
@@ -312,7 +326,8 @@ public class BukkitCruderBuilder<T extends Crudable> {
                 onUpdate,
                 onAutoSave,
                 onJoin,
-                onQuit
+                onQuit,
+                customDirectory
         );
     }
 

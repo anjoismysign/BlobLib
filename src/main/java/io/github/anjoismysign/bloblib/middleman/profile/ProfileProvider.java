@@ -26,4 +26,11 @@ public interface ProfileProvider {
      */
     boolean isValid();
 
+    /**
+     * Gets the plugin provider name.
+     * @return The plugin name.
+     */
+    @NotNull
+    String getProviderName();
+
 }

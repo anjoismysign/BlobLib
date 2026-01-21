@@ -86,4 +86,9 @@ public class AlternativeSavingMiddleman implements ProfileProvider {
         return true;
     }
 
+    @Override
+    public @NotNull String getProviderName() {
+        return "AlternativeSaving";
+    }
+
 }
