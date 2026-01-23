@@ -2,6 +2,9 @@ package io.github.anjoismysign.bloblib.middleman.profile;
 
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.UUID;
 
 public interface ProfileProvider {
 
@@ -13,6 +16,14 @@ public interface ProfileProvider {
      */
     @NotNull
     ProfileManagement getProfileManagement(@NotNull Player player);
+
+    /**
+     * Gets the ProfileManager of a Player's uniqueId
+     * @param uuid The uniqueId of the Player
+     * @return The ProfileManagement if cached, null otherwise.
+     */
+    @Nullable
+    ProfileManagement getProfileManagement(@NotNull UUID uuid);
 
     /**
      * If this ProfileProvider supports saving Profiles through Profile#save

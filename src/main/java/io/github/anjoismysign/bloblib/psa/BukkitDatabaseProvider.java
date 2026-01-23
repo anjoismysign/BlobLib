@@ -23,7 +23,7 @@ public enum BukkitDatabaseProvider {
             Objects.requireNonNull(plugin, "'plugin' cannot be null");
             Objects.requireNonNull(directory, "'directory' cannot be null");
             if (!directory.isDirectory()){
-                throw new RuntimeException(directory.getAbsolutePath() + "is not a directory");
+                throw new RuntimeException(directory.getAbsolutePath() + " is not a directory");
             }
             return SQLDatabaseCredentials.at(DatabaseCredentials.Identifier.UUID, directory);
         }

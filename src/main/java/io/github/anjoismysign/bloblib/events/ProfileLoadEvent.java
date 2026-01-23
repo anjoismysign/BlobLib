@@ -29,10 +29,12 @@ public class ProfileLoadEvent extends Event {
         return HANDLERS_LIST;
     }
 
+    @NotNull
     public Player getPlayer() {
         return player;
     }
 
+    @NotNull
     public Profile getProfile() {
         return profile;
     }

@@ -1,5 +1,6 @@
 package io.github.anjoismysign.bloblib.api;
 
+import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.middleman.AlternativeSavingMiddleman;
 import io.github.anjoismysign.bloblib.middleman.BlobTycoonMiddleman;
 import io.github.anjoismysign.bloblib.middleman.profile.AbsentProfileProvider;
@@ -13,12 +14,18 @@ public class BlobLibProfileAPI {
     private static BlobLibProfileAPI INSTANCE;
 
     public static BlobLibProfileAPI getInstance(){
+        if (INSTANCE == null){
+            INSTANCE = new BlobLibProfileAPI();
+        }
         return INSTANCE;
     }
 
-    private final ProfileProvider provider;
+    private ProfileProvider provider;
 
     private BlobLibProfileAPI(){
+    }
+
+    private void setupProvider(){
         PluginManager pluginManager = Bukkit.getPluginManager();
         boolean blobTycoonEnabled = pluginManager.isPluginEnabled("BlobTycoon");
         if (blobTycoonEnabled){
@@ -39,6 +46,9 @@ public class BlobLibProfileAPI {
      */
     @NotNull
     public ProfileProvider getProvider() {
+        if (provider == null){
+            setupProvider();
+        }
         return provider;
     }
 

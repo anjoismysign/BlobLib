@@ -13,10 +13,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class AlternativeSavingMiddleman implements ProfileProvider {
 
-    private record ASProfile(@NotNull SerialPlayer serialPlayer,
+    public record ASProfile(@NotNull SerialPlayer serialPlayer,
                              @NotNull SerialProfile serialProfile) implements Profile {
 
         @Override
@@ -43,7 +44,7 @@ public class AlternativeSavingMiddleman implements ProfileProvider {
         }
     }
 
-    private record ASProfileManagement(@NotNull SerialPlayer serialPlayer) implements ProfileManagement{
+    public record ASProfileManagement(@NotNull SerialPlayer serialPlayer) implements ProfileManagement{
 
         @Override
         public @NotNull List<Profile> getProfiles() {
@@ -74,6 +75,12 @@ public class AlternativeSavingMiddleman implements ProfileProvider {
     @Override
     public @NotNull ProfileManagement getProfileManagement(@NotNull Player player) {
         return new ASProfileManagement(Objects.requireNonNull(serialPlayer(player), "Has Player cached a SerialPlayer?"));
+    }
+
+    @Override
+    public @Nullable ProfileManagement getProfileManagement(@NotNull UUID uuid) {
+        var serialPlayer = AlternativeSavingManager.getSerialPlayer(uuid);
+        return serialPlayer == null ? null : new ASProfileManagement(serialPlayer);
     }
 
     @Override

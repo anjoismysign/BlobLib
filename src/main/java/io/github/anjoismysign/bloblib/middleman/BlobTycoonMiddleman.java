@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class BlobTycoonMiddleman implements ProfileProvider {
 
@@ -66,6 +67,12 @@ public class BlobTycoonMiddleman implements ProfileProvider {
     @Override
     public @NotNull ProfileManagement getProfileManagement(@NotNull Player player) {
         return new BTProfileManagement(tycoonPlayer(player));
+    }
+
+    @Override
+    public @Nullable ProfileManagement getProfileManagement(@NotNull UUID uuid) {
+        var tycoonPlayer = BlobTycoonInternalAPI.getInstance().getTycoonPlayer(uuid);
+        return tycoonPlayer == null ? null : new BTProfileManagement(tycoonPlayer);
     }
 
     @Override
