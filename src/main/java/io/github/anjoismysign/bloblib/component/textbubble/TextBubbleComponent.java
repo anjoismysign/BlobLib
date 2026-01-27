@@ -5,6 +5,7 @@ import io.github.anjoismysign.bloblib.entities.MutableAddress;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.GameRule;
+import org.bukkit.GameRules;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -46,7 +47,7 @@ public interface TextBubbleComponent {
             return;
         }
         TextBubbleComponent.isListening.set(plugin.getName());
-        Bukkit.getWorlds().forEach(world -> world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true));
+        Bukkit.getWorlds().forEach(world -> world.setGameRule(GameRules.IMMEDIATE_RESPAWN, true));
         Bukkit.getPluginManager().registerEvents(
                 new Listener() {
 
@@ -60,7 +61,7 @@ public interface TextBubbleComponent {
                     @EventHandler
                     public void world(WorldLoadEvent event) {
                         World world = event.getWorld();
-                        world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
+                        world.setGameRule(GameRules.IMMEDIATE_RESPAWN, true);
                     }
 
                     @EventHandler

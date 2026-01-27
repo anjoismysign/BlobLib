@@ -333,7 +333,7 @@ public enum BlobLibCommand {
             List<Entity> passengers = player.getPassengers();
             boolean isValid = passengers.size() == 1 && TextBubbleComponent.entityTracking.get(passengers.getFirst()) != null;
             if (isValid)
-                player.teleport(location, TeleportFlag.EntityState.RETAIN_PASSENGERS);
+                player.teleport(location);
             else
                 player.teleport(location);
         }));
