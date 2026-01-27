@@ -62,7 +62,7 @@ public class AlternativeSavingMiddleman implements ProfileProvider {
 
         @Override
         public void switchProfile(int index) {
-            serialPlayer.loadProfile(Objects.requireNonNull(serialPlayer.getPlayer(), "Is SerialPlayer cached?"), index);
+            serialPlayer.loadProfile(Objects.requireNonNull(serialPlayer.getPlayer(), "Is SerialPlayer cached?"), index, true);
         }
     }
 
