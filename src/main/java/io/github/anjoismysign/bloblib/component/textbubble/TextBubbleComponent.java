@@ -4,7 +4,6 @@ import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
 import io.github.anjoismysign.bloblib.entities.MutableAddress;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.GameRule;
 import org.bukkit.GameRules;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;

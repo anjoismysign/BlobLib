@@ -1,6 +1,5 @@
 package io.github.anjoismysign.bloblib.api;
 
-import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.middleman.AlternativeSavingMiddleman;
 import io.github.anjoismysign.bloblib.middleman.BlobTycoonMiddleman;
 import io.github.anjoismysign.bloblib.middleman.profile.AbsentProfileProvider;

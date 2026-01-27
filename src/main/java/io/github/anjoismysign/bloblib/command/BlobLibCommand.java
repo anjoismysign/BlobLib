@@ -28,7 +28,6 @@ import io.github.anjoismysign.skeramidcommands.command.CommandTarget;
 import io.github.anjoismysign.skeramidcommands.commandtarget.BukkitCommandTarget;
 import io.github.anjoismysign.skeramidcommands.commandtarget.CommandTargetBuilder;
 import io.github.anjoismysign.skeramidcommands.server.bukkit.BukkitAdapter;
-import io.papermc.paper.entity.TeleportFlag;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
