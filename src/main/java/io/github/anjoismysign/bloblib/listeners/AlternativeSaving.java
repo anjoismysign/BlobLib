@@ -6,7 +6,6 @@ import io.github.anjoismysign.alternativesaving.event.SerialPlayerJoinEvent;
 import io.github.anjoismysign.alternativesaving.event.SerialPlayerQuitEvent;
 import io.github.anjoismysign.alternativesaving.event.SerialProfileLoadEvent;
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.api.BlobLibProfileAPI;
 import io.github.anjoismysign.bloblib.events.ProfileLoadEvent;
 import io.github.anjoismysign.bloblib.events.ProfileManagementQuitEvent;
 import io.github.anjoismysign.bloblib.middleman.AlternativeSavingMiddleman;

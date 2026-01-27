@@ -7,6 +7,9 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Called on main thread
+ */
 public class ProfileManagementQuitEvent extends Event {
     private final Player player;
     private final ProfileManagement management;

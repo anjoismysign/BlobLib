@@ -120,6 +120,7 @@ public class BukkitCruderBuilder<T extends Crudable> {
      * The event can be used to notify other parts of the plugin that the
      * player's data has been loaded.
      * </p>
+     * Called on main thread
      *
      * @param joinEvent A function that takes a Crudable object and returns
      *                  a Bukkit Event to be called on player join, or null
@@ -139,6 +140,7 @@ public class BukkitCruderBuilder<T extends Crudable> {
      * can be used to notify other parts of the plugin that the player's data
      * is about to be saved and the player is leaving.
      * </p>
+     * Called on main thread.
      *
      * @param quitEvent A function that takes a Crudable object and returns
      *                  a Bukkit Event to be called on player quit, or null

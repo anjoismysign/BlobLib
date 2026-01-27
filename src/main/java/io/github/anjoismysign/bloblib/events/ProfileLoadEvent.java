@@ -6,6 +6,9 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Called on main thread
+ */
 public class ProfileLoadEvent extends Event {
     private final Player player;
     private final Profile profile;
