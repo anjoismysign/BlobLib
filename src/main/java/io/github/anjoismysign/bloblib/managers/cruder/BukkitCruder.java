@@ -35,6 +35,7 @@ import java.util.function.Function;
 public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler {
     protected final Map<UUID, T> serializables;
     private final Map<UUID, BukkitTask> autoSave;
+    private final Set<UUID> loading;
     private final Set<UUID> saving;
     protected Cruder<T> cruder;
     private final JavaPlugin plugin;
@@ -70,6 +71,7 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
         autoSave = Maps.newConcurrentMap();
         this.joinEvent = joinEvent;
         this.quitEvent = quitEvent;
+        loading = Sets.newConcurrentHashSet();
         saving = Sets.newConcurrentHashSet();
         cruder = Cruder.of(plugin, clazz, createFunction, customDirectory);
         this.onRead = onRead;
@@ -94,44 +96,45 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
 
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        UUID uuid = player.getUniqueId();
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            if (!player.isConnected()){
+        var connection = player.getConnection();
+        UUID uniqueId = player.getUniqueId();
+        loading.add(uniqueId);
+        var scheduler = Bukkit.getScheduler();
+        scheduler.runTaskAsynchronously(plugin, () -> {
+            if (!connection.isConnected()){
+                loading.remove(uniqueId);
                 return;
-                }
-            T serializable = cruder.readOrGenerate(uuid.toString());
+            }
+            T serializable = cruder.readOrGenerate(uniqueId.toString());
+            cruder.update(serializable);
             if (onJoin != null){
                 onJoin.accept(serializable);
             }
             if (onRead != null) {
                 onRead.accept(serializable);
             }
-            Bukkit.getScheduler().runTask(plugin, () -> {
-                if (!player.isConnected()) {
+            scheduler.runTask(plugin, () -> {
+                loading.remove(uniqueId);
+                if (!connection.isConnected()) {
                     return;
                 }
-                Bukkit.getScheduler().runTaskAsynchronously(getPlugin(),
-                        () -> cruder.update(serializable));
-                serializables.put(uuid, serializable);
-                autoSave.put(uuid, new BukkitRunnable() {
+                serializables.put(uniqueId, serializable);
+                autoSave.put(uniqueId, new BukkitRunnable() {
                     @Override
                     public void run() {
-                        if (!player.isConnected()) {
+                        if (!connection.isConnected()) {
                             cancel();
                             return;
                         }
                         if (onAutoSave != null){
                             onAutoSave.accept(serializable);
                         }
-                        Bukkit.getScheduler().runTaskAsynchronously(getPlugin(),
-                                () -> {
-                                    cruder.update(serializable);
-                                    if (onUpdate != null) {
-                                        onUpdate.accept(serializable);
-                                    }
-                                });
+                        cruder.update(serializable);
+                        if (onUpdate != null) {
+                            onUpdate.accept(serializable);
+                        }
                     }
-                }.runTaskTimer(getPlugin(), 20 * 60 * 5,
+                }.runTaskTimerAsynchronously(getPlugin(), 20 * 60 * 5,
                         20 * 60 * 5));
                 if (joinEvent == null) {
                     return;
@@ -144,6 +147,13 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
     public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
+        BukkitTask task = autoSave.remove(uuid);
+        if (task != null) {
+            task.cancel();
+        }
+        if (loading.contains(uuid)){
+            return;
+        }
         Optional<T> optional = isCrudable(uuid);
         if (optional.isEmpty())
             return;
@@ -151,8 +161,6 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
         if (quitEvent != null)
             Bukkit.getPluginManager().callEvent(quitEvent.apply(serializable));
         saving.add(uuid);
-        BukkitTask task = autoSave.remove(uuid);
-        task.cancel();
         if (onQuit != null){
             onQuit.accept(serializable);
         }
@@ -259,27 +267,24 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
     private void loadAll(){
         Bukkit.getOnlinePlayers().forEach(player -> {
             UUID uuid = player.getUniqueId();
+            var connection = player.getConnection();
             String identification = uuid.toString();
             T serializable = cruder.readOrGenerate(identification);
             cruder.update(serializable);
             serializables.put(uuid, serializable);
-
             autoSave.put(uuid, new BukkitRunnable() {
                 @Override
                 public void run() {
-                    if (!player.isConnected()) {
+                    if (!connection.isConnected()) {
                         cancel();
                         return;
                     }
-                    Bukkit.getScheduler().runTaskAsynchronously(getPlugin(),
-                            () -> {
-                                cruder.update(serializable);
-                                if (onUpdate != null) {
-                                    onUpdate.accept(serializable);
-                                }
-                            });
+                    cruder.update(serializable);
+                    if (onUpdate != null) {
+                        onUpdate.accept(serializable);
+                    }
                 }
-            }.runTaskTimer(getPlugin(), 20 * 60 * 5,
+            }.runTaskTimerAsynchronously(getPlugin(), 20 * 60 * 5,
                     20 * 60 * 5));
         });
     }
