@@ -186,6 +186,7 @@ public class BlobLibInventoryAPI {
                                               @Nullable Consumer<Player> onClose,
                                               @Nullable String clickSound) {
         BlobInventory inventory = getInventoryManager().cloneInventory(blobInventoryKey, player.getLocale());
+        inventory.setTitle(inventory.getTitle().replace("%variable%", dataType.toUpperCase()));
         BlobSelector<T> selector = BlobSelector.build(inventory, player.getUniqueId(),
                 dataType, selectorList.get(), onReturn);
         selector.setButtonRangeKey(buttonRangeKey);
@@ -259,6 +260,7 @@ public class BlobLibInventoryAPI {
                                           @Nullable Consumer<Player> onClose,
                                           @Nullable String clickSound) {
         BlobInventory inventory = getInventoryManager().cloneInventory(blobInventoryKey, player.getLocale());
+        inventory.setTitle(inventory.getTitle().replace("%variable%", dataType.toUpperCase()));
         Uber<BlobEditor<T>> uber = Uber.fly();
         uber.talk(BlobEditor.build(inventory, player.getUniqueId(),
                 dataType, owner -> {
@@ -278,6 +280,7 @@ public class BlobLibInventoryAPI {
                                         onClose,
                                         clickSound);
                             });
+                    playerSelector.setTitle(playerSelector.getTitle().replace("%variable%", dataType.toUpperCase()));
                     playerSelector.setItemsPerPage(playerSelector.getSlots(buttonRangeKey)
                             == null ? 1 : playerSelector.getSlots(buttonRangeKey).size());
                     playerSelector.selectElement(player,
