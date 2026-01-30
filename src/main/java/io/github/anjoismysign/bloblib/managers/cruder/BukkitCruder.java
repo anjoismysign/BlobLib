@@ -1,5 +1,7 @@
 package io.github.anjoismysign.bloblib.managers.cruder;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import io.github.anjoismysign.bloblib.entities.BlobSerializableHandler;
 import io.github.anjoismysign.psa.crud.Crudable;
 import org.bukkit.Bukkit;
@@ -64,11 +66,11 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
             registerJoinListener(pluginManager, joinPriority);
         if (quitPriority != null)
             registerQuitListener(pluginManager, quitPriority);
-        serializables = new HashMap<>();
-        autoSave = new HashMap<>();
+        serializables = Maps.newConcurrentMap();
+        autoSave = Maps.newConcurrentMap();
         this.joinEvent = joinEvent;
         this.quitEvent = quitEvent;
-        saving = ConcurrentHashMap.newKeySet();
+        saving = Sets.newConcurrentHashSet();
         cruder = Cruder.of(plugin, clazz, createFunction, customDirectory);
         this.onRead = onRead;
         this.onUpdate = onUpdate;
