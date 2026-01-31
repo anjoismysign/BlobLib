@@ -1,5 +1,6 @@
 package io.github.anjoismysign.bloblib.middleman.profile;
 
+import io.github.anjoismysign.bloblib.entities.ProfileView;
 import org.jetbrains.annotations.NotNull;
 
 public interface Profile {
@@ -17,6 +18,10 @@ public interface Profile {
      */
     @NotNull
     String getName();
+
+    default ProfileView toView(){
+        return new ProfileView(getIdentification(), getName());
+    }
 
     /**
      * Saves this Profile to the database.

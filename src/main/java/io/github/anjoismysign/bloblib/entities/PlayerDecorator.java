@@ -1,39 +1,47 @@
 package io.github.anjoismysign.bloblib.entities;
 
+import io.papermc.paper.connection.PlayerConnection;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-import java.util.function.Supplier;
+import java.util.UUID;
 
-public record PlayerDecorator(@NotNull PlayerAddress address,
-                              @NotNull Supplier<Boolean> validSupplier) implements AddressDecorator<Player> {
+public final class PlayerDecorator {
+    private final @NotNull PlayerConnection connection;
+    private final @NotNull UUID uniqueId;
 
-    public static PlayerDecorator of(@NotNull Player player){
-        return new PlayerDecorator(PlayerAddress.of(player.getUniqueId().toString()), player::isConnected);
+    private PlayerDecorator(@NotNull PlayerConnection connection,
+                           @NotNull UUID uniqueId) {
+        this.connection = connection;
+        this.uniqueId = uniqueId;
     }
 
-    public static PlayerDecorator address(@NotNull PlayerAddress address) {
-        Objects.requireNonNull(address, "'address' is null");
-        return new PlayerDecorator(address, () -> address.look() != null);
-    }
-
-    @NotNull
-    public static PlayerDecorator address(@NotNull String address) {
-        return address(PlayerAddress.of(address));
+    public static PlayerDecorator of(@NotNull Player player) {
+        UUID uniqueId = player.getUniqueId();
+        return new PlayerDecorator(player.getConnection(), uniqueId);
     }
 
     @NotNull
     public PermissibleDecorator getPermissible() {
-        Player lookup = address.look();
+        Player lookup = Bukkit.getPlayer(uniqueId);
         if (lookup == null)
             throw new NullPointerException("'lookup' is null");
         return PermissibleDecorator.of(AddressFactory.getInstance().of(lookup));
     }
 
-    @Override
-    public boolean isValid(){
-        return validSupplier.get();
+    public boolean isValid() {
+        return connection.isConnected();
+    }
+
+    @Nullable
+    public Player lookup(){
+        return isValid() ? Bukkit.getPlayer(uniqueId) : null;
+    }
+
+    public @NotNull UUID getUniqueId() {
+        return uniqueId;
     }
 
 }
