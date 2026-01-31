@@ -21,14 +21,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -146,21 +144,21 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
 
     public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        UUID uuid = player.getUniqueId();
-        BukkitTask task = autoSave.remove(uuid);
+        UUID uniqueId = player.getUniqueId();
+        BukkitTask task = autoSave.remove(uniqueId);
         if (task != null) {
             task.cancel();
         }
-        if (loading.contains(uuid)){
+        if (loading.contains(uniqueId)){
             return;
         }
-        Optional<T> optional = isCrudable(uuid);
+        Optional<T> optional = isCrudable(uniqueId);
         if (optional.isEmpty())
             return;
         T serializable = optional.get();
         if (quitEvent != null)
             Bukkit.getPluginManager().callEvent(quitEvent.apply(serializable));
-        saving.add(uuid);
+        saving.add(uniqueId);
         if (onQuit != null){
             onQuit.accept(serializable);
         }
@@ -169,8 +167,8 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
             if (onUpdate != null) {
                 onUpdate.accept(serializable);
             }
-            removeObject(uuid);
-            saving.remove(uuid);
+            removeObject(uniqueId);
+            saving.remove(uniqueId);
         });
     }
 

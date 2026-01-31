@@ -1,5 +1,6 @@
 package io.github.anjoismysign.bloblib.managers.cruder;
 
+import io.github.anjoismysign.bloblib.utilities.ClassHandler;
 import io.github.anjoismysign.psa.crud.Crudable;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
@@ -8,8 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -29,39 +28,6 @@ public class BukkitCruderBuilder<T extends Crudable> {
     private @Nullable Consumer<T> onJoin;
     private @Nullable Consumer<T> onQuit;
     private @Nullable File customDirectory;
-
-    private T createInstance(String identification) {
-        try {
-            Constructor<T> constructor = crudableClass.getConstructor(String.class);
-            return constructor.newInstance(identification);
-        } catch (NoSuchMethodException exception) {
-            throw new RuntimeException(
-                    "Class " + crudableClass.getName() +
-                            " must have a public constructor that accepts a single String (identification) parameter. " +
-                            "This constructor is fallback for automatic instantiation by BlobCruderBuilder when" +
-                            " create function is not provided.",
-                    exception
-            );
-        } catch (InstantiationException exception) {
-            throw new RuntimeException(
-                    "Failed to instantiate class " + crudableClass.getName() +
-                            ". The class may be abstract or an interface.",
-                    exception
-            );
-        } catch (IllegalAccessException exception) {
-            throw new RuntimeException(
-                    "Cannot access the constructor of class " + crudableClass.getName() +
-                            ". Make sure the constructor is public.",
-                    exception
-            );
-        } catch (InvocationTargetException exception) {
-            throw new RuntimeException(
-                    "Constructor of class " + crudableClass.getName() +
-                            " threw an exception during instantiation with identification: " + identification,
-                    exception.getCause()
-            );
-        }
-    }
 
     /**
      * Sets the JavaPlugin instance for this BlobCruderBuilder.
@@ -315,7 +281,7 @@ public class BukkitCruderBuilder<T extends Crudable> {
     public BukkitCruder<T> build() {
         Objects.requireNonNull(plugin, "'plugin' cannot be null");
         Objects.requireNonNull(crudableClass, "'crudableClass' cannot be null");
-        createFunction = createFunction == null ? this::createInstance : createFunction;
+        createFunction = createFunction == null ? identification -> new ClassHandler<>(crudableClass).constructCrudable(identification) : createFunction;
         return new BukkitCruder<>(
                 plugin,
                 crudableClass,
