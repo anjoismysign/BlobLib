@@ -1,6 +1,7 @@
 package io.github.anjoismysign.bloblib.middleman.itemstack;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
+import com.destroystokyo.paper.profile.ProfileProperty;
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import io.github.anjoismysign.bloblib.middleman.itemsadder.ItemsAdderMiddleman;
@@ -10,6 +11,7 @@ import io.papermc.paper.datacomponent.item.Consumable;
 import io.papermc.paper.datacomponent.item.Equippable;
 import io.papermc.paper.datacomponent.item.FoodProperties;
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers;
+import io.papermc.paper.datacomponent.item.ResolvableProfile;
 import io.papermc.paper.datacomponent.item.Tool;
 import io.papermc.paper.datacomponent.item.consumable.ConsumeEffect;
 import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation;
@@ -47,7 +49,9 @@ import org.jetbrains.annotations.Nullable;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -58,10 +62,20 @@ import java.util.function.Supplier;
 @SuppressWarnings({"PatternValidation", "UnstableApiUsage"})
 public class ItemStackReader {
 
+    public static ResolvableProfile resolvableProfile(@NotNull String url){
+        var json = "{\"textures\":{\"SKIN\":{\"url\":\"%s\"}}}".formatted(url);
+        var base64 = Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8));
+        return ResolvableProfile.resolvableProfile()
+                .addProperty(new ProfileProperty("textures", base64))
+                .build();
+    }
+
     public static PlayerProfile profile(@NotNull String url) {
-        PlayerProfile profile = Bukkit.createProfile("Notch");
+        PlayerProfile profile = Bukkit.createProfileExact(null,"Notch");
+        profile.clearProperties();
         PlayerTextures textures = profile.getTextures();
-        URL skin = null;
+        textures.clear();
+        URL skin;
         try {
             skin = URI.create(url).toURL();
         } catch (MalformedURLException exception) {
@@ -106,7 +120,7 @@ public class ItemStackReader {
         } else if (inputMaterial.startsWith("HEAD-")) {
             ItemStackBuilder builder = ItemStackBuilder.build(Material.PLAYER_HEAD);
             String url = inputMaterial.substring(5);
-            builder.playerProfile(profile(url));
+            builder.resolvableProfile(resolvableProfile(url));
             stackSupplier = builder::build;
         } else if (inputMaterial.startsWith("WM-")) {
             String weaponTitle = inputMaterial.substring(3);
