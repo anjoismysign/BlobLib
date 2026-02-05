@@ -32,6 +32,7 @@ public abstract class MultiSlotable {
     private final String moneyCurrency;
     @NotNull
     private final List<ActionMemo> actions;
+    private final boolean cancelInteraction;
 
     /**
      * @param slots                      The slots to be used.
@@ -54,13 +55,15 @@ public abstract class MultiSlotable {
                          @Nullable String hasTranslatableItem,
                          boolean isPermissionInverted,
                          boolean isMoneyInverted,
-                         boolean isTranslatableItemInverted) {
+                         boolean isTranslatableItemInverted,
+                         boolean cancelInteraction) {
         this.slots = slots;
         this.supplier = supplier;
         this.hasPermission = hasPermission;
         this.hasMoney = hasMoney;
         this.moneyCurrency = priceCurrency;
         this.actions = actions;
+        this.cancelInteraction = cancelInteraction;
         this.hasTranslatableItem = hasTranslatableItem;
         this.isPermissionInverted = isPermissionInverted;
         this.isMoneyInverted = isMoneyInverted;
@@ -105,6 +108,10 @@ public abstract class MultiSlotable {
     @NotNull
     public List<ActionMemo> getActions() {
         return actions;
+    }
+
+    public boolean isCancelInteraction() {
+        return cancelInteraction;
     }
 
     public boolean isPermissionInverted() {

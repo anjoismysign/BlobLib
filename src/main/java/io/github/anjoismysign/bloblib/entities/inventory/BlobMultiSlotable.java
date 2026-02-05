@@ -39,7 +39,7 @@ public class BlobMultiSlotable extends MultiSlotable {
     /**
      * Parses/reads from a ConfigurationSection using ItemStackReader.
      *
-     * @param section The ConfigurationSection to read from.
+     * @param section    The ConfigurationSection to read from.
      * @param identifier The identifier of the BlobMultiSlotable which was intended to read from.
      * @return The BlobMultiSlotable which was read from the ConfigurationSection.
      */
@@ -150,9 +150,10 @@ public class BlobMultiSlotable extends MultiSlotable {
         }
         if (action != null)
             actions.add(new ActionMemo(action, actionType));
+        boolean cancelInteraction = section.getBoolean("Cancel-Interaction", true);
         return new BlobMultiSlotable(set, supplier, identifier, hasPermission, hasMoney,
                 priceCurrency, actions, hasTranslatableItem, isPermissionInverted,
-                isMoneyInverted, isTranslatableItemInverted);
+                isMoneyInverted, isTranslatableItemInverted, cancelInteraction);
     }
 
     /**
@@ -223,6 +224,7 @@ public class BlobMultiSlotable extends MultiSlotable {
      * @param isPermissionInverted       If the permission check is inverted.
      * @param isMoneyInverted            If the money check is inverted.
      * @param isTranslatableItemInverted If the TranslatableItem check is inverted.
+     * @param cancelInteraction          If clicking should be cancelled
      */
     public BlobMultiSlotable(@NotNull Set<Integer> slots,
                              @NotNull Supplier<ItemStack> supplier,
@@ -234,16 +236,18 @@ public class BlobMultiSlotable extends MultiSlotable {
                              @Nullable String hasTranslatableItem,
                              boolean isPermissionInverted,
                              boolean isMoneyInverted,
-                             boolean isTranslatableItemInverted) {
+                             boolean isTranslatableItemInverted,
+                             boolean cancelInteraction) {
         super(slots, supplier, hasPermission, hasMoney, priceCurrency, actions,
-                hasTranslatableItem, isPermissionInverted, isMoneyInverted, isTranslatableItemInverted);
+                hasTranslatableItem, isPermissionInverted, isMoneyInverted, isTranslatableItemInverted, cancelInteraction);
         this.key = key;
     }
 
     public InventoryButton toInventoryButton() {
         return new InventoryButton(key, getSlots(), getHasPermission(), getHasMoney(),
                 getMoneyCurrency(), getActions(), getHasTranslatableItem(),
-                isPermissionInverted(), isMoneyInverted(), isTranslatableItemInverted());
+                isPermissionInverted(), isMoneyInverted(), isTranslatableItemInverted(),
+                isCancelInteraction());
     }
 
     /**

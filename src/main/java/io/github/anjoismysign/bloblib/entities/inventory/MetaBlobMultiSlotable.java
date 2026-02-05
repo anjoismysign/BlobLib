@@ -159,10 +159,11 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
         }
         if (action != null)
             actions.add(new ActionMemo(action, actionType));
+        boolean cancelInteraction = section.getBoolean("Cancel-Interaction", true);
         return new MetaBlobMultiSlotable(set, supplier, identifier, meta, subMeta,
                 hasPermission, hasMoney, priceCurrency, actions,
                 hasTranslatableItem, isPermissionInverted, isMoneyInverted,
-                isTranslatableItemInverted);
+                isTranslatableItemInverted, cancelInteraction);
     }
 
     /**
@@ -181,6 +182,7 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
      * @param isPermissionInverted       If the permission check is inverted.
      * @param isMoneyInverted            If the money check is inverted.
      * @param isTranslatableItemInverted If the TranslatableItem check is inverted.
+     * @param cancelInteraction          If clicking should be cancelled
      */
     public MetaBlobMultiSlotable(@NotNull Set<Integer> slots,
                                  @NotNull Supplier<ItemStack> supplier,
@@ -194,10 +196,11 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
                                  @Nullable String hasTranslatableItem,
                                  boolean isPermissionInverted,
                                  boolean isMoneyInverted,
-                                 boolean isTranslatableItemInverted) {
+                                 boolean isTranslatableItemInverted,
+                                 boolean cancelInteraction) {
         super(slots, supplier, hasPermission, hasMoney, priceCurrency, actions,
                 hasTranslatableItem, isPermissionInverted, isMoneyInverted,
-                isTranslatableItemInverted);
+                isTranslatableItemInverted, cancelInteraction);
         this.key = key;
         this.meta = meta;
         this.subMeta = subMeta;
@@ -207,7 +210,7 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
         return new MetaInventoryButton(key, getSlots(), meta, subMeta,
                 getHasPermission(), getHasMoney(), getMoneyCurrency(),
                 getActions(), getHasTranslatableItem(), isPermissionInverted(),
-                isMoneyInverted(), isTranslatableItemInverted());
+                isMoneyInverted(), isTranslatableItemInverted(), isCancelInteraction());
     }
 
     /**

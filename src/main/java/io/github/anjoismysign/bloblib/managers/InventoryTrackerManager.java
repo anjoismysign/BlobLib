@@ -1,5 +1,6 @@
 package io.github.anjoismysign.bloblib.managers;
 
+import com.google.common.collect.Maps;
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
 import io.github.anjoismysign.bloblib.entities.inventory.BlobInventory;
@@ -24,20 +25,21 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
 public class InventoryTrackerManager implements Listener {
     private final BlobLib plugin;
-    private final WeakHashMap<Inventory, InventoryTracker<?, ?>> tracker;
-    private final HashMap<UUID, InventoryTracker<?, ?>> playerTracker;
+    private final Map<Inventory, InventoryTracker<?, ?>> tracker;
+    private final Map<UUID, InventoryTracker<?, ?>> playerTracker;
 
     public InventoryTrackerManager() {
         plugin = BlobLib.getInstance();
         Bukkit.getPluginManager().registerEvents(this, plugin);
         this.tracker = new WeakHashMap<>();
-        this.playerTracker = new HashMap<>();
+        this.playerTracker = Maps.newHashMap();
     }
 
     /**
@@ -134,6 +136,8 @@ public class InventoryTrackerManager implements Listener {
                 return;
             if (!button.handleAll((Player) event.getWhoClicked()))
                 return;
+            boolean cancel = button.isCancelInteraction();
+            event.setCancelled(cancel);
             registry.processSingleClickEvent(key, event);
             button.accept(ClickEventProcessor.of(event, registry));
         });
@@ -142,8 +146,6 @@ public class InventoryTrackerManager implements Listener {
     @EventHandler
     private void onClose(InventoryCloseEvent event) {
         Inventory inventory = event.getInventory();
-        if (inventory == null)
-            return;
         InventoryTracker<?, ?> inventoryTracker = this.tracker.get(inventory);
         if (inventoryTracker == null)
             return;

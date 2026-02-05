@@ -37,6 +37,7 @@ public class InventoryButton {
     private final String priceCurrency;
     @NotNull
     private final List<ActionMemo> actions;
+    private final boolean cancelInteraction;
 
     public InventoryButton(@NotNull String key,
                            @NotNull Set<Integer> slots,
@@ -47,13 +48,15 @@ public class InventoryButton {
                            @Nullable String hasTranslatableItem,
                            boolean isPermissionInverted,
                            boolean isMoneyInverted,
-                           boolean isTranslatableItemInverted) {
+                           boolean isTranslatableItemInverted,
+                           boolean cancelInteraction) {
         this.key = key;
         this.slots = slots;
         this.hasPermission = hasPermission;
         this.hasMoney = hasMoney;
         this.priceCurrency = priceCurrency;
         this.actions = actions;
+        this.cancelInteraction = cancelInteraction;
         this.hasTranslatableItem = hasTranslatableItem;
         this.isPermissionInverted = isPermissionInverted;
         this.isMoneyInverted = isMoneyInverted;
@@ -208,6 +211,10 @@ public class InventoryButton {
         return actions;
     }
 
+    public boolean isCancelInteraction() {
+        return cancelInteraction;
+    }
+
     /**
      * Will handle the action of the button.
      *
@@ -240,6 +247,7 @@ public class InventoryButton {
     public InventoryButton copy() {
         return new InventoryButton(key, new HashSet<>(slots),
                 hasPermission, hasMoney, priceCurrency, actions,
-                hasTranslatableItem, isPermissionInverted, isMoneyInverted, isTranslatableItemInverted);
+                hasTranslatableItem, isPermissionInverted, isMoneyInverted,
+                isTranslatableItemInverted, cancelInteraction);
     }
 }

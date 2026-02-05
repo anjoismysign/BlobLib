@@ -14,16 +14,6 @@ public class MetaInventoryButton extends InventoryButton {
     @Nullable
     private final String subMeta;
 
-    public static MetaInventoryButton fromInventoryButton(InventoryButton button,
-                                                          String meta,
-                                                          String subMeta) {
-        return new MetaInventoryButton(button.getKey(), button.getSlots(), meta,
-                subMeta, button.getHasPermission(), button.getHasMoney(),
-                button.getPriceCurrency(), button.getActions(),
-                button.getHasTranslatableItem(), button.isPermissionInverted(),
-                button.isMoneyInverted(), button.isTranslatableItemInverted());
-    }
-
     public MetaInventoryButton(@NotNull String key,
                                @NotNull Set<Integer> slots,
                                @NotNull String meta,
@@ -35,9 +25,10 @@ public class MetaInventoryButton extends InventoryButton {
                                @Nullable String hasTranslatableItem,
                                boolean isPermissionInverted,
                                boolean isMoneyInverted,
-                               boolean isTranslatableItemInverted) {
+                               boolean isTranslatableItemInverted,
+                               boolean cancelInteraction) {
         super(key, slots, hasPermission, hasMoney, priceCurrency, actions,
-                hasTranslatableItem, isPermissionInverted, isMoneyInverted, isTranslatableItemInverted);
+                hasTranslatableItem, isPermissionInverted, isMoneyInverted, isTranslatableItemInverted, cancelInteraction);
         this.meta = meta;
         this.subMeta = subMeta;
     }
@@ -80,6 +71,7 @@ public class MetaInventoryButton extends InventoryButton {
         return new MetaInventoryButton(getKey(), new HashSet<>(getSlots()), getMeta(), getSubMeta(),
                 getHasPermission(), getHasMoney(), getPriceCurrency(), getActions(),
                 getHasTranslatableItem(), isPermissionInverted(),
-                isMoneyInverted(), isTranslatableItemInverted());
+                isMoneyInverted(), isTranslatableItemInverted(),
+                isCancelInteraction());
     }
 }
