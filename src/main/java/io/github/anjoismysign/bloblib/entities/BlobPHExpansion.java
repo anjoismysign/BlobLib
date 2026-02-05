@@ -9,10 +9,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -29,7 +31,11 @@ public class BlobPHExpansion extends PlaceholderExpansion implements Relational 
         this.identifier = identifier.toLowerCase(Locale.ROOT);
         simple = new HashMap<>();
         simpleRelational = new HashMap<>();
-        startsWith = new HashMap<>();
+        Comparator<String> lengthComparator = (s1, s2) -> {
+            int lengthCompare = Integer.compare(s2.length(), s1.length());
+            return lengthCompare != 0 ? lengthCompare : s1.compareTo(s2);
+        };
+        this.startsWith = new TreeMap<>(lengthComparator);
         Bukkit.getScheduler().runTask(plugin, this::register);
     }
 
