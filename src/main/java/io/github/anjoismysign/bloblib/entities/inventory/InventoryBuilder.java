@@ -22,10 +22,20 @@ public abstract class InventoryBuilder<T extends InventoryButton> {
     private int size;
     private ButtonManager<T> buttonManager;
     @Nullable
-    protected String reference;
+    protected String key;
+    @Nullable
+    protected String path;
     @Nullable
     protected String locale;
     protected final Map<String, ItemStack> defaultButtons = new HashMap<>();
+
+    public void setPath(@Nullable String path) {
+        this.path = path;
+    }
+
+    public @Nullable String getPath() {
+        return path;
+    }
 
     public String getTitle() {
         return title;
@@ -62,7 +72,13 @@ public abstract class InventoryBuilder<T extends InventoryButton> {
 
     @Nullable
     public T getButton(String key) {
-        return buttonManager.getButton(key);
+        var button = buttonManager.getButton(key);
+        var isNull = button == null;
+        if (isNull){
+            var debug = path == null ? this.key+":"+key : path+":"+key;
+            BlobLib.getInstance().getLogger().severe("Cannot find button "+debug);
+        }
+        return button;
     }
 
     public Collection<String> getKeys() {
@@ -264,7 +280,7 @@ public abstract class InventoryBuilder<T extends InventoryButton> {
     }
 
     @Nullable
-    public String getReference() {
-        return reference;
+    public String getKey() {
+        return key;
     }
 }

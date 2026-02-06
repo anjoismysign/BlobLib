@@ -16,7 +16,8 @@ public class MetaBlobInventory extends SharableInventory<MetaInventoryButton> {
                 carrier.buttonManager().copy(),
                 carrier.type(),
                 carrier.reference(),
-                carrier.locale());
+                carrier.locale(),
+                carrier.path());
     }
 
     public MetaBlobInventory(@NotNull String title,
@@ -24,8 +25,9 @@ public class MetaBlobInventory extends SharableInventory<MetaInventoryButton> {
                              @NotNull ButtonManager<MetaInventoryButton> buttonManager,
                              @Nullable String type,
                              @Nullable String reference,
-                             @Nullable String locale) {
-        super(title, size, buttonManager, reference, locale);
+                             @Nullable String locale,
+                             @Nullable String path) {
+        super(title, size, buttonManager, reference, locale, path);
         this.type = Objects.requireNonNull(type, "'type' cannot be null!");
     }
 
@@ -44,8 +46,9 @@ public class MetaBlobInventory extends SharableInventory<MetaInventoryButton> {
                 getSize(),
                 getButtonManager().copy(),
                 getType(),
-                getReference(),
-                getLocale());
+                getKey(),
+                getLocale(),
+                getPath());
     }
 
     /**

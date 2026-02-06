@@ -16,7 +16,8 @@ public record InventoryBuilderCarrier<T extends InventoryButton>(@NotNull String
                                                                  @NotNull ButtonManager<T> buttonManager,
                                                                  @Nullable String type,
                                                                  @NotNull String reference,
-                                                                 @NotNull String locale) {
+                                                                 @NotNull String locale,
+                                                                 @NotNull String path) {
     public boolean isMetaInventoryButton() {
         return type != null;
     }
@@ -25,12 +26,14 @@ public record InventoryBuilderCarrier<T extends InventoryButton>(@NotNull String
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(
                 Objects.requireNonNull(file, "'file' cannot be null!"));
         String fileName = FilenameUtils.removeExtension(file.getName());
-        return BLOB_FROM_CONFIGURATION_SECTION(configuration, fileName);
+        return BLOB_FROM_CONFIGURATION_SECTION(configuration, fileName, file.getPath());
     }
 
     @NotNull
     public static InventoryBuilderCarrier<InventoryButton> BLOB_FROM_CONFIGURATION_SECTION(
-            @NotNull ConfigurationSection configurationSection, @NotNull String reference) {
+            @NotNull ConfigurationSection configurationSection,
+            @NotNull String reference,
+            @NotNull String path) {
         Objects.requireNonNull(configurationSection, "'configurationSection' cannot be null!");
         String title = TextColor.PARSE(configurationSection.getString("Title", configurationSection.getName() + ">NOT-SET"));
         int size = configurationSection.getInt("Size", -1);
@@ -56,18 +59,20 @@ public record InventoryBuilderCarrier<T extends InventoryButton>(@NotNull String
         BlobButtonManager buttonManager = BlobButtonManager
                 .fromConfigurationSection(buttonsSection, locale);
         return new InventoryBuilderCarrier<>(title, size, buttonManager,
-                null, reference, locale);
+                null, reference, locale, path);
     }
 
     public static InventoryBuilderCarrier<MetaInventoryButton> META_FROM_FILE(@NotNull File file) {
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(
                 Objects.requireNonNull(file, "'file' cannot be null!"));
         String fileName = FilenameUtils.removeExtension(file.getName());
-        return META_FROM_CONFIGURATION_SECTION(configuration, fileName);
+        return META_FROM_CONFIGURATION_SECTION(configuration, fileName, file.getPath());
     }
 
     public static InventoryBuilderCarrier<MetaInventoryButton> META_FROM_CONFIGURATION_SECTION(
-            @NotNull ConfigurationSection configurationSection, @NotNull String reference) {
+            @NotNull ConfigurationSection configurationSection,
+            @NotNull String reference,
+            @NotNull String path) {
         Objects.requireNonNull(configurationSection, "'configurationSection' cannot be null!");
         String title = TextColor.PARSE(configurationSection.getString("Title", configurationSection.getName() + ">NOT-SET"));
         int size = configurationSection.getInt("Size", -1);
@@ -95,11 +100,11 @@ public record InventoryBuilderCarrier<T extends InventoryButton>(@NotNull String
         MetaBlobButtonManager buttonManager = MetaBlobButtonManager
                 .fromConfigurationSection(buttonsSection, locale);
         return new InventoryBuilderCarrier<>(title, size, buttonManager,
-                type, reference, locale);
+                type, reference, locale, path);
     }
 
     public InventoryBuilderCarrier<T> setLocale(@NotNull String locale) {
         Objects.requireNonNull(locale, "'locale' cannot be null!");
-        return new InventoryBuilderCarrier<>(title, size, buttonManager, type, reference, locale);
+        return new InventoryBuilderCarrier<>(title, size, buttonManager, type, reference, locale, path);
     }
 }

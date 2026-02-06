@@ -1,8 +1,8 @@
 package io.github.anjoismysign.bloblib.managers;
 
 import io.github.anjoismysign.bloblib.entities.inventory.InventoryBuilderCarrier;
+import io.github.anjoismysign.bloblib.entities.inventory.MetaBlobInventory;
 import io.github.anjoismysign.bloblib.entities.inventory.MetaInventoryButton;
-import io.github.anjoismysign.bloblib.entities.inventory.ReferenceMetaBlobInventory;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -37,11 +37,11 @@ public class MetaInventoryShard {
      * @return The inventory or null if not found
      */
     @Nullable
-    public ReferenceMetaBlobInventory getInventory(String key) {
+    public MetaBlobInventory getInventory(String key) {
         InventoryBuilderCarrier<MetaInventoryButton> carrier = getMetaInventoryBuilderCarrier(key);
         if (carrier == null)
             return null;
-        return ReferenceMetaBlobInventory.of(carrier);
+        return MetaBlobInventory.fromInventoryBuilderCarrier(carrier);
     }
 
     /**
@@ -52,8 +52,8 @@ public class MetaInventoryShard {
      * @return The inventory or null if not found
      */
     @Nullable
-    public ReferenceMetaBlobInventory copyInventory(String key) {
-        ReferenceMetaBlobInventory inventory = getInventory(key);
+    public MetaBlobInventory copyInventory(String key) {
+        MetaBlobInventory inventory = getInventory(key);
         if (inventory == null)
             return null;
         return inventory.copy();
@@ -62,8 +62,8 @@ public class MetaInventoryShard {
     /**
      * @return All inventories held by this shard.
      */
-    public List<ReferenceMetaBlobInventory> allInventories() {
-        return inventories.values().stream().map(ReferenceMetaBlobInventory::of).toList();
+    public List<MetaBlobInventory> allInventories() {
+        return inventories.values().stream().map(MetaBlobInventory::fromInventoryBuilderCarrier).toList();
     }
 
     /**

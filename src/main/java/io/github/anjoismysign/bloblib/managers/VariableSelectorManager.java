@@ -46,7 +46,7 @@ public class VariableSelectorManager implements Listener {
         }
         event.setCancelled(true);
         int slot = event.getRawSlot();
-        String reference = Objects.requireNonNull(blobEditor.getReference(), "'blobEditor' was dynamically constructed by BlobLib without providing a reference");
+        String reference = Objects.requireNonNull(blobEditor.getKey(), "'blobEditor' was dynamically constructed by BlobLib without providing a reference");
         InventoryDataRegistry<?> registry = BlobLibInventoryAPI.getInstance().getInventoryDataRegistry(reference);
         BlobSound clickSound = BlobLibSoundAPI.getInstance().getSound("Builder.Button-Click");
         if (blobEditor.isNextPageButton(slot)) {
@@ -96,7 +96,7 @@ public class VariableSelectorManager implements Listener {
         if (listener == null)
             return;
         event.setCancelled(true);
-        String reference = Objects.requireNonNull(variableSelector.getReference(), "'variableSelector' was dynamically constructed by BlobLib without providing a reference");
+        String reference = Objects.requireNonNull(variableSelector.getKey(), "'variableSelector' was dynamically constructed by BlobLib without providing a reference");
         InventoryDataRegistry<?> registry = BlobLibInventoryAPI.getInstance().getInventoryDataRegistry(reference);
         int slot = event.getRawSlot();
         BlobSound clickSound = BlobLibSoundAPI.getInstance().getSound("Builder.Button-Click");

@@ -17,7 +17,8 @@ public class BlobInventory extends SharableInventory<InventoryButton> {
                 carrier.size(),
                 carrier.buttonManager().copy(),
                 carrier.reference(),
-                carrier.locale());
+                carrier.locale(),
+                carrier.path());
     }
 
     @NotNull
@@ -34,7 +35,8 @@ public class BlobInventory extends SharableInventory<InventoryButton> {
                 carrier.size(),
                 carrier.buttonManager().copy(),
                 carrier.reference(),
-                carrier.locale());
+                carrier.locale(),
+                carrier.path());
     }
 
     @NotNull
@@ -50,8 +52,9 @@ public class BlobInventory extends SharableInventory<InventoryButton> {
                          int size,
                          @NotNull ButtonManager<InventoryButton> buttonManager,
                          @Nullable String reference,
-                         @Nullable String locale) {
-        super(title, size, buttonManager, reference, locale);
+                         @Nullable String locale,
+                         @Nullable String path) {
+        super(title, size, buttonManager, reference, locale, path);
     }
 
     public BlobInventory(@NotNull String title,
@@ -67,7 +70,8 @@ public class BlobInventory extends SharableInventory<InventoryButton> {
                 getTitle(),
                 getSize(),
                 getButtonManager().copy(),
-                getReference(),
-                getLocale());
+                getKey(),
+                getLocale(),
+                getPath());
     }
 }

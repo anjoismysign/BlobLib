@@ -24,11 +24,11 @@ import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.WeakHashMap;
+import java.util.stream.Stream;
 
 public class InventoryTrackerManager implements Listener {
     private final BlobLib plugin;
@@ -126,21 +126,34 @@ public class InventoryTrackerManager implements Listener {
         InventoryTracker<?, ?> inventoryTracker = this.tracker.get(clickedInventory);
         if (inventoryTracker == null)
             return;
+
         SharableInventory<?> sharableInventory = inventoryTracker.getInventory();
         InventoryDataRegistry<?> registry = inventoryTracker.getRegistry();
         int slot = event.getRawSlot();
-        event.setCancelled(true);
-        sharableInventory.getKeys().forEach(key -> {
-            var button = sharableInventory.getButton(key);
-            if (!button.containsSlot(slot))
-                return;
-            if (!button.handleAll((Player) event.getWhoClicked()))
-                return;
-            boolean cancel = button.isCancelInteraction();
-            event.setCancelled(cancel);
-            registry.processSingleClickEvent(key, event);
-            button.accept(ClickEventProcessor.of(event, registry));
-        });
+        Player player = (Player) event.getWhoClicked();
+
+        sharableInventory.getKeys().stream()
+                .flatMap(key -> {
+                    var button = sharableInventory.getButton(key);
+                    if (button == null || !button.containsSlot(slot)) {
+                        return Stream.empty();
+                    }
+                    return Stream.of(Map.entry(key, button));
+                })
+                .sorted((e1, e2) -> Boolean.compare(
+                        e2.getValue().isCancelInteraction(),
+                        e1.getValue().isCancelInteraction()
+                ))
+                .forEach(entry -> {
+                    String key = entry.getKey();
+                    var button = entry.getValue();
+                    if (!button.handleAll(player)) {
+                        return;
+                    }
+                    event.setCancelled(button.isCancelInteraction());
+                    registry.processSingleClickEvent(key, event);
+                    button.accept(ClickEventProcessor.of(event, registry));
+                });
     }
 
     @EventHandler

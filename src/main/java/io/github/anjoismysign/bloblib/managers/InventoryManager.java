@@ -185,9 +185,10 @@ public class InventoryManager {
 
     private void loadBlobInventory(BlobPlugin plugin, File file) {
         String fileName = FilenameUtils.removeExtension(file.getName());
+        String path = file.getPath();
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
-            addBlobInventory(fileName, BLOB_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName));
+            addBlobInventory(fileName, BLOB_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName, path));
             pluginBlobInventories.get(plugin.getName()).add(fileName);
             return;
         }
@@ -198,7 +199,7 @@ public class InventoryManager {
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (!section.contains("Size") && !section.isInt("Size"))
                 return;
-            InventoryBuilderCarrier<InventoryButton> carrier = BLOB_FROM_CONFIGURATION_SECTION(section, reference);
+            InventoryBuilderCarrier<InventoryButton> carrier = BLOB_FROM_CONFIGURATION_SECTION(section, reference, path);
             carrier = carrier.setLocale(locale);
             addBlobInventory(reference, carrier);
             pluginBlobInventories.get(plugin.getName()).add(reference);
@@ -207,10 +208,11 @@ public class InventoryManager {
 
     private void loadMetaInventory(BlobPlugin plugin, File file) {
         String fileName = FilenameUtils.removeExtension(file.getName());
+        String path = file.getPath();
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
             addMetaInventory(fileName, InventoryBuilderCarrier.
-                    META_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName));
+                    META_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName, path));
             pluginMetaInventories.get(plugin.getName()).add(fileName);
             return;
         }
@@ -222,7 +224,7 @@ public class InventoryManager {
             if (!section.contains("Size") && !section.isInt("Size"))
                 return;
             InventoryBuilderCarrier<MetaInventoryButton> carrier = InventoryBuilderCarrier.
-                    META_FROM_CONFIGURATION_SECTION(section, reference);
+                    META_FROM_CONFIGURATION_SECTION(section, reference, path);
             carrier = carrier.setLocale(locale);
             addMetaInventory(reference, carrier);
             pluginMetaInventories.get(plugin.getName()).add(reference);
@@ -231,9 +233,10 @@ public class InventoryManager {
 
     private void loadBlobInventory(File file) {
         String fileName = FilenameUtils.removeExtension(file.getName());
+        String path = file.getPath();
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
-            InventoryBuilderCarrier<InventoryButton> carrier = BLOB_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName);
+            InventoryBuilderCarrier<InventoryButton> carrier = BLOB_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName, path);
             addBlobInventory(fileName, carrier);
             return;
         }
@@ -244,7 +247,7 @@ public class InventoryManager {
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (!section.contains("Size") && !section.isInt("Size"))
                 return;
-            InventoryBuilderCarrier<InventoryButton> carrier = BLOB_FROM_CONFIGURATION_SECTION(section, reference);
+            InventoryBuilderCarrier<InventoryButton> carrier = BLOB_FROM_CONFIGURATION_SECTION(section, reference, path);
             carrier = carrier.setLocale(locale);
             addBlobInventory(reference, carrier);
         });
@@ -252,10 +255,11 @@ public class InventoryManager {
 
     private void loadMetaInventory(File file) {
         String fileName = FilenameUtils.removeExtension(file.getName());
+        String path = file.getPath();
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
             addMetaInventory(fileName, InventoryBuilderCarrier.
-                    META_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName));
+                    META_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName, path));
             return;
         }
         String locale = yamlConfiguration.getString("Locale", "en_us");
@@ -266,7 +270,7 @@ public class InventoryManager {
             if (!section.contains("Size") && !section.isInt("Size"))
                 return;
             InventoryBuilderCarrier<MetaInventoryButton> carrier = InventoryBuilderCarrier.
-                    META_FROM_CONFIGURATION_SECTION(section, reference);
+                    META_FROM_CONFIGURATION_SECTION(section, reference, path);
             carrier = carrier.setLocale(locale);
             addMetaInventory(reference, carrier);
         });

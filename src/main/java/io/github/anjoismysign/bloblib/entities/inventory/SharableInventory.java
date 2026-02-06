@@ -27,14 +27,16 @@ public class SharableInventory<T extends InventoryButton> extends InventoryBuild
     protected SharableInventory(@NotNull String title,
                                 int size,
                                 @NotNull ButtonManager<T> buttonManager) {
-        this(title, size, buttonManager, null, null);
+        this(title, size, buttonManager, null, null, null);
     }
 
     protected SharableInventory(@NotNull String title,
                                 int size,
                                 @NotNull ButtonManager<T> buttonManager,
                                 @Nullable String reference,
-                                @Nullable String locale) {
+                                @Nullable String locale,
+                                @Nullable String path) {
+        this.path = path;
         this.setTitle(Objects.requireNonNull(title,
                 "'title' cannot be null!"));
         this.setSize(size);
@@ -45,7 +47,7 @@ public class SharableInventory<T extends InventoryButton> extends InventoryBuild
             setButton(slot,supplier.get());
         });
         this.loadDefaultButtons();
-        this.reference = reference;
+        this.key = reference;
         this.locale = locale;
     }
 
@@ -56,7 +58,7 @@ public class SharableInventory<T extends InventoryButton> extends InventoryBuild
      */
     @NotNull
     public SharableInventory<T> copy() {
-        return new SharableInventory<>(getTitle(), getSize(), getButtonManager().copy(), reference, locale);
+        return new SharableInventory<>(getTitle(), getSize(), getButtonManager().copy(), key, locale, path);
     }
 
     /**
