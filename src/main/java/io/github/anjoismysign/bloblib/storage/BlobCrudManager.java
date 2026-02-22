@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.UUID;
 
 public class BlobCrudManager<T extends BlobCrudable> implements CrudManager<T> {
@@ -115,6 +116,11 @@ public class BlobCrudManager<T extends BlobCrudable> implements CrudManager<T> {
     @Override
     public Logger getLogger() {
         return crudManager.getLogger();
+    }
+
+    @Override
+    public List<T> getAll() {
+        return crudManager.getAll();
     }
 
     /**

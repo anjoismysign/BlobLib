@@ -8,6 +8,7 @@ import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -118,6 +119,11 @@ public class MongoCrudManager<T extends BlobCrudable> implements CrudManager<T> 
     @Override
     public Logger getLogger() {
         return logger;
+    }
+
+    @Override
+    public List<T> getAll() {
+        return List.of();
     }
 
     private T readOrGenerate(String id, Supplier<T> replacement) {

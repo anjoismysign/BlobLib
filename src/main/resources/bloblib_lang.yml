@@ -296,6 +296,10 @@ Economy:
     Type: CHAT
     Message: '&cProvided amount is not a valid number'
     BlobSound: System.Alert
+  Must-Be-Positive:
+    Type: CHAT
+    Message: '&cAmount must be positive'
+    BlobSound: System.Alert
 Withdraw:
   Amount:
     Type: TITLE
