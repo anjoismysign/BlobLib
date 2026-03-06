@@ -35,6 +35,10 @@ public enum WeaponInfoDisplay implements Listener {
 
     private final Map<String, String> map = new HashMap<>();
 
+    public Map<String,String> map(){
+        return Map.copyOf(map);
+    }
+
     public void preReload(){
         map.clear();
     }

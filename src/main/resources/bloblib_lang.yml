@@ -417,4 +417,4 @@ Soul:
 WeaponMechanics:
   Weapon-Info-Display:
     Type: ACTIONBAR
-    Message: '%name% &8<<&7%ammo%87>>'
+    Message: '%name% &8<<&7%ammo%&8>>'
