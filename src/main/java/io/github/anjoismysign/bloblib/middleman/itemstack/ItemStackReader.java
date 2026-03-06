@@ -1,6 +1,5 @@
 package io.github.anjoismysign.bloblib.middleman.itemstack;
 
-import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
@@ -23,7 +22,6 @@ import io.papermc.paper.registry.tag.Tag;
 import io.papermc.paper.registry.tag.TagKey;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.util.TriState;
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -42,13 +40,9 @@ import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.profile.PlayerTextures;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -68,22 +62,6 @@ public class ItemStackReader {
         return ResolvableProfile.resolvableProfile()
                 .addProperty(new ProfileProperty("textures", base64))
                 .build();
-    }
-
-    public static PlayerProfile profile(@NotNull String url) {
-        PlayerProfile profile = Bukkit.createProfileExact(null,"Notch");
-        profile.clearProperties();
-        PlayerTextures textures = profile.getTextures();
-        textures.clear();
-        URL skin;
-        try {
-            skin = URI.create(url).toURL();
-        } catch (MalformedURLException exception) {
-            throw new RuntimeException(exception);
-        }
-        textures.setSkin(skin);
-        profile.setTextures(textures);
-        return profile;
     }
 
     @Deprecated
