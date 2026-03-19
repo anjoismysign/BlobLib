@@ -75,8 +75,7 @@ public abstract class InventoryBuilder<T extends InventoryButton> {
         var button = buttonManager.getButton(key);
         var isNull = button == null;
         if (isNull){
-            var debug = path == null ? this.key+":"+key : path+":"+key;
-            BlobLib.getInstance().getLogger().severe("Cannot find button "+debug);
+            BlobLib.getInstance().getLogger().severe("Cannot find button "+debugButton(key));
         }
         return button;
     }
@@ -282,5 +281,10 @@ public abstract class InventoryBuilder<T extends InventoryButton> {
     @Nullable
     public String getKey() {
         return key;
+    }
+
+    @NotNull
+    public String debugButton(String key){
+        return path == null ? this.key+":"+key : path+":"+key;
     }
 }
