@@ -2,9 +2,12 @@ package io.github.anjoismysign.bloblib.entities.inventory;
 
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -69,6 +72,61 @@ public class SharableInventory<T extends InventoryButton> extends InventoryBuild
     @NotNull
     public Inventory getInventory() {
         return inventory;
+    }
+
+    /**
+     * Retrieves the items currently held in the inventory slots associated with a specific button key.
+     *
+     * @param key The unique identifier of the button/region.
+     * @return A map where the keys are slot indices and values are the ItemStacks in those slots.
+     * Returns an empty map if the key is not found.
+     */
+    @NotNull
+    public Map<Integer, @Nullable ItemStack> getContents(@NotNull String key){
+        Map<Integer, @Nullable ItemStack> map = new HashMap<>();
+        @Nullable var button = getButton(key);
+        if (button == null){
+            return Map.of();
+        }
+        for (Integer slot : button.getSlots()) {
+            map.put(slot, inventory.getItem(slot));
+        }
+        return map;
+    }
+
+    /**
+     * Updates the items in the inventory for the slots associated with the specified button key.
+     * <p>
+     * If the contents map is null, all slots associated with the button will be cleared (set to null).
+     * Otherwise, only the slots present in the map that are also owned by the button will be updated.
+     * </p>
+     *
+     * @param key      The unique identifier of the button/region to update.
+     * @param contents A map of slot indices and their corresponding ItemStacks.
+     */
+    public void setContents(@NotNull String key,
+                            @Nullable Map<Integer, @Nullable ItemStack> contents){
+        @Nullable var button = getButton(key);
+        if (button == null){
+            return;
+        }
+        if (contents == null){
+            button.getSlots().forEach(slot->{
+                inventory.setItem(slot, null);
+            });
+            return;
+        }
+        contents.entrySet()
+                .stream()
+                .filter(entry -> {
+                    int slot = entry.getKey();
+                    return button.containsSlot(slot);
+                })
+                .forEach(entry->{
+                    int index = entry.getKey();
+                    @Nullable ItemStack itemStack = entry.getValue();
+                    inventory.setItem(index, itemStack);
+                });
     }
 
 }
