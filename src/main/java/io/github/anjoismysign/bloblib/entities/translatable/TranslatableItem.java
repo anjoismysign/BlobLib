@@ -73,8 +73,6 @@ public interface TranslatableItem extends Translatable<ItemStack> {
                          @NotNull String locale) {
         TranslatableItem translatableItem = TranslatableItem.byItemStack(itemStack);
         if (translatableItem == null) {
-            if (itemStack != null && !itemStack.getType().isAir()){
-            }
             return;
         }
         TranslatableItem localized = translatableItem.localize(locale);
