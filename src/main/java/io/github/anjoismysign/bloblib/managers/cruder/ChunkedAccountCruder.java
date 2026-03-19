@@ -100,7 +100,7 @@ public final class ChunkedAccountCruder<T extends Crudable> extends ProfiledCrud
         return data == null ? null : data.currentProfile;
     }
 
-    private void postLoadData(Data<T> data) {
+    private void postLoadData(PlayerConnection connection, Data<T> data) {
         var account = data.account;
         var identification = account.getIdentification();
         account.setPlayerDecorator(assignPlayerDecorator(identification));
@@ -109,14 +109,14 @@ public final class ChunkedAccountCruder<T extends Crudable> extends ProfiledCrud
             int currentProfileIndex = account.getCurrentProfileIndex();
             var create = data.create;
             if (create != null){
-                createProfile(data);
+                createProfile(connection, data);
                 return;
             }
             if (currentProfileIndex < 0 || currentProfileIndex >= profiles.size()) {
                 account.setCurrentProfileIndex(0);
             }
             ProfileView view = profiles.get(account.getCurrentProfileIndex());
-            switchToProfile(data, view);
+            switchToProfile(connection, data, view);
         } else {
             var profileAPI = BlobLibProfileAPI.getInstance();
             var provider = profileAPI.getProvider();
@@ -126,11 +126,11 @@ public final class ChunkedAccountCruder<T extends Crudable> extends ProfiledCrud
             }
             var profile = profileManagement.getProfiles().get(profileManagement.getCurrentProfileIndex());
             data.create = profile.toView();
-            createProfile(data);
+            createProfile(connection, data);
         }
     }
 
-    private void switchToProfile(Data<T> data, ProfileView view) {
+    private void switchToProfile(PlayerConnection connection, Data<T> data, ProfileView view) {
         var account = data.account;
         var profiles = account.getProfiles();
         if (view == null) {
@@ -147,7 +147,17 @@ public final class ChunkedAccountCruder<T extends Crudable> extends ProfiledCrud
             }
             data.currentProfile = profileCruder.readOrGenerate(view.identification());
             if (data.currentProfile instanceof PlayerDecoratorAware aware){
-                aware.setPlayerDecorator(account.getPlayerDecorator());
+                Runnable syncRunnable = () -> {
+                    if (!connection.isConnected()){
+                        return;
+                    }
+                    aware.setPlayerDecorator(account.getPlayerDecorator());
+                };
+                if (Bukkit.isPrimaryThread()){
+                    syncRunnable.run();
+                } else {
+                    Bukkit.getScheduler().runTask(plugin, syncRunnable);
+                }
             }
             account.setCurrentProfileIndex(index);
         };
@@ -158,7 +168,7 @@ public final class ChunkedAccountCruder<T extends Crudable> extends ProfiledCrud
         }
     }
 
-    private void createProfile(Data<T> data) {
+    private void createProfile(PlayerConnection connection, Data<T> data) {
         var account = data.account;
         var view = data.create;
         @Nullable var currentProfile = data.currentProfile;
@@ -167,12 +177,22 @@ public final class ChunkedAccountCruder<T extends Crudable> extends ProfiledCrud
         }
         T profile = profileCruder.createAndUpdate(view.identification());
         if (profile instanceof PlayerDecoratorAware aware){
-            aware.setPlayerDecorator(account.getPlayerDecorator());
+            Runnable syncRunnable = () -> {
+                if (!connection.isConnected()){
+                    return;
+                }
+                aware.setPlayerDecorator(account.getPlayerDecorator());
+            };
+            if (Bukkit.isPrimaryThread()){
+                syncRunnable.run();
+            } else {
+                Bukkit.getScheduler().runTask(plugin, syncRunnable);
+            }
         }
         var profiles = account.getProfiles();
         profiles.add(view);
         data.create = null;
-        switchToProfile(data, view);
+        switchToProfile(connection, data, view);
     }
 
     private BukkitTask saveTask(@NotNull Data<T> data,
@@ -231,7 +251,7 @@ public final class ChunkedAccountCruder<T extends Crudable> extends ProfiledCrud
                 data.create = profile.toView();
             }
             account.setCurrentProfileIndex(index);
-            postLoadData(data);
+            postLoadData(connection, data);
         };
     }
 

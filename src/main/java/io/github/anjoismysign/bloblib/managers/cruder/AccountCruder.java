@@ -103,7 +103,8 @@ public final class AccountCruder<R extends AccountCrudable<T>, T extends Crudabl
         return account == null ? null : account.getCurrentProfile();
     }
 
-    private void postLoadData(Data<R,T> data) {
+    private void postLoadData(PlayerConnection connection,
+                              Data<R,T> data) {
         var account = data.account;
         var identification = account.getIdentification();
         account.setPlayerDecorator(assignPlayerDecorator(identification));
@@ -112,14 +113,14 @@ public final class AccountCruder<R extends AccountCrudable<T>, T extends Crudabl
             int currentProfileIndex = account.getCurrentProfileIndex();
             var create = data.create;
             if (create != null){
-                createProfile(data);
+                createProfile(connection, data);
                 return;
             }
             if (currentProfileIndex < 0 || currentProfileIndex >= profiles.size()) {
                 account.setCurrentProfileIndex(0);
             }
             T profile = profiles.get(account.getCurrentProfileIndex());
-            switchToProfile(account, profile);
+            switchToProfile(connection, account, profile);
         } else {
             var profileAPI = BlobLibProfileAPI.getInstance();
             var provider = profileAPI.getProvider();
@@ -129,11 +130,11 @@ public final class AccountCruder<R extends AccountCrudable<T>, T extends Crudabl
             }
             var profile = profileManagement.getProfiles().get(profileManagement.getCurrentProfileIndex());
             data.create = profile.toView();
-            createProfile(data);
+            createProfile(connection, data);
         }
     }
 
-    private void switchToProfile(R account, T profile) {
+    private void switchToProfile(PlayerConnection connection, R account, T profile) {
         var profiles = account.getProfiles();
         int index = profiles.indexOf(profile);
         var currentProfile = account.getCurrentProfile();
@@ -147,7 +148,17 @@ public final class AccountCruder<R extends AccountCrudable<T>, T extends Crudabl
                 }
             }
             if (profile instanceof PlayerDecoratorAware aware){
-                aware.setPlayerDecorator(account.getPlayerDecorator());
+                Runnable syncRunnable = () -> {
+                    if (!connection.isConnected()){
+                        return;
+                    }
+                    aware.setPlayerDecorator(account.getPlayerDecorator());
+                };
+                if (Bukkit.isPrimaryThread()){
+                    syncRunnable.run();
+                } else {
+                    Bukkit.getScheduler().runTask(plugin, syncRunnable);
+                }
             }
             account.setCurrentProfileIndex(index);
         };
@@ -158,7 +169,7 @@ public final class AccountCruder<R extends AccountCrudable<T>, T extends Crudabl
         }
     }
 
-    private void createProfile(Data<R,T> data) {
+    private void createProfile(PlayerConnection connection, Data<R,T> data) {
         var account = data.account;
         var view = data.create;
         T profile = profileCreateFunction.apply(view.identification());
@@ -166,12 +177,22 @@ public final class AccountCruder<R extends AccountCrudable<T>, T extends Crudabl
             postLoadable.onPostLoad();
         }
         if (profile instanceof PlayerDecoratorAware aware){
-            aware.setPlayerDecorator(account.getPlayerDecorator());
+            Runnable syncRunnable = () -> {
+                if (!connection.isConnected()){
+                    return;
+                }
+                aware.setPlayerDecorator(account.getPlayerDecorator());
+            };
+            if (Bukkit.isPrimaryThread()){
+                syncRunnable.run();
+            } else {
+                Bukkit.getScheduler().runTask(plugin, syncRunnable);
+            }
         }
         var profiles = account.getProfiles();
         profiles.add(profile);
         data.create = null;
-        switchToProfile(account, profile);
+        switchToProfile(connection, account, profile);
     }
 
     private BukkitTask saveTask(@NotNull R account,
@@ -228,7 +249,7 @@ public final class AccountCruder<R extends AccountCrudable<T>, T extends Crudabl
                 data.create = profile.toView();
             }
             account.setCurrentProfileIndex(index);
-            postLoadData(data);
+            postLoadData(connection, data);
         };
     }
 
