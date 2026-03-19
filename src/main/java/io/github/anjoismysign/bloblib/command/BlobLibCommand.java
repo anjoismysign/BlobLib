@@ -185,7 +185,7 @@ public enum BlobLibCommand {
         CommandTarget<ItemMaterial> target = CommandTargetBuilder.fromMap(materialManager::getItems);
         Command get = command.child("get");
         get.setParameters(target);
-        get.onExecute(((permissionMessenger, args) -> {
+        get.onExecute((permissionMessenger, args) -> {
             CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
             if (args.length < 1) {
                 BlobLibMessageAPI.getInstance()
@@ -213,7 +213,7 @@ public enum BlobLibCommand {
             }
             ItemStack clone = item.localize(player).getClone();
             PlayerUtil.giveItemToInventoryOrDrop(player, clone);
-        }));
+        });
         Command give = command.child("give");
         CommandTarget<Player> onlinePlayers = BukkitCommandTarget.ONLINE_PLAYERS();
         give.setParameters(target, onlinePlayers);
@@ -253,7 +253,7 @@ public enum BlobLibCommand {
         Command command = bloblib.child("translatablepositionable");
         Command save = command.child("save");
         save.setParameters(CommandTargetBuilder.fromMap(() -> Map.of("Type the key you wanna use", "")));
-        save.onExecute(((permissionMessenger, args) -> {
+        save.onExecute((permissionMessenger, args) -> {
             CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
             if (!(sender instanceof Player player)) {
                 BlobLibMessageAPI.getInstance()
@@ -276,7 +276,7 @@ public enum BlobLibCommand {
                     .replace("%reference%", key)
                     .get()
                     .handle(player);
-        }));
+        });
         Command random = command.child("random");
         random.onExecute(((permissionMessenger, args) -> {
             CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
@@ -299,7 +299,7 @@ public enum BlobLibCommand {
         CommandTarget<Player> onlinePlayers = BukkitCommandTarget.ONLINE_PLAYERS();
         CommandTarget<TranslatablePositionable> target = CommandTargetBuilder.fromMap(() -> main.getTranslatablePositionableManager().getDefault());
         teleport.setParameters(target, onlinePlayers);
-        teleport.onExecute(((permissionMessenger, args) -> {
+        teleport.onExecute((permissionMessenger, args) -> {
             CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
             int length = args.length;
 
@@ -335,13 +335,13 @@ public enum BlobLibCommand {
                 player.teleport(location);
             else
                 player.teleport(location);
-        }));
+        });
     }
 
     public void translatablearea(@NotNull Command bloblib) {
         Command command = bloblib.child("translatablearea");
         Command random = command.child("random");
-        random.onExecute(((permissionMessenger, args) -> {
+        random.onExecute((permissionMessenger, args) -> {
             CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
             if (!(sender instanceof Player player)) {
                 BlobLibMessageAPI.getInstance()
@@ -362,7 +362,7 @@ public enum BlobLibCommand {
                     .replace("%reference%", reference)
                     .get()
                     .handle(player);
-        }));
+        });
     }
 
     public void blobinventory(@NotNull Command bloblib) {
@@ -371,7 +371,7 @@ public enum BlobLibCommand {
         CommandTarget<Player> onlinePlayers = BukkitCommandTarget.ONLINE_PLAYERS();
         open.setParameters(CommandTargetBuilder.fromMap(() -> BlobLibInventoryAPI.getInstance()
                 .getInventoryManager().getBlobInventories()), onlinePlayers);
-        open.onExecute(((permissionMessenger, args) -> {
+        open.onExecute((permissionMessenger, args) -> {
             CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
             int length = args.length;
 
@@ -406,14 +406,14 @@ public enum BlobLibCommand {
                 return;
             }
             tracker.getInventory().open(player);
-        }));
+        });
     }
 
     public void closeinventory(@NotNull Command bloblib) {
         Command command = bloblib.child("closeinventory");
         CommandTarget<Player> onlinePlayers = BukkitCommandTarget.ONLINE_PLAYERS();
         command.setParameters(onlinePlayers);
-        command.onExecute(((permissionMessenger, args) -> {
+        command.onExecute((permissionMessenger, args) -> {
             CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
             Player player = onlinePlayers.parse(args[0]);
             if (player == null) {
@@ -423,7 +423,7 @@ public enum BlobLibCommand {
                 return;
             }
             player.closeInventory();
-        }));
+        });
     }
 
     public void blobmessage(@NotNull Command bloblib) {
@@ -432,7 +432,7 @@ public enum BlobLibCommand {
         CommandTarget<BlobMessage> target = CommandTargetBuilder.fromMap(() -> BlobLibMessageAPI.getInstance().getDefault());
         CommandTarget<Player> onlinePlayers = BukkitCommandTarget.ONLINE_PLAYERS();
         send.setParameters(target, onlinePlayers);
-        send.onExecute(((permissionMessenger, args) -> {
+        send.onExecute((permissionMessenger, args) -> {
             CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
             int length = args.length;
 
@@ -461,7 +461,7 @@ public enum BlobLibCommand {
                 return;
             }
             message.handle(player);
-        }));
+        });
     }
 
     public void blobsound(@NotNull Command bloblib) {
@@ -470,7 +470,7 @@ public enum BlobLibCommand {
         CommandTarget<BlobSound> target = CommandTargetBuilder.fromMap(() -> BlobLibSoundAPI.getInstance().getDefault());
         CommandTarget<Player> onlinePlayers = BukkitCommandTarget.ONLINE_PLAYERS();
         send.setParameters(target, onlinePlayers);
-        send.onExecute(((permissionMessenger, args) -> {
+        send.onExecute((permissionMessenger, args) -> {
             CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
             int length = args.length;
 
@@ -499,7 +499,7 @@ public enum BlobLibCommand {
                 return;
             }
             sound.handle(player);
-        }));
+        });
     }
 
     /**
