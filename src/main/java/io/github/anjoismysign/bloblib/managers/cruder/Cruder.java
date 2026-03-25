@@ -33,6 +33,11 @@ public interface Cruder<T extends Crudable> {
         CrudManager<T> crudManager = crudDatabase.crudManagerOf(createFunction);
         return new Cruder<>() {
             @Override
+            public void disconnect(){
+                crudManager.disconnect();
+            }
+
+            @Override
             public boolean exists(String identification) {
                 return crudManager.exists(identification);
             }
@@ -60,6 +65,8 @@ public interface Cruder<T extends Crudable> {
             }
         };
     }
+
+    void disconnect();
 
     boolean exists(String identification);
 

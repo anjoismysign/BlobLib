@@ -262,6 +262,7 @@ public final class AccountCruder<R extends AccountCrudable<T>, T extends Crudabl
             accountCruder.update(account);
         }
         accounts.clear();
+        accountCruder.disconnect();
     }
 
 }

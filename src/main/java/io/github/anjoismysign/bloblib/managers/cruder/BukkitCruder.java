@@ -298,6 +298,8 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
             cruder.update(item);
         }
         serializables.clear();
+        cruder.disconnect();
+
     }
 
     public void saveAll() {

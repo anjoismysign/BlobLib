@@ -80,6 +80,11 @@ public final class ChunkedAccountCruder<T extends Crudable> extends ProfiledCrud
             if (account != null) {
                 accountCruder.update(account);
                 @Nullable var currentProfile = data.currentProfile;
+                if (currentProfile == null){
+                    plugin.getLogger().severe("'data.currentProfile' should not be null");
+                    saving.remove(uniqueId);
+                    return;
+                }
                 if (currentProfile instanceof Cleanable cleanable){
                     cleanable.cleanup();
                 }
@@ -267,6 +272,8 @@ public final class ChunkedAccountCruder<T extends Crudable> extends ProfiledCrud
             }
         }
         data.clear();
+        profileCruder.disconnect();
+        accountCruder.disconnect();
     }
 
 }
