@@ -6,10 +6,13 @@ import io.github.anjoismysign.bloblib.events.BlobLibReloadEvent;
 import me.deecaad.weaponmechanics.WeaponMechanics;
 import me.deecaad.weaponmechanics.WeaponMechanicsAPI;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
@@ -38,5 +41,20 @@ public enum WMFound implements WeaponMechanicsMiddleman, Listener {
     @Override
     public @NotNull ItemStack generateWeapon(@NotNull String weaponTitle) {
         return WeaponMechanicsAPI.generateWeapon(weaponTitle);
+    }
+
+    @Override
+    public @Nullable String getWeaponTitle(@NotNull ItemStack item) {
+        return WeaponMechanicsAPI.getWeaponTitle(item);
+    }
+
+    @Override
+    public void shoot(@NotNull LivingEntity shooter, @NotNull String weaponTitle, @NotNull Vector direction) {
+        WeaponMechanicsAPI.shoot(shooter, weaponTitle, direction);
+    }
+
+    @Override
+    public boolean isReloading(@NotNull LivingEntity entity) {
+        return WeaponMechanicsAPI.isReloading(entity);
     }
 }
