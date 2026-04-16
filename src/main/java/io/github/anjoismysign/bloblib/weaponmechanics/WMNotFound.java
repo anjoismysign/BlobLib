@@ -12,6 +12,11 @@ import java.util.Set;
 
 public class WMNotFound implements WeaponMechanicsMiddleman {
     @Override
+    public boolean isEnabled() {
+        return false;
+    }
+
+    @Override
     public @NotNull Set<String> getWeaponTitles() {
         return Set.of();
     }

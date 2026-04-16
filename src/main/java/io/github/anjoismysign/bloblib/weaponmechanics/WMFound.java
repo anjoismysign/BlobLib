@@ -3,9 +3,14 @@ package io.github.anjoismysign.bloblib.weaponmechanics;
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.events.BlobLibPreReloadEvent;
 import io.github.anjoismysign.bloblib.events.BlobLibReloadEvent;
+import me.deecaad.core.file.Configuration;
 import me.deecaad.weaponmechanics.WeaponMechanics;
 import me.deecaad.weaponmechanics.WeaponMechanicsAPI;
+import me.deecaad.weaponmechanics.weapon.projectile.weaponprojectile.Projectile;
+import me.deecaad.weaponmechanics.weapon.projectile.weaponprojectile.ProjectileSettings;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,6 +26,10 @@ public enum WMFound implements WeaponMechanicsMiddleman, Listener {
 
     WMFound(){
         Bukkit.getPluginManager().registerEvents(this, BlobLib.getInstance());
+    }
+
+    public boolean isEnabled(){
+        return true;
     }
 
     @EventHandler
@@ -56,5 +65,54 @@ public enum WMFound implements WeaponMechanicsMiddleman, Listener {
     @Override
     public boolean isReloading(@NotNull LivingEntity entity) {
         return WeaponMechanicsAPI.isReloading(entity);
+    }
+
+    @Nullable
+    public Double getSpread(@NotNull String weaponTitle){
+        Configuration weaponConfigurations = WeaponMechanics.getInstance().getWeaponConfigurations();
+        String path = weaponTitle + ".Shoot.Spread.Base_Spread";
+        if (!weaponConfigurations.hasDouble(path)){
+            return null;
+        }
+        return weaponConfigurations.getDouble(path);
+    }
+
+    @Nullable
+    public Integer getDelayBetweenShots(@NotNull String weaponTitle){
+        Configuration weaponConfigurations = WeaponMechanics.getInstance().getWeaponConfigurations();
+        String path = weaponTitle + ".Shoot.Delay_Between_Shots";
+        if (!weaponConfigurations.hasInt(path)){
+            return null;
+        }
+        return weaponConfigurations.getInt(path);
+    }
+
+    @Nullable
+    public Integer getFullyAutomaticShotsPerSecond(@NotNull String weaponTitle){
+        Configuration weaponConfigurations = WeaponMechanics.getInstance().getWeaponConfigurations();
+        String path = weaponTitle + ".Shoot.Fully_Automatic_Shots_Per_Second";
+        if (!weaponConfigurations.hasInt(path)){
+            return null;
+        }
+        return weaponConfigurations.getInt(path);
+    }
+
+    @Nullable
+    public ProjectileSettings getProjectileSettings(@NotNull String weaponTitle){
+        Configuration weaponConfigurations = WeaponMechanics.getInstance().getWeaponConfigurations();
+        @Nullable Projectile projectile = weaponConfigurations.getObject(weaponTitle + ".Projectile", Projectile.class);
+        if (projectile == null) {
+            return null;
+        }
+
+        World world = Bukkit.getWorlds().getFirst();
+
+        ProjectileSettings settings = projectile.create(null, new Location(world, 0,0,0), new Vector(0,0,0), null, null, null).getProjectileSettings();
+        return new ProjectileSettings() {
+            @Override
+            public double getMaximumTravelDistance() {
+                return settings.getMaximumTravelDistance();
+            }
+        };
     }
 }

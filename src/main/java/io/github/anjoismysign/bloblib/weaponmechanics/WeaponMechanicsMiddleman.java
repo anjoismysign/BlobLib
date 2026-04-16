@@ -21,6 +21,9 @@ public interface WeaponMechanicsMiddleman {
         }
     }
 
+
+    boolean isEnabled();
+
     /**
      * Gets all available weapon titles using the WeaponConfiguration.
      * @return The non-null set.
@@ -88,5 +91,4 @@ public interface WeaponMechanicsMiddleman {
      * @return <code>true</code> if the entity is reloading.
      */
     boolean isReloading(@NotNull LivingEntity entity);
-
 }

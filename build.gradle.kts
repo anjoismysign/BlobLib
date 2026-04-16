@@ -88,18 +88,12 @@ dependencies {
     compileOnly(libs.commons.io.commons.io)
     compileOnly(libs.com.github.decentsoftware.eu.decentholograms)
     compileOnly(libs.me.clip.placeholderapi)
-    implementation("me.libraryaddict.disguises:libsdisguises:11.0.13")
+    compileOnly("me.libraryaddict.disguises:libsdisguises:11.0.13")
     compileOnly(libs.net.lingala.zip4j.zip4j)
     compileOnly(libs.de.oliver.fancyholograms)
     compileOnly("dev.lone:api-itemsadder:4.0.10")
-//    mvn install:install-file \
-//    -Dfile=weaponmechanics-4.1.5.jar \
-//    -DpomFile=weaponmechanics-4.1.5.pom.xml
-    compileOnly("com.cjcrafter:weaponmechanics:4.1.5")
-//    mvn install:install-file \
-//    -Dfile=mechanicscore-4.1.5.jar \
-//    -DpomFile=mechanicscore-4.1.5.pom.xml
-    compileOnly("com.cjcrafter:mechanicscore:4.1.5")
+    compileOnly("com.cjcrafter:weaponmechanics:4.2.5")
+    compileOnly("com.cjcrafter:mechanicscore:4.2.5")
     compileOnly("com.github.SkriptLang:Skript:2.12.2")
 }
 
