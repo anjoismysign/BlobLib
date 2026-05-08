@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
     private final File assetDirectory;
@@ -32,7 +34,8 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
     private final BlobLib main;
     private final @Nullable BiConsumer<YamlConfiguration, T> saveConsumer;
     private Map<String, Set<String>> assets;
-    private Map<String, Integer> duplicates;
+    private Map<String, List<String>> duplicates;
+    private Map<String, String> keyFirstFile;
     private Map<String, Map<String, T>> locales;
 
     /**
@@ -59,7 +62,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
         Objects.requireNonNull(readFunction, "Read function cannot be null");
         Objects.requireNonNull(type, "Data asset type cannot be null");
         Objects.requireNonNull(filter, "Filter cannot be null");
-        if (!assetDirectory.isDirectory()){
+        if (!assetDirectory.isDirectory()) {
             assetDirectory.mkdirs();
         }
         return new LocalizableDataAssetManager<>(assetDirectory,
@@ -83,9 +86,11 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
         locales = new HashMap<>();
         assets = new HashMap<>();
         duplicates = new HashMap<>();
+        keyFirstFile = new HashMap<>();
         loadFiles(assetDirectory);
-        duplicates.forEach((identifier, value) -> BlobLib.getAnjoLogger()
-                .log("Duplicate " + type.name() + ": '" + identifier + "' (found " + value + " instances)"));
+        duplicates.forEach((identifier, paths) -> BlobLib.getAnjoLogger()
+                .log("Duplicate " + type.name() + ": '" + identifier + "' (found " + paths.size() + " instances)\n" +
+                        paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
     }
 
     public void reload(BlobPlugin plugin, IManagerDirector director) {
@@ -98,8 +103,9 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
         if (directory == null)
             throw new NullPointerException("Directory for " + type.name() + " is null");
         loadFiles(directory);
-        duplicates.forEach((identifier, value) -> plugin.getAnjoLogger()
-                .log("Duplicate " + type.name() + ": '" + identifier + "' (found " + value + " instances)"));
+        duplicates.forEach((identifier, paths) -> plugin.getAnjoLogger()
+                .log("Duplicate " + type.name() + ": '" + identifier + "' (found " + paths.size() + " instances)\n" +
+                        paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
     }
 
     public void unload(BlobPlugin plugin) {
@@ -127,7 +133,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
             configuration.set("Locale", asset.locale());
             saveConsumer.accept(configuration, asset);
             configuration.save(file);
-            addOrCreateLocale(asset, identifier);
+            addOrCreateLocale(asset, identifier, file.getPath());
         } catch (Throwable throwable) {
             main.getLogger().severe(throwable.getMessage() + "\nAt: " + file.getPath());
         }
@@ -158,6 +164,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
 
     private void loadYamlConfiguration(File file) {
         String fileName = FilenameUtils.removeExtension(file.getName());
+        String filePath = file.getPath();
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         String locale = yamlConfiguration.getString("Locale", "en_us");
         if (filter.test(yamlConfiguration)) {
@@ -165,9 +172,9 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
                 T asset = readFunction.apply(yamlConfiguration, locale, fileName);
                 if (asset == null)
                     return;
-                addOrCreateLocale(asset, fileName);
+                addOrCreateLocale(asset, fileName, filePath);
             } catch (Throwable throwable) {
-                BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
+                BlobLib.getInstance().getLogger().severe("At: " + filePath);
                 throwable.printStackTrace();
             }
             return;
@@ -180,9 +187,9 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
                 return;
             try {
                 T asset = readFunction.apply(section, locale, reference);
-                addOrCreateLocale(asset, reference);
+                addOrCreateLocale(asset, reference, filePath);
             } catch (Throwable throwable) {
-                BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
+                BlobLib.getInstance().getLogger().severe("At: " + filePath);
                 throwable.printStackTrace();
             }
         });
@@ -190,6 +197,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
 
     private void loadYamlConfiguration(File file, BlobPlugin plugin) {
         String fileName = FilenameUtils.removeExtension(file.getName());
+        String filePath = file.getPath();
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         String locale = yamlConfiguration.getString("Locale", "en_us");
         if (filter.test(yamlConfiguration)) {
@@ -197,10 +205,10 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
                 T asset = readFunction.apply(yamlConfiguration, locale, fileName);
                 if (asset == null)
                     return;
-                addOrCreateLocale(asset, fileName);
+                addOrCreateLocale(asset, fileName, filePath);
                 assets.get(plugin.getName()).add(fileName);
             } catch (Throwable throwable) {
-                BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
+                BlobLib.getInstance().getLogger().severe("At: " + filePath);
                 throwable.printStackTrace();
             }
             return;
@@ -213,23 +221,24 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
                 return;
             try {
                 T asset = readFunction.apply(section, locale, reference);
-                addOrCreateLocale(asset, reference);
+                addOrCreateLocale(asset, reference, filePath);
                 assets.get(plugin.getName()).add(reference);
             } catch (Throwable throwable) {
-                BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
+                BlobLib.getInstance().getLogger().severe("At: " + filePath);
                 throwable.printStackTrace();
             }
         });
     }
 
-    private boolean addOrCreateLocale(T asset, String reference) {
+    private boolean addOrCreateLocale(T asset, String reference, String filePath) {
         String locale = asset.locale();
         Map<String, T> localeMap = locales.computeIfAbsent(locale, k -> new HashMap<>());
         if (localeMap.containsKey(reference)) {
-            addDuplicate(reference);
+            addDuplicate(reference, filePath);
             return false;
         }
         localeMap.put(reference, asset);
+        keyFirstFile.put(reference, filePath);
         return true;
     }
 
@@ -238,15 +247,17 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
         for (File file : files)
             loadYamlConfiguration(file, plugin);
         if (warnDuplicates)
-            duplicates.forEach((identifier, value) -> plugin.getAnjoLogger()
-                    .log("Duplicate " + type.name() + ": '" + identifier + "' (found " + value + " instances)"));
+            duplicates.forEach((identifier, paths) -> plugin.getAnjoLogger()
+                    .log("Duplicate " + type.name() + ": '" + identifier + "' (found " + paths.size() + " instances)\n" +
+                            paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
     }
 
-    private void addDuplicate(String identifier) {
-        if (duplicates.containsKey(identifier))
-            duplicates.put(identifier, duplicates.get(identifier) + 1);
-        else
-            duplicates.put(identifier, 2);
+    private void addDuplicate(String identifier, String filePath) {
+        duplicates.computeIfAbsent(identifier, k -> {
+            List<String> list = new ArrayList<>();
+            list.add(keyFirstFile.getOrDefault(k, "unknown"));
+            return list;
+        }).add(filePath);
     }
 
     @Nullable

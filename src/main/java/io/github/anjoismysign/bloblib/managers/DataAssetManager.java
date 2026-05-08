@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class DataAssetManager<T extends DataAsset> {
     private final File assetDirectory;
@@ -30,7 +32,8 @@ public class DataAssetManager<T extends DataAsset> {
     private final BlobLib main;
     private final @Nullable BiConsumer<YamlConfiguration, T> saveConsumer;
     private Map<String, Set<String>> pluginAssets;
-    private Map<String, Integer> duplicates;
+    private Map<String, List<String>> duplicates;
+    private Map<String, String> keyFirstFile;
     private Map<String, T> assets;
 
     /**
@@ -56,7 +59,7 @@ public class DataAssetManager<T extends DataAsset> {
         Objects.requireNonNull(readFunction, "Read function cannot be null");
         Objects.requireNonNull(type, "Data asset type cannot be null");
         Objects.requireNonNull(filter, "Filter cannot be null");
-        if (!assetDirectory.isDirectory()){
+        if (!assetDirectory.isDirectory()) {
             assetDirectory.mkdirs();
         }
         return new DataAssetManager<>(assetDirectory,
@@ -80,9 +83,11 @@ public class DataAssetManager<T extends DataAsset> {
         assets = new HashMap<>();
         pluginAssets = new HashMap<>();
         duplicates = new HashMap<>();
+        keyFirstFile = new HashMap<>();
         loadFiles(assetDirectory);
-        duplicates.forEach((identifier, value) -> BlobLib.getAnjoLogger()
-                .log("Duplicate " + type.name() + ": '" + identifier + "' (found " + value + " instances)"));
+        duplicates.forEach((identifier, paths) -> BlobLib.getAnjoLogger()
+                .log("Duplicate " + type.name() + ": '" + identifier + "' (found " + paths.size() + " instances)\n" +
+                        paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
     }
 
     public void reload(BlobPlugin plugin, IManagerDirector director) {
@@ -95,8 +100,9 @@ public class DataAssetManager<T extends DataAsset> {
         if (directory == null)
             throw new NullPointerException("Directory for " + type.name() + " is null");
         loadFiles(directory);
-        duplicates.forEach((identifier, value) -> plugin.getAnjoLogger()
-                .log("Duplicate " + type.name() + ": '" + identifier + "' (found " + value + " instances)"));
+        duplicates.forEach((identifier, paths) -> plugin.getAnjoLogger()
+                .log("Duplicate " + type.name() + ": '" + identifier + "' (found " + paths.size() + " instances)\n" +
+                        paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
     }
 
     public void unload(BlobPlugin plugin) {
@@ -123,7 +129,7 @@ public class DataAssetManager<T extends DataAsset> {
             YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
             saveConsumer.accept(configuration, asset);
             configuration.save(file);
-            addOrCreate(asset, identifier);
+            addOrCreate(asset, identifier, file.getPath());
         } catch (Throwable throwable) {
             main.getLogger().severe(throwable.getMessage() + "\nAt: " + file.getPath());
         }
@@ -154,15 +160,16 @@ public class DataAssetManager<T extends DataAsset> {
 
     private void loadYamlConfiguration(File file) {
         String fileName = FilenameUtils.removeExtension(file.getName());
+        String filePath = file.getPath();
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         if (filter.test(yamlConfiguration)) {
             try {
                 T asset = readFunction.apply(yamlConfiguration, fileName);
                 if (asset == null)
                     return;
-                addOrCreate(asset, fileName);
+                addOrCreate(asset, fileName, filePath);
             } catch (Throwable throwable) {
-                BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
+                BlobLib.getInstance().getLogger().severe("At: " + filePath);
                 throwable.printStackTrace();
             }
             return;
@@ -175,9 +182,9 @@ public class DataAssetManager<T extends DataAsset> {
                 return;
             try {
                 T asset = readFunction.apply(section, reference);
-                addOrCreate(asset, reference);
+                addOrCreate(asset, reference, filePath);
             } catch (Throwable throwable) {
-                BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
+                BlobLib.getInstance().getLogger().severe("At: " + filePath);
                 throwable.printStackTrace();
             }
         });
@@ -185,16 +192,17 @@ public class DataAssetManager<T extends DataAsset> {
 
     private void loadYamlConfiguration(File file, BlobPlugin plugin) {
         String fileName = FilenameUtils.removeExtension(file.getName());
+        String filePath = file.getPath();
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         if (filter.test(yamlConfiguration)) {
             try {
                 T asset = readFunction.apply(yamlConfiguration, fileName);
                 if (asset == null)
                     return;
-                addOrCreate(asset, fileName);
+                addOrCreate(asset, fileName, filePath);
                 pluginAssets.get(plugin.getName()).add(fileName);
             } catch (Throwable throwable) {
-                BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
+                BlobLib.getInstance().getLogger().severe("At: " + filePath);
                 throwable.printStackTrace();
             }
             return;
@@ -207,21 +215,22 @@ public class DataAssetManager<T extends DataAsset> {
                 return;
             try {
                 T asset = readFunction.apply(section, reference);
-                addOrCreate(asset, reference);
+                addOrCreate(asset, reference, filePath);
                 pluginAssets.get(plugin.getName()).add(reference);
             } catch (Throwable throwable) {
-                BlobLib.getInstance().getLogger().severe("At: " + file.getPath());
+                BlobLib.getInstance().getLogger().severe("At: " + filePath);
                 throwable.printStackTrace();
             }
         });
     }
 
-    private boolean addOrCreate(T asset, String reference) {
+    private boolean addOrCreate(T asset, String reference, String filePath) {
         if (assets.containsKey(reference)) {
-            addDuplicate(reference);
+            addDuplicate(reference, filePath);
             return false;
         }
         assets.put(reference, asset);
+        keyFirstFile.put(reference, filePath);
         return true;
     }
 
@@ -230,15 +239,17 @@ public class DataAssetManager<T extends DataAsset> {
         for (File file : files)
             loadYamlConfiguration(file, plugin);
         if (warnDuplicates)
-            duplicates.forEach((identifier, value) -> plugin.getAnjoLogger()
-                    .log("Duplicate " + type.name() + ": '" + identifier + "' (found " + value + " instances)"));
+            duplicates.forEach((identifier, paths) -> plugin.getAnjoLogger()
+                    .log("Duplicate " + type.name() + ": '" + identifier + "' (found " + paths.size() + " instances)\n" +
+                            paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
     }
 
-    private void addDuplicate(String identifier) {
-        if (duplicates.containsKey(identifier))
-            duplicates.put(identifier, duplicates.get(identifier) + 1);
-        else
-            duplicates.put(identifier, 2);
+    private void addDuplicate(String identifier, String filePath) {
+        duplicates.computeIfAbsent(identifier, k -> {
+            List<String> list = new ArrayList<>();
+            list.add(keyFirstFile.getOrDefault(k, "unknown"));
+            return list;
+        }).add(filePath);
     }
 
     @Nullable

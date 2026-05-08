@@ -11,17 +11,21 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SoundManager {
     private final BlobLib main;
     private Map<String, BlobSound> sounds;
     private Map<String, Set<String>> pluginSounds;
-    private Map<String, Integer> duplicates;
+    private Map<String, List<String>> duplicates;
+    private Map<String, String> keyFirstFile;
 
     public static void loadBlobPlugin(BlobPlugin plugin, IManagerDirector director) {
         SoundManager manager = BlobLib.getInstance().getSoundManager();
@@ -36,8 +40,9 @@ public class SoundManager {
     public static boolean loadAndRegisterYamlConfiguration(BlobPlugin plugin, File file) {
         SoundManager manager = BlobLib.getInstance().getSoundManager();
         manager.loadYamlConfiguration(plugin, file);
-        manager.duplicates.forEach((key, value) -> BlobLib.getAnjoLogger()
-                .log("Duplicate BlobSound: '" + key + "' (found " + value + " instances)"));
+        manager.duplicates.forEach((key, paths) -> BlobLib.getAnjoLogger()
+                .log("Duplicate BlobSound: '" + key + "' (found " + paths.size() + " instances)\n" +
+                        paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
         return true;
     }
 
@@ -47,8 +52,9 @@ public class SoundManager {
         for (File file : files)
             manager.loadYamlConfiguration(plugin, file);
         if (warnDuplicates)
-            manager.duplicates.forEach((key, value) -> plugin.getAnjoLogger()
-                    .log("Duplicate BlobSound: '" + key + "' (found " + value + " instances)"));
+            manager.duplicates.forEach((key, paths) -> plugin.getAnjoLogger()
+                    .log("Duplicate BlobSound: '" + key + "' (found " + paths.size() + " instances)\n" +
+                            paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
     }
 
     public SoundManager() {
@@ -63,9 +69,11 @@ public class SoundManager {
         sounds = new HashMap<>();
         pluginSounds = new HashMap<>();
         duplicates = new HashMap<>();
+        keyFirstFile = new HashMap<>();
         loadFiles(main.getFileManager().getDirectory(DataAssetType.BLOB_SOUND));
-        duplicates.forEach((key, value) -> main.getLogger()
-                .severe("Duplicate BlobSound: '" + key + "' (found " + value + " instances)"));
+        duplicates.forEach((key, paths) -> main.getLogger()
+                .severe("Duplicate BlobSound: '" + key + "' (found " + paths.size() + " instances)\n" +
+                        paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
     }
 
     public void load(BlobPlugin plugin, IManagerDirector director) {
@@ -76,8 +84,9 @@ public class SoundManager {
         duplicates.clear();
         File directory = director.getFileManager().getDirectory(DataAssetType.BLOB_SOUND);
         loadFiles(directory);
-        duplicates.forEach((key, value) -> main.getLogger()
-                .severe("Duplicate BlobSound: '" + key + "' (found " + value + " instances)"));
+        duplicates.forEach((key, paths) -> main.getLogger()
+                .severe("Duplicate BlobSound: '" + key + "' (found " + paths.size() + " instances)\n" +
+                        paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
     }
 
     public void unload(BlobPlugin plugin) {
@@ -119,6 +128,7 @@ public class SoundManager {
 
     private void loadYamlConfiguration(BlobPlugin plugin, File file) {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
+        String filePath = file.getPath();
         yamlConfiguration.getKeys(true).forEach(reference -> {
             if (!yamlConfiguration.isConfigurationSection(reference))
                 return;
@@ -126,16 +136,18 @@ public class SoundManager {
             if (!section.contains("Sound") && !section.isString("Sound"))
                 return;
             if (sounds.containsKey(reference)) {
-                addDuplicate(reference);
+                addDuplicate(reference, filePath);
                 return;
             }
             sounds.put(reference, BlobSoundReader.read(section, reference));
+            keyFirstFile.put(reference, filePath);
             pluginSounds.get(plugin.getName()).add(reference);
         });
     }
 
     private void loadYamlConfiguration(File file) {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
+        String filePath = file.getPath();
         yamlConfiguration.getKeys(true).forEach(reference -> {
             if (!yamlConfiguration.isConfigurationSection(reference))
                 return;
@@ -143,23 +155,25 @@ public class SoundManager {
             if (!section.contains("Sound") && !section.isString("Sound"))
                 return;
             if (sounds.containsKey(reference)) {
-                addDuplicate(reference);
+                addDuplicate(reference, filePath);
                 return;
             }
             try {
                 BlobSound sound = BlobSoundReader.read(section, reference);
                 sounds.put(reference, sound);
+                keyFirstFile.put(reference, filePath);
             } catch (Throwable throwable) {
-                main.getLogger().severe(throwable.getMessage() + "\nAt: " + file.getPath());
+                main.getLogger().severe(throwable.getMessage() + "\nAt: " + filePath);
             }
         });
     }
 
-    private void addDuplicate(String key) {
-        if (duplicates.containsKey(key))
-            duplicates.put(key, duplicates.get(key) + 1);
-        else
-            duplicates.put(key, 2);
+    private void addDuplicate(String key, String filePath) {
+        duplicates.computeIfAbsent(key, k -> {
+            List<String> list = new ArrayList<>();
+            list.add(keyFirstFile.getOrDefault(k, "unknown"));
+            return list;
+        }).add(filePath);
     }
 
     @Nullable

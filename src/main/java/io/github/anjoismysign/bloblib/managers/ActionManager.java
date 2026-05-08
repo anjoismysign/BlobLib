@@ -10,15 +10,19 @@ import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ActionManager {
     private final BlobLib main;
     private HashMap<String, Action<Entity>> actions;
     private HashMap<String, Set<String>> pluginActions;
-    private HashMap<String, Integer> duplicates;
+    private HashMap<String, List<String>> duplicates;
+    private HashMap<String, String> keyFirstFile;
 
     public ActionManager() {
         this.main = BlobLib.getInstance();
@@ -32,9 +36,11 @@ public class ActionManager {
         actions = new HashMap<>();
         pluginActions = new HashMap<>();
         duplicates = new HashMap<>();
+        keyFirstFile = new HashMap<>();
         loadFiles(main.getFileManager().getDirectory(DataAssetType.ACTION));
-        duplicates.forEach((key, value) -> BlobLib.getAnjoLogger()
-                .log("Duplicate Action: '" + key + "' (found " + value + " instances)"));
+        duplicates.forEach((key, paths) -> BlobLib.getAnjoLogger()
+                .log("Duplicate Action: '" + key + "' (found " + paths.size() + " instances)\n" +
+                        paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
     }
 
     public void load(BlobPlugin plugin, IManagerDirector director) {
@@ -45,8 +51,9 @@ public class ActionManager {
         duplicates.clear();
         File directory = director.getFileManager().getDirectory(DataAssetType.ACTION);
         loadFiles(directory);
-        duplicates.forEach((key, value) -> plugin.getAnjoLogger()
-                .log("Duplicate Action: '" + key + "' (found " + value + " instances)"));
+        duplicates.forEach((key, paths) -> plugin.getAnjoLogger()
+                .log("Duplicate Action: '" + key + "' (found " + paths.size() + " instances)\n" +
+                        paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
     }
 
     public void unload(BlobPlugin plugin) {
@@ -81,10 +88,10 @@ public class ActionManager {
                     continue;
                 try {
                     loadYamlConfiguration(file);
-                } catch ( ConfigurationFieldException exception ) {
+                } catch (ConfigurationFieldException exception) {
                     main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
                     continue;
-                } catch ( Throwable throwable ) {
+                } catch (Throwable throwable) {
                     throwable.printStackTrace();
                     continue;
                 }
@@ -96,6 +103,7 @@ public class ActionManager {
 
     private void loadYamlConfiguration(File file) {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
+        String filePath = file.getPath();
         yamlConfiguration.getKeys(true).forEach(reference -> {
             if (!yamlConfiguration.isConfigurationSection(reference))
                 return;
@@ -103,15 +111,17 @@ public class ActionManager {
             if (!section.contains("Type") && !section.isString("Type"))
                 return;
             if (actions.containsKey(reference)) {
-                addDuplicate(reference);
+                addDuplicate(reference, filePath);
                 return;
             }
             actions.put(reference, Action.fromConfigurationSection(section));
+            keyFirstFile.put(reference, filePath);
         });
     }
 
     private void loadYamlConfiguration(File file, BlobPlugin plugin) {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
+        String filePath = file.getPath();
         yamlConfiguration.getKeys(true).forEach(reference -> {
             if (!yamlConfiguration.isConfigurationSection(reference))
                 return;
@@ -119,10 +129,11 @@ public class ActionManager {
             if (!section.contains("Type") && !section.isString("Type"))
                 return;
             if (actions.containsKey(reference)) {
-                addDuplicate(reference);
+                addDuplicate(reference, filePath);
                 return;
             }
             actions.put(reference, Action.fromConfigurationSection(section));
+            keyFirstFile.put(reference, filePath);
             pluginActions.get(plugin.getName()).add(reference);
         });
     }
@@ -142,16 +153,18 @@ public class ActionManager {
         if (!manager.pluginActions.containsKey(plugin.getName()))
             return false;
         manager.loadYamlConfiguration(file, plugin);
-        manager.duplicates.forEach((key, value) -> BlobLib.getAnjoLogger()
-                .log("Duplicate Action: '" + key + "' (found " + value + " instances)"));
+        manager.duplicates.forEach((key, paths) -> BlobLib.getAnjoLogger()
+                .log("Duplicate Action: '" + key + "' (found " + paths.size() + " instances)\n" +
+                        paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
         return true;
     }
 
-    private void addDuplicate(String key) {
-        if (duplicates.containsKey(key))
-            duplicates.put(key, duplicates.get(key) + 1);
-        else
-            duplicates.put(key, 2);
+    private void addDuplicate(String key, String filePath) {
+        duplicates.computeIfAbsent(key, k -> {
+            List<String> list = new ArrayList<>();
+            list.add(keyFirstFile.getOrDefault(k, "unknown"));
+            return list;
+        }).add(filePath);
     }
 
     public Action<Entity> getAction(String reference) {

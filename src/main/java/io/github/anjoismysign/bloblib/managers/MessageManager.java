@@ -13,17 +13,21 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class MessageManager {
     private final BlobLib main;
-    private HashMap<String, Set<String>> pluginMessages;
-    private HashMap<String, Integer> duplicates;
-    private HashMap<String, Map<String, BlobMessage>> locales;
+    private Map<String, Set<String>> pluginMessages;
+    private Map<String, List<String>> duplicates;
+    private Map<String, String> keyFirstFile;
+    private Map<String, Map<String, BlobMessage>> locales;
 
     public MessageManager() {
         this.main = BlobLib.getInstance();
@@ -37,9 +41,11 @@ public class MessageManager {
         locales = new HashMap<>();
         pluginMessages = new HashMap<>();
         duplicates = new HashMap<>();
+        keyFirstFile = new HashMap<>();
         loadFiles(main.getFileManager().getDirectory(DataAssetType.BLOB_MESSAGE));
-        duplicates.forEach((key, value) -> BlobLib.getAnjoLogger()
-                .log("Duplicate BlobMessage: '" + key + "' (found " + value + " instances)"));
+        duplicates.forEach((key, paths) -> BlobLib.getAnjoLogger()
+                .log("Duplicate BlobMessage: '" + key + "' (found " + paths.size() + " instances)\n" +
+                        paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
     }
 
     public void load(BlobPlugin plugin, IManagerDirector director) {
@@ -50,8 +56,9 @@ public class MessageManager {
         duplicates.clear();
         File directory = director.getFileManager().getDirectory(DataAssetType.BLOB_MESSAGE);
         loadFiles(directory);
-        duplicates.forEach((key, value) -> plugin.getAnjoLogger()
-                .log("Duplicate BlobMessage: '" + key + "' (found " + value + " instances)"));
+        duplicates.forEach((key, paths) -> plugin.getAnjoLogger()
+                .log("Duplicate BlobMessage: '" + key + "' (found " + paths.size() + " instances)\n" +
+                        paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
     }
 
     public void unload(BlobPlugin plugin) {
@@ -87,10 +94,10 @@ public class MessageManager {
                     continue;
                 try {
                     loadYamlConfiguration(file);
-                } catch ( ConfigurationFieldException exception ) {
+                } catch (ConfigurationFieldException exception) {
                     main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
                     continue;
-                } catch ( Throwable throwable ) {
+                } catch (Throwable throwable) {
                     throwable.printStackTrace();
                     continue;
                 }
@@ -103,6 +110,7 @@ public class MessageManager {
     private void loadYamlConfiguration(File file) {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         String locale = yamlConfiguration.getString("Locale", "en_us");
+        String filePath = file.getPath();
         yamlConfiguration.getKeys(true).forEach(reference -> {
             if (!yamlConfiguration.isConfigurationSection(reference))
                 return;
@@ -111,9 +119,9 @@ public class MessageManager {
                 return;
             try {
                 BlobMessage message = BlobMessageReader.read(section, locale, reference);
-                addOrCreateLocale(message, reference);
-            } catch ( NoClassDefFoundError e ) {
-                BlobLib.getAnjoLogger().singleError("Not loading '" + reference + "' in file '" + file.getPath() + "' due to deprecated server software: " +
+                addOrCreateLocale(message, reference, filePath);
+            } catch (NoClassDefFoundError e) {
+                BlobLib.getAnjoLogger().singleError("Not loading '" + reference + "' in file '" + filePath + "' due to deprecated server software: " +
                         e.getMessage());
                 return;
             }
@@ -123,26 +131,28 @@ public class MessageManager {
     private void loadYamlConfiguration(File file, BlobPlugin plugin) {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         String locale = yamlConfiguration.getString("Locale", "en_us");
+        String filePath = file.getPath();
         yamlConfiguration.getKeys(true).forEach(reference -> {
             if (!yamlConfiguration.isConfigurationSection(reference))
                 return;
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
             if (!section.contains("Type") && !section.isString("Type"))
                 return;
-            if (!addOrCreateLocale(BlobMessageReader.read(section, locale), reference))
+            if (!addOrCreateLocale(BlobMessageReader.read(section, locale), reference, filePath))
                 return;
             pluginMessages.get(plugin.getName()).add(reference);
         });
     }
 
-    private boolean addOrCreateLocale(BlobMessage message, String reference) {
+    private boolean addOrCreateLocale(BlobMessage message, String reference, String filePath) {
         String locale = message.locale();
         Map<String, BlobMessage> localeMap = locales.computeIfAbsent(locale, k -> new HashMap<>());
         if (localeMap.containsKey(reference)) {
-            addDuplicate(reference);
+            addDuplicate(reference, filePath);
             return false;
         }
         localeMap.put(reference, message);
+        keyFirstFile.put(reference, filePath);
         return true;
     }
 
@@ -152,15 +162,17 @@ public class MessageManager {
         for (File file : files)
             manager.loadYamlConfiguration(file, plugin);
         if (warnDuplicates)
-            manager.duplicates.forEach((key, value) -> plugin.getAnjoLogger()
-                    .log("Duplicate BlobMessage: '" + key + "' (found " + value + " instances)"));
+            manager.duplicates.forEach((key, paths) -> plugin.getAnjoLogger()
+                    .log("Duplicate BlobMessage: '" + key + "' (found " + paths.size() + " instances)\n" +
+                            paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
     }
 
-    private void addDuplicate(String key) {
-        if (duplicates.containsKey(key))
-            duplicates.put(key, duplicates.get(key) + 1);
-        else
-            duplicates.put(key, 2);
+    private void addDuplicate(String key, String filePath) {
+        duplicates.computeIfAbsent(key, k -> {
+            List<String> list = new ArrayList<>();
+            list.add(keyFirstFile.getOrDefault(k, "unknown"));
+            return list;
+        }).add(filePath);
     }
 
     public void noPermission(Player player) {

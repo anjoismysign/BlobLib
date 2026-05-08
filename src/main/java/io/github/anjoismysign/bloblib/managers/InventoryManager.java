@@ -18,12 +18,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static io.github.anjoismysign.bloblib.entities.inventory.InventoryBuilderCarrier.BLOB_FROM_CONFIGURATION_SECTION;
 
@@ -34,7 +37,8 @@ public class InventoryManager {
     private HashMap<String, MetaInventoryShard> metaInventoriesShards;
     private HashMap<String, Set<String>> pluginBlobInventories;
     private HashMap<String, Set<String>> pluginMetaInventories;
-    private HashMap<String, Integer> duplicates;
+    private HashMap<String, List<String>> duplicates;
+    private HashMap<String, String> keyFirstFile;
 
     public static void loadBlobPlugin(BlobPlugin plugin, IManagerDirector director) {
         InventoryManager manager = BlobLib.getInstance().getInventoryManager();
@@ -56,8 +60,9 @@ public class InventoryManager {
         for (File file : files)
             manager.loadBlobInventory(plugin, file);
         if (warnDuplicates)
-            manager.duplicates.forEach((key, value) -> plugin.getAnjoLogger()
-                    .log("Duplicate BlobInventory: '" + key + "' (found " + value + " instances)"));
+            manager.duplicates.forEach((key, paths) -> plugin.getAnjoLogger()
+                    .log("Duplicate BlobInventory: '" + key + "' (found " + paths.size() + " instances)\n" +
+                            paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
     }
 
     public static void continueLoadingBlobInventories(BlobPlugin plugin, File... files) {
@@ -70,8 +75,9 @@ public class InventoryManager {
         for (File file : files)
             manager.loadMetaInventory(plugin, file);
         if (warnDuplicates)
-            manager.duplicates.forEach((key, value) -> plugin.getAnjoLogger()
-                    .log("Duplicate MetaBlobInventory: '" + key + "' (found " + value + " instances)"));
+            manager.duplicates.forEach((key, paths) -> plugin.getAnjoLogger()
+                    .log("Duplicate MetaBlobInventory: '" + key + "' (found " + paths.size() + " instances)\n" +
+                            paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
     }
 
     public static void continueLoadingMetaInventories(BlobPlugin plugin, File... files) {
@@ -93,10 +99,12 @@ public class InventoryManager {
         pluginBlobInventories = new HashMap<>();
         pluginMetaInventories = new HashMap<>();
         duplicates = new HashMap<>();
+        keyFirstFile = new HashMap<>();
         loadBlobInventories(main.getFileManager().getDirectory(DataAssetType.BLOB_INVENTORY));
         loadMetaInventories(main.getFileManager().getDirectory(DataAssetType.META_BLOB_INVENTORY));
-        duplicates.forEach((key, value) -> BlobLib.getAnjoLogger()
-                .log("Duplicate Inventory: '" + key + "' (found " + value + " instances)"));
+        duplicates.forEach((key, paths) -> BlobLib.getAnjoLogger()
+                .log("Duplicate Inventory: '" + key + "' (found " + paths.size() + " instances)\n" +
+                        paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
     }
 
     public void load(BlobPlugin plugin, IManagerDirector director) {
@@ -111,8 +119,9 @@ public class InventoryManager {
         loadBlobInventories(blobDirectory);
         File metaDirectory = fileManager.getDirectory(DataAssetType.META_BLOB_INVENTORY);
         loadMetaInventories(metaDirectory);
-        duplicates.forEach((key, value) -> plugin.getAnjoLogger()
-                .log("Duplicate Inventory: '" + key + "' (found " + value + " instances)"));
+        duplicates.forEach((key, paths) -> plugin.getAnjoLogger()
+                .log("Duplicate Inventory: '" + key + "' (found " + paths.size() + " instances)\n" +
+                        paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
     }
 
     public void unload(BlobPlugin plugin) {
@@ -188,7 +197,7 @@ public class InventoryManager {
         String path = file.getPath();
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
-            addBlobInventory(fileName, BLOB_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName, path));
+            addBlobInventory(fileName, BLOB_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName, path), path);
             pluginBlobInventories.get(plugin.getName()).add(fileName);
             return;
         }
@@ -201,7 +210,7 @@ public class InventoryManager {
                 return;
             InventoryBuilderCarrier<InventoryButton> carrier = BLOB_FROM_CONFIGURATION_SECTION(section, reference, path);
             carrier = carrier.setLocale(locale);
-            addBlobInventory(reference, carrier);
+            addBlobInventory(reference, carrier, path);
             pluginBlobInventories.get(plugin.getName()).add(reference);
         });
     }
@@ -212,7 +221,7 @@ public class InventoryManager {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
             addMetaInventory(fileName, InventoryBuilderCarrier.
-                    META_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName, path));
+                    META_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName, path), path);
             pluginMetaInventories.get(plugin.getName()).add(fileName);
             return;
         }
@@ -226,7 +235,7 @@ public class InventoryManager {
             InventoryBuilderCarrier<MetaInventoryButton> carrier = InventoryBuilderCarrier.
                     META_FROM_CONFIGURATION_SECTION(section, reference, path);
             carrier = carrier.setLocale(locale);
-            addMetaInventory(reference, carrier);
+            addMetaInventory(reference, carrier, path);
             pluginMetaInventories.get(plugin.getName()).add(reference);
         });
     }
@@ -237,7 +246,7 @@ public class InventoryManager {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
             InventoryBuilderCarrier<InventoryButton> carrier = BLOB_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName, path);
-            addBlobInventory(fileName, carrier);
+            addBlobInventory(fileName, carrier, path);
             return;
         }
         String locale = yamlConfiguration.getString("Locale", "en_us");
@@ -249,7 +258,7 @@ public class InventoryManager {
                 return;
             InventoryBuilderCarrier<InventoryButton> carrier = BLOB_FROM_CONFIGURATION_SECTION(section, reference, path);
             carrier = carrier.setLocale(locale);
-            addBlobInventory(reference, carrier);
+            addBlobInventory(reference, carrier, path);
         });
     }
 
@@ -259,7 +268,7 @@ public class InventoryManager {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         if (yamlConfiguration.contains("Size") && yamlConfiguration.isInt("Size")) {
             addMetaInventory(fileName, InventoryBuilderCarrier.
-                    META_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName, path));
+                    META_FROM_CONFIGURATION_SECTION(yamlConfiguration, fileName, path), path);
             return;
         }
         String locale = yamlConfiguration.getString("Locale", "en_us");
@@ -272,16 +281,17 @@ public class InventoryManager {
             InventoryBuilderCarrier<MetaInventoryButton> carrier = InventoryBuilderCarrier.
                     META_FROM_CONFIGURATION_SECTION(section, reference, path);
             carrier = carrier.setLocale(locale);
-            addMetaInventory(reference, carrier);
+            addMetaInventory(reference, carrier, path);
         });
     }
 
 
-    private void addDuplicate(String key) {
-        if (duplicates.containsKey(key))
-            duplicates.put(key, duplicates.get(key) + 1);
-        else
-            duplicates.put(key, 2);
+    private void addDuplicate(String key, String filePath) {
+        duplicates.computeIfAbsent(key, k -> {
+            List<String> list = new ArrayList<>();
+            list.add(keyFirstFile.getOrDefault(k, "unknown"));
+            return list;
+        }).add(filePath);
     }
 
     /**
@@ -394,26 +404,28 @@ public class InventoryManager {
         return metaInventoriesShards.get(type);
     }
 
-    private void addBlobInventory(String key, InventoryBuilderCarrier<InventoryButton> inventory) {
+    private void addBlobInventory(String key, InventoryBuilderCarrier<InventoryButton> inventory, String filePath) {
         InventoryDataRegistry<InventoryButton> dataRegistry = blobInventories.get(key);
         if (dataRegistry == null)
             dataRegistry = InventoryDataRegistry.of("en_us", key);
         if (!dataRegistry.process(inventory)) {
-            addDuplicate(key);
+            addDuplicate(key, filePath);
             return;
         }
         blobInventories.put(key, dataRegistry);
+        keyFirstFile.put(key, filePath);
     }
 
-    private void addMetaInventory(String key, InventoryBuilderCarrier<MetaInventoryButton> inventory) {
+    private void addMetaInventory(String key, InventoryBuilderCarrier<MetaInventoryButton> inventory, String filePath) {
         InventoryDataRegistry<MetaInventoryButton> dataRegistry = metaInventories.get(key);
         if (dataRegistry == null)
             dataRegistry = InventoryDataRegistry.of("en_us", key);
         if (!dataRegistry.process(inventory)) {
-            addDuplicate(key);
+            addDuplicate(key, filePath);
             return;
         }
         metaInventories.put(key, dataRegistry);
+        keyFirstFile.put(key, filePath);
         metaInventoriesShards.computeIfAbsent(inventory.type(), type -> new MetaInventoryShard())
                 .addInventory(inventory, key);
     }
