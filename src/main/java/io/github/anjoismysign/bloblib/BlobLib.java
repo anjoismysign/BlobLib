@@ -31,7 +31,6 @@ import io.github.anjoismysign.bloblib.managers.InventoryTrackerManager;
 import io.github.anjoismysign.bloblib.managers.LocalizableDataAssetManager;
 import io.github.anjoismysign.bloblib.managers.MessageManager;
 import io.github.anjoismysign.bloblib.managers.PluginManager;
-import io.github.anjoismysign.bloblib.managers.ScriptManager;
 import io.github.anjoismysign.bloblib.managers.SelPosListenerManager;
 import io.github.anjoismysign.bloblib.managers.SelectorListenerManager;
 import io.github.anjoismysign.bloblib.managers.TranslatableAreaManager;
@@ -58,7 +57,6 @@ public class BlobLib extends JavaPlugin {
     private SerializationLib serializationLib;
     private BlobLibUpdater bloblibupdater;
     private BlobLibAPI api;
-    private ScriptManager scriptManager;
     private VaultManager vaultManager;
     private EngineHubManager engineHubManager;
     private DisguiseManager disguiseManager;
@@ -133,7 +131,6 @@ public class BlobLib extends JavaPlugin {
         api = BlobLibAPI.getInstance(this);
         bloblibupdater = new BlobLibUpdater(this);
         anjoLogger = new BlobPluginLogger(this);
-        scriptManager = new ScriptManager();
         pluginManager = PluginManager.getInstance();
         colorManager = new ColorManager();
         fileManager = new BlobLibFileManager();
@@ -251,15 +248,6 @@ public class BlobLib extends JavaPlugin {
      */
     public ColorManager getColorManager() {
         return colorManager;
-    }
-
-    /**
-     * Will retrieve the ScriptManager
-     *
-     * @return The ScriptManager
-     */
-    public ScriptManager getScriptManager() {
-        return scriptManager;
     }
 
     /**
