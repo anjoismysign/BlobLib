@@ -1,7 +1,7 @@
 plugins {
     `java-library`
     `maven-publish`
-    id("com.gradleup.shadow") version "9.0.0-beta9"
+    id("com.gradleup.shadow") version "9.4.0"
 }
 
 repositories {
@@ -100,8 +100,8 @@ dependencies {
 group = "io.github.anjoismysign"
 version = "1.698.32"
 description = "bloblib"
-java.sourceCompatibility = JavaVersion.VERSION_16
-java.targetCompatibility = JavaVersion.VERSION_16
+java.sourceCompatibility = JavaVersion.VERSION_25
+java.targetCompatibility = JavaVersion.VERSION_25
 
 publishing {
     publications.create<MavenPublication>("maven") {
