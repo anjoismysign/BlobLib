@@ -124,7 +124,6 @@ tasks.withType<Javadoc> {
 }
 
 tasks.shadowJar {
-    minimize()
     archiveClassifier.set("")
     archiveFileName.set("${project.name}-${project.version}.jar")
 }
