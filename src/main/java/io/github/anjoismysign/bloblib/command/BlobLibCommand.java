@@ -467,7 +467,7 @@ public enum BlobLibCommand {
     public void blobsound(@NotNull Command bloblib) {
         Command command = bloblib.child("blobsound");
         Command send = command.child("send");
-        CommandTarget<BlobSound> target = CommandTargetBuilder.fromMap(() -> BlobLibSoundAPI.getInstance().getDefault());
+        CommandTarget<BlobSound> target = CommandTargetBuilder.fromMap(() -> BlobLibSoundAPI.getInstance().mapDefault());
         CommandTarget<Player> onlinePlayers = BukkitCommandTarget.ONLINE_PLAYERS();
         send.setParameters(target, onlinePlayers);
         send.onExecute((permissionMessenger, args) -> {

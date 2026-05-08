@@ -262,4 +262,9 @@ public class DataAssetManager<T extends DataAsset> {
     public List<T> getAssets() {
         return assets.values().stream().toList();
     }
+
+    @NotNull
+    public Map<String, T> mapAssets() {
+        return Map.copyOf(assets);
+    }
 }

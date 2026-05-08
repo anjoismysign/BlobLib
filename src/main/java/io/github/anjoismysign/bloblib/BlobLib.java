@@ -2,8 +2,10 @@ package io.github.anjoismysign.bloblib;
 
 import io.github.anjoismysign.bloblib.command.BlobLibCommand;
 import io.github.anjoismysign.bloblib.disguises.DisguiseManager;
+import io.github.anjoismysign.bloblib.entities.BlobSoundReader;
 import io.github.anjoismysign.bloblib.entities.DataAssetType;
 import io.github.anjoismysign.bloblib.entities.logger.BlobPluginLogger;
+import io.github.anjoismysign.bloblib.entities.message.BlobSound;
 import io.github.anjoismysign.bloblib.entities.positionable.Positionable;
 import io.github.anjoismysign.bloblib.entities.positionable.PositionableIO;
 import io.github.anjoismysign.bloblib.entities.tag.TagSet;
@@ -32,7 +34,6 @@ import io.github.anjoismysign.bloblib.managers.PluginManager;
 import io.github.anjoismysign.bloblib.managers.ScriptManager;
 import io.github.anjoismysign.bloblib.managers.SelPosListenerManager;
 import io.github.anjoismysign.bloblib.managers.SelectorListenerManager;
-import io.github.anjoismysign.bloblib.managers.SoundManager;
 import io.github.anjoismysign.bloblib.managers.TranslatableAreaManager;
 import io.github.anjoismysign.bloblib.managers.TranslatableManager;
 import io.github.anjoismysign.bloblib.managers.VariableSelectorManager;
@@ -65,7 +66,7 @@ public class BlobLib extends JavaPlugin {
     private BlobLibFileManager fileManager;
     private InventoryManager inventoryManager;
     private MessageManager messageManager;
-    private SoundManager soundManager;
+    private DataAssetManager<BlobSound> soundManager;
     private FillerManager fillerManager;
     private ChatListenerManager chatManager;
     private SelPosListenerManager positionManager;
@@ -170,7 +171,11 @@ public class BlobLib extends JavaPlugin {
         translatableAreaManager = TranslatableAreaManager.of();
         messageManager = new MessageManager();
         actionManager = new ActionManager();
-        soundManager = new SoundManager();
+        soundManager = DataAssetManager.of(fileManager.getDirectory(DataAssetType.BLOB_SOUND),
+                BlobSoundReader::read,
+                DataAssetType.BLOB_SOUND,
+                section -> section.contains("Sound"),
+                null);
         fillerManager = new FillerManager();
         vaultManager = new VaultManager();
         disguiseManager = new DisguiseManager();
@@ -322,7 +327,7 @@ public class BlobLib extends JavaPlugin {
      *
      * @return The SoundManager
      */
-    public SoundManager getSoundManager() {
+    public DataAssetManager<BlobSound> getSoundManager() {
         return soundManager;
     }
 

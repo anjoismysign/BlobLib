@@ -2,10 +2,11 @@ package io.github.anjoismysign.bloblib.api;
 
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.entities.message.BlobSound;
-import io.github.anjoismysign.bloblib.managers.SoundManager;
+import io.github.anjoismysign.bloblib.managers.DataAssetManager;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Map;
 
 public class BlobLibSoundAPI {
@@ -32,7 +33,7 @@ public class BlobLibSoundAPI {
     /**
      * @return The sound manager
      */
-    public SoundManager getSoundManager() {
+    public DataAssetManager<BlobSound> getSoundManager() {
         return plugin.getSoundManager();
     }
 
@@ -42,7 +43,7 @@ public class BlobLibSoundAPI {
      */
     @Nullable
     public BlobSound getSound(String key) {
-        return getSoundManager().getSound(key);
+        return getSoundManager().getAsset(key);
     }
 
     /**
@@ -50,10 +51,17 @@ public class BlobLibSoundAPI {
      * @param player The player to play the sound
      */
     public void playSound(String key, Player player) {
-        getSoundManager().play(player, key);
+        BlobSound sound = getSoundManager().getAsset(key);
+        if (sound == null)
+            throw new NullPointerException("Sound '" + key + "' does not exist!");
+        sound.play(player);
     }
 
-    public Map<String, BlobSound> getDefault() {
-        return getSoundManager().getSounds();
+    public List<BlobSound> getDefault() {
+        return getSoundManager().getAssets();
+    }
+
+    public Map<String, BlobSound> mapDefault(){
+        return getSoundManager().mapAssets();
     }
 }

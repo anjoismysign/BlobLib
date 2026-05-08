@@ -5,7 +5,6 @@ import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.managers.BlobPlugin;
 import io.github.anjoismysign.bloblib.managers.InventoryManager;
 import io.github.anjoismysign.bloblib.managers.MessageManager;
-import io.github.anjoismysign.bloblib.managers.SoundManager;
 import io.github.anjoismysign.bloblib.managers.TranslatableManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,7 +21,7 @@ public enum DataAssetType {
     BLOB_MESSAGE("messages", File.separator + "BlobMessage", "_lang.yml",
             (plugin, files) -> MessageManager.continueLoadingMessages(plugin, true, files.toArray(new File[0]))),
     BLOB_SOUND("sounds", File.separator + "BlobSound", "_sounds.yml",
-            (plugin, files) -> SoundManager.continueLoadingSounds(plugin, true, files.toArray(new File[0]))),
+            (plugin, files) -> BlobLib.getInstance().getSoundManager().continueLoadingAssets(plugin, true, files.toArray(new File[0]))),
     BLOB_INVENTORY("blobInventories", File.separator + "BlobInventory", "_inventories.yml",
             (plugin, files) -> InventoryManager.continueLoadingBlobInventories(plugin, files.toArray(new File[0]))),
     META_BLOB_INVENTORY("metaBlobInventories", File.separator + "MetaBlobInventory", "_meta_inventories.yml",

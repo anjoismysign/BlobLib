@@ -698,7 +698,7 @@ public abstract class ManagerDirector implements IManagerDirector {
     public ManagerDirector registerBlobSound(boolean debug, String... fileNames) {
         String[] yaml = addYml(fileNames);
         File[] freshFiles = freshFiles(debug, getRealFileManager().getDirectory(DataAssetType.BLOB_SOUND), yaml);
-        SoundManager.continueLoadingSounds(plugin, true, freshFiles);
+        BlobLib.getInstance().getSoundManager().continueLoadingAssets(plugin, true, freshFiles);
         if (debug)
             getPlugin().getAnjoLogger().debug(" sound asset " + Arrays.toString(fileNames) + " successfully registered");
         return this;
