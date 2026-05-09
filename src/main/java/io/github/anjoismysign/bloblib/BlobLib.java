@@ -1,10 +1,12 @@
 package io.github.anjoismysign.bloblib;
 
+import io.github.anjoismysign.bloblib.action.Action;
 import io.github.anjoismysign.bloblib.command.BlobLibCommand;
 import io.github.anjoismysign.bloblib.disguises.DisguiseManager;
 import io.github.anjoismysign.bloblib.entities.BlobSoundReader;
 import io.github.anjoismysign.bloblib.entities.DataAssetType;
 import io.github.anjoismysign.bloblib.entities.logger.BlobPluginLogger;
+import io.github.anjoismysign.bloblib.entities.message.BlobMessage;
 import io.github.anjoismysign.bloblib.entities.message.BlobSound;
 import io.github.anjoismysign.bloblib.entities.positionable.Positionable;
 import io.github.anjoismysign.bloblib.entities.positionable.PositionableIO;
@@ -18,7 +20,6 @@ import io.github.anjoismysign.bloblib.events.BlobLibPreReloadEvent;
 import io.github.anjoismysign.bloblib.events.BlobLibReloadEvent;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import io.github.anjoismysign.bloblib.hologram.HologramManager;
-import io.github.anjoismysign.bloblib.managers.ActionManager;
 import io.github.anjoismysign.bloblib.managers.BlobLibConfigManager;
 import io.github.anjoismysign.bloblib.managers.BlobLibFileManager;
 import io.github.anjoismysign.bloblib.managers.BlobLibListenerManager;
@@ -46,6 +47,7 @@ import io.github.anjoismysign.bloblib.utilities.MinecraftVersion;
 import io.github.anjoismysign.bloblib.utilities.SerializationLib;
 import io.github.anjoismysign.bloblib.vault.VaultManager;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -73,7 +75,7 @@ public class BlobLib extends JavaPlugin {
     private DropListenerManager dropListenerManager;
     private ColorManager colorManager;
     private PluginManager pluginManager;
-    private ActionManager actionManager;
+    private DataAssetManager<Action<Entity>> actionManager;
     private BlobLibConfigManager configManager;
     private BlobLibListenerManager listenerManager;
     private InventoryTrackerManager inventoryTrackerManager;
@@ -167,7 +169,11 @@ public class BlobLib extends JavaPlugin {
                         PositionableIO.INSTANCE::write);
         translatableAreaManager = TranslatableAreaManager.of();
         messageManager = new MessageManager();
-        actionManager = new ActionManager();
+        actionManager = DataAssetManager.of(fileManager.getDirectory(DataAssetType.ACTION),
+                (section, key) -> Action.fromConfigurationSection(section),
+                DataAssetType.ACTION,
+                section -> section.contains("Type") && section.isString("Type"),
+                null);
         soundManager = DataAssetManager.of(fileManager.getDirectory(DataAssetType.BLOB_SOUND),
                 BlobSoundReader::read,
                 DataAssetType.BLOB_SOUND,
@@ -306,7 +312,7 @@ public class BlobLib extends JavaPlugin {
      *
      * @return The ActionManager
      */
-    public ActionManager getActionManager() {
+    public DataAssetManager<Action<Entity>> getActionManager() {
         return actionManager;
     }
 

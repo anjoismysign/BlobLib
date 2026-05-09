@@ -1,8 +1,10 @@
 package io.github.anjoismysign.bloblib.action;
 
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
+import io.github.anjoismysign.holoworld.asset.DataAsset;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
@@ -11,7 +13,7 @@ import java.util.function.Function;
  *
  * @param <T> The type of entity to perform the action on
  */
-public abstract class Action<T extends Entity> {
+public abstract class Action<T extends Entity> implements DataAsset {
     /**
      * Creates an action from a configuration section
      *
@@ -33,13 +35,13 @@ public abstract class Action<T extends Entity> {
                 String command = section.getString("Command");
                 if (command == null)
                     throw new ConfigurationFieldException("'Action.Command' is not valid");
-                return CommandAction.build(command);
+                return CommandAction.build(command, section.getName());
             }
             case CONSOLE_COMMAND -> {
                 String command = section.getString("Command");
                 if (command == null)
                     throw new ConfigurationFieldException("'Action.Command' is not valid");
-                return ConsoleCommandAction.build(command);
+                return ConsoleCommandAction.build(command, section.getName());
             }
             default -> throw new IllegalArgumentException("Unknown Action Type: " + type);
         }
@@ -50,6 +52,12 @@ public abstract class Action<T extends Entity> {
      * The type of action
      */
     protected ActionType actionType;
+    protected String key;
+
+    @Override
+    public @NotNull String identifier() {
+        return key;
+    }
 
     /**
      * Runs the action.

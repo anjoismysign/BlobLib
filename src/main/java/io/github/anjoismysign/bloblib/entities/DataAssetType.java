@@ -27,8 +27,7 @@ public enum DataAssetType {
     META_BLOB_INVENTORY("metaBlobInventories", File.separator + "MetaBlobInventory", "_meta_inventories.yml",
             (plugin, files) -> InventoryManager.continueLoadingMetaInventories(plugin, files.toArray(new File[0]))),
     ACTION("actions", File.separator + "Action", "_actions.yml",
-            (plugin, files) -> {
-            }),
+            (plugin, files) -> BlobLib.getInstance().getActionManager().continueLoadingAssets(plugin, true, files.toArray(new File[0]))),
     TRANSLATABLE_BLOCK("translatableBlocks", File.separator + "TranslatableBlock", "_translatable_blocks.yml",
             (plugin, files) -> TranslatableManager.continueLoadingBlocks(plugin, true, files.toArray(new File[0]))),
     TRANSLATABLE_SNIPPET("translatableSnippets", File.separator + "TranslatableSnippet", "_translatable_snippets.yml",

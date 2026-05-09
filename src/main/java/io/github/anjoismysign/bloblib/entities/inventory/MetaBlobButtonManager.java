@@ -31,11 +31,12 @@ public class MetaBlobButtonManager extends ButtonManager<MetaInventoryButton> {
      * @return a non-abstract ButtonManager.
      */
     public static MetaBlobButtonManager fromConfigurationSection(@NotNull ConfigurationSection section,
-                                                                 @NotNull String locale) {
+                                                                 @NotNull String locale,
+                                                                 @NotNull String inventoryIdentifier) {
         Objects.requireNonNull(section);
         Objects.requireNonNull(locale);
         MetaBlobButtonManager blobButtonManager = new MetaBlobButtonManager();
-        blobButtonManager.add(section, locale);
+        blobButtonManager.add(section, locale, inventoryIdentifier);
         return blobButtonManager;
     }
 
@@ -124,7 +125,7 @@ public class MetaBlobButtonManager extends ButtonManager<MetaInventoryButton> {
      * this is determined in case the being called after the first add call
      */
     public boolean add(ConfigurationSection section) {
-        return add(section, "en_us");
+        return add(section, "en_us", "");
     }
 
     /**
@@ -144,13 +145,13 @@ public class MetaBlobButtonManager extends ButtonManager<MetaInventoryButton> {
      * @return true if at least one button was successfully added.
      * this is determined in case being called after the first adding call
      */
-    public boolean add(ConfigurationSection section, String locale) {
+    public boolean add(ConfigurationSection section, String locale, String inventoryIdentifier) {
         Set<String> set = section.getKeys(false);
         Uber<Boolean> madeChanges = new Uber<>(false);
         set.stream().filter(key -> !contains(key)).forEach(key -> {
             madeChanges.talk(true);
             MetaBlobMultiSlotable slotable = MetaBlobMultiSlotable
-                    .read(section.getConfigurationSection(key), key, locale);
+                    .read(section.getConfigurationSection(key), key, locale, inventoryIdentifier);
             slotable.setInButtonManager(this);
         });
         return madeChanges.thanks();

@@ -57,7 +57,7 @@ public record InventoryBuilderCarrier<T extends InventoryButton>(@NotNull String
         if (buttonsSection == null)
             buttonsSection = configurationSection.createSection("Buttons");
         BlobButtonManager buttonManager = BlobButtonManager
-                .fromConfigurationSection(buttonsSection, locale);
+                .fromConfigurationSection(buttonsSection, locale, reference);
         return new InventoryBuilderCarrier<>(title, size, buttonManager,
                 null, reference, locale, path);
     }
@@ -98,7 +98,7 @@ public record InventoryBuilderCarrier<T extends InventoryButton>(@NotNull String
         if (buttonsSection == null)
             buttonsSection = configurationSection.createSection("Buttons");
         MetaBlobButtonManager buttonManager = MetaBlobButtonManager
-                .fromConfigurationSection(buttonsSection, locale);
+                .fromConfigurationSection(buttonsSection, locale, reference);
         return new InventoryBuilderCarrier<>(title, size, buttonManager,
                 type, reference, locale, path);
     }

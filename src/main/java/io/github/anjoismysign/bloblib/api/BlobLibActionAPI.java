@@ -2,7 +2,7 @@ package io.github.anjoismysign.bloblib.api;
 
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.action.Action;
-import io.github.anjoismysign.bloblib.managers.ActionManager;
+import io.github.anjoismysign.bloblib.managers.DataAssetManager;
 import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,7 +30,7 @@ public class BlobLibActionAPI {
     /**
      * @return The action manager
      */
-    public ActionManager getActionManager() {
+    public DataAssetManager<Action<Entity>> getActionManager() {
         return plugin.getActionManager();
     }
 
@@ -40,6 +40,6 @@ public class BlobLibActionAPI {
      */
     @Nullable
     public Action<Entity> getAction(String key) {
-        return getActionManager().getAction(key);
+        return getActionManager().getAsset(key);
     }
 }

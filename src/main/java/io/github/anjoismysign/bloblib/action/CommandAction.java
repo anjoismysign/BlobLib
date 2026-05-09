@@ -25,14 +25,15 @@ public class CommandAction<T extends Entity> extends Action<T> {
      * @param <T>     The entity type
      * @return The new CommandAction
      */
-    public static <T extends Entity> CommandAction<T> build(String command) {
+    public static <T extends Entity> CommandAction<T> build(String command, String key) {
         Objects.requireNonNull(command);
-        return new <T>CommandAction<T>(command);
+        return new CommandAction<>(command, key);
     }
 
-    private CommandAction(String command) {
+    private CommandAction(String command, String key) {
         this.actionType = ActionType.ACTOR_COMMAND;
         this.command = command;
+        this.key = key;
     }
 
     /**
@@ -53,7 +54,7 @@ public class CommandAction<T extends Entity> extends Action<T> {
     public <U extends Entity> CommandAction<U> updateActor(U actor) {
         if (actor != null) {
             String updatedCommand = command.replace("%actor%", actor.getName());
-            CommandAction<U> updatedAction = new CommandAction<>(updatedCommand);
+            CommandAction<U> updatedAction = new CommandAction<>(updatedCommand, key);
             updatedAction.actor = actor;
             return updatedAction;
         } else {
@@ -82,7 +83,7 @@ public class CommandAction<T extends Entity> extends Action<T> {
     @Override
     public CommandAction<T> modify(Function<String, String> modifier) {
         String newCommand = modifier.apply(command);
-        return new CommandAction<>(newCommand);
+        return new CommandAction<>(newCommand, key);
     }
 
     @Override

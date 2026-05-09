@@ -45,7 +45,8 @@ public class BlobMultiSlotable extends MultiSlotable {
      */
     public static BlobMultiSlotable read(ConfigurationSection section,
                                          String identifier,
-                                         String locale) {
+                                         String locale,
+                                         String inventoryIdentifier) {
         final Supplier<ItemStack> readSupplier;
         if (section.isString("ItemStack")) {
             String reference = section.getString("ItemStack");
@@ -125,12 +126,12 @@ public class BlobMultiSlotable extends MultiSlotable {
         List<ActionMemo> actions = new ArrayList<>();
         if (section.isConfigurationSection("Actions")) {
             ConfigurationSection actionsSection = section.getConfigurationSection("Actions");
-            for (String key1 : actionsSection.getKeys(false)) {
-                ConfigurationSection actionSection = actionsSection.getConfigurationSection(key1);
+            for (String actionIdentifier : actionsSection.getKeys(false)) {
+                ConfigurationSection actionSection = actionsSection.getConfigurationSection(actionIdentifier);
                 String reference;
                 ActionType type = null;
                 if (actionSection != null) {
-                    String path = identifier + ".Actions." + key1;
+                    String path = identifier + ".Actions." + actionIdentifier;
                     if (!actionSection.isString("Action"))
                         Bukkit.getLogger().info("'Action' field is missing in 'Action' ConfigurationSection (" + path + ")");
                     if (!actionSection.isString("Action-Type"))
@@ -141,15 +142,15 @@ public class BlobMultiSlotable extends MultiSlotable {
                     } catch (IllegalArgumentException exception) {
                         throw new ConfigurationFieldException("Invalid 'ActionType' for " + identifier + ".Action.Action-Type");
                     }
-                    actions.add(new ActionMemo(reference, type));
-                } else if (actionsSection.isString(key1)) {
-                    reference = actionsSection.getString(key1);
-                    actions.add(new ActionMemo(reference, null));
+                    actions.add(new ActionMemo(reference, type, "MS-" + inventoryIdentifier + "-" + identifier + "." + actionIdentifier));
+                } else if (actionsSection.isString(actionIdentifier)) {
+                    reference = actionsSection.getString(actionIdentifier);
+                    actions.add(new ActionMemo(reference, null, "MS-" + inventoryIdentifier + "-" + identifier + "." + actionIdentifier));
                 }
             }
         }
         if (action != null)
-            actions.add(new ActionMemo(action, actionType));
+            actions.add(new ActionMemo(action, actionType, "MS-" + inventoryIdentifier + "-" + identifier + ".Action"));
         boolean cancelInteraction = section.getBoolean("Cancel-Interaction", true);
         return new BlobMultiSlotable(set, supplier, identifier, hasPermission, hasMoney,
                 priceCurrency, actions, hasTranslatableItem, isPermissionInverted,

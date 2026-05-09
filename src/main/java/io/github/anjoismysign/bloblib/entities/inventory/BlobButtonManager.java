@@ -31,11 +31,12 @@ public class BlobButtonManager extends ButtonManager<InventoryButton> {
      * @return a non-abstract ButtonManager.
      */
     public static BlobButtonManager fromConfigurationSection(@NotNull ConfigurationSection section,
-                                                             @NotNull String locale) {
+                                                             @NotNull String locale,
+                                                             @NotNull String inventoryIdentifier) {
         Objects.requireNonNull(section);
         Objects.requireNonNull(locale);
         BlobButtonManager blobButtonManager = new BlobButtonManager();
-        blobButtonManager.add(section, locale);
+        blobButtonManager.add(section, locale, inventoryIdentifier);
         return blobButtonManager;
     }
 
@@ -122,7 +123,7 @@ public class BlobButtonManager extends ButtonManager<InventoryButton> {
      * this is determined in case the being called after the first add call
      */
     public boolean add(ConfigurationSection section) {
-        return add(section, "en_us");
+        return add(section, "en_us", "");
     }
 
     /**
@@ -143,14 +144,15 @@ public class BlobButtonManager extends ButtonManager<InventoryButton> {
      * this is determined in case being called after the first adding call
      */
     public boolean add(ConfigurationSection section,
-                       String locale) {
+                       String locale,
+                       String inventoryIdentifier) {
         Set<String> set = section.getKeys(false);
         Uber<Boolean> madeChanges = new Uber<>(false);
         set.stream().filter(key -> !contains(key)).forEach(key -> {
             madeChanges.talk(true);
             BlobMultiSlotable slotable = BlobMultiSlotable
                     .read(section.getConfigurationSection(key), key,
-                            locale);
+                            locale, inventoryIdentifier);
             slotable.setInButtonManager(this);
         });
         return madeChanges.thanks();

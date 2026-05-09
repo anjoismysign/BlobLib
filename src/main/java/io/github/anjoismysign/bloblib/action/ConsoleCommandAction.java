@@ -14,14 +14,15 @@ import java.util.function.Function;
 public class ConsoleCommandAction<T extends Entity> extends Action<T> {
     private final String command;
 
-    public static <T extends Entity> ConsoleCommandAction<T> build(String command) {
+    public static <T extends Entity> ConsoleCommandAction<T> build(String command, String key) {
         Objects.requireNonNull(command);
-        return new <T>ConsoleCommandAction<T>(command);
+        return new ConsoleCommandAction<>(command, key);
     }
 
-    private ConsoleCommandAction(String command) {
+    private ConsoleCommandAction(String command, String key) {
         this.actionType = ActionType.CONSOLE_COMMAND;
         this.command = command;
+        this.key = key;
     }
 
     @Override
@@ -39,14 +40,14 @@ public class ConsoleCommandAction<T extends Entity> extends Action<T> {
     public <U extends Entity> ConsoleCommandAction<U> updateActor(U actor) {
         if (actor != null) {
             String updatedCommand = command.replace("%actor%", actor.getName());
-            ConsoleCommandAction<U> updatedAction = new ConsoleCommandAction<>(updatedCommand);
+            ConsoleCommandAction<U> updatedAction = new ConsoleCommandAction<>(updatedCommand, key);
             updatedAction.actor = actor;
             return updatedAction;
         } else {
             if (actionType != ActionType.NO_ACTOR) {
                 throw new IllegalArgumentException("Actor cannot be null");
             } else {
-                return new ConsoleCommandAction<>(command);
+                return new ConsoleCommandAction<>(command, key);
             }
         }
     }
@@ -67,7 +68,7 @@ public class ConsoleCommandAction<T extends Entity> extends Action<T> {
     @Override
     public ConsoleCommandAction<T> modify(Function<String, String> modifier) {
         String newCommand = modifier.apply(command);
-        return new ConsoleCommandAction<>(newCommand);
+        return new ConsoleCommandAction<>(newCommand, key);
     }
 
 

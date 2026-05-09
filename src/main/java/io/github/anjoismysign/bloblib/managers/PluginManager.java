@@ -116,7 +116,7 @@ public class PluginManager {
         blobLib().getTranslatablePositionableManager().unload(plugin);
         blobLib().getTranslatableAreaManager().unload(plugin);
         InventoryManager.unloadBlobPlugin(plugin);
-        ActionManager.unloadBlobPlugin(plugin);
+        blobLib().getActionManager().unload(plugin);
         MessageManager.unloadBlobPlugin(plugin);
         blobLib().getSoundManager().unload(plugin);
     }
@@ -132,7 +132,7 @@ public class PluginManager {
         blobLib().getTranslatableAreaManager().reload(plugin, director);
         blobLib().getSoundManager().reload(plugin, director);
         MessageManager.loadBlobPlugin(plugin, director);
-        ActionManager.loadBlobPlugin(plugin, director);
+        blobLib().getActionManager().reload(plugin, director);
         InventoryManager.loadBlobPlugin(plugin, director);
     }
 
