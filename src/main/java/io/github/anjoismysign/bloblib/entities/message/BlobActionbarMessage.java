@@ -30,6 +30,10 @@ public class BlobActionbarMessage extends AbstractMessage {
         this.actionbar = BlobTranslatableSnippet.PARSE(message, locale);
     }
 
+    public String getActionbar() {
+        return actionbar;
+    }
+
     /**
      * @param player The player to send the message to
      */

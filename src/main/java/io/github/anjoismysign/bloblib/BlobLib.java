@@ -3,6 +3,7 @@ package io.github.anjoismysign.bloblib;
 import io.github.anjoismysign.bloblib.action.Action;
 import io.github.anjoismysign.bloblib.command.BlobLibCommand;
 import io.github.anjoismysign.bloblib.disguises.DisguiseManager;
+import io.github.anjoismysign.bloblib.entities.BlobMessageIO;
 import io.github.anjoismysign.bloblib.entities.BlobSoundReader;
 import io.github.anjoismysign.bloblib.entities.DataAssetType;
 import io.github.anjoismysign.bloblib.entities.logger.BlobPluginLogger;
@@ -30,7 +31,6 @@ import io.github.anjoismysign.bloblib.managers.DropListenerManager;
 import io.github.anjoismysign.bloblib.managers.InventoryManager;
 import io.github.anjoismysign.bloblib.managers.InventoryTrackerManager;
 import io.github.anjoismysign.bloblib.managers.LocalizableDataAssetManager;
-import io.github.anjoismysign.bloblib.managers.MessageManager;
 import io.github.anjoismysign.bloblib.managers.PluginManager;
 import io.github.anjoismysign.bloblib.managers.SelPosListenerManager;
 import io.github.anjoismysign.bloblib.managers.SelectorListenerManager;
@@ -65,7 +65,7 @@ public class BlobLib extends JavaPlugin {
     private HologramManager hologramManager;
     private BlobLibFileManager fileManager;
     private InventoryManager inventoryManager;
-    private MessageManager messageManager;
+    private LocalizableDataAssetManager<BlobMessage> messageManager;
     private DataAssetManager<BlobSound> soundManager;
     private FillerManager fillerManager;
     private ChatListenerManager chatManager;
@@ -168,7 +168,11 @@ public class BlobLib extends JavaPlugin {
                         section -> section.isDouble("X") && section.isDouble("Y") && section.isDouble("Z"),
                         PositionableIO.INSTANCE::write);
         translatableAreaManager = TranslatableAreaManager.of();
-        messageManager = new MessageManager();
+        messageManager = LocalizableDataAssetManager.of(fileManager.getDirectory(DataAssetType.BLOB_MESSAGE),
+                (section, locale, key) -> BlobMessageIO.read(section, locale, key),
+        DataAssetType.BLOB_MESSAGE,
+        section -> section.isString("Type"),
+        null);
         actionManager = DataAssetManager.of(fileManager.getDirectory(DataAssetType.ACTION),
                 (section, key) -> Action.fromConfigurationSection(section),
                 DataAssetType.ACTION,
@@ -303,7 +307,7 @@ public class BlobLib extends JavaPlugin {
      *
      * @return The MessageManager
      */
-    public MessageManager getMessageManager() {
+    public LocalizableDataAssetManager<BlobMessage> getMessageManager() {
         return messageManager;
     }
 

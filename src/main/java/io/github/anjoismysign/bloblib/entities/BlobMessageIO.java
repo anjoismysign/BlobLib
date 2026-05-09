@@ -25,7 +25,7 @@ import java.util.Optional;
  * <p>
  * Recommended method is parse(ConfigurationSection section)
  */
-public class BlobMessageReader {
+public class BlobMessageIO {
     public static BlobMessage read(@NotNull ConfigurationSection section,
                                    @NotNull String key) {
         return read(section, "en_us", key);

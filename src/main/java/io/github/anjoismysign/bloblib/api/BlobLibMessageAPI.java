@@ -4,14 +4,13 @@ import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.entities.BlobMessageModder;
 import io.github.anjoismysign.bloblib.entities.message.BlobMessage;
 import io.github.anjoismysign.bloblib.managers.BlobLibConfigManager;
-import io.github.anjoismysign.bloblib.managers.MessageManager;
+import io.github.anjoismysign.bloblib.managers.LocalizableDataAssetManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -41,7 +40,7 @@ public class BlobLibMessageAPI {
     /**
      * @return The message manager
      */
-    public MessageManager getMessageManager() {
+    public LocalizableDataAssetManager<BlobMessage> getMessageManager() {
         return plugin.getMessageManager();
     }
 
@@ -85,7 +84,7 @@ public class BlobLibMessageAPI {
     @Nullable
     public BlobMessage getMessage(@NotNull String key) {
         Objects.requireNonNull(key);
-        return getMessageManager().getMessage(key);
+        return getMessageManager().getAsset(key);
     }
 
     /**
@@ -100,7 +99,7 @@ public class BlobLibMessageAPI {
     public BlobMessage getMessage(@NotNull String key, @NotNull String locale) {
         Objects.requireNonNull(key);
         Objects.requireNonNull(locale);
-        return getMessageManager().getMessage(key, locale);
+        return getMessageManager().getAsset(key, locale);
     }
 
     /**
@@ -114,7 +113,7 @@ public class BlobLibMessageAPI {
     @Nullable
     public BlobMessage getMessage(@NotNull String key, @NotNull Player player) {
         Objects.requireNonNull(player);
-        return getMessageManager().getMessage(key, player.getLocale());
+        return getMessage(key, player.getLocale());
     }
 
     /**
@@ -127,7 +126,7 @@ public class BlobLibMessageAPI {
     @Nullable
     public BlobMessage getMessage(@NotNull String key, @NotNull CommandSender sender) {
         Objects.requireNonNull(sender);
-        return getMessageManager().getMessage(key, sender instanceof Player ? ((Player) sender).getLocale() :
+        return getMessage(key, sender instanceof Player ? ((Player) sender).getLocale() :
                 BlobLibConfigManager.getInstance().getConsoleLocale());
     }
 
@@ -138,10 +137,11 @@ public class BlobLibMessageAPI {
      */
     @Nullable
     public BlobMessage getLocaleMessageOrDefault(String key, String locale) {
-        BlobMessage localeMessage = getMessageManager().getMessage(key, locale);
-        if (localeMessage != null)
+        BlobMessage localeMessage = getMessage(key, locale);
+        if (localeMessage != null) {
             return localeMessage;
-        return getMessageManager().getMessage(key);
+        }
+        return getMessage(key);
     }
 
     /**
@@ -158,30 +158,17 @@ public class BlobLibMessageAPI {
     }
 
     /**
-     * @param key    The key of the message
-     * @param player The player to send the message to
-     */
-    public void sendMessage(String key, Player player) {
-        getMessageManager().send(player, key);
-    }
-
-    /**
      * Gets all BlobMessages' reference from the default locale.
      *
      * @return The references
      */
     @NotNull
     public Set<String> getDefaultReferences() {
-        return getMessageManager().getDefaultReferences();
+        return getMessageManager().getDefault().keySet();
     }
 
     public Map<String, BlobMessage> getDefault() {
-        Set<String> references = getDefaultReferences();
-        Map<String, BlobMessage> messages = new HashMap<>();
-        references.forEach(key -> {
-            messages.put(key, getMessageManager().getMessage(key));
-        });
-        return messages;
+        return getMessageManager().getDefault();
     }
 
 }
