@@ -13,11 +13,15 @@ import io.papermc.paper.datacomponent.item.ItemAttributeModifiers;
 import io.papermc.paper.datacomponent.item.ResolvableProfile;
 import io.papermc.paper.datacomponent.item.Tool;
 import io.papermc.paper.datacomponent.item.TooltipDisplay;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
+import io.papermc.paper.registry.TypedKey;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
@@ -379,28 +383,38 @@ public final class ItemStackBuilder {
         });
     }
 
+    @SuppressWarnings("PatternValidation")
     public ItemStackBuilder deserializeAndEnchant(Collection<String> serializedEnchantments) {
-        HashMap<Enchantment, Integer> enchantments = new HashMap<>();
+        Map<Enchantment, Integer> enchantments = new HashMap<>();
         serializedEnchantments.forEach(element -> {
             String[] split = element.split(",");
             if (split.length != 2) {
                 Bukkit.getLogger().severe("Invalid element inside 'Enchantments': " + element);
                 return;
             }
-            String key = split[0];
+            String[] keyParts = split[0].contains(":") ? split[0].split(":", 2) : new String[]{"minecraft", split[0]};
+            String keyNamespace = keyParts[0];
+            String keyValue = keyParts[1];
             int level;
             try {
                 level = Integer.parseInt(split[1]);
             } catch ( NumberFormatException exception ) {
-                Bukkit.getLogger().severe("Invalid level for " + key + " enchantment: " + split[1]);
+                Bukkit.getLogger().severe("Invalid level for " + keyNamespace + ":" + keyValue + " enchantment: " + split[1]);
                 return;
             }
-            Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(key));
-            if (enchantment != null) {
-                enchantments.put(enchantment, level);
-            } else {
-                Bukkit.getLogger().severe("Enchantment " + key + " is not a valid enchantment. Skipping.");
+            final Registry<Enchantment> enchantmentRegistry = RegistryAccess
+                    .registryAccess()
+                    .getRegistry(RegistryKey.ENCHANTMENT);
+
+            final Enchantment enchantment;
+            try {
+                enchantment = enchantmentRegistry.getOrThrow(TypedKey.create(
+                        RegistryKey.ENCHANTMENT, Key.key(keyNamespace, keyValue)));
+            } catch ( Exception exception ) {
+                Bukkit.getLogger().severe("Unknown enchantment key: " + keyNamespace + ":" + keyValue);
+                return;
             }
+            enchantments.put(enchantment, level);
         });
         return enchant(enchantments);
     }
