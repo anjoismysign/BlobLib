@@ -354,14 +354,10 @@ public class WalletOwnerManager<T extends WalletOwner> extends Manager implement
      */
     @Nullable
     public CurrencyEconomy getImplementation(String key) {
-        CurrencyEconomy economy = implementations.get(key);
-        if (economy == null) {
-            getPlugin().getAnjoLogger().singleError("Implementation doesn't exist. Currently available " +
-                    "implementations: " + Arrays.toString(implementations.values().stream()
-                    .map(CurrencyEconomy::getName)
-                    .toArray()));
-        }
-        return economy;
+        return Objects.requireNonNull(implementations.get(key), "Implementation doesn't exist ("+key+"). Currently available " +
+                "implementations: " + Arrays.toString(implementations.values().stream()
+                .map(CurrencyEconomy::getName)
+                .toArray()));
     }
 
     public Collection<IdentityEconomy> retrieveImplementations() {
