@@ -206,8 +206,10 @@ public final class AccountCruder<R extends AccountCrudable<T>, T extends Crudabl
                 }
                 accountCruder.update(account);
             }
-        }.runTaskTimerAsynchronously(plugin, 20 * 60 * 5,
-                20 * 60 * 5);
+        }.runTaskTimerAsynchronously(
+                plugin,
+                autoSaveIntervalTicks + autoSaveIntervalJitter,
+                autoSaveIntervalTicks);
     }
 
     @Override
@@ -223,8 +225,11 @@ public final class AccountCruder<R extends AccountCrudable<T>, T extends Crudabl
             }
             @Nullable var data = this.accounts.get(uniqueId);
             if (data == null) {
+                boolean isNew = !accountCruder.exists(idToString);
                 var account = accountCruder.readOrGenerate(idToString);
-                accountCruder.update(account);
+                if (isNew) {
+                    accountCruder.update(account);
+                }
                 data = new Data<>(account);
                 @Nullable R finalAccount = account;
                 @Nullable Data<R, T> finalData = data;

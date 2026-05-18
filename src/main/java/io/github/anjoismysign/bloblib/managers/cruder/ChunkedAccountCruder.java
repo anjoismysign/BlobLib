@@ -215,8 +215,10 @@ public final class ChunkedAccountCruder<T extends Crudable> extends ProfiledCrud
                     profileCruder.update(currentProfile);
                 }
             }
-        }.runTaskTimerAsynchronously(plugin, 20 * 60 * 5,
-                20 * 60 * 5);
+        }.runTaskTimerAsynchronously(
+                plugin,
+                autoSaveIntervalTicks + autoSaveIntervalJitter,
+                autoSaveIntervalTicks);
     }
 
     @Override
@@ -232,8 +234,12 @@ public final class ChunkedAccountCruder<T extends Crudable> extends ProfiledCrud
             }
             @Nullable Data<T> data = this.data.get(uniqueId);
             if (data == null) {
-                data = new Data<>(accountCruder.readOrGenerate(idToString));
-                accountCruder.update(data.account);
+                boolean isNew = !accountCruder.exists(idToString);
+                var account = accountCruder.readOrGenerate(idToString);
+                data = new Data<>(account);
+                if (isNew) {
+                    accountCruder.update(account);
+                }
                 @Nullable Data<T> finalData = data;
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     loading.remove(uniqueId);

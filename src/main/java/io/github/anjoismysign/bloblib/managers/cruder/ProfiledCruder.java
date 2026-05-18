@@ -33,9 +33,13 @@ public abstract class ProfiledCruder<T extends Crudable> implements Listener {
     final @NotNull Set<UUID> saving = Sets.newConcurrentHashSet();
     final @NotNull Map<String, PlayerDecorator> playerDecorators = Maps.newConcurrentMap();
 
+    final long autoSaveIntervalTicks = 20 * 60 * 5;
+    final long autoSaveIntervalJitter;
+
     public ProfiledCruder(@NotNull JavaPlugin plugin){
         this.plugin = plugin;
         Bukkit.getPluginManager().registerEvents(this, plugin);
+        autoSaveIntervalJitter = Math.abs(plugin.getName().hashCode() % 200L);
     }
 
     @EventHandler
