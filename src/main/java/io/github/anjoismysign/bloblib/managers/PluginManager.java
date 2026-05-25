@@ -119,10 +119,11 @@ public class PluginManager {
         blobLib().getActionManager().unload(plugin);
         blobLib().getMessageManager().unload(plugin);
         blobLib().getSoundManager().unload(plugin);
+        blobLib().getLootTableManager().unload(plugin);
     }
 
     private static void loadAssets(@NotNull BlobPlugin plugin,
-                                   @NotNull IManagerDirector director) {
+                                    @NotNull IManagerDirector director) {
         Objects.requireNonNull(director,
                 plugin.getName() + "'s ManagerDirector is null!");
         TranslatableManager.loadBlobPlugin(plugin, director);
@@ -133,6 +134,7 @@ public class PluginManager {
         blobLib().getSoundManager().reload(plugin, director);
         blobLib().getMessageManager().reload(plugin, director);
         blobLib().getActionManager().reload(plugin, director);
+        blobLib().getLootTableManager().reload(plugin, director);
         InventoryManager.loadBlobPlugin(plugin, director);
     }
 

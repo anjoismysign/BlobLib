@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.api.BlobLibInventoryAPI;
+import io.github.anjoismysign.bloblib.api.BlobLibLootAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibSoundAPI;
 import io.github.anjoismysign.bloblib.component.textbubble.TextBubbleComponent;
@@ -15,9 +16,11 @@ import io.github.anjoismysign.bloblib.entities.message.BlobMessage;
 import io.github.anjoismysign.bloblib.entities.message.BlobSound;
 import io.github.anjoismysign.bloblib.entities.positionable.Positionable;
 import io.github.anjoismysign.bloblib.entities.positionable.PositionableIO;
+import io.github.anjoismysign.bloblib.entities.loot.LootTable;
 import io.github.anjoismysign.bloblib.entities.translatable.TranslatableItem;
 import io.github.anjoismysign.bloblib.entities.translatable.TranslatablePositionable;
 import io.github.anjoismysign.bloblib.itemapi.ItemMaterial;
+import io.github.anjoismysign.bloblib.managers.LootTableManager;
 import io.github.anjoismysign.bloblib.itemapi.ItemMaterialManager;
 import io.github.anjoismysign.bloblib.managers.BlobPlugin;
 import io.github.anjoismysign.bloblib.managers.PluginManager;
@@ -34,6 +37,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,6 +68,7 @@ public enum BlobLibCommand {
         translatableitem(bloblib);
         translatablepositionable(bloblib);
         translatablearea(bloblib);
+        loot(bloblib);
         blobinventory(bloblib);
         closeinventory(bloblib);
         blobmessage(bloblib);
@@ -619,6 +624,100 @@ public enum BlobLibCommand {
             Location playerLocation = player.getLocation();
             player.teleport(new Location(player.getWorld(), x, y, z, playerLocation.getYaw(), playerLocation.getPitch()));
         }));
+    }
+
+    public void loot(@NotNull Command bloblib) {
+        Command command = bloblib.child("loot");
+        Command spawn = command.child("spawn");
+        var playerTarget = BukkitCommandTarget.ONLINE_PLAYERS();
+        var lootApi = BlobLibLootAPI.getInstance();
+        CommandTarget<LootTable> lootTarget = CommandTargetBuilder.fromMap(lootApi::getLootTables);
+        CommandTarget<String> tildeCoordinate = new CommandTarget<>() {
+            @Override
+            public List<String> get() {
+                return List.of("~");
+            }
+
+            @Override
+            public @Nullable String parse(String s) {
+                return s;
+            }
+        };
+        spawn.setParameters(tildeCoordinate, tildeCoordinate, tildeCoordinate, lootTarget, playerTarget);
+        spawn.onExecute(((permissionMessenger, args) -> {
+            CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
+            int length = args.length;
+            if (length < 4){
+                return;
+            }
+            LootTable lootTable = lootTarget.parse(args[3]);
+            if (lootTable == null) {
+                BlobMessage.by("Loot.Not-Found")
+                        .modder()
+                        .replace("%key%", args[3])
+                        .get()
+                        .toCommandSender(sender);
+                return;
+            }
+            Player referencePlayer = null;
+            if (length >= 5) {
+                referencePlayer = playerTarget.parse(args[4]);
+                if (referencePlayer == null) {
+                    BlobLibMessageAPI.getInstance()
+                            .getMessage("Player.Not-Found", sender)
+                            .toCommandSender(sender);
+                    return;
+                }
+            } else if (sender instanceof Player player) {
+                referencePlayer = player;
+            }
+            Location origin;
+            if (referencePlayer != null) {
+                origin = referencePlayer.getLocation();
+            } else {
+                BlobLibMessageAPI.getInstance()
+                        .getMessage("System.Console-Not-Allowed-Command", sender)
+                        .toCommandSender(sender);
+                return;
+            }
+            Location location = parseTildeLocation(args[0], args[1], args[2], origin);
+            lootApi.spawn(location, lootTable.identifier());
+            BlobMessage.by("Loot.Spawned")
+                    .modder()
+                    .replace("%lootTable%", lootTable.identifier())
+                    .replace("%location%", vectorToString(location.toVector()))
+                    .get()
+                    .toCommandSender(sender);
+        }));
+    }
+
+    private String vectorToString(Vector vector) {
+        return vector.getBlockX() + "," + vector.getBlockY() + "," + vector.getBlockZ();
+    }
+
+    private Location parseTildeLocation(String xStr, String yStr, String zStr, Location origin) {
+        double x = parseTildeCoordinate(xStr, origin.getX());
+        double y = parseTildeCoordinate(yStr, origin.getY());
+        double z = parseTildeCoordinate(zStr, origin.getZ());
+        return new Location(origin.getWorld(), x, y, z, origin.getYaw(), origin.getPitch());
+    }
+
+    private double parseTildeCoordinate(String input, double origin) {
+        if (input.startsWith("~")) {
+            String offset = input.substring(1);
+            if (offset.isEmpty())
+                return origin;
+            try {
+                return origin + Double.parseDouble(offset);
+            } catch (NumberFormatException e) {
+                return origin;
+            }
+        }
+        try {
+            return Double.parseDouble(input);
+        } catch (NumberFormatException e) {
+            return origin;
+        }
     }
 
     private enum DownloadError {

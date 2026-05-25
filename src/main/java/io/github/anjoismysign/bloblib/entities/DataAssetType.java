@@ -38,7 +38,9 @@ public enum DataAssetType {
     TRANSLATABLE_POSITIONABLE("translatablePositionables", File.separator + "TranslatablePositionable", "_translatable_positionables.yml",
             (plugin, files) -> BlobLib.getInstance().getTranslatablePositionableManager().continueLoadingAssets(plugin, true, files.toArray(new File[0]))),
     TRANSLATABLE_AREA("translatableAreas", File.separator + "TranslatableArea", "_translatable_areas.yml",
-            (plugin, files) -> BlobLib.getInstance().getTranslatableAreaManager().continueLoadingAssets(plugin, true, files.toArray(new File[0])));
+            (plugin, files) -> BlobLib.getInstance().getTranslatableAreaManager().continueLoadingAssets(plugin, true, files.toArray(new File[0]))),
+    LOOT_TABLE("lootTables", File.separator + "LootTable", "_loot_tables.json",
+            (plugin, files) -> BlobLib.getInstance().getLootTableManager().continueLoadingAssets(plugin, true, files.toArray(new File[0])));
 
     private static final Map<String, DataAssetType> byEqualsIgnoreObjectName = new HashMap<>();
 

@@ -94,7 +94,7 @@ public class TranslatableAreaWand implements Listener {
         }
     }
 
-    private final String toString(Block block) {
+    private String toString(Block block) {
         Vector vector = block.getLocation().toVector();
         return vector.getBlockX() + "," + vector.getBlockY() + "," + vector.getBlockZ();
     }

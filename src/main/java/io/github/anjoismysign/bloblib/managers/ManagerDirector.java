@@ -592,6 +592,14 @@ public abstract class ManagerDirector implements IManagerDirector {
         return fileNames;
     }
 
+    private String[] addJson(String... fileNames) {
+        for (int i = 0; i < fileNames.length; i++) {
+            if (!fileNames[i].endsWith(".json"))
+                fileNames[i] = fileNames[i] + ".json";
+        }
+        return fileNames;
+    }
+
     private File[] freshFiles(boolean debug, File path, String... fileNames) {
         List<File> files = new ArrayList<>();
         for (String fileName : fileNames) {
@@ -889,6 +897,33 @@ public abstract class ManagerDirector implements IManagerDirector {
      */
     public ManagerDirector registerTranslatableArea(String... fileNames) {
         return registerTranslatableArea(false, fileNames);
+    }
+
+    /**
+     * Will detach all LootTables provided.
+     *
+     * @param debug     Whether to print debug messages
+     * @param fileNames The names of the files to detach. Needs to include the extension.
+     * @return The ManagerDirector instance for method chaining
+     */
+    public ManagerDirector registerLootTable(boolean debug, String... fileNames) {
+        String[] json = addJson(fileNames);
+        File[] freshFiles = freshFiles(debug, getRealFileManager().getDirectory(DataAssetType.LOOT_TABLE), json);
+        BlobLib.getInstance().getLootTableManager().continueLoadingAssets(plugin, true, freshFiles);
+        if (debug) {
+            getPlugin().getAnjoLogger().debug(" loot table asset " + Arrays.toString(fileNames) + " successfully registered");
+        }
+        return this;
+    }
+
+    /**
+     * Will detach all LootTables provided.
+     *
+     * @param fileNames The names of the files to detach. Needs to include the extension.
+     * @return The ManagerDirector instance for method chaining
+     */
+    public ManagerDirector registerLootTable(String... fileNames) {
+        return registerLootTable(false, fileNames);
     }
 
     /**

@@ -11,6 +11,7 @@ import io.github.anjoismysign.bloblib.entities.message.BlobMessage;
 import io.github.anjoismysign.bloblib.entities.message.BlobSound;
 import io.github.anjoismysign.bloblib.entities.positionable.Positionable;
 import io.github.anjoismysign.bloblib.entities.positionable.PositionableIO;
+import io.github.anjoismysign.bloblib.entities.loot.LootTable;
 import io.github.anjoismysign.bloblib.entities.tag.TagSet;
 import io.github.anjoismysign.bloblib.entities.tag.TagSetIO;
 import io.github.anjoismysign.bloblib.entities.translatable.BlobTranslatablePositionable;
@@ -28,6 +29,7 @@ import io.github.anjoismysign.bloblib.managers.ChatListenerManager;
 import io.github.anjoismysign.bloblib.managers.ColorManager;
 import io.github.anjoismysign.bloblib.managers.DataAssetManager;
 import io.github.anjoismysign.bloblib.managers.DropListenerManager;
+import io.github.anjoismysign.bloblib.managers.LootTableManager;
 import io.github.anjoismysign.bloblib.managers.InventoryManager;
 import io.github.anjoismysign.bloblib.managers.InventoryTrackerManager;
 import io.github.anjoismysign.bloblib.managers.LocalizableDataAssetManager;
@@ -84,6 +86,7 @@ public class BlobLib extends JavaPlugin {
     private LocalizableDataAssetManager<TranslatablePositionable> translatablePositionableManager;
     private TranslatableAreaManager translatableAreaManager;
     private DataAssetManager<TagSet> tagSetManager;
+    private LootTableManager lootTableManager;
     private MinecraftVersion running;
     private SoulAPI soulAPI;
     private UniqueAPI uniqueAPI;
@@ -149,6 +152,7 @@ public class BlobLib extends JavaPlugin {
                 section -> section.isList("Inclusions") ||
                         !section.getStringList("Include-Set").isEmpty(),
                 TagSetIO::WRITE);
+        lootTableManager = new LootTableManager(this);
         translatableItemManager = LocalizableDataAssetManager
                 .of(fileManager.getDirectory(DataAssetType.TRANSLATABLE_ITEM),
                         TranslatableReader::ITEM,
@@ -228,6 +232,7 @@ public class BlobLib extends JavaPlugin {
         translatableAreaManager.reload();
         messageManager.reload();
         actionManager.reload();
+        lootTableManager.reload();
         inventoryManager.reload();
         getPluginManager().reload();
 
@@ -300,6 +305,10 @@ public class BlobLib extends JavaPlugin {
 
     public DataAssetManager<TagSet> getTagSetManager() {
         return tagSetManager;
+    }
+
+    public LootTableManager getLootTableManager() {
+        return lootTableManager;
     }
 
     /**
