@@ -42,6 +42,14 @@ public class AttributeModifierBean {
                 return attributes;
         }
 
+        public static Map<String, AttributeModifierBean> serializeAttributes(@NotNull Map<Attribute, AttributeModifier> runtimeAttributes){
+                Map<String, AttributeModifierBean> serialized = new HashMap<>();
+                runtimeAttributes.forEach((attribute, modifier)->{
+                        serialized.put(attribute.getKey().toString(), ofAttributeModifier(modifier));
+                });
+                return serialized;
+        }
+
         public AttributeModifier toAttributeModifier(){
                 Key key = Key.key(this.key);
                 NamespacedKey namespacedKey = new NamespacedKey(key.namespace(), key.value());
