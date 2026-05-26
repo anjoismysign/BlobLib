@@ -2,6 +2,7 @@ package io.github.anjoismysign.bloblib;
 
 import io.github.anjoismysign.bloblib.api.BlobLibActionAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibInventoryAPI;
+import io.github.anjoismysign.bloblib.api.BlobLibLootAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibSoundAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibTagAPI;
@@ -20,6 +21,7 @@ public class BlobLibAssetAPI {
     private final BlobLibMessageAPI messageAPI;
     private final BlobLibTranslatableAPI translatableAPI;
     private final ItemMaterialManager materialManager;
+    private final BlobLibLootAPI lootAPI;
 
     public static BlobLibAssetAPI getInstance(BlobLib plugin) {
         if (instance == null) {
@@ -43,6 +45,7 @@ public class BlobLibAssetAPI {
         this.translatableAPI = BlobLibTranslatableAPI.getInstance(plugin);
         this.materialManager = new ItemMaterialManager() {
         };
+        this.lootAPI = BlobLibLootAPI.getInstance(plugin);
     }
 
     public BlobLibSoundAPI getSoundAPI() {
@@ -73,4 +76,7 @@ public class BlobLibAssetAPI {
         return materialManager;
     }
 
+    public BlobLibLootAPI getLootAPI() {
+        return lootAPI;
+    }
 }

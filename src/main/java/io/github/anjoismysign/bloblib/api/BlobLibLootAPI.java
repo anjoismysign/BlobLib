@@ -1,24 +1,16 @@
 package io.github.anjoismysign.bloblib.api;
 
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.entities.BlobMessageModder;
 import io.github.anjoismysign.bloblib.entities.loot.LootTable;
-import io.github.anjoismysign.bloblib.entities.message.BlobMessage;
-import io.github.anjoismysign.bloblib.managers.BlobLibConfigManager;
-import io.github.anjoismysign.bloblib.managers.LocalizableDataAssetManager;
 import io.github.anjoismysign.bloblib.managers.LootTableManager;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Consumer;
 
 public class BlobLibLootAPI {
     private static BlobLibLootAPI instance;
@@ -76,6 +68,28 @@ public class BlobLibLootAPI {
      */
     public boolean giveToInventory(@NotNull Inventory inventory, @NotNull String identifier, @Nullable String locale){
         return getLootTableManager().giveToInventory(inventory, identifier, locale);
+    }
+
+    /**
+     * Generates loot from the specified loot table without spawning it
+     * into the world or inserting it into an inventory.
+     * <p>
+     * Each loot pool is rolled according to its configured roll count,
+     * weighted entries are selected, functions are applied, and optional
+     * localization is performed before the generated items are returned.
+     * <p>
+     * This method is useful for previews, testing, simulations,
+     * or custom distribution handling.
+     *
+     * @param identifier the identifier of the loot table to generate loot from
+     * @param locale the locale used to localize translatable items,
+     *               or {@code null} to skip localization
+     * @return a collection containing all generated {@link ItemStack}s;
+     *         returns an empty collection if the loot table does not exist
+     */
+    public Collection<ItemStack> generateLoot(@NotNull String identifier,
+                                              @Nullable String locale) {
+        return getLootTableManager().generateLoot(identifier,locale);
     }
 
 }

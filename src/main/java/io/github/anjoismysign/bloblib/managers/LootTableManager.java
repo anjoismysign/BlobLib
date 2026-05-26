@@ -3,9 +3,7 @@ package io.github.anjoismysign.bloblib.managers;
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.entities.DataAssetType;
 import io.github.anjoismysign.bloblib.entities.loot.LootEntry;
-import io.github.anjoismysign.bloblib.entities.loot.LootEntryType;
 import io.github.anjoismysign.bloblib.entities.loot.LootFunction;
-import io.github.anjoismysign.bloblib.entities.loot.LootFunctionType;
 import io.github.anjoismysign.bloblib.entities.loot.LootPool;
 import io.github.anjoismysign.bloblib.entities.loot.LootTable;
 import io.github.anjoismysign.bloblib.entities.loot.LootTableIO;
@@ -14,11 +12,8 @@ import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.entity.Item;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ItemType;
 import org.jetbrains.annotations.NotNull;
@@ -29,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -36,7 +32,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class LootTableManager {
 
@@ -95,7 +90,40 @@ public class LootTableManager {
         return Map.copyOf(lootTables);
     }
 
-    public boolean giveToInventory(@NotNull Inventory inventory, @NotNull String identifier, @Nullable String locale){
+    public Collection<ItemStack> generateLoot(@NotNull String identifier,
+                                              @Nullable String locale){
+        Objects.requireNonNull(identifier);
+        LootTable table = lootTables.get(identifier);
+        if (table == null) {
+            main.getLogger().info("LootTable not found: '" + identifier + "'");
+            return List.of();
+        }
+        List<ItemStack> list = new ArrayList<>();
+        for (LootPool pool : table.pools()) {
+            for (int i = 0; i < pool.rolls(); i++) {
+                LootEntry entry = pickEntry(pool);
+                if (entry == null)
+                    continue;
+                ItemStack itemStack = resolveEntry(entry);
+                if (itemStack == null) {
+                    continue;
+                }
+                itemStack = applyFunctions(itemStack, entry.functions());
+                if (itemStack == null){
+                    continue;
+                }
+                if (locale != null) {
+                    TranslatableItem.localize(itemStack, locale);
+                }
+                list.add(itemStack);
+            }
+        }
+        return list;
+    }
+
+    public boolean giveToInventory(@NotNull Inventory inventory,
+                                   @NotNull String identifier,
+                                   @Nullable String locale){
         Objects.requireNonNull(inventory);
         Objects.requireNonNull(identifier);
         LootTable table = lootTables.get(identifier);
@@ -125,7 +153,8 @@ public class LootTableManager {
         return true;
     }
 
-    public boolean spawn(@NotNull Location location, @NotNull String identifier) {
+    public boolean spawn(@NotNull Location location,
+                         @NotNull String identifier) {
         Objects.requireNonNull(location);
         Objects.requireNonNull(identifier);
         LootTable table = lootTables.get(identifier);
