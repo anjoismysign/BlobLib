@@ -13,6 +13,15 @@ public class AttributeModifierBean {
         private double amount;
         private String equipmentSlotGroup;
 
+        public static AttributeModifierBean ofAttributeModifier(AttributeModifier attributeModifier){
+                AttributeModifierBean bean = new AttributeModifierBean();
+                bean.setKey(attributeModifier.getKey().toString());
+                bean.setOperation(attributeModifier.getOperation());
+                bean.setAmount(attributeModifier.getAmount());
+                bean.setEquipmentSlotGroup(attributeModifier.getSlotGroup().toString());
+                return bean;
+        }
+
         public AttributeModifier toAttributeModifier(){
                 Key key = Key.key(this.key);
                 NamespacedKey namespacedKey = new NamespacedKey(key.namespace(), key.value());
