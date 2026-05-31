@@ -1,0 +1,83 @@
+# =============================================================================
+# BlobSound Example — Simple sound definitions
+# File: myplugin_sounds.yml
+# Place in: plugins/BlobLib/BlobSound/
+# =============================================================================
+#
+# Each top-level key becomes part of the sound's dot-separated identifier.
+# For example, "UI.Click" below is referenced as "UI.Click" in your code.
+#
+# Required fields: Sound, Volume, Pitch
+# Optional fields: Category, Audience, Seed
+#
+# For a list of all supported fields, see the BlobSound documentation:
+#   https://github.com/anjoismysign/BlobLib/docs/blob-sound.md
+
+# ---- UI sounds ----
+
+UI:
+  Click:
+    Sound: ui.button.click
+    Volume: 1.0
+    Pitch: 1.0
+    Audience: PLAYER
+
+  Success:
+    Sound: block.note_block.pling
+    Volume: 1.0
+    Pitch: 2.0
+    Audience: PLAYER
+
+  Error:
+    Sound: block.note_block.bass
+    Volume: 1.0
+    Pitch: 0.5
+    Audience: PLAYER
+
+  Back:
+    Sound: ui.button.click
+    Volume: 0.7
+    Pitch: 0.8
+    Audience: PLAYER
+
+# ---- Item sounds ----
+
+Item:
+  Pickup:
+    Sound: entity.item.pickup
+    Volume: 0.5
+    Pitch: 1.0
+    Audience: PLAYER
+
+  Break:
+    Sound: entity.item.break
+    Volume: 0.8
+    Pitch: 1.0
+    Audience: PLAYER
+
+  Throw:
+    Sound: entity.snowball.throw
+    Volume: 0.6
+    Pitch: 1.2
+    Audience: WORLD
+
+# ---- Player sounds ----
+
+Player:
+  Hurt:
+    Sound: entity.player.hurt
+    Volume: 1.0
+    Pitch: 1.0
+    Audience: WORLD
+
+  Level-Up:
+    Sound: entity.player.levelup
+    Volume: 1.0
+    Pitch: 1.0
+    Audience: PLAYER
+
+  Death:
+    Sound: entity.player.death
+    Volume: 1.0
+    Pitch: 1.0
+    Audience: WORLD

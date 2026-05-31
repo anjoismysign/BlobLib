@@ -1,0 +1,108 @@
+# =============================================================================
+# BlobSound Example — RPG-style plugin integration
+# File: myrpg_sounds.yml
+# Place in: plugins/BlobLib/BlobSound/
+# =============================================================================
+#
+# These sounds might be referenced by BlobMessage definitions or InventoryButton
+# actions within the same plugin. For example, a BlobMessage can reference
+# "MyRPG.Quest.Start" as its BlobSound field.
+#
+# For a list of all supported fields, see the BlobSound documentation:
+#   https://github.com/anjoismysign/BlobLib/docs/blob-sound.md
+
+MyRPG:
+  # Quest sounds
+  Quest:
+    Start:
+      Sound: entity.experience_orb.pickup
+      Volume: 0.8
+      Pitch: 1.5
+      Audience: PLAYER
+
+    Complete:
+      Sound: entity.player.levelup
+      Volume: 1.0
+      Pitch: 1.2
+      Category: PLAYERS
+      Audience: WORLD
+
+    Fail:
+      Sound: entity.item.break
+      Volume: 0.7
+      Pitch: 0.5
+      Audience: PLAYER
+
+    Update:
+      Sound: block.note_block.bell
+      Volume: 0.6
+      Pitch: 1.25
+      Audience: PLAYER
+
+  # Level-up and progression
+  Level-Up:
+    Sound: ui.toast.challenge_complete
+    Volume: 1.0
+    Pitch: 1.5
+    Audience: PLAYER
+
+  Skill-Up:
+    Sound: entity.firework_rocket.twinkle
+    Volume: 1.0
+    Pitch: 1.0
+    Audience: PLAYER
+
+  # Shop and economy
+  Shop:
+    Open:
+      Sound: block.chest.open
+      Volume: 0.8
+      Pitch: 1.0
+      Audience: PLAYER
+
+    Close:
+      Sound: block.chest.close
+      Volume: 0.8
+      Pitch: 1.0
+      Audience: PLAYER
+
+    Purchase:
+      Sound: entity.experience_orb.pickup
+      Volume: 0.7
+      Pitch: 2.0
+      Category: NEUTRAL
+      Audience: PLAYER
+
+    Insufficient-Funds:
+      Sound: block.note_block.bass
+      Volume: 1.0
+      Pitch: 0.5
+      Audience: PLAYER
+
+  # Teleportation and travel
+  Teleport:
+    Start:
+      Sound: entity.enderman.teleport
+      Volume: 1.0
+      Pitch: 1.0
+      Audience: WORLD
+
+    Arrive:
+      Sound: entity.enderman.teleport
+      Volume: 1.0
+      Pitch: 1.5
+      Audience: WORLD
+
+  # Environmental and discovery
+  Discovery:
+    Sound: block.amethyst_block.resonate
+    Volume: 0.8
+    Pitch: 1.0
+    Category: BLOCKS
+    Audience: WORLD
+
+  Rare-Drop:
+    Sound: entity.firework_rocket.blast
+    Volume: 0.8
+    Pitch: 1.0
+    Audience: WORLD

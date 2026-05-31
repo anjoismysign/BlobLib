@@ -249,6 +249,16 @@ Plays a BlobSound to yourself or to the specified online player. The sound's `au
 
 ---
 
+## Examples
+
+See the [examples](examples/) directory for ready-to-use YAML files:
+
+- [`simple_definitions.yml`](examples/blobsound_simple_definitions.yml) — basic sound definitions with `PLAYER` and `WORLD` audience variants
+- [`themed_categories.yml`](examples/blobsound_themed_categories.yml) — sounds grouped by game mechanics (Combat, Weather, Ambience, Boss) with `SoundCategory` and `Seed` usage
+- [`plugin_integration.yml`](examples/blobsound_plugin_integration.yml) — RPG-style plugin example with Quest, Shop, Level-Up, and Teleport sound families
+
+---
+
 ## Loading Order
 
 1. BlobLib loads its own `BlobSound/` directory on startup (including `bloblib_sounds.yml`).

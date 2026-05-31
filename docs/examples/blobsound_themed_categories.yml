@@ -1,0 +1,115 @@
+# =============================================================================
+# BlobSound Example — Themed categories with SoundCategory and WORLD audience
+# File: mygame_sounds.yml
+# Place in: plugins/BlobLib/BlobSound/
+# =============================================================================
+#
+# This example demonstrates grouping sounds by game mechanic themes and
+# using the optional Category and Seed fields.
+#
+# For a list of all supported fields, see the BlobSound documentation:
+#   https://github.com/anjoismysign/BlobLib/docs/blob-sound.md
+
+# ---- Combat sounds ----
+
+Combat:
+  Hit:
+    Sound: entity.player.attack.knockback
+    Volume: 1.0
+    Pitch: 1.0
+    Category: PLAYERS
+    Audience: WORLD
+
+  Critical-Hit:
+    Sound: entity.player.attack.critical
+    Volume: 1.0
+    Pitch: 1.2
+    Category: PLAYERS
+    Audience: WORLD
+
+  Kill:
+    Sound: entity.lightning_bolt.thunder
+    Volume: 1.0
+    Pitch: 0.8
+    Category: HOSTILE
+    Audience: WORLD
+
+  Fireball-Shoot:
+    Sound: entity.ender_dragon.shoot
+    Volume: 1.0
+    Pitch: 1.0
+    Category: HOSTILE
+    Audience: WORLD
+
+  Block:
+    Sound: entity.shield.block
+    Volume: 1.0
+    Pitch: 1.0
+    Category: PLAYERS
+    Audience: PLAYER
+
+# ---- Weather / Environment sounds ----
+
+Weather:
+  Rain-Start:
+    Sound: weather.rain
+    Volume: 1.0
+    Pitch: 1.0
+    Category: WEATHER
+    Audience: WORLD
+
+  Thunder:
+    Sound: entity.lightning_bolt.thunder
+    Volume: 1.0
+    Pitch: 0.7
+    Category: WEATHER
+    Audience: WORLD
+
+# ---- Music / Ambience sounds ----
+
+Ambience:
+  Day:
+    Sound: music.creative
+    Volume: 0.5
+    Pitch: 1.0
+    Category: MUSIC
+    Audience: WORLD
+
+  Night:
+    Sound: music_dragon
+    Volume: 0.3
+    Pitch: 0.9
+    Category: MUSIC
+    Audience: WORLD
+
+  Cave:
+    Sound: ambient.cave
+    Volume: 0.6
+    Pitch: 1.0
+    Category: AMBIENT
+    Audience: WORLD
+
+# ---- Boss sounds (using Seed for variation) ----
+
+Boss:
+  Spawn:
+    Sound: entity.wither.spawn
+    Volume: 2.0
+    Pitch: 1.0
+    Category: HOSTILE
+    Audience: WORLD
+
+  Death:
+    Sound: entity.wither.death
+    Volume: 2.0
+    Pitch: 0.7
+    Category: HOSTILE
+    Audience: WORLD
+
+  Hurt:
+    Sound: entity.wither.hurt
+    Volume: 2.0
+    Pitch: 1.0
+    Category: HOSTILE
+    Audience: WORLD
+    Seed: 42
