@@ -1,0 +1,65 @@
+# ==================================
+# TagSet — Referencing & Composition
+# ==================================
+# TagSets can reference each other via Include-Tags and Exclude-Tags.
+# Include-Tags: merges the referenced TagSet's inclusions into this set.
+# Exclude-Tags: adds the referenced TagSet's inclusions to THIS set's exclusions.
+#
+# File: tagset_referencing.yml
+
+# --- Base tag definitions ---
+
+explosive:
+  Inclusions:
+    - 'tag_explosive'
+    - 'tag_splash'
+
+poison:
+  Inclusions:
+    - 'tag_poison'
+    - 'tag_dot'
+
+healing:
+  Inclusions:
+    - 'tag_heal'
+    - 'tag_regen'
+
+# --- Composed TagSets ---
+
+# "dangerous_potions" includes everything from both explosive and poison,
+# but excludes everything from healing.
+dangerous_potions:
+  Include-Tags:
+    - 'explosive'
+    - 'poison'
+  Exclude-Tags:
+    - 'healing'
+
+# Result: {tag_explosive, tag_splash, tag_poison, tag_dot}
+# (healing's inclusions {tag_heal, tag_regen} are excluded)
+
+# "all_potions" includes ALL base tags by referencing them.
+# Exclusions can remove specific tags.
+all_potions:
+  Include-Tags:
+    - 'explosive'
+    - 'poison'
+    - 'healing'
+  Exclusions:
+    - 'tag_dot'            # directly excluded
+
+# Result: {tag_explosive, tag_splash, tag_poison, tag_heal, tag_regen}
+# (tag_dot is removed by direct exclusion)
+
+# "safe_potions" is the complement — only healing tags, minus anything explosive/poison
+safe_potions:
+  Inclusions:
+    - 'tag_heal'
+    - 'tag_regen'
+  Exclude-Tags:
+    - 'explosive'
+    - 'poison'
+
+# Result: {tag_heal, tag_regen}
+# (explosive's and poison's tags are not present in safe_potions anyway,
+#  but Exclude-Tags is redundant here — included for demonstration)

@@ -1,0 +1,66 @@
+# ==============================
+# TagSet — Simple Tags Example
+# ==============================
+# Each section is a separate TagSet identified by its section name.
+# Place this file in plugins/BlobLib/TagSet/ (or your plugin's TagSet/ directory).
+#
+# File: tagset_simple_tags.yml
+
+# Weapon material types
+melee:
+  Inclusions:
+    - 'material_sword'
+    - 'material_axe'
+    - 'material_dagger'
+
+ranged:
+  Inclusions:
+    - 'material_bow'
+    - 'material_crossbow'
+    - 'material_staff'
+
+# Rarity tiers
+common:
+  Inclusions:
+    - 'tier_common'
+
+uncommon:
+  Inclusions:
+    - 'tier_uncommon'
+
+rare:
+  Inclusions:
+    - 'tier_rare'
+
+legendary:
+  Inclusions:
+    - 'tier_legendary'
+
+# Damage elements
+physical:
+  Inclusions:
+    - 'element_slash'
+    - 'element_blunt'
+    - 'element_pierce'
+
+fire:
+  Inclusions:
+    - 'element_fire'
+
+frost:
+  Inclusions:
+    - 'element_frost'
+
+arcane:
+  Inclusions:
+    - 'element_arcane'
+
+# Weapon types with exclusions
+# "all_blades" includes swords and daggers but NOT wooden ones
+all_blades:
+  Inclusions:
+    - 'material_sword'
+    - 'material_dagger'
+  Exclusions:
+    - 'material_wooden_sword'
+    - 'material_wooden_dagger'

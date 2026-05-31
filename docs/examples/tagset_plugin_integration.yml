@@ -1,0 +1,80 @@
+# =====================================
+# TagSet — Plugin Integration Example
+# =====================================
+# This file demonstrates how an RPG plugin named "MyRPG" might organise
+# its TagSets. The file would be placed at:
+#   plugins/MyRPG/TagSet/myrpg_tag_sets.yml
+#
+# BlobLib auto-loads it when the plugin registers via BlobPlugin.
+#
+# File: myrpg_tag_sets.yml
+
+# ---- Class tags ----
+class_warrior:
+  Inclusions:
+    - 'class_warrior'
+    - 'can_heavy_armor'
+    - 'can_axes'
+
+class_mage:
+  Inclusions:
+    - 'class_mage'
+    - 'can_staves'
+    - 'can_robes'
+
+class_rogue:
+  Inclusions:
+    - 'class_rogue'
+    - 'can_light_armor'
+    - 'can_daggers'
+
+# ---- Races ----
+race_human:
+  Inclusions:
+    - 'race_human'
+    - 'skill_diplomacy'
+
+race_elf:
+  Inclusions:
+    - 'race_elf'
+    - 'skill_archery'
+
+race_dwarf:
+  Inclusions:
+    - 'race_dwarf'
+    - 'skill_forging'
+
+# ---- Composed: faction eligibility ----
+# A warrior or rogue of any race qualifies for the "fighters_guild"
+fighters_guild:
+  Include-Tags:
+    - 'class_warrior'
+    - 'class_rogue'
+  Exclude-Tags:
+    - 'race_elf'        # elves cannot join the fighters guild
+
+# Only mages of any race qualify for "arcane_order"
+arcane_order:
+  Include-Tags:
+    - 'class_mage'
+
+# ---- Composed: server rules ----
+# Tags that are banned from PvP zones
+pvp_banned_tags:
+  Inclusions:
+    - 'tag_area_damage'
+    - 'tag_stun'
+    - 'tag_knockback'
+  Exclude-Tags:
+    - 'class_warrior'    # warriors' tags are AREA DAMAGE — actually this
+                         # demonstrates that referencing is literal: it adds
+                         # class_warrior's inclusions {class_warrior, can_heavy_armor, can_axes}
+                         # to the exclusions, removing those strings from the set.
+                         # In practice you'd use carefully named tag conventions.
+
+# ---- Usage via API ----
+#
+# TagSet guild = BlobLibTagAPI.getInstance().getTagSet("fighters_guild");
+# if (guild != null && guild.contains("class_warrior")) {
+#     player.sendMessage("You may enter the Fighters Guild!");
+# }
