@@ -1,0 +1,12 @@
+# plugins/BlobLib/TranslatablePositionable/spawn.yml
+# A single TranslatablePositionable defined at file-root level.
+# Identifier (key): spawn (derived from the filename without .yml)
+# Type: Locatable (has X, Y, Z, Yaw, Pitch, AND World)
+Locale: en_us
+Display: '&a&lServer Spawn'
+X: 0.5
+Y: 64.0
+Z: 0.5
+Yaw: 0.0
+Pitch: 0.0
+World: world

@@ -1,0 +1,20 @@
+# plugins/BlobLib/TranslatablePositionable/locations_es_es.yml
+# Locale-specific overlay file.
+# Only the fields that differ from en_us need to be specified.
+# The coordinates (X, Y, Z, Yaw, Pitch, World) are inherited from the en_us file.
+Locale: es_es
+
+spawn:
+  Display: '&a&lAparición'
+
+event_hub:
+  Display: '&6&lCentro de Eventos'
+
+crate_01:
+  Display: '&b&lCofre Misterioso'
+
+parkour_start:
+  Display: '&e&lInicio de Parkour'
+
+crate_02:
+  Display: '&b&lCofre de Votación'

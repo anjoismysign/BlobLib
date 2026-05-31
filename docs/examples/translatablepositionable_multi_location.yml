@@ -1,0 +1,53 @@
+# plugins/BlobLib/TranslatablePositionable/locations.yml
+# Multiple TranslatablePositionables in one file, each keyed by its section name.
+# Demonstrates all three Positionable types.
+
+# Locatable — full location with world, rotation, and position
+spawn:
+  Locale: en_us
+  Display: '&a&lSpawn'
+  X: 0.5
+  Y: 64.0
+  Z: 0.5
+  Yaw: 180.0
+  Pitch: 0.0
+  World: world
+
+# Spatial — coordinates + rotation, no world
+event_hub:
+  Locale: en_us
+  Display: '&6&lEvent Hub'
+  X: 100.0
+  Y: 50.0
+  Z: -200.0
+  Yaw: 90.0
+  Pitch: -10.0
+
+# Simple Positionable — just coordinates
+crate_01:
+  Locale: en_us
+  Display: '&b&lMystery Crate'
+  X: 10.5
+  Y: 70.0
+  Z: -15.0
+
+# Another Locatable with different rotation
+parkour_start:
+  Locale: en_us
+  Display: '&e&lParkour Start'
+  X: -50.0
+  Y: 32.0
+  Z: 100.0
+  Yaw: 0.0
+  Pitch: 15.0
+  World: world
+
+# Another Spatial example
+crate_02:
+  Locale: en_us
+  Display: '&b&lVote Crate'
+  X: 10.5
+  Y: 70.0
+  Z: -20.0
+  Yaw: 45.0
+  Pitch: 0.0
