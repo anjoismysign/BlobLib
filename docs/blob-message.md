@@ -67,7 +67,7 @@ There are **7 message types**, each represented by a concrete Java class. The `T
 The `BlobSound` field can be either:
 
 1. **A string reference** to a sound registered in the BlobSound system (e.g. `System.Alert`). Optionally append `:WORLD` to override the audience to world-level playback.
-2. **A ConfigurationSection** with inline sound definition. See [BlobSound documentation](sound.md) for the full schema.
+2. **A ConfigurationSection** with inline sound definition. See [BlobSound documentation](blob-sound.md) for the full schema.
 
 ### YAML Examples
 
