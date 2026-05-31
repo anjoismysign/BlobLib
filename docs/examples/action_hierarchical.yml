@@ -1,0 +1,47 @@
+# =============================================================================
+# Actions Example — Hierarchical (nested) structure
+# File: myplugin_actions.yml
+# Place in: plugins/BlobLib/Action/
+# =============================================================================
+#
+# Actions can be nested under YAML sections to create organised identifiers.
+# The identifier is formed by joining section names with dots.
+#
+# For example, the action below at "Gamemode.Creative" would be referenced
+# as "Gamemode.Creative" in your plugin code.
+#
+# For a list of all supported fields, see the Action documentation:
+#   https://github.com/anjoismysign/BlobLib/docs/action.md
+
+Gamemode:
+  Creative:
+    Type: CONSOLE_COMMAND
+    Command: 'gamemode creative %actor%'
+  Survival:
+    Type: CONSOLE_COMMAND
+    Command: 'gamemode survival %actor%'
+  Adventure:
+    Type: CONSOLE_COMMAND
+    Command: 'gamemode adventure %actor%'
+  Spectator:
+    Type: CONSOLE_COMMAND
+    Command: 'gamemode spectator %actor%'
+
+Inventory:
+  Clear:
+    Type: CONSOLE_COMMAND
+    Command: 'clear %actor%'
+  Enderchest:
+    Type: CONSOLE_COMMAND
+    Command: 'enderchest %actor%'
+
+Teleport:
+  Spawn:
+    Type: CONSOLE_COMMAND
+    Command: 'spawn %actor%'
+  Hub:
+    Type: CONSOLE_COMMAND
+    Command: 'server hub'
+  Wilderness:
+    Type: CONSOLE_COMMAND
+    Command: 'wilderness %actor%'

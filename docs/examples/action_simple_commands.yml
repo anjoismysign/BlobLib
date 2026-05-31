@@ -1,0 +1,47 @@
+# =============================================================================
+# Actions Example — Simple commands
+# File: myplugin_actions.yml
+# Place in: plugins/BlobLib/Action/
+# =============================================================================
+#
+# Each top-level key becomes the action's identifier. The identifier is a
+# dot-separated path (e.g. "Heal", "Pardon").
+#
+# The %actor% placeholder is replaced with the acting player's name at runtime.
+#
+# For a list of all supported fields, see the Action documentation:
+#   https://github.com/anjoismysign/BlobLib/docs/action.md
+
+# ---- ACTOR_COMMAND: runs the command AS the player who triggers the action ----
+
+Heal:
+  Type: ACTOR_COMMAND
+  Command: 'heal'
+
+Feed:
+  Type: ACTOR_COMMAND
+  Command: 'feed'
+
+Fly-Toggle:
+  Type: ACTOR_COMMAND
+  Command: 'fly'
+
+# ---- CONSOLE_COMMAND: runs the command AS THE CONSOLE ----
+
+Pardon:
+  Type: CONSOLE_COMMAND
+  Command: 'pardon %actor%'
+
+Teleport-Spawn:
+  Type: CONSOLE_COMMAND
+  Command: 'spawn %actor%'
+
+Broadcast-Join:
+  Type: CONSOLE_COMMAND
+  Command: 'broadcast &a%actor% joined the game!'
+
+# ---- CONSOLE_COMMAND with a complex command ----
+
+Give-Diamond:
+  Type: CONSOLE_COMMAND
+  Command: 'minecraft:give %actor% minecraft:diamond 1'

@@ -148,6 +148,16 @@ Action<Entity> action = memo.getAction(); // returns CommandAction or ConsoleCom
 
 ---
 
+## Examples
+
+See the [examples](examples/) directory for ready-to-use YAML files:
+
+- [`simple_commands.yml`](examples/action_simple_commands.yml) — basic `ACTOR_COMMAND` and `CONSOLE_COMMAND` actions
+- [`hierarchical.yml`](examples/action_hierarchical.yml) — nested action structure with organised groupings
+- [`plugin_integration.yml`](examples/action_plugin_integration.yml) — integration example showing an RPG-style plugin's action definitions
+
+---
+
 ## Loading Order
 
 1. BlobLib loads its own `Action/` directory on startup.

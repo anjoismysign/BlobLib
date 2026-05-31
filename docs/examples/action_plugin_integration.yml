@@ -1,0 +1,72 @@
+# =============================================================================
+# Actions Example — Plugin integration with other BlobLib data assets
+# File: myrpg_actions.yml
+# Place in: plugins/BlobLib/Action/
+# =============================================================================
+#
+# This example shows how an RPG plugin might define actions that use
+# other BlobLib asset types (messages, sounds, inventories).
+#
+# Actions are often referenced inside InventoryButton configurations,
+# MetaBlobInventory files, or other plugin data assets.
+#
+# For a list of all supported fields, see the Action documentation:
+#   https://github.com/anjoismysign/BlobLib/docs/action.md
+
+# ---- Player commands (run by the actor) ----
+
+Quest:
+  Accept:
+    Type: ACTOR_COMMAND
+    Command: 'quest accept %actor%'
+  Complete:
+    Type: ACTOR_COMMAND
+    Command: 'quest complete %actor%'
+  Abandon:
+    Type: ACTOR_COMMAND
+    Command: 'quest abandon %actor%'
+
+Shop:
+  Open:
+    Type: ACTOR_COMMAND
+    Command: 'shop open'
+  Sell:
+    Type: ACTOR_COMMAND
+    Command: 'shop sell'
+  Buy:
+    Type: ACTOR_COMMAND
+    Command: 'shop buy'
+
+Skill:
+  View:
+    Type: ACTOR_COMMAND
+    Command: 'skills view %actor%'
+  Upgrade:
+    Type: ACTOR_COMMAND
+    Command: 'skills upgrade'
+
+# ---- Console commands (run by the server console) ----
+
+Reward:
+  Give-Money:
+    Type: CONSOLE_COMMAND
+    Command: 'eco give %actor% 100'
+  Give-Exp:
+    Type: CONSOLE_COMMAND
+    Command: 'experience add %actor% 500 points'
+  Give-Item:
+    Type: CONSOLE_COMMAND
+    Command: 'minecraft:give %actor% minecraft:netherite_sword{Enchantments:[{id:sharpness,lvl:5}]} 1'
+
+# ---- Admin/debug commands ----
+
+Admin:
+  Heal-All:
+    Type: CONSOLE_COMMAND
+    Command: 'minecraft:effect give @a minecraft:instant_health 1 255'
+  Day:
+    Type: CONSOLE_COMMAND
+    Command: 'time set day'
+  Night:
+    Type: CONSOLE_COMMAND
+    Command: 'time set night'
