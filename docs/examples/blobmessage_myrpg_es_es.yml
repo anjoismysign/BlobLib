@@ -1,0 +1,55 @@
+# =============================================================================
+# BlobMessage Example — Spanish locale (es_es)
+# File: myrpg_es_es_lang.yml
+# Place in: plugins/BlobLib/BlobMessage/
+# =============================================================================
+
+Locale: es_es
+
+MyRPG:
+  Quest-Start:
+    Type: CHAT
+    Message: '&a[Misión] &7Empezaste la misión: &f%quest_name%'
+    BlobSound: MyRPG.QuestStart
+
+  Quest-Complete:
+    Type: CHAT_ACTIONBAR
+    Chat: '&a[Misión] &7Completada: &f%quest_name%'
+    Actionbar: '&a¡MISIÓN COMPLETADA!'
+    Hover: '&7Click para ver recompensas'
+    BlobSound: MyRPG.QuestComplete
+
+  Level-Up:
+    Type: CHAT_ACTIONBAR_TITLE
+    Chat: '&a¡Has alcanzado el nivel &f%level%&a!'
+    Actionbar: '&a&l¡SUBIDA DE NIVEL!'
+    Title: '&a&lNIVEL %level%'
+    Subtitle: '&7Felicidades %player%'
+    FadeIn: 5
+    Stay: 50
+    FadeOut: 10
+    BlobSound: MyRPG.LevelUp
+
+  Welcome:
+    Type: TITLE
+    Title: '&6&l%world%'
+    Subtitle: '&7Bienvenido, &f%player%'
+    FadeIn: 10
+    Stay: 60
+    FadeOut: 20
+
+  Boss-Spawn:
+    Type: TITLE
+    Title: '&c&l⚠ JEFE %boss_name% ⚠'
+    Subtitle: '&7Ha aparecido en &f%location%'
+    BlobSound:
+      Sound: entity.wither.spawn
+      Volume: 1.0
+      Pitch: 0.8
+      Category: HOSTILE
+      Audience: WORLD
+
+  Error:
+    Type: CHAT
+    Message: '&cOcurrió un error. Contacta con el staff.'
+    BlobSound: System.Alert

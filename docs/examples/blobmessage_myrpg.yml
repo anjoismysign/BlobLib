@@ -1,0 +1,85 @@
+# =============================================================================
+# BlobMessage Example — Messages for an RPG-style minigame plugin
+# File: myrpg_lang.yml
+# Place in: plugins/BlobLib/BlobMessage/
+# =============================================================================
+
+# File-level locale — all entries in this file inherit this value
+Locale: en_us
+
+# ------ CHAT messages ------
+
+MyRPG:
+  Quest-Start:
+    Type: CHAT
+    Message: '&a[Quest] &7Started quest: &f%quest_name%'
+    BlobSound: MyRPG.QuestStart
+
+  Quest-Complete:
+    Type: CHAT_ACTIONBAR
+    Chat: '&a[Quest] &7Completed: &f%quest_name%'
+    Actionbar: '&aQUEST COMPLETE!'
+    Hover: '&7Click to view rewards'
+    BlobSound: MyRPG.QuestComplete
+
+  Level-Up:
+    Type: CHAT_ACTIONBAR_TITLE
+    Chat: '&aYou reached level &f%level%&a!'
+    Actionbar: '&a&lLEVEL UP!'
+    Title: '&a&lLEVEL %level%'
+    Subtitle: '&7Congratulations %player%'
+    FadeIn: 5
+    Stay: 50
+    FadeOut: 10
+    BlobSound: MyRPG.LevelUp
+
+  Shop-Open:
+    Type: CHAT
+    Message: '&eYou opened the &6&lMerchant Shop'
+    Hover: '&7Sell your items here'
+    ClickEvent:
+      Action: RUN_COMMAND
+      Value: '/shop sell'
+
+# ------ ACTIONBAR messages ------
+
+  Location-Target:
+    Type: ACTIONBAR
+    Message: '&7Click a block to set your target location'
+
+  Action-Timeout:
+    Type: ACTIONBAR_TITLE
+    Actionbar: '&cYou took too long!'
+    Title: '&c&lTIMEOUT'
+    Subtitle: '&7Please try again'
+    FadeIn: 5
+    Stay: 30
+    FadeOut: 5
+    BlobSound: MyRPG.Timeout
+
+# ------ TITLE messages ------
+
+  Welcome:
+    Type: TITLE
+    Title: '&6&l%world%'
+    Subtitle: '&7Welcome, &f%player%'
+    FadeIn: 10
+    Stay: 60
+    FadeOut: 20
+
+  Boss-Spawn:
+    Type: TITLE
+    Title: '&c&l⚠ BOSS %boss_name% ⚠'
+    Subtitle: '&7Has spawned at &f%location%'
+    BlobSound:
+      Sound: entity.wither.spawn
+      Volume: 1.0
+      Pitch: 0.8
+      Category: HOSTILE
+      Audience: WORLD
+
+# A message referencing a sound from BlobLib's built-in sounds
+  Error:
+    Type: CHAT
+    Message: '&cAn error occurred. Please contact staff.'
+    BlobSound: System.Alert
