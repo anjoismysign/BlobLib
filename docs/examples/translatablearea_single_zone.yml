@@ -1,0 +1,30 @@
+# =============================================================================
+# TranslatableArea Example — Single file-root BoxArea
+# File: event_arena.yml
+# Place in: plugins/BlobLib/TranslatableArea/
+# =============================================================================
+
+# File-level locale — all entries in this file inherit this value.
+# This file is a single asset; its identifier is "event_arena" (the filename
+# without .yml).
+Locale: en_us
+
+# Localized display name. Supports color codes (&) and {r=key} snippet
+# references that resolve to TranslatableSnippets at load time.
+Display: '&6&lEvent Arena'
+
+# (Required) The Bukkit world this area belongs to.
+World: world
+
+# BoxArea corners — defines a cuboid from Min to Max.
+Min:
+  X: -150
+  Y: -10
+  Z: -150
+Max:
+  X: 150
+  Y: 200
+  Z: 150
+
+# (Optional) Serialized BlockVector for the area's center.
+Center: '0.0, 95.0, 0.0'

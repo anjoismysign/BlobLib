@@ -1,0 +1,33 @@
+# =============================================================================
+# TranslatableArea Example — Locale-specific display overrides
+# File: world_zones_es_es.yml
+# Place in: plugins/BlobLib/TranslatableArea/
+# =============================================================================
+#
+# Files with a non-"en_us" Locale act as overlays. Only the fields that
+# differ from the default locale need to be provided.
+#
+# The Area (Min/Max/Id/World/Center) is inherited from the en_us asset
+# with the same key. If the en_us asset is not found, TranslatableArea.by()
+# will throw a NullPointerException when the locale-specific asset's get()
+# is called.
+
+Locale: es_es
+
+# Override display names for zones defined in world_zones.yml (or any other
+# file with matching identifiers).
+
+spawn_plaza:
+  Display: '&a&lPlaza de Aparición'
+
+pvp_arena:
+  Display: '&c&lArena JcJ'
+
+market_district:
+  Display: '&6&lDistrito Comercial'
+
+nether_fortress:
+  Display: '&c&lFortaleza del Nether'
+
+event_zone:
+  Display: '&b&lZona de Evento {r=event_tag}'

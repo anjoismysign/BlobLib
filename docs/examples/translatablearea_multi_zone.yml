@@ -1,0 +1,72 @@
+# =============================================================================
+# TranslatableArea Example — Multiple zones in one file
+# File: world_zones.yml
+# Place in: plugins/BlobLib/TranslatableArea/
+# =============================================================================
+#
+# Each section becomes its own TranslatableArea, keyed by the section name.
+# This file demonstrates BoxArea and WorldGuardArea definitions alongside
+# each other.
+#
+# A section must have a "World" field to be recognised as a TranslatableArea.
+
+# ------ Spawn zone (BoxArea) ------
+spawn_plaza:
+  Locale: en_us
+  Display: '&a&lSpawn Plaza'
+  World: world
+  Min:
+    X: -50
+    Y: 0
+    Z: -50
+  Max:
+    X: 50
+    Y: 80
+    Z: 50
+  Center: '0.0, 40.0, 0.0'
+
+# ------ PvP arena (BoxArea) ------
+pvp_arena:
+  Locale: en_us
+  Display: '&c&lPvP Arena'
+  World: world
+  Min:
+    X: 200
+    Y: 0
+    Z: 200
+  Max:
+    X: 250
+    Y: 100
+    Z: 250
+
+# ------ Market district (WorldGuardArea) ------
+# Requires WorldGuard on the server. The region must exist before this
+# asset loads. "Id" references the WorldGuard ProtectedRegion ID.
+market_district:
+  Locale: en_us
+  Display: '&6&lMarket District'
+  World: world
+  Id: market_region
+
+# ------ Nether fortress (WorldGuardArea) ------
+nether_fortress:
+  Locale: en_us
+  Display: '&c&lNether Fortress'
+  World: world_nether
+  Id: nether_boss_region
+
+# ------ Event zone with snippet reference in display ------
+# {r=event_tag} will be resolved by BlobTranslatableSnippet.PARSE at load
+# time, replacing it with the corresponding TranslatableSnippet's value.
+event_zone:
+  Locale: en_us
+  Display: '&b&lEvent Zone {r=event_tag}'
+  World: world
+  Min:
+    X: 500
+    Y: 0
+    Z: 500
+  Max:
+    X: 600
+    Y: 120
+    Z: 600
