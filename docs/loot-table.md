@@ -170,7 +170,7 @@ LootTable table = LootTable.by("dungeon_chest");
 
 See the [examples](examples/) directory for ready-to-use JSON files:
 
-- [`simple_drop.json`](examples/simple_drop.json) — a basic single-pool table
-- [`multiple_pools.json`](examples/multiple_pools.json) — two pools with different entry types
-- [`weighted_entries.json`](examples/weighted_entries.json) — demonstrates weighted probability
-- [`translatable_item_example.json`](examples/translatable_item_example.json) — uses `bloblib:translatableitem`
+- [`simple_drop.json`](examples/loottable_simple_drop.json) — a basic single-pool table
+- [`multiple_pools.json`](examples/loottable_multiple_pools.json) — two pools with different entry types
+- [`weighted_entries.json`](examples/loottable_weighted_entries.json) — demonstrates weighted probability
+- [`translatable_item_example.json`](examples/loottable_translatable_item_example.json) — uses `bloblib:translatableitem`
