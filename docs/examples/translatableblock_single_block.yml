@@ -1,0 +1,13 @@
+# plugins/BlobLib/TranslatableBlock/welcome.yml
+# File-root TranslatableBlock.
+# Identifier: "welcome" (filename without .yml)
+#
+# All lines support & color codes and hex colors (&#rrggbb).
+
+Locale: en_us
+Block:
+  - '&6&lWelcome to MyServer!'
+  - '&7We hope you enjoy your time here.'
+  - ''
+  - '&aVisit our website: &f&nwww.myserver.com'
+  - '&aDiscord: &f&nhttps://discord.gg/myserver'

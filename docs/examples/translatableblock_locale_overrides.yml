@@ -1,0 +1,41 @@
+# plugins/BlobLib/TranslatableBlock/panels_es_es.yml
+# Locale-specific overrides for the blocks defined in panels.yml.
+# Only "Block" is needed; the section key must match the identifier
+# of the en_us block it overrides.
+#
+# File locale is "es_es" — every section in this file will be
+# registered under that locale.
+
+Locale: es_es
+
+help_panel:
+  Block:
+    - '&6&lAyuda'
+    - '&7/help &8- &fMostrar este panel'
+    - '&7/warp &8- &fAbrir menú de warps'
+    - '&7/shop &8- &fAbrir tienda'
+    - '&7/kit &8- &fReclamar tu kit diario'
+
+rules_panel:
+  Block:
+    - '&c&lReglas del Servidor'
+    - '&71. Respeta a todos los jugadores.'
+    - '&72. No hagas trampa ni uses hacks.'
+    - '&73. No envies spam en el chat.'
+    - '&74. Sigue las instrucciones del staff.'
+    - '&75. ¡Diviértete!'
+
+server_info:
+  Block:
+    - '&a&lInfo del Servidor'
+    - '&7Versión: &f1.20.4'
+    - '&7Jugadores en línea: &f%online%'
+    - '&7TPS: &f%tps%'
+    - '&7Tiempo activo: &f%uptime%'
+
+donation_panel:
+  Block:
+    - '&#ffd700&lDonar'
+    - '&7¡Apoya al servidor y obtén recompensas!'
+    - '&a/store &8- &fVisita nuestra tienda'
+    - '&a/rankup &8- &fVer mejoras de rango'

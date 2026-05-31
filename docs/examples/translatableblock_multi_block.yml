@@ -1,0 +1,43 @@
+# plugins/BlobLib/TranslatableBlock/panels.yml
+# Multi-section TranslatableBlock file.
+# Each top-level section becomes its own TranslatableBlock,
+# keyed by the section name.
+#
+# Sections are discovered at load time: the loader checks for
+# a non-empty "Block" string list.
+
+help_panel:
+  Locale: en_us
+  Block:
+    - '&6&lHelp'
+    - '&7/help &8- &fShow this panel'
+    - '&7/warp &8- &fOpen warps menu'
+    - '&7/shop &8- &fOpen shop'
+    - '&7/kit &8- &fClaim your daily kit'
+
+rules_panel:
+  Locale: en_us
+  Block:
+    - '&c&lServer Rules'
+    - '&71. Be respectful to all players.'
+    - '&72. No hacking, cheating, or exploiting.'
+    - '&73. No spamming in chat.'
+    - '&74. Follow staff instructions.'
+    - '&75. Have fun and enjoy your stay!'
+
+server_info:
+  Locale: en_us
+  Block:
+    - '&a&lServer Info'
+    - '&7Version: &f1.20.4'
+    - '&7Online Players: &f%online%'
+    - '&7TPS: &f%tps%'
+    - '&7Uptime: &f%uptime%'
+
+donation_panel:
+  Locale: en_us
+  Block:
+    - '&#ffd700&lDonate'
+    - '&7Support the server and get rewards!'
+    - '&a/store &8- &fBrowse our store'
+    - '&a/rankup &8- &fView rank upgrades'
