@@ -1,0 +1,56 @@
+# plugins/BlobLib/TranslatableItem/gui_items_es_es.yml
+# Locale-specific overrides for items defined in gui_items.yml.
+# File locale is "es_es" — every section in this file will be
+# registered under that locale.
+#
+# The section key must match the identifier of the en_us item it overrides.
+# Only the fields that differ from the en_us version need to be provided.
+
+Locale: es_es
+
+previous_page:
+  ItemStack:
+    Material: ARROW
+    CustomModelData: 1
+    DisplayName: '&6Página anterior'
+    Lore:
+      - '&7Haz clic para ir a la página anterior'
+      - '&7Mayús+clic para la primera página'
+  Rarity: common
+
+next_page:
+  ItemStack:
+    Material: ARROW
+    CustomModelData: 2
+    DisplayName: '&6Página siguiente'
+    Lore:
+      - '&7Haz clic para ir a la página siguiente'
+      - '&7Mayús+clic para la última página'
+  Rarity: common
+
+return_button:
+  ItemStack:
+    Material: SPECTRAL_ARROW
+    CustomModelData: 3
+    DisplayName: '&6Hecho'
+    Lore:
+      - '&7Haz clic cuando hayas terminado'
+  Rarity: common
+
+confirm_button:
+  ItemStack:
+    Material: LIME_DYE
+    CustomModelData: 1
+    DisplayName: '&a&lConfirmar'
+    Lore:
+      - '&7Haz clic para confirmar tu selección'
+  Rarity: uncommon
+
+cancel_button:
+  ItemStack:
+    Material: RED_DYE
+    CustomModelData: 1
+    DisplayName: '&c&lCancelar'
+    Lore:
+      - '&7Haz clic para cancelar'
+  Rarity: uncommon

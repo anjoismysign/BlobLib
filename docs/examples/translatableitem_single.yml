@@ -1,0 +1,18 @@
+# plugins/BlobLib/TranslatableItem/healing_potion.yml
+# File-root TranslatableItem.
+# Identifier: "healing_potion" (filename without .yml)
+#
+# The ItemStack section supports all OmniStack fields.
+# Rarity is resolved against plugins/BlobLib/rarity.yml.
+
+Locale: en_us
+ItemStack:
+  Material: POTION
+  Color: 255,85,85
+  DisplayName: '&c&lHealing Potion'
+  Lore:
+    - '&7Restores &c20❤ &7health.'
+    - '&7Drink to recover.'
+  CustomModelData: 5001
+Rarity: common
+Is-Soul: true

@@ -1,0 +1,66 @@
+# plugins/BlobLib/TranslatableItem/gui_items.yml
+# Multi-section TranslatableItem file.
+# Each section becomes its own TranslatableItem, keyed by the section name.
+#
+# A section is considered a TranslatableItem if it has an "ItemStack" section.
+
+background:
+  Locale: en_us
+  ItemStack:
+    Material: BLACK_STAINED_GLASS_PANE
+    CustomModelData: 1
+    DisplayName: ' '
+    HideToolTip: true
+    Lore: []
+
+previous_page:
+  Locale: en_us
+  ItemStack:
+    Material: ARROW
+    CustomModelData: 1
+    DisplayName: '&6Previous page'
+    Lore:
+      - '&7Click to go to the previous page'
+      - '&7Shift+Click for first page'
+  Rarity: common
+
+next_page:
+  Locale: en_us
+  ItemStack:
+    Material: ARROW
+    CustomModelData: 2
+    DisplayName: '&6Next page'
+    Lore:
+      - '&7Click to go to the next page'
+      - '&7Shift+Click for last page'
+  Rarity: common
+
+return_button:
+  Locale: en_us
+  ItemStack:
+    Material: SPECTRAL_ARROW
+    CustomModelData: 3
+    DisplayName: '&6Done'
+    Lore:
+      - '&7Click when done'
+  Rarity: common
+
+confirm_button:
+  Locale: en_us
+  ItemStack:
+    Material: LIME_DYE
+    CustomModelData: 1
+    DisplayName: '&a&lConfirm'
+    Lore:
+      - '&7Click to confirm your selection'
+  Rarity: uncommon
+
+cancel_button:
+  Locale: en_us
+  ItemStack:
+    Material: RED_DYE
+    CustomModelData: 1
+    DisplayName: '&c&lCancel'
+    Lore:
+      - '&7Click to cancel'
+  Rarity: uncommon

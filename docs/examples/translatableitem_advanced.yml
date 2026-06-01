@@ -1,0 +1,47 @@
+# plugins/BlobLib/TranslatableItem/legendary_armor.yml
+# Advanced TranslatableItem demonstrating a wide range of OmniStack fields.
+
+helmet_of_eternity:
+  Locale: en_us
+  ItemStack:
+    Material: DIAMOND_HELMET
+    Amount: 1
+    DisplayName: '&6&lHelmet of Eternity'
+    ItemName: '&6Helmet of Eternity'
+    Lore:
+      - '&7A legendary helmet from the ancients.'
+      - '&7Grants its wearer immense protection.'
+      - ''
+      - '&6&l✦ &e+4 &7Armor'
+      - '&6&l✦ &e+2 &7Armor Toughness'
+      - '&6&l✦ &e+1 &7Knockback Resistance'
+    CustomModelData: 9001
+    ItemModel: 'minecraft:diamond_helmet'
+    Unbreakable: true
+    EnchantmentGlintOverride: true
+    FireResistant: true
+    MaxStackSize: 1
+    Rarity: EPIC
+    ArmorTrim:
+      TrimMaterial: 'minecraft:netherite'
+      TrimPattern: 'minecraft:eye'
+    Attributes:
+      minecraft:armor:
+        Amount: 4.0
+        Operation: ADD_NUMBER
+        EquipmentSlotGroup: HEAD
+      minecraft:armor_toughness:
+        Amount: 2.0
+        Operation: ADD_NUMBER
+        EquipmentSlotGroup: HEAD
+      minecraft:knockback_resistance:
+        Amount: 1.0
+        Operation: ADD_NUMBER
+        EquipmentSlotGroup: HEAD
+    Enchantments:
+      - 'protection:4'
+      - 'unbreaking:3'
+      - 'respiration:3'
+      - 'aqua_affinity:1'
+  Rarity: epic
+  Is-Unique: true
