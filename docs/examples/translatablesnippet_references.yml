@@ -1,0 +1,47 @@
+# plugins/BlobLib/TranslatableSnippet/composites.yml
+# Demonstrates the {r=<key>} reference resolution feature.
+# During construction, {r=...} tokens are replaced with the
+# resolved content of the referenced snippet in the same locale.
+
+kill_feed:
+  Locale: en_us
+  Snippet: '{r=kill_icon} {r=player_killer} {r=kill_verb} {r=player_victim}'
+
+kill_icon:
+  Locale: en_us
+  Snippet: '&c&l⚔'
+
+player_killer:
+  Locale: en_us
+  Snippet: '&f%killer%'
+
+kill_verb:
+  Locale: en_us
+  Snippet: '&7slayed'
+
+player_victim:
+  Locale: en_us
+  Snippet: '&f%victim%'
+
+# Nested references are also resolved:
+join_message:
+  Locale: en_us
+  Snippet: '{r=join_icon} {r=player_name} {r=join_suffix}'
+
+join_icon:
+  Locale: en_us
+  Snippet: '&a&l+'
+
+player_name:
+  Locale: en_us
+  Snippet: '&f%player%'
+
+join_suffix:
+  Locale: en_us
+  Snippet: '&7has joined the game!'
+
+# References that don't resolve become empty strings:
+missing_reference_demo:
+  Locale: en_us
+  Snippet: 'This {r=non_existent_key} will be empty.'
+  # Result: "This  will be empty."

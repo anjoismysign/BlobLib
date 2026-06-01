@@ -1,0 +1,23 @@
+# plugins/BlobLib/TranslatableSnippet/rarity_labels.yml
+# Multiple TranslatableSnippets in a single file.
+# Each section becomes its own snippet, keyed by the section name.
+
+rarity_common:
+  Locale: en_us
+  Snippet: '&f&lCOMMON'
+
+rarity_uncommon:
+  Locale: en_us
+  Snippet: '&e&lUNCOMMON'
+
+rarity_rare:
+  Locale: en_us
+  Snippet: '&b&lRARE'
+
+rarity_epic:
+  Locale: en_us
+  Snippet: '&d&lEPIC'
+
+rarity_legendary:
+  Locale: en_us
+  Snippet: '&6&lLEGENDARY'

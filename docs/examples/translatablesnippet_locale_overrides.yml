@@ -1,0 +1,21 @@
+# plugins/BlobLib/TranslatableSnippet/rarity_labels_es_es.yml
+# Locale-specific overrides for existing snippet identifiers.
+# Only the Snippet field needs to be provided; the Locale at
+# file root sets the context for all sections.
+
+Locale: es_es
+
+rarity_common:
+  Snippet: '&f&lCOMÚN'
+
+rarity_uncommon:
+  Snippet: '&e&lPOCO COMÚN'
+
+rarity_rare:
+  Snippet: '&b&lRARO'
+
+rarity_epic:
+  Snippet: '&d&lÉPICO'
+
+rarity_legendary:
+  Snippet: '&6&lLEGENDARIO'

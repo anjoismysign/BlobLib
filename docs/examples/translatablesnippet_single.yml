@@ -1,0 +1,5 @@
+# plugins/BlobLib/TranslatableSnippet/welcome.yml
+# File-root TranslatableSnippet.
+# Identifier is derived from the filename: "welcome"
+Locale: en_us
+Snippet: '&6&lWelcome to MyServer! &eHope you enjoy your stay.'
