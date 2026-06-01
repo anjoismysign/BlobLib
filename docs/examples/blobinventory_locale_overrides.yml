@@ -1,0 +1,46 @@
+# plugins/MyPlugin/BlobInventory/weapon_shop_es_es.yml
+# Locale-specific override for the weapon_shop inventory.
+# File locale is "es_es". Only the Title and button DisplayName/Lore
+# need to be provided — other fields (Slot, Price, Permission, Action)
+# are inherited from the en_us version.
+
+Title: '&6⚔ Tienda de Armas'
+Locale: es_es
+Buttons:
+  iron_sword:
+    ItemStack:
+      Material: IRON_SWORD
+      DisplayName: '&fEspada de Hierro'
+      Lore:
+        - '&7Una espada de hierro básica.'
+        - ''
+        - '&ePrecio: &650 monedas'
+
+  diamond_sword:
+    ItemStack:
+      Material: DIAMOND_SWORD
+      DisplayName: '&bEspada de Diamante'
+      Lore:
+        - '&7Una espada de diamante fuerte.'
+        - ''
+        - '&ePrecio: &6200 monedas'
+        - '&cRequiere: VIP'
+
+  legendary_sword:
+    ItemStack:
+      Material: DIAMOND_SWORD
+      DisplayName: '&6&lEspada Legendaria'
+      Lore:
+        - '&7Una espada legendaria.'
+        - ''
+        - '&ePrecio: &61000 monedas'
+        - '&cRequiere: MVP'
+
+  healing_wand:
+    ItemStack:
+      Material: STICK
+      DisplayName: '&aVarita Curativa'
+      Lore:
+        - '&7Una varita que cura al usuario.'
+        - ''
+        - '&ePrecio: &675 monedas'

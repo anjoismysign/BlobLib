@@ -1,0 +1,121 @@
+# plugins/MyPlugin/MetaBlobInventory/quest_menu.yml
+# A MetaBlobInventory demonstrating Meta/SubMeta button grouping.
+# The Type "QUEST" groups this inventory with other quest-related
+# MetaBlobInventories into a MetaInventoryShard.
+#
+# Meta buttons allow filtering/sorting by category; SubMeta provides
+# additional nesting (e.g. daily vs weekly quests within a category).
+
+Title: '&6📜 Quest Menu'
+Size: 54
+Type: QUEST
+Locale: en_us
+Buttons:
+  # --- Decoration / Navigation ---
+  Background:
+    ItemStack: BlobLib.Background
+    Slot: '45-53'
+
+  White-Background:
+    ItemStack:
+      Material: WHITE_STAINED_GLASS_PANE
+      DisplayName: ' '
+      HideToolTip: true
+      Lore: []
+    Slot: '0-44'
+
+  Previous-Page:
+    ItemStack: BlobLib.Previous-Page
+    Slot: '52'
+
+  Next-Page:
+    ItemStack: BlobLib.Next-Page
+    Slot: '53'
+
+  Return:
+    ItemStack: BlobLib.Return
+    Slot: '45'
+
+  # --- Category Tabs (Meta buttons) ---
+  # These use Meta to define which quest category they belong to.
+
+  daily_tab:
+    ItemStack:
+      Material: CLOCK
+      DisplayName: '&e&lDaily Quests'
+      Lore:
+        - '&7Click to view daily quests'
+    Slot: '46'
+    Meta: 'tab_daily'
+    Action: 'myplugin:filter_daily'
+    Cancel-Interaction: true
+
+  weekly_tab:
+    ItemStack:
+      Material: WEEKLY_SNEAKER  # or another material
+      DisplayName: '&b&lWeekly Quests'
+      Lore:
+        - '&7Click to view weekly quests'
+    Slot: '47'
+    Meta: 'tab_weekly'
+    Action: 'myplugin:filter_weekly'
+    Cancel-Interaction: true
+
+  # --- Quest Entries with Meta & SubMeta ---
+
+  # Daily quest: Kill Zombies (SubMeta: combat)
+  daily_kill_zombies:
+    ItemStack:
+      Material: ZOMBIE_HEAD
+      DisplayName: '&aKill 10 Zombies'
+      Lore:
+        - '&7Progress: &e5/10'
+        - '&7Reward: &6100 coins'
+    Slot: '10'
+    Meta: 'quest_daily'
+    SubMeta: 'combat'
+    Action: 'myplugin:quest_info_daily_zombies'
+    Cancel-Interaction: true
+
+  # Daily quest: Mine Iron (SubMeta: gathering)
+  daily_mine_iron:
+    ItemStack:
+      Material: IRON_ORE
+      DisplayName: '&aMine 20 Iron Ore'
+      Lore:
+        - '&7Progress: &e12/20'
+        - '&7Reward: &6150 coins'
+    Slot: '11'
+    Meta: 'quest_daily'
+    SubMeta: 'gathering'
+    Action: 'myplugin:quest_info_daily_iron'
+    Cancel-Interaction: true
+
+  # Weekly quest: Raid Dungeon (SubMeta: combat)
+  weekly_raid_dungeon:
+    ItemStack:
+      Material: NETHERITE_SWORD
+      DisplayName: '&bRaid the Dungeon'
+      Lore:
+        - '&7Defeat the dungeon boss.'
+        - '&7Progress: &e0/1'
+        - '&7Reward: &6Legendary Sword'
+    Slot: '14'
+    Meta: 'quest_weekly'
+    SubMeta: 'combat'
+    Action: 'myplugin:quest_info_weekly_dungeon'
+    Cancel-Interaction: true
+
+  # Weekly quest: Gather Resources (SubMeta: gathering)
+  weekly_gather_resources:
+    ItemStack:
+      Material: DIAMOND
+      DisplayName: '&bGather 50 Diamonds'
+      Lore:
+        - '&7Progress: &e23/50'
+        - '&7Reward: &61000 coins'
+    Slot: '15'
+    Meta: 'quest_weekly'
+    SubMeta: 'gathering'
+    Action: 'myplugin:quest_info_weekly_diamonds'
+    Cancel-Interaction: true

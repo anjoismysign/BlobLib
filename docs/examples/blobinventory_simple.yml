@@ -1,0 +1,47 @@
+# plugins/BlobLib/BlobInventory/settings_menu.yml
+# A simple BlobInventory with a title, size, and a few buttons.
+# Identifier: "settings_menu" (filename without .yml)
+
+Title: '&8Server Settings'
+Size: 27
+Locale: en_us
+Buttons:
+  # Background filler - TranslatableItem reference
+  Background:
+    ItemStack: BlobLib.Background
+    Slot: '0-26'
+
+  # Toggle PvP button
+  toggle_pvp:
+    ItemStack:
+      Material: DIAMOND_SWORD
+      DisplayName: '&c&lToggle PvP'
+      Lore:
+        - '&7Click to toggle PvP on/off.'
+        - '&7Currently: &aEnabled'
+    Slot: '11'
+    Action: 'myplugin:toggle_pvp'
+    Cancel-Interaction: true
+
+  # Fly Speed button
+  fly_speed:
+    ItemStack:
+      Material: FEATHER
+      DisplayName: '&b&lFly Speed'
+      Lore:
+        - '&7Adjust your fly speed.'
+        - '&7Current: &fNormal'
+    Slot: '13'
+    Action: 'myplugin:fly_speed'
+    Cancel-Interaction: true
+
+  # Close button
+  close:
+    ItemStack:
+      Material: BARRIER
+      DisplayName: '&c&lClose'
+      Lore:
+        - '&7Click to close this menu.'
+    Slot: '22'
+    Action: 'myplugin:close_menu'
+    Cancel-Interaction: true

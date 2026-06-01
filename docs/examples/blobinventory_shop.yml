@@ -1,0 +1,94 @@
+# plugins/MyPlugin/BlobInventory/weapon_shop.yml
+# A shop GUI with permissions, economy prices, and TranslatableItem references.
+
+Title: '&6⚔ Weapon Shop'
+Size: 54
+Locale: en_us
+Buttons:
+  # Background
+  Background:
+    ItemStack: BlobLib.Background
+    Slot: '45-53'
+
+  # White background for item slots
+  White-Background:
+    ItemStack:
+      Material: WHITE_STAINED_GLASS_PANE
+      DisplayName: ' '
+      HideToolTip: true
+      Lore: []
+    Slot: '0-44'
+
+  # Previous page
+  Previous-Page:
+    ItemStack: BlobLib.Previous-Page
+    Slot: '52'
+
+  # Next page
+  Next-Page:
+    ItemStack: BlobLib.Next-Page
+    Slot: '53'
+
+  # Return button
+  Return:
+    ItemStack: BlobLib.Return
+    Slot: '45'
+
+  # Iron Sword - costs money, requires permission
+  iron_sword:
+    ItemStack:
+      Material: IRON_SWORD
+      DisplayName: '&fIron Sword'
+      Lore:
+        - '&7A basic iron sword.'
+        - ''
+        - '&ePrice: &650 coins'
+    Slot: '10'
+    Price: 50.0
+    Action: 'myplugin:buy_iron_sword'
+    Cancel-Interaction: true
+
+  # Diamond Sword - requires VIP rank and costs more
+  diamond_sword:
+    ItemStack:
+      Material: DIAMOND_SWORD
+      DisplayName: '&bDiamond Sword'
+      Lore:
+        - '&7A strong diamond sword.'
+        - ''
+        - '&ePrice: &6200 coins'
+        - '&cRequires: VIP'
+    Slot: '12'
+    Price: 200.0
+    Permission: 'myplugin.vip'
+    Action: 'myplugin:buy_diamond_sword'
+    Cancel-Interaction: true
+
+  # Legendary Sword - referenced from TranslatableItem
+  legendary_sword:
+    ItemStack: 'MyPlugin.LegendarySword'
+    Slot: '14'
+    Price: 1000.0
+    Permission: 'myplugin.mvp'
+    Action: 'myplugin:buy_legendary_sword'
+    Cancel-Interaction: true
+
+  # Healing Wand - multiple named actions
+  healing_wand:
+    ItemStack:
+      Material: STICK
+      DisplayName: '&aHealing Wand'
+      Lore:
+        - '&7A wand that heals the user.'
+        - ''
+        - '&ePrice: &675 coins'
+    Slot: '16'
+    Price: 75.0
+    Actions:
+      purchase:
+        Action: 'myplugin:buy_healing_wand'
+        Action-Type: 'PLAYER'
+      sound:
+        Action: 'myplugin:level_up_sound'
+        Action-Type: 'PLAYER'
+    Cancel-Interaction: true
