@@ -275,10 +275,13 @@ Economy:
   Reset:
     Type: CHAT
     Message: '&7Reset %currency% to %player%'
+  # '%display%' is using BlobLibEconomyAPI.getElasticEconomy() and using either ElasticEconomy#getDefault#format or ElasticEconomy#getImplementation#format
   Not-Enough:
     Type: CHAT
     Message: '&cYou are missing %display%'
     BlobSound: System.Alert
+  # '%display%' is using BlobLibEconomyAPI.getElasticEconomy() and using either ElasticEconomy#getDefault#format or ElasticEconomy#getImplementation#format
+  # '%player%' is the player that is missing money
   Not-Enough-Others:
     Type: CHAT
     Message: '&c%player% is missing %display%'
