@@ -115,4 +115,34 @@ public enum WMFound implements WeaponMechanicsMiddleman, Listener {
             }
         };
     }
+
+    @Nullable
+    public Integer getMagazineSize(@NotNull String weaponTitle){
+        Configuration weaponConfigurations = WeaponMechanics.getInstance().getWeaponConfigurations();
+        String path = weaponTitle + ".Reload.Magazine_Size";
+        if (!weaponConfigurations.hasInt(path)){
+            return null;
+        }
+        return weaponConfigurations.getInt(path);
+    }
+
+    @Nullable
+    public Integer getAmmoPerReload(@NotNull String weaponTitle){
+        Configuration weaponConfigurations = WeaponMechanics.getInstance().getWeaponConfigurations();
+        String path = weaponTitle + ".Reload.Ammo_Per_Reload";
+        if (!weaponConfigurations.hasInt(path)){
+            return null;
+        }
+        return weaponConfigurations.getInt(path);
+    }
+
+    @Nullable
+    public Integer getReloadDuration(@NotNull String weaponTitle){
+        Configuration weaponConfigurations = WeaponMechanics.getInstance().getWeaponConfigurations();
+        String path = weaponTitle + ".Reload.Reload_Duration";
+        if (!weaponConfigurations.hasInt(path)){
+            return null;
+        }
+        return weaponConfigurations.getInt(path);
+    }
 }
