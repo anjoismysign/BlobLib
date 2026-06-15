@@ -216,6 +216,8 @@ public enum BlobLibCommand {
                 return;
             }
             ItemStack clone = item.localize(player).getClone();
+            int amount = args.length > 1 ? Integer.parseInt(args[1]) : 1;
+            clone.setAmount(amount);
             PlayerUtil.giveItemToInventoryOrDrop(player, clone);
         });
         Command give = command.child("give");
@@ -248,6 +250,9 @@ public enum BlobLibCommand {
                 return;
             }
             ItemStack clone = item.localize(player).getClone();
+
+            int amount = args.length > 2 ? Integer.parseInt(args[2]) : 1;
+            clone.setAmount(amount);
             PlayerUtil.giveItemToInventoryOrDrop(player, clone);
         }));
 
