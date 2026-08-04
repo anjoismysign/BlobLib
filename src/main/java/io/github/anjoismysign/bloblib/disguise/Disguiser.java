@@ -1,4 +1,4 @@
-package io.github.anjoismysign.bloblib.disguises;
+package io.github.anjoismysign.bloblib.disguise;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;

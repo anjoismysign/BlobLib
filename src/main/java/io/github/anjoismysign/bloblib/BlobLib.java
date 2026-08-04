@@ -2,7 +2,7 @@ package io.github.anjoismysign.bloblib;
 
 import io.github.anjoismysign.bloblib.action.Action;
 import io.github.anjoismysign.bloblib.command.BlobLibCommand;
-import io.github.anjoismysign.bloblib.disguises.DisguiseManager;
+import io.github.anjoismysign.bloblib.disguise.DisguiseManager;
 import io.github.anjoismysign.bloblib.entities.BlobMessageIO;
 import io.github.anjoismysign.bloblib.entities.BlobSoundReader;
 import io.github.anjoismysign.bloblib.entities.DataAssetType;

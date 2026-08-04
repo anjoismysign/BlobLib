@@ -1,4 +1,4 @@
-package io.github.anjoismysign.bloblib.disguises;
+package io.github.anjoismysign.bloblib.disguise;
 
 import io.github.anjoismysign.bloblib.middleman.LibsDisguises;
 import org.bukkit.Bukkit;
