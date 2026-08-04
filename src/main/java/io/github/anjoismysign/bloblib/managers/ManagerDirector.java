@@ -47,7 +47,6 @@ import java.util.function.Function;
 
 public abstract class ManagerDirector implements IManagerDirector {
     private final BlobPlugin plugin;
-    private final BDirector<?> bDirector;
     private final HashMap<String, Manager> managers;
     private final ChatListenerManager chatListenerManager;
     private final SelectorListenerManager selectorListenerManager;
@@ -78,8 +77,6 @@ public abstract class ManagerDirector implements IManagerDirector {
         dropListenerManager = BlobLib.getInstance().getDropListenerManager();
         managers = new HashMap<>();
         plugin.registerToBlobLib(this);
-        bDirector = new BDirector<>(this);
-        bDirector.reload();
     }
 
     /**
@@ -484,7 +481,6 @@ public abstract class ManagerDirector implements IManagerDirector {
     public void reloadAll() {
         reloadNamespacedKeys();
         reload();
-        bDirector.reload();
     }
 
     public IFileManager getFileManager() {
@@ -498,7 +494,6 @@ public abstract class ManagerDirector implements IManagerDirector {
 
     public void realUnload() {
         unload();
-        bDirector.unload();
     }
 
     /**
