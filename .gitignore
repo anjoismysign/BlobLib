@@ -119,3 +119,8 @@ run/
 /.gradle/
 /.gradle/
 /bin/
+/.codegraph/
+/.claude/
+/.opencode/
+/opencode.jsonc
+/AGENTS.md
