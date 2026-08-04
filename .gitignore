@@ -124,3 +124,7 @@ run/
 /.opencode/
 /opencode.jsonc
 /AGENTS.md
+/.classpath
+/.project
+/.settings/org.eclipse.buildship.core.prefs
+/.mcp.json
