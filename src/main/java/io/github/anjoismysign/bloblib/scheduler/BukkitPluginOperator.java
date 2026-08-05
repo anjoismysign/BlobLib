@@ -1,4 +1,4 @@
-package io.github.anjoismysign.bloblib.updater;
+package io.github.anjoismysign.bloblib.scheduler;
 import io.github.anjoismysign.bloblib.utility.MinecraftTimeUnit;
 
 import org.bukkit.Bukkit;

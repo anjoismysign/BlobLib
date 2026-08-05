@@ -1,6 +1,6 @@
 package io.github.anjoismysign.bloblib.display;
 
-import io.github.anjoismysign.bloblib.updater.BukkitPluginOperator;
+import io.github.anjoismysign.bloblib.scheduler.BukkitPluginOperator;
 import org.bukkit.entity.Display;
 import org.bukkit.util.Transformation;
 import org.jetbrains.annotations.NotNull;
