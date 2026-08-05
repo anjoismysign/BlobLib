@@ -7,7 +7,7 @@ import io.github.anjoismysign.bloblib.UniqueAPI;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import io.github.anjoismysign.bloblib.middleman.itemstack.ItemStackReader;
 import io.github.anjoismysign.bloblib.middleman.itemstack.OmniStack;
-import io.github.anjoismysign.bloblib.utilities.TextColor;
+import io.github.anjoismysign.bloblib.utility.TextColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;

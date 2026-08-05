@@ -1,14 +1,14 @@
 package io.github.anjoismysign.bloblib.logger;
 
 import io.github.anjoismysign.anjo.logger.Logger;
-import io.github.anjoismysign.bloblib.managers.ColorManager;
+import io.github.anjoismysign.bloblib.manager.ColorManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 /**
  * @author anjoismysign
  * <p>
- * An object used in io.github.anjoismysign.bloblib.utilities.Debug
+ * An object used in io.github.anjoismysign.bloblib.utility.Debug
  */
 public class ConsoleLogger implements Logger {
     private final java.util.logging.Logger logger = Bukkit.getLogger();

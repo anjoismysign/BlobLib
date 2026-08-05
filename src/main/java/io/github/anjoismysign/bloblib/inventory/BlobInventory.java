@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.inventory;
 
-import io.github.anjoismysign.bloblib.api.BlobLibInventoryAPI;
 import io.github.anjoismysign.bloblib.address.PlayerAddress;
+import io.github.anjoismysign.bloblib.api.BlobLibInventoryAPI;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

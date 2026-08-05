@@ -1,7 +1,6 @@
 package io.github.anjoismysign.bloblib.message;
 
 import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
-import io.github.anjoismysign.bloblib.message.BlobMessageModder;
 import io.github.anjoismysign.bloblib.domain.Localizable;
 import io.github.anjoismysign.holoworld.asset.DataAsset;
 import net.md_5.bungee.api.chat.ClickEvent;

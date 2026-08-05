@@ -2,7 +2,7 @@ package io.github.anjoismysign.bloblib.api;
 
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.action.Action;
-import io.github.anjoismysign.bloblib.managers.DataAssetManager;
+import io.github.anjoismysign.bloblib.manager.DataAssetManager;
 import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 

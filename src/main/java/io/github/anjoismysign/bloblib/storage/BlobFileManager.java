@@ -1,10 +1,10 @@
 package io.github.anjoismysign.bloblib.storage;
 
-import io.github.anjoismysign.bloblib.managers.BlobPlugin;
-import io.github.anjoismysign.bloblib.managers.Manager;
-import io.github.anjoismysign.bloblib.managers.ManagerDirector;
-import io.github.anjoismysign.bloblib.utilities.ResourceUtil;
 import io.github.anjoismysign.bloblib.domain.DataAssetType;
+import io.github.anjoismysign.bloblib.manager.BlobPlugin;
+import io.github.anjoismysign.bloblib.manager.Manager;
+import io.github.anjoismysign.bloblib.manager.ManagerDirector;
+import io.github.anjoismysign.bloblib.utility.ResourceUtil;
 import org.apache.commons.io.FilenameUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;

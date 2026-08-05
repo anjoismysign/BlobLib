@@ -68,7 +68,7 @@ The file name `spawn` becomes the identifier passed to `generate("spawn")`.
 
 ### `BukkitIdentityManager<T extends DataAsset>`
 
-**Package:** `io.github.anjoismysign.bloblib.managers.asset`
+**Package:** `io.github.anjoismysign.bloblib.manager.asset`
 
 An interface that extends both `IdentityManager<T>` (holoworld) and `CommandTarget<T>` (SkeramidCommands). This gives every manager automatic tab-completion and string-parsing for commands.
 
@@ -326,10 +326,10 @@ Instantiation of a `BukkitIdentityManager` must go through `PluginManager.addIde
 package com.example.myplugin;
 
 import com.example.myplugin.asset.WarpData;
-import io.github.anjoismysign.bloblib.managers.BlobPlugin;
-import io.github.anjoismysign.bloblib.managers.PluginManager;
-import io.github.anjoismysign.bloblib.managers.asset.BukkitIdentityManager;
-import io.github.anjoismysign.bloblib.managers.IManagerDirector;
+import io.github.anjoismysign.bloblib.manager.BlobPlugin;
+import io.github.anjoismysign.bloblib.manager.PluginManager;
+import io.github.anjoismysign.bloblib.manager.asset.BukkitIdentityManager;
+import io.github.anjoismysign.bloblib.manager.IManagerDirector;
 import org.jetbrains.annotations.NotNull;
 
 public class MyWarpPlugin extends BlobPlugin {
@@ -345,10 +345,10 @@ public class MyWarpPlugin extends BlobPlugin {
         // MUST use PluginManager.addIdentityManager() — the only supported way.
         // The name "WarpData" is converted to "warp_data/" via NamingConventions.toSnakeCase().
         warpManager = PluginManager.getInstance().addIdentityManager(
-            WarpData.Info.class,
-            this,        // your BlobPlugin instance
-            "WarpData",
-            true         // failOnNullField = true → null fields throw at load time
+                WarpData.Info.class,
+                this,        // your BlobPlugin instance
+                "WarpData",
+                true         // failOnNullField = true → null fields throw at load time
         );
         // warpManager is now loaded and registered in the central registry.
     }
@@ -465,4 +465,4 @@ Null checks for *optional* fields should be handled inside your `IdentityGenerat
 - `io.github.anjoismysign.holoworld.asset.IdentityGenerator` — the holoworld interface
 - `io.github.anjoismysign.holoworld.asset.IdentityGeneration` — record pairing an identifier + generator
 - `io.github.anjoismysign.holoworld.manager.IdentityManager` — the core manager interface
-- `io.github.anjoismysign.bloblib.managers.PluginManager` — central registry for all manager types
+- `io.github.anjoismysign.bloblib.manager.PluginManager` — central registry for all manager types

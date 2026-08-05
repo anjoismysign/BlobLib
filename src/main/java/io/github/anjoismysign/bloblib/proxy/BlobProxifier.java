@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.proxy;
 
+import io.github.anjoismysign.bloblib.manager.IManagerDirector;
 import io.github.anjoismysign.bloblib.storage.IFileManager;
-import io.github.anjoismysign.bloblib.managers.IManagerDirector;
 
 /**
  * There's no issue with proxying IFileManager and IManagerDirector

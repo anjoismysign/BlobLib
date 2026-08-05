@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.proxy;
 
+import io.github.anjoismysign.bloblib.manager.IManagerDirector;
 import io.github.anjoismysign.bloblib.storage.IFileManager;
-import io.github.anjoismysign.bloblib.managers.IManagerDirector;
 
 public class IManagerDirectorProxy implements IManagerDirector {
     private final IManagerDirector managerDirector;

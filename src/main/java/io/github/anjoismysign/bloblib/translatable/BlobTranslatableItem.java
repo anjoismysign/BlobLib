@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.translatable;
 
 import io.github.anjoismysign.bloblib.domain.TranslatableRarity;
-import io.github.anjoismysign.bloblib.managers.BlobLibConfigManager;
+import io.github.anjoismysign.bloblib.manager.BlobLibConfigManager;
 import io.github.anjoismysign.bloblib.middleman.itemstack.ItemStackModder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;

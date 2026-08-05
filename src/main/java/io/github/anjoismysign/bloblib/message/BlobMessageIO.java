@@ -1,17 +1,8 @@
 package io.github.anjoismysign.bloblib.message;
 
 import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
-import io.github.anjoismysign.bloblib.message.BlobActionbarMessage;
-import io.github.anjoismysign.bloblib.message.BlobActionbarTitleMessage;
-import io.github.anjoismysign.bloblib.message.BlobChatActionbarMessage;
-import io.github.anjoismysign.bloblib.message.BlobChatActionbarTitleMessage;
-import io.github.anjoismysign.bloblib.message.BlobChatMessage;
-import io.github.anjoismysign.bloblib.message.BlobChatTitleMessage;
-import io.github.anjoismysign.bloblib.message.BlobMessage;
-import io.github.anjoismysign.bloblib.message.BlobSound;
-import io.github.anjoismysign.bloblib.message.BlobTitleMessage;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
-import io.github.anjoismysign.bloblib.utilities.TextColor;
+import io.github.anjoismysign.bloblib.utility.TextColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

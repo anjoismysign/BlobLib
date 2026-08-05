@@ -1,5 +1,5 @@
 package io.github.anjoismysign.bloblib.updater;
-import io.github.anjoismysign.bloblib.utilities.MinecraftTimeUnit;
+import io.github.anjoismysign.bloblib.utility.MinecraftTimeUnit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;

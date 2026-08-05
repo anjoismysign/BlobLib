@@ -1,9 +1,9 @@
 package io.github.anjoismysign.bloblib.positionable;
 
 import io.github.anjoismysign.bloblib.BlobLib;
+import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import io.github.anjoismysign.bloblib.translatable.BlobTranslatablePositionable;
 import io.github.anjoismysign.bloblib.translatable.TranslatablePositionable;
-import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;

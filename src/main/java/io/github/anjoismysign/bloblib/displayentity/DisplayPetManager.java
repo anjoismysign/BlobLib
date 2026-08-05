@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.displayentity;
 
-import io.github.anjoismysign.bloblib.managers.Manager;
-import io.github.anjoismysign.bloblib.managers.ManagerDirector;
+import io.github.anjoismysign.bloblib.manager.Manager;
+import io.github.anjoismysign.bloblib.manager.ManagerDirector;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;

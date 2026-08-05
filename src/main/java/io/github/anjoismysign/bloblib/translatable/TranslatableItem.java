@@ -2,7 +2,7 @@ package io.github.anjoismysign.bloblib.translatable;
 
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
 import io.github.anjoismysign.bloblib.domain.TranslatableRarity;
-import io.github.anjoismysign.bloblib.events.TranslatableItemCloneEvent;
+import io.github.anjoismysign.bloblib.event.TranslatableItemCloneEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

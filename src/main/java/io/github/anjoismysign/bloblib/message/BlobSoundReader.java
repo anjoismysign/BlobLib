@@ -2,8 +2,6 @@ package io.github.anjoismysign.bloblib.message;
 
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.api.BlobLibSoundAPI;
-import io.github.anjoismysign.bloblib.message.BlobSound;
-import io.github.anjoismysign.bloblib.message.MessageAudience;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;

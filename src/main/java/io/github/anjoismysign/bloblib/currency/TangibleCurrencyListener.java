@@ -1,6 +1,6 @@
 package io.github.anjoismysign.bloblib.currency;
 
-import io.github.anjoismysign.bloblib.managers.ManagerDirector;
+import io.github.anjoismysign.bloblib.manager.ManagerDirector;
 import org.bukkit.Material;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;

@@ -98,32 +98,32 @@ public class VaultManager implements Listener {
                 RegisteredServiceProvider<AbstractEconomy> provider = (RegisteredServiceProvider<AbstractEconomy>) eventProvider;
                 vaultEconomyWorker = new Found(provider.getProvider());
                 vaultEcoInstalled = true;
-                Bukkit.getLogger().fine("Vault AbstractEconomy override");
+                BlobLib.getInstance().getLogger().fine("Vault AbstractEconomy override");
             }
             case "net.milkbowl.vault.economy.Economy" -> {
                 RegisteredServiceProvider<Economy> provider = (RegisteredServiceProvider<Economy>) eventProvider;
                 vaultEconomyWorker = new Found(provider.getProvider());
                 vaultEcoInstalled = true;
-                Bukkit.getLogger().fine("Vault Economy override");
+                BlobLib.getInstance().getLogger().fine("Vault Economy override");
             }
             case "net.milkbowl.vault.permission.Permission" -> {
                 RegisteredServiceProvider<Permission> provider = (RegisteredServiceProvider<Permission>) eventProvider;
                 try {
                     vaultPermissionsWorker = new FoundPerms(provider.getProvider());
                     vaultPermsInstalled = true;
-                    Bukkit.getLogger().fine("Vault Permissions override");
+                    BlobLib.getInstance().getLogger().fine("Vault Permissions override");
                 } catch (ClassCastException ignored) {
                 }
             }
             case "net.milkbowl.vault.economy.MultiEconomy" -> {
                 elasticEconomy = ElasticEconomy.of(eventProvider.getProvider());
                 vaultMultiEcoInstalled = true;
-                Bukkit.getLogger().fine("Vault MultiEconomy override");
+                BlobLib.getInstance().getLogger().fine("Vault MultiEconomy override");
             }
             case "net.milkbowl.vault.profile.Profile" -> {
                 elasticProfile = ElasticProfile.of(eventProvider.getProvider());
                 vaultProfileInstalled = true;
-                Bukkit.getLogger().fine("Vault Profile override");
+                BlobLib.getInstance().getLogger().fine("Vault Profile override");
             }
         }
 
@@ -197,7 +197,7 @@ public class VaultManager implements Listener {
                 Class.forName(pkg);
             }
             return true;
-        } catch (Exception e) {
+        } catch (Exception exception) {
             return false;
         }
     }
@@ -214,10 +214,10 @@ public class VaultManager implements Listener {
 
     private boolean hasMultiEconomyProvider() {
         if (!packagesExists("net.milkbowl.vault.economy.MultiEconomy")) {
-            Bukkit.getLogger().info("Not using Vault2, disabling MultiEconomy features");
+            BlobLib.getInstance().getLogger().info("Not using Vault2, disabling MultiEconomy features");
             return false;
         }
-        Bukkit.getLogger().info("Detected Vault2, enabling MultiEconomy features");
+        BlobLib.getInstance().getLogger().info("Detected Vault2, enabling MultiEconomy features");
         RegisteredServiceProvider<?> multieconomyServiceProvider = servicesManager.getRegistration(MultiEconomy.class);
         if (multieconomyServiceProvider == null) {
             if (!vaultEcoInstalled)
@@ -241,7 +241,7 @@ public class VaultManager implements Listener {
 
     private boolean hasProfileProvider() {
         if (!packagesExists("net.milkbowl.vault.profile.Profile")) {
-            Bukkit.getLogger().info("Not using Vault2, disabling Profile features");
+            BlobLib.getInstance().getLogger().info("Not using Vault2, disabling Profile features");
             return false;
         }
         RegisteredServiceProvider<?> profileProvider = servicesManager.getRegistration(Profile.class);

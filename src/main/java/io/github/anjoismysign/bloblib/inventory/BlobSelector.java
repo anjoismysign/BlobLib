@@ -1,11 +1,9 @@
 package io.github.anjoismysign.bloblib.inventory;
 
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.inventory.BlobInventory;
-import io.github.anjoismysign.bloblib.inventory.VariableSelector;
-import io.github.anjoismysign.bloblib.listeners.BlobSelectorListener;
-import io.github.anjoismysign.bloblib.listeners.EditorActionType;
-import io.github.anjoismysign.bloblib.managers.SelectorListenerManager;
+import io.github.anjoismysign.bloblib.listener.BlobSelectorListener;
+import io.github.anjoismysign.bloblib.listener.EditorActionType;
+import io.github.anjoismysign.bloblib.manager.SelectorListenerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

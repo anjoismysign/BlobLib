@@ -1,6 +1,6 @@
 package io.github.anjoismysign.bloblib.display;
 
-import io.github.anjoismysign.bloblib.utilities.JOMLReader;
+import io.github.anjoismysign.bloblib.utility.JOMLReader;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Display;
 import org.bukkit.util.Transformation;

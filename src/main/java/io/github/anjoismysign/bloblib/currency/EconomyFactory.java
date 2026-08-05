@@ -1,8 +1,8 @@
 package io.github.anjoismysign.bloblib.currency;
 
-import io.github.anjoismysign.bloblib.managers.ObjectDirector;
-import io.github.anjoismysign.bloblib.managers.ObjectDirectorData;
-import io.github.anjoismysign.bloblib.managers.ManagerDirector;
+import io.github.anjoismysign.bloblib.manager.ManagerDirector;
+import io.github.anjoismysign.bloblib.manager.ObjectDirector;
+import io.github.anjoismysign.bloblib.manager.ObjectDirectorData;
 
 public class EconomyFactory {
 

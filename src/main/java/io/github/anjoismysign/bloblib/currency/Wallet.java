@@ -2,7 +2,6 @@ package io.github.anjoismysign.bloblib.currency;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Map;
 
 public class Wallet extends HashMap<String, Double> implements Serializable {
 

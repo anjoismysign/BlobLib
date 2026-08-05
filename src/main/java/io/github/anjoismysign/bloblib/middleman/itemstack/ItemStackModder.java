@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.middleman.itemstack;
 
-import io.github.anjoismysign.bloblib.utilities.ItemStackUtil;
-import io.github.anjoismysign.bloblib.utilities.TextColor;
+import io.github.anjoismysign.bloblib.utility.ItemStackUtil;
+import io.github.anjoismysign.bloblib.utility.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;

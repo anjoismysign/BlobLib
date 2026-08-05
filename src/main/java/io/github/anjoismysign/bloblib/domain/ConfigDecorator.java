@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.domain;
 
-import io.github.anjoismysign.bloblib.utilities.ResourceUtil;
-import io.github.anjoismysign.bloblib.listeners.ListenersSection;
+import io.github.anjoismysign.bloblib.listener.ListenersSection;
+import io.github.anjoismysign.bloblib.utility.ResourceUtil;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;

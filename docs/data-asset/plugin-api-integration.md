@@ -20,7 +20,7 @@ BlobLib combines each holoworld manager interface with SkeramidCommands' `Comman
 
 ## The Three Bukkit Manager Interfaces
 
-Each interface lives in the `io.github.anjoismysign.bloblib.managers.asset` package and follows the same pattern: extend a holoworld manager + `CommandTarget<T>`, expose a `Plugin plugin()`, and provide default implementations of `CommandTarget.get()` and `CommandTarget.parse()` that delegate to the inherited `map()`.
+Each interface lives in the `io.github.anjoismysign.bloblib.manager.asset` package and follows the same pattern: extend a holoworld manager + `CommandTarget<T>`, expose a `Plugin plugin()`, and provide default implementations of `CommandTarget.get()` and `CommandTarget.parse()` that delegate to the inherited `map()`.
 
 ### `BukkitIdentityManager<T extends DataAsset>`
 
@@ -133,7 +133,7 @@ Each record delegates these methods to the underlying holoworld manager:
 
 ## `PluginManager` — Central Registry
 
-`PluginManager` (singleton, `io.github.anjoismysign.bloblib.managers.PluginManager`) is the central registry where external plugins register their managers. It stores three maps:
+`PluginManager` (singleton, `io.github.anjoismysign.bloblib.manager.PluginManager`) is the central registry where external plugins register their managers. It stores three maps:
 
 ```java
 Map<Class<?>, BukkitAssetManager<?>> assetManagers
@@ -255,7 +255,7 @@ public <T extends LehmappSerializable, S extends BukkitSerializableEvent<T>>
 
 ## `ObjectManager<T>` — Runtime Objects with `CommandTarget`
 
-`ObjectManager<T extends BlobObject>` is an abstract class in `io.github.anjoismysign.bloblib.managers` that extends `Manager` and **implements `CommandTarget<T>` directly**. This is a separate path from the Bukkit manager interfaces — it is used for runtime objects that are loaded into memory and tracked by key, often from files in a custom directory.
+`ObjectManager<T extends BlobObject>` is an abstract class in `io.github.anjoismysign.bloblib.manager` that extends `Manager` and **implements `CommandTarget<T>` directly**. This is a separate path from the Bukkit manager interfaces — it is used for runtime objects that are loaded into memory and tracked by key, often from files in a custom directory.
 
 ```java
 public abstract class ObjectManager<T extends BlobObject>
@@ -557,11 +557,11 @@ package com.example.myplugin;
 
 import com.example.myplugin.asset.MyCustomData;
 import com.example.myplugin.asset.MyCustomIdentityGenerator;
-import io.github.anjoismysign.bloblib.managers.BlobPlugin;
-import io.github.anjoismysign.bloblib.managers.PluginManager;
-import io.github.anjoismysign.bloblib.managers.asset.BukkitIdentityManager;
-import io.github.anjoismysign.bloblib.managers.ManagerDirector;
-import io.github.anjoismysign.bloblib.managers.IManagerDirector;
+import io.github.anjoismysign.bloblib.manager.BlobPlugin;
+import io.github.anjoismysign.bloblib.manager.PluginManager;
+import io.github.anjoismysign.bloblib.manager.asset.BukkitIdentityManager;
+import io.github.anjoismysign.bloblib.manager.ManagerDirector;
+import io.github.anjoismysign.bloblib.manager.IManagerDirector;
 import org.jetbrains.annotations.NotNull;
 
 public class MyPlugin extends BlobPlugin {
@@ -686,5 +686,5 @@ CommandTarget<Player> onlinePlayers = BukkitCommandTarget.ONLINE_PLAYERS();
 - [SkeramidCommands documentation](https://github.com/anjoismysign/skeramidcommands) — the `CommandTarget`, `CommandTargetBuilder`, and `BukkitCommandTarget` API
 - [holoworld documentation](https://github.com/anjoismysign/holoworld) — the `DataAsset`, `IdentityManager`, `AssetManager`, `GeneratorManager` interfaces
 - [Actions](action.md), [Blob Messages](blob-message.md), [Blob Sounds](blob-sound.md) — built-in DataAsset types
-- `io.github.anjoismysign.bloblib.managers.PluginManager` — central registry JavaDoc
-- `io.github.anjoismysign.bloblib.managers.BlobPlugin` — base class JavaDoc
+- `io.github.anjoismysign.bloblib.manager.PluginManager` — central registry JavaDoc
+- `io.github.anjoismysign.bloblib.manager.BlobPlugin` — base class JavaDoc

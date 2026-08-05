@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.translatable;
 
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
-import io.github.anjoismysign.bloblib.utilities.TextColor;
+import io.github.anjoismysign.bloblib.utility.TextColor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;

@@ -2,9 +2,9 @@ package io.github.anjoismysign.bloblib.domain;
 
 import io.github.anjoismysign.anjo.entities.NamingConventions;
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.managers.BlobPlugin;
-import io.github.anjoismysign.bloblib.managers.InventoryManager;
-import io.github.anjoismysign.bloblib.managers.TranslatableManager;
+import io.github.anjoismysign.bloblib.manager.BlobPlugin;
+import io.github.anjoismysign.bloblib.manager.InventoryManager;
+import io.github.anjoismysign.bloblib.manager.TranslatableManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

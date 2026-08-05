@@ -1,7 +1,6 @@
 package io.github.anjoismysign.bloblib.message;
 
-import io.github.anjoismysign.bloblib.message.BlobMessage;
-import io.github.anjoismysign.bloblib.utilities.TextColor;
+import io.github.anjoismysign.bloblib.utility.TextColor;
 import net.md_5.bungee.api.ChatColor;
 
 import java.util.Locale;

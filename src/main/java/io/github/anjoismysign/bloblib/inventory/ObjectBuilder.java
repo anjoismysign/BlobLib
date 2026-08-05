@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.inventory;
 
 import io.github.anjoismysign.bloblib.domain.BlobObject;
-import io.github.anjoismysign.bloblib.managers.ObjectDirector;
+import io.github.anjoismysign.bloblib.manager.ObjectDirector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
