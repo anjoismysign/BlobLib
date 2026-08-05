@@ -89,10 +89,6 @@ public class PluginManager {
     public static void unregisterPlugin(BlobPlugin plugin) {
         unloadAssets(plugin);
         PluginManager manager = getInstance();
-        plugin.getSerializableManagers().values().forEach(bukkitSerializableManager -> {
-            bukkitSerializableManager.syncSaveAll();
-            bukkitSerializableManager.unregisterEvents();
-        });
         @Nullable List<Class<?>> list = manager.pluginManagers.get(plugin);
         if (list != null)
             list.forEach(clazz -> {

@@ -4,24 +4,14 @@ import io.github.anjoismysign.bloblib.component.ComponentConsumer;
 import io.github.anjoismysign.bloblib.domain.ConfigDecorator;
 import io.github.anjoismysign.bloblib.domain.PermissionDecorator;
 import io.github.anjoismysign.bloblib.logger.BlobPluginLogger;
-import io.github.anjoismysign.bloblib.manager.serializablemanager.BukkitSerializableEvent;
-import io.github.anjoismysign.bloblib.manager.serializablemanager.BukkitSerializableManager;
 import io.github.anjoismysign.bloblib.scheduler.BlobScheduler;
 import io.github.anjoismysign.bloblib.updater.GitHubPluginUpdater;
 import io.github.anjoismysign.bloblib.updater.PluginUpdater;
-import io.github.anjoismysign.psa.lehmapp.LehmappCrudable;
-import io.github.anjoismysign.psa.lehmapp.LehmappSerializable;
 import org.bukkit.Bukkit;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * @author anjoismysign
@@ -30,7 +20,6 @@ import java.util.function.Supplier;
  */
 public abstract class BlobPlugin extends JavaPlugin implements PermissionDecorator, ComponentConsumer {
     private final BlobPluginLogger logger = new BlobPluginLogger(this);
-    private final Map<Class<? extends LehmappSerializable>, BukkitSerializableManager<? extends LehmappSerializable>> serializableManagers = new HashMap<>();
     private final BlobScheduler scheduler = new BlobScheduler(this);
     private Permission permission;
 
@@ -154,30 +143,10 @@ public abstract class BlobPlugin extends JavaPlugin implements PermissionDecorat
 
     @NotNull
     public Permission getPermission() {
-        if (permission == null)
+        if (permission == null) {
             permission = new Permission(getName());
+        }
         return permission;
     }
 
-    @NotNull
-    public Map<Class<? extends LehmappSerializable>, BukkitSerializableManager<? extends LehmappSerializable>> getSerializableManagers() {
-        return serializableManagers;
-    }
-
-    @NotNull
-    public <T extends LehmappSerializable, S extends BukkitSerializableEvent<T>> BukkitSerializableManager<T> registerSerializableManager(
-            @NotNull Class<T> serializableClass,
-            @NotNull Function<LehmappCrudable, T> deserializer,
-            @Nullable Function<T, S> joinEvent,
-            @Nullable Function<T, S> quitEvent,
-            @Nullable Supplier<Boolean> eventsRegistrationSupplier) {
-        Objects.requireNonNull(deserializer, "'deserializeFunction' cannot be null");
-        BukkitSerializableManager<T> serializableManager = BukkitSerializableManager.of(
-                        deserializer,
-                        joinEvent,
-                        quitEvent,
-                        eventsRegistrationSupplier,this);
-        serializableManagers.put(serializableClass, serializableManager);
-        return serializableManager;
-    }
 }

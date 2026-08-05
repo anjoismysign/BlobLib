@@ -12,8 +12,6 @@ loadbefore:
   - WorldGuard
   - WeaponMechanics
   - ItemsAdder
-  - BlobTycoon
-  - AlternativeSaving
 authors: [ anjoismysign ]
 commands:
   bloblib:

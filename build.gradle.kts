@@ -42,7 +42,7 @@ repositories {
     }
 
     maven {
-        url = uri("https://repo.fancyplugins.de/releases")
+        url = uri("https://repo.fancyinnovations.com/releases")
     }
 
     maven {
@@ -96,7 +96,7 @@ dependencies {
 }
 
 group = "io.github.anjoismysign"
-version = "1.698.32"
+version = "1.700"
 description = "bloblib"
 java.sourceCompatibility = JavaVersion.VERSION_25
 java.targetCompatibility = JavaVersion.VERSION_25
