@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.middleman.itemstack;
 
-import io.github.anjoismysign.bloblib.events.OmniStackUpdateEvent;
-import io.github.anjoismysign.bloblib.utilities.TextColor;
+import io.github.anjoismysign.bloblib.event.OmniStackUpdateEvent;
+import io.github.anjoismysign.bloblib.utility.TextColor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;

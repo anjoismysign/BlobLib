@@ -2,7 +2,7 @@ package io.github.anjoismysign.bloblib.component;
 
 import io.github.anjoismysign.bloblib.component.textbubble.TextBubble1_19_4;
 import io.github.anjoismysign.bloblib.component.textbubble.TextBubbleComponent;
-import io.github.anjoismysign.bloblib.utilities.MinecraftVersion;
+import io.github.anjoismysign.bloblib.utility.MinecraftVersion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 

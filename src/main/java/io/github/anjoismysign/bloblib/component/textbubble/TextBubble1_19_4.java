@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.component.textbubble;
 
-import io.github.anjoismysign.bloblib.entities.MutableAddress;
-import io.github.anjoismysign.bloblib.utilities.TextColor;
+import io.github.anjoismysign.bloblib.address.MutableAddress;
+import io.github.anjoismysign.bloblib.utility.TextColor;
 import io.papermc.paper.math.Rotation;
 import org.bukkit.Location;
 import org.bukkit.World;

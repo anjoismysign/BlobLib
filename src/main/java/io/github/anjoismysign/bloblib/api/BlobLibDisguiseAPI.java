@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.api;
 
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.disguises.Disguiser;
+import io.github.anjoismysign.bloblib.disguise.Disguiser;
 
 public class BlobLibDisguiseAPI {
     private static BlobLibDisguiseAPI instance;

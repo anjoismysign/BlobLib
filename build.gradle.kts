@@ -42,7 +42,7 @@ repositories {
     }
 
     maven {
-        url = uri("https://repo.fancyplugins.de/releases")
+        url = uri("https://repo.fancyinnovations.com/releases")
     }
 
     maven {
@@ -71,8 +71,6 @@ dependencies {
     api(libs.io.github.anjoismysign.psa.sql)
     api(libs.io.github.anjoismysign.winona)
     api(libs.io.github.anjoismysign.aesthetic)
-    compileOnly("io.github.anjoismysign:alternativesaving:1.0")
-    compileOnly("io.github.anjoismysign:blobtycoon:2.0-SNAPSHOT")
     api("io.github.anjoismysign:blobutil:1.0")
     api("io.github.anjoismysign:bukkit-vector:1.0")
     api("io.github.anjoismysign:bukkit-blockfaceutil:1.0")
@@ -98,7 +96,7 @@ dependencies {
 }
 
 group = "io.github.anjoismysign"
-version = "1.698.32"
+version = "1.700"
 description = "bloblib"
 java.sourceCompatibility = JavaVersion.VERSION_25
 java.targetCompatibility = JavaVersion.VERSION_25

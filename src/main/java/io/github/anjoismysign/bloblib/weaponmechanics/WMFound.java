@@ -1,8 +1,8 @@
 package io.github.anjoismysign.bloblib.weaponmechanics;
 
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.events.BlobLibPreReloadEvent;
-import io.github.anjoismysign.bloblib.events.BlobLibReloadEvent;
+import io.github.anjoismysign.bloblib.event.BlobLibPreReloadEvent;
+import io.github.anjoismysign.bloblib.event.BlobLibReloadEvent;
 import me.deecaad.core.file.Configuration;
 import me.deecaad.weaponmechanics.WeaponMechanics;
 import me.deecaad.weaponmechanics.WeaponMechanicsAPI;

@@ -1,13 +1,13 @@
 package io.github.anjoismysign.bloblib.api;
 
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatableArea;
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatableBlock;
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatableItem;
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatablePositionable;
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatableSnippet;
-import io.github.anjoismysign.bloblib.managers.BlobLibConfigManager;
-import io.github.anjoismysign.bloblib.managers.TranslatableManager;
+import io.github.anjoismysign.bloblib.manager.BlobLibConfigManager;
+import io.github.anjoismysign.bloblib.manager.TranslatableManager;
+import io.github.anjoismysign.bloblib.translatable.TranslatableArea;
+import io.github.anjoismysign.bloblib.translatable.TranslatableBlock;
+import io.github.anjoismysign.bloblib.translatable.TranslatableItem;
+import io.github.anjoismysign.bloblib.translatable.TranslatablePositionable;
+import io.github.anjoismysign.bloblib.translatable.TranslatableSnippet;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

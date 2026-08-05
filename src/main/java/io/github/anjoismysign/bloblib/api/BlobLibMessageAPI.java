@@ -1,10 +1,10 @@
 package io.github.anjoismysign.bloblib.api;
 
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.entities.BlobMessageModder;
-import io.github.anjoismysign.bloblib.entities.message.BlobMessage;
-import io.github.anjoismysign.bloblib.managers.BlobLibConfigManager;
-import io.github.anjoismysign.bloblib.managers.LocalizableDataAssetManager;
+import io.github.anjoismysign.bloblib.manager.BlobLibConfigManager;
+import io.github.anjoismysign.bloblib.manager.LocalizableDataAssetManager;
+import io.github.anjoismysign.bloblib.message.BlobMessage;
+import io.github.anjoismysign.bloblib.message.BlobMessageModder;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

@@ -1,13 +1,13 @@
 package io.github.anjoismysign.bloblib.api;
 
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.entities.BlobEditor;
-import io.github.anjoismysign.bloblib.entities.inventory.VariableSelector;
-import io.github.anjoismysign.bloblib.entities.listeners.BlobChatListener;
-import io.github.anjoismysign.bloblib.entities.listeners.BlobDropListener;
-import io.github.anjoismysign.bloblib.entities.listeners.BlobEditorListener;
-import io.github.anjoismysign.bloblib.entities.listeners.BlobSelPosListener;
-import io.github.anjoismysign.bloblib.entities.listeners.BlobSelectorListener;
+import io.github.anjoismysign.bloblib.inventory.BlobEditor;
+import io.github.anjoismysign.bloblib.inventory.VariableSelector;
+import io.github.anjoismysign.bloblib.listener.BlobChatListener;
+import io.github.anjoismysign.bloblib.listener.BlobDropListener;
+import io.github.anjoismysign.bloblib.listener.BlobEditorListener;
+import io.github.anjoismysign.bloblib.listener.BlobSelPosListener;
+import io.github.anjoismysign.bloblib.listener.BlobSelectorListener;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

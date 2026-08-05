@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.component;
 
+import io.github.anjoismysign.bloblib.address.MutableAddress;
 import io.github.anjoismysign.bloblib.component.textbubble.TextBubbleComponent;
-import io.github.anjoismysign.bloblib.entities.MutableAddress;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

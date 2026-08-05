@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.component.textbubble;
 
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
-import io.github.anjoismysign.bloblib.entities.MutableAddress;
+import io.github.anjoismysign.bloblib.address.MutableAddress;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.GameRules;

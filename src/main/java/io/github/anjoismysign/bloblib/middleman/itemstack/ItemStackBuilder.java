@@ -2,7 +2,7 @@ package io.github.anjoismysign.bloblib.middleman.itemstack;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.utilities.TextColor;
+import io.github.anjoismysign.bloblib.utility.TextColor;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.Consumable;
 import io.papermc.paper.datacomponent.item.DamageResistant;

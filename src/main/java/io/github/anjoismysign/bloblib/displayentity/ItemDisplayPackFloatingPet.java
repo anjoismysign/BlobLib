@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.displayentity;
 
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.entities.display.DisplayDecorator;
+import io.github.anjoismysign.bloblib.display.DisplayDecorator;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.EntityType;

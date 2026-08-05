@@ -1,6 +1,6 @@
 package io.github.anjoismysign.bloblib.component;
 
-import io.github.anjoismysign.bloblib.entities.MutableAddress;
+import io.github.anjoismysign.bloblib.address.MutableAddress;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
