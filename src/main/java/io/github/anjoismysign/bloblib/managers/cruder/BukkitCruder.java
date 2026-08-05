@@ -2,7 +2,7 @@ package io.github.anjoismysign.bloblib.managers.cruder;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import io.github.anjoismysign.bloblib.entities.BlobSerializableHandler;
+import io.github.anjoismysign.bloblib.storage.BlobSerializableHandler;
 import io.github.anjoismysign.psa.crud.Crudable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

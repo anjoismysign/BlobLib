@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.managers.serializablemanager;
 
-import io.github.anjoismysign.bloblib.entities.BlobScheduler;
-import io.github.anjoismysign.bloblib.entities.PermissionDecorator;
+import io.github.anjoismysign.bloblib.scheduler.BlobScheduler;
+import io.github.anjoismysign.bloblib.domain.PermissionDecorator;
 import io.github.anjoismysign.psa.crud.CrudDatabaseCredentials;
 import io.github.anjoismysign.psa.crud.DatabaseCredentials;
 import io.github.anjoismysign.psa.lehmapp.LehmappCrudable;

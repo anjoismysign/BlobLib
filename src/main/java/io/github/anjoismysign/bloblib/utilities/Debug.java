@@ -1,6 +1,6 @@
 package io.github.anjoismysign.bloblib.utilities;
 
-import io.github.anjoismysign.bloblib.entities.logger.ConsoleLogger;
+import io.github.anjoismysign.bloblib.logger.ConsoleLogger;
 
 public class Debug {
     /**

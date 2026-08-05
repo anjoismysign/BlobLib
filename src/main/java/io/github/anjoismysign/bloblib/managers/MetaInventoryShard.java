@@ -1,8 +1,8 @@
 package io.github.anjoismysign.bloblib.managers;
 
-import io.github.anjoismysign.bloblib.entities.inventory.InventoryBuilderCarrier;
-import io.github.anjoismysign.bloblib.entities.inventory.MetaBlobInventory;
-import io.github.anjoismysign.bloblib.entities.inventory.MetaInventoryButton;
+import io.github.anjoismysign.bloblib.inventory.InventoryBuilderCarrier;
+import io.github.anjoismysign.bloblib.inventory.MetaBlobInventory;
+import io.github.anjoismysign.bloblib.inventory.MetaInventoryButton;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;

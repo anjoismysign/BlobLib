@@ -2,7 +2,7 @@ package io.github.anjoismysign.bloblib.itemapi;
 
 import io.github.anjoismysign.bloblib.BlobLibAssetAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatableItem;
+import io.github.anjoismysign.bloblib.translatable.TranslatableItem;
 import io.github.anjoismysign.holoworld.asset.DataAsset;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

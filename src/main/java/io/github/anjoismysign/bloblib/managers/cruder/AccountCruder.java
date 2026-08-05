@@ -2,17 +2,17 @@ package io.github.anjoismysign.bloblib.managers.cruder;
 
 import com.google.common.collect.Maps;
 import io.github.anjoismysign.bloblib.api.BlobLibProfileAPI;
-import io.github.anjoismysign.bloblib.entities.AccountCrudable;
-import io.github.anjoismysign.bloblib.entities.Cleanable;
-import io.github.anjoismysign.bloblib.entities.PlayerDecoratorAware;
-import io.github.anjoismysign.bloblib.entities.ProfileView;
-import io.github.anjoismysign.bloblib.events.ProfileManagementQuitEvent;
-import io.github.anjoismysign.bloblib.middleman.profile.Profile;
+import io.github.anjoismysign.bloblib.storage.AccountCrudable;
+import io.github.anjoismysign.bloblib.domain.Cleanable;
+import io.github.anjoismysign.bloblib.domain.PlayerDecoratorAware;
+import io.github.anjoismysign.bloblib.profile.ProfileView;
 import io.github.anjoismysign.bloblib.utilities.ClassHandler;
 import io.github.anjoismysign.psa.PostLoadable;
 import io.github.anjoismysign.psa.crud.Crudable;
 import io.papermc.paper.connection.PlayerConnection;
+import net.milkbowl.vault.profile.ProfileManagementQuitEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -49,11 +49,10 @@ public final class AccountCruder<R extends AccountCrudable<T>, T extends Crudabl
         super(plugin);
         var profileAPI = BlobLibProfileAPI.getInstance();
         var provider = profileAPI.getProvider();
-        var providerName = provider.getProviderName();
-        @NotNull var directory = providerName.equals("AbsentProfileProvider") ?
+        @NotNull var directory = provider.isAbsent() ?
                 plugin.getDataFolder()
                 :
-                new File(plugin.getDataFolder(), providerName);
+                new File(plugin.getDataFolder(), provider.getName());
         if (!directory.isDirectory()) {
             directory.mkdirs();
         }
@@ -124,12 +123,12 @@ public final class AccountCruder<R extends AccountCrudable<T>, T extends Crudabl
         } else {
             var profileAPI = BlobLibProfileAPI.getInstance();
             var provider = profileAPI.getProvider();
-            var profileManagement = provider.getProfileManagement(UUID.fromString(identification));
-            if (profileManagement == null) {
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(identification));
+            int currentProfileIndex = provider.getCurrentProfileIndex(offlinePlayer);
+            if (currentProfileIndex < 0) {
                 return;
             }
-            var profile = profileManagement.getProfiles().get(profileManagement.getCurrentProfileIndex());
-            data.create = profile.toView();
+            data.create = provider.toView(offlinePlayer, currentProfileIndex);
             createProfile(connection, data);
         }
     }
@@ -172,7 +171,7 @@ public final class AccountCruder<R extends AccountCrudable<T>, T extends Crudabl
     private void createProfile(PlayerConnection connection, Data<R,T> data) {
         var account = data.account;
         var view = data.create;
-        T profile = profileCreateFunction.apply(view.identification());
+        T profile = profileCreateFunction.apply(view.getIdentification());
         if (profile instanceof PostLoadable postLoadable){
             postLoadable.onPostLoad();
         }
@@ -215,7 +214,7 @@ public final class AccountCruder<R extends AccountCrudable<T>, T extends Crudabl
     @Override
     Runnable loadRunnable(PlayerConnection connection,
                           UUID uniqueId,
-                          Profile profile){
+                          ProfileView profile){
         String idToString = uniqueId.toString();
         return () -> {
             if (!connection.isConnected()) {
@@ -251,7 +250,7 @@ public final class AccountCruder<R extends AccountCrudable<T>, T extends Crudabl
                     .orElse(null);
             int index = profiles.indexOf(accountProfile);
             if (accountProfile == null){
-                data.create = profile.toView();
+                data.create = profile;
             }
             account.setCurrentProfileIndex(index);
             postLoadData(connection, data);

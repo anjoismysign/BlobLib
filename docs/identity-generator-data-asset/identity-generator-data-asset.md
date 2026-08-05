@@ -221,7 +221,7 @@ Below is a full, copy-paste-ready example of an external plugin that defines a `
 package com.example.myplugin.asset;
 
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatablePositionable;
+import io.github.anjoismysign.bloblib.translatable.TranslatablePositionable;
 import io.github.anjoismysign.holoworld.asset.DataAsset;
 import io.github.anjoismysign.holoworld.asset.IdentityGenerator;
 import org.jetbrains.annotations.NotNull;
@@ -329,7 +329,7 @@ import com.example.myplugin.asset.WarpData;
 import io.github.anjoismysign.bloblib.managers.BlobPlugin;
 import io.github.anjoismysign.bloblib.managers.PluginManager;
 import io.github.anjoismysign.bloblib.managers.asset.BukkitIdentityManager;
-import io.github.anjoismysign.bloblib.entities.IManagerDirector;
+import io.github.anjoismysign.bloblib.managers.IManagerDirector;
 import org.jetbrains.annotations.NotNull;
 
 public class MyWarpPlugin extends BlobPlugin {

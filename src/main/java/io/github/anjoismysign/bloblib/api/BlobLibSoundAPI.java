@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.api;
 
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.entities.message.BlobSound;
+import io.github.anjoismysign.bloblib.message.BlobSound;
 import io.github.anjoismysign.bloblib.managers.DataAssetManager;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;

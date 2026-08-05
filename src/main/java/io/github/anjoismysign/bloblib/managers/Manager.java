@@ -1,6 +1,6 @@
 package io.github.anjoismysign.bloblib.managers;
 
-import io.github.anjoismysign.bloblib.entities.Reloadable;
+import io.github.anjoismysign.bloblib.domain.Reloadable;
 
 public abstract class Manager implements Reloadable {
     private ManagerDirector managerDirector;

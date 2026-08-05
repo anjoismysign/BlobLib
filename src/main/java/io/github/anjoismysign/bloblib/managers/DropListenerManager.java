@@ -2,7 +2,7 @@ package io.github.anjoismysign.bloblib.managers;
 
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
-import io.github.anjoismysign.bloblib.entities.listeners.DropListener;
+import io.github.anjoismysign.bloblib.listeners.DropListener;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

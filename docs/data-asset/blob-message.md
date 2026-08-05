@@ -186,7 +186,7 @@ BlobMessage (interface, extends Localizable, DataAsset)
 
 ## BlobMessage Interface API
 
-Located in `io.github.anjoismysign.bloblib.entities.message.BlobMessage`.
+Located in `io.github.anjoismysign.bloblib.message.BlobMessage`.
 
 ### Static Methods
 
@@ -487,7 +487,7 @@ Returns a copy of all `en_us` messages as a `Map<String, BlobMessage>`.
 
 ## BlobMessageModder (Fluent Builder)
 
-Located in `io.github.anjoismysign.bloblib.entities.BlobMessageModder<T>`.
+Located in `io.github.anjoismysign.bloblib.message.BlobMessageModder<T>`.
 
 This is a generic fluent builder that wraps a `BlobMessage` and returns a `BlobMessageModder` for chaining. Call `get()` to retrieve the modified message.
 
@@ -543,7 +543,7 @@ BlobMessage modified = message.modder()
 
 ## BlobMessageIO — YAML Parsing Utilities
 
-Located in `io.github.anjoismysign.bloblib.entities.BlobMessageIO`.
+Located in `io.github.anjoismysign.bloblib.message.BlobMessageIO`.
 
 ```java
 public static BlobMessage read(@NotNull ConfigurationSection section,
@@ -600,7 +600,7 @@ Reads a string-only `BlobMessage` reference. Throws `IllegalArgumentException` i
 
 ### BlobSound Record
 
-Located in `io.github.anjoismysign.bloblib.entities.message.BlobSound`.
+Located in `io.github.anjoismysign.bloblib.message.BlobSound`.
 
 ```java
 public record BlobSound(
@@ -626,7 +626,7 @@ public record BlobSound(
 
 ### MessageAudience
 
-Located in `io.github.anjoismysign.bloblib.entities.message.MessageAudience`.
+Located in `io.github.anjoismysign.bloblib.message.MessageAudience`.
 
 ```java
 public enum MessageAudience {
@@ -681,7 +681,7 @@ BlobSound: System.Alert:WORLD
 
 ### BlobSoundReader
 
-Located in `io.github.anjoismysign.bloblib.entities.BlobSoundReader`.
+Located in `io.github.anjoismysign.bloblib.message.BlobSoundReader`.
 
 ```java
 public static BlobSound read(@NotNull ConfigurationSection section, @NotNull String key)
@@ -797,7 +797,7 @@ public class MyGameDirector extends ManagerDirector {
 
 ```java
 import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
-import io.github.anjoismysign.bloblib.entities.message.BlobMessage;
+import io.github.anjoismysign.bloblib.message.BlobMessage;
 import org.bukkit.entity.Player;
 
 public void sendWelcome(Player player) {
@@ -853,7 +853,7 @@ public void broadcastJoinMessage(Player player) {
 ### Example 5 — Using BlobMessageIO.parse() for Inline/Reference Reading
 
 ```java
-import io.github.anjoismysign.bloblib.entities.BlobMessageIO;
+import io.github.anjoismysign.bloblib.message.BlobMessageIO;
 import org.bukkit.configuration.ConfigurationSection;
 
 public void handleActionConfiguration(ConfigurationSection actionSection) {

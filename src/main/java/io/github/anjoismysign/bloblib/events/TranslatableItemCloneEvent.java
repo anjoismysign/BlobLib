@@ -1,6 +1,6 @@
 package io.github.anjoismysign.bloblib.events;
 
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatableItem;
+import io.github.anjoismysign.bloblib.translatable.TranslatableItem;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 

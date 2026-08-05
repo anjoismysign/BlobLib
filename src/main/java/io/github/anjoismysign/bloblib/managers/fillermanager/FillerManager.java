@@ -1,6 +1,6 @@
 package io.github.anjoismysign.bloblib.managers.fillermanager;
 
-import io.github.anjoismysign.bloblib.entities.VariableFiller;
+import io.github.anjoismysign.bloblib.inventory.VariableFiller;
 
 import java.util.HashMap;
 

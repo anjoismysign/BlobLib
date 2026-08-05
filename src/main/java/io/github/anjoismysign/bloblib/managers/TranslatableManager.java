@@ -2,12 +2,12 @@ package io.github.anjoismysign.bloblib.managers;
 
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
-import io.github.anjoismysign.bloblib.entities.DataAssetType;
-import io.github.anjoismysign.bloblib.entities.IFileManager;
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatableBlock;
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatableReader;
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatableRegistry;
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatableSnippet;
+import io.github.anjoismysign.bloblib.domain.DataAssetType;
+import io.github.anjoismysign.bloblib.storage.IFileManager;
+import io.github.anjoismysign.bloblib.translatable.TranslatableBlock;
+import io.github.anjoismysign.bloblib.translatable.TranslatableReader;
+import io.github.anjoismysign.bloblib.translatable.TranslatableRegistry;
+import io.github.anjoismysign.bloblib.translatable.TranslatableSnippet;
 import org.apache.commons.io.FilenameUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;

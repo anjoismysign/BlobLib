@@ -1,12 +1,12 @@
 package io.github.anjoismysign.bloblib.managers;
 
 import io.github.anjoismysign.bloblib.component.ComponentConsumer;
-import io.github.anjoismysign.bloblib.entities.BlobScheduler;
-import io.github.anjoismysign.bloblib.entities.ConfigDecorator;
-import io.github.anjoismysign.bloblib.entities.GitHubPluginUpdater;
-import io.github.anjoismysign.bloblib.entities.PermissionDecorator;
-import io.github.anjoismysign.bloblib.entities.PluginUpdater;
-import io.github.anjoismysign.bloblib.entities.logger.BlobPluginLogger;
+import io.github.anjoismysign.bloblib.scheduler.BlobScheduler;
+import io.github.anjoismysign.bloblib.domain.ConfigDecorator;
+import io.github.anjoismysign.bloblib.updater.GitHubPluginUpdater;
+import io.github.anjoismysign.bloblib.domain.PermissionDecorator;
+import io.github.anjoismysign.bloblib.updater.PluginUpdater;
+import io.github.anjoismysign.bloblib.logger.BlobPluginLogger;
 import io.github.anjoismysign.bloblib.managers.serializablemanager.BukkitSerializableEvent;
 import io.github.anjoismysign.bloblib.managers.serializablemanager.BukkitSerializableManager;
 import io.github.anjoismysign.psa.lehmapp.LehmappCrudable;

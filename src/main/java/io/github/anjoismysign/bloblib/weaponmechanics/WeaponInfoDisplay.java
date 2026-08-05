@@ -2,7 +2,7 @@ package io.github.anjoismysign.bloblib.weaponmechanics;
 
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatableItem;
+import io.github.anjoismysign.bloblib.translatable.TranslatableItem;
 import io.github.anjoismysign.bloblib.utilities.ItemStackUtil;
 import me.deecaad.weaponmechanics.utils.CustomTag;
 import me.deecaad.weaponmechanics.weapon.weaponevents.WeaponReloadCompleteEvent;

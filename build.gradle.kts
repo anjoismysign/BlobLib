@@ -71,8 +71,6 @@ dependencies {
     api(libs.io.github.anjoismysign.psa.sql)
     api(libs.io.github.anjoismysign.winona)
     api(libs.io.github.anjoismysign.aesthetic)
-    compileOnly("io.github.anjoismysign:alternativesaving:1.0")
-    compileOnly("io.github.anjoismysign:blobtycoon:2.0-SNAPSHOT")
     api("io.github.anjoismysign:blobutil:1.0")
     api("io.github.anjoismysign:bukkit-vector:1.0")
     api("io.github.anjoismysign:bukkit-blockfaceutil:1.0")

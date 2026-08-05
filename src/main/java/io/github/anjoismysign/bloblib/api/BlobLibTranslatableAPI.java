@@ -1,11 +1,11 @@
 package io.github.anjoismysign.bloblib.api;
 
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatableArea;
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatableBlock;
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatableItem;
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatablePositionable;
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatableSnippet;
+import io.github.anjoismysign.bloblib.translatable.TranslatableArea;
+import io.github.anjoismysign.bloblib.translatable.TranslatableBlock;
+import io.github.anjoismysign.bloblib.translatable.TranslatableItem;
+import io.github.anjoismysign.bloblib.translatable.TranslatablePositionable;
+import io.github.anjoismysign.bloblib.translatable.TranslatableSnippet;
 import io.github.anjoismysign.bloblib.managers.BlobLibConfigManager;
 import io.github.anjoismysign.bloblib.managers.TranslatableManager;
 import org.bukkit.entity.Player;

@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.managers;
 
-import io.github.anjoismysign.bloblib.entities.TranslatableRarity;
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatableItem;
+import io.github.anjoismysign.bloblib.domain.TranslatableRarity;
+import io.github.anjoismysign.bloblib.translatable.TranslatableItem;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;

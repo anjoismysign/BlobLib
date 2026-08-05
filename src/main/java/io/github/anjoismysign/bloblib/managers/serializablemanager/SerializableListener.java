@@ -1,6 +1,6 @@
 package io.github.anjoismysign.bloblib.managers.serializablemanager;
 
-import io.github.anjoismysign.bloblib.entities.BlobListener;
+import io.github.anjoismysign.bloblib.listeners.BlobListener;
 import io.github.anjoismysign.bloblib.managers.BlobPlugin;
 import io.github.anjoismysign.psa.lehmapp.LehmappSerializable;
 import org.bukkit.Bukkit;

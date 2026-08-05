@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.api;
 
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.entities.loot.LootTable;
+import io.github.anjoismysign.bloblib.loot.LootTable;
 import io.github.anjoismysign.bloblib.managers.LootTableManager;
 import org.bukkit.Location;
 import org.bukkit.inventory.Inventory;

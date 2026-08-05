@@ -1,13 +1,13 @@
 package io.github.anjoismysign.bloblib.managers;
 
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.entities.DataAssetType;
-import io.github.anjoismysign.bloblib.entities.area.Area;
-import io.github.anjoismysign.bloblib.entities.area.AreaIO;
-import io.github.anjoismysign.bloblib.entities.area.AreaType;
-import io.github.anjoismysign.bloblib.entities.area.BoxArea;
-import io.github.anjoismysign.bloblib.entities.translatable.BlobTranslatableArea;
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatableArea;
+import io.github.anjoismysign.bloblib.domain.DataAssetType;
+import io.github.anjoismysign.bloblib.area.Area;
+import io.github.anjoismysign.bloblib.area.AreaIO;
+import io.github.anjoismysign.bloblib.area.AreaType;
+import io.github.anjoismysign.bloblib.area.BoxArea;
+import io.github.anjoismysign.bloblib.translatable.BlobTranslatableArea;
+import io.github.anjoismysign.bloblib.translatable.TranslatableArea;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import org.apache.commons.lang3.function.TriFunction;
 import org.bukkit.Location;

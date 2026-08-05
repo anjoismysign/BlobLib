@@ -255,7 +255,7 @@ public <T extends LehmappSerializable, S extends BukkitSerializableEvent<T>>
 
 ## `ObjectManager<T>` — Runtime Objects with `CommandTarget`
 
-`ObjectManager<T extends BlobObject>` is an abstract class in `io.github.anjoismysign.bloblib.entities` that extends `Manager` and **implements `CommandTarget<T>` directly**. This is a separate path from the Bukkit manager interfaces — it is used for runtime objects that are loaded into memory and tracked by key, often from files in a custom directory.
+`ObjectManager<T extends BlobObject>` is an abstract class in `io.github.anjoismysign.bloblib.managers` that extends `Manager` and **implements `CommandTarget<T>` directly**. This is a separate path from the Bukkit manager interfaces — it is used for runtime objects that are loaded into memory and tracked by key, often from files in a custom directory.
 
 ```java
 public abstract class ObjectManager<T extends BlobObject>
@@ -561,7 +561,7 @@ import io.github.anjoismysign.bloblib.managers.BlobPlugin;
 import io.github.anjoismysign.bloblib.managers.PluginManager;
 import io.github.anjoismysign.bloblib.managers.asset.BukkitIdentityManager;
 import io.github.anjoismysign.bloblib.managers.ManagerDirector;
-import io.github.anjoismysign.bloblib.entities.IManagerDirector;
+import io.github.anjoismysign.bloblib.managers.IManagerDirector;
 import org.jetbrains.annotations.NotNull;
 
 public class MyPlugin extends BlobPlugin {

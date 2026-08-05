@@ -1,13 +1,13 @@
 package io.github.anjoismysign.bloblib.managers;
 
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.entities.DataAssetType;
-import io.github.anjoismysign.bloblib.entities.loot.LootEntry;
-import io.github.anjoismysign.bloblib.entities.loot.LootFunction;
-import io.github.anjoismysign.bloblib.entities.loot.LootPool;
-import io.github.anjoismysign.bloblib.entities.loot.LootTable;
-import io.github.anjoismysign.bloblib.entities.loot.LootTableIO;
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatableItem;
+import io.github.anjoismysign.bloblib.domain.DataAssetType;
+import io.github.anjoismysign.bloblib.loot.LootEntry;
+import io.github.anjoismysign.bloblib.loot.LootFunction;
+import io.github.anjoismysign.bloblib.loot.LootPool;
+import io.github.anjoismysign.bloblib.loot.LootTable;
+import io.github.anjoismysign.bloblib.loot.LootTableIO;
+import io.github.anjoismysign.bloblib.translatable.TranslatableItem;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import net.kyori.adventure.key.Key;

@@ -1,8 +1,8 @@
 package io.github.anjoismysign.bloblib.managers;
 
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.entities.DataAssetType;
-import io.github.anjoismysign.bloblib.entities.IFileManager;
+import io.github.anjoismysign.bloblib.domain.DataAssetType;
+import io.github.anjoismysign.bloblib.storage.IFileManager;
 import io.github.anjoismysign.bloblib.utilities.ResourceUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

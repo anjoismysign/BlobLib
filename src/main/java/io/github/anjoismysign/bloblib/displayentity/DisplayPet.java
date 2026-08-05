@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.displayentity;
 
-import io.github.anjoismysign.bloblib.entities.Ownable;
-import io.github.anjoismysign.bloblib.entities.ParticleContainer;
+import io.github.anjoismysign.bloblib.domain.Ownable;
+import io.github.anjoismysign.bloblib.domain.ParticleContainer;
 import org.bukkit.Location;
 import org.bukkit.Nameable;
 import org.bukkit.Particle;

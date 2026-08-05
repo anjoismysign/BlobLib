@@ -2,8 +2,8 @@ package io.github.anjoismysign.bloblib.managers;
 
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
-import io.github.anjoismysign.bloblib.entities.listeners.EditorListener;
-import io.github.anjoismysign.bloblib.entities.listeners.SelectorListener;
+import io.github.anjoismysign.bloblib.listeners.EditorListener;
+import io.github.anjoismysign.bloblib.listeners.SelectorListener;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 

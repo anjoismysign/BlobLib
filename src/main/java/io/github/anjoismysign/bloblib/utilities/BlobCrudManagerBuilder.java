@@ -6,7 +6,7 @@ import io.github.anjoismysign.anjo.crud.MySQLCrudManager;
 import io.github.anjoismysign.anjo.crud.SQLiteCrudManager;
 import io.github.anjoismysign.anjo.entities.NamingConventions;
 import io.github.anjoismysign.anjo.entities.Result;
-import io.github.anjoismysign.bloblib.entities.BlobCrudable;
+import io.github.anjoismysign.bloblib.storage.BlobCrudable;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import io.github.anjoismysign.bloblib.managers.BlobPlugin;
 import io.github.anjoismysign.bloblib.storage.BlobCrudManager;

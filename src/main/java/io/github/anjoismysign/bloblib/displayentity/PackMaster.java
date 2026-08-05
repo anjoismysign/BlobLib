@@ -1,6 +1,6 @@
 package io.github.anjoismysign.bloblib.displayentity;
 
-import io.github.anjoismysign.bloblib.entities.SquareMaster;
+import io.github.anjoismysign.bloblib.domain.SquareMaster;
 import io.github.anjoismysign.bloblib.gists.RelativeLocation;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

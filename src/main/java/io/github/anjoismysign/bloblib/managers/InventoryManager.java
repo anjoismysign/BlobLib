@@ -2,14 +2,14 @@ package io.github.anjoismysign.bloblib.managers;
 
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
-import io.github.anjoismysign.bloblib.entities.DataAssetType;
-import io.github.anjoismysign.bloblib.entities.IFileManager;
-import io.github.anjoismysign.bloblib.entities.inventory.BlobInventory;
-import io.github.anjoismysign.bloblib.entities.inventory.InventoryBuilderCarrier;
-import io.github.anjoismysign.bloblib.entities.inventory.InventoryButton;
-import io.github.anjoismysign.bloblib.entities.inventory.InventoryDataRegistry;
-import io.github.anjoismysign.bloblib.entities.inventory.MetaBlobInventory;
-import io.github.anjoismysign.bloblib.entities.inventory.MetaInventoryButton;
+import io.github.anjoismysign.bloblib.domain.DataAssetType;
+import io.github.anjoismysign.bloblib.storage.IFileManager;
+import io.github.anjoismysign.bloblib.inventory.BlobInventory;
+import io.github.anjoismysign.bloblib.inventory.InventoryBuilderCarrier;
+import io.github.anjoismysign.bloblib.inventory.InventoryButton;
+import io.github.anjoismysign.bloblib.inventory.InventoryDataRegistry;
+import io.github.anjoismysign.bloblib.inventory.MetaBlobInventory;
+import io.github.anjoismysign.bloblib.inventory.MetaInventoryButton;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import org.apache.commons.io.FilenameUtils;
 import org.bukkit.configuration.ConfigurationSection;
@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static io.github.anjoismysign.bloblib.entities.inventory.InventoryBuilderCarrier.BLOB_FROM_CONFIGURATION_SECTION;
+import static io.github.anjoismysign.bloblib.inventory.InventoryBuilderCarrier.BLOB_FROM_CONFIGURATION_SECTION;
 
 public class InventoryManager {
     private final BlobLib main;

@@ -1,6 +1,6 @@
 package io.github.anjoismysign.bloblib.managers;
 
-import io.github.anjoismysign.bloblib.entities.IFileManager;
+import io.github.anjoismysign.bloblib.storage.IFileManager;
 
 public interface IManagerDirector {
     /**

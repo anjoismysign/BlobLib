@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.managers.fillermanager;
 
-import io.github.anjoismysign.bloblib.entities.VariableFiller;
-import io.github.anjoismysign.bloblib.entities.VariableValue;
+import io.github.anjoismysign.bloblib.inventory.VariableFiller;
+import io.github.anjoismysign.bloblib.inventory.VariableValue;
 import io.github.anjoismysign.bloblib.utilities.MaterialUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

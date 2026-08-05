@@ -1,54 +1,33 @@
 package io.github.anjoismysign.bloblib.api;
 
-import io.github.anjoismysign.bloblib.middleman.AlternativeSavingMiddleman;
-import io.github.anjoismysign.bloblib.middleman.BlobTycoonMiddleman;
-import io.github.anjoismysign.bloblib.middleman.profile.AbsentProfileProvider;
-import io.github.anjoismysign.bloblib.middleman.profile.ProfileProvider;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.PluginManager;
+import io.github.anjoismysign.bloblib.BlobLib;
+import io.github.anjoismysign.bloblib.vault.profile.ElasticProfile;
 import org.jetbrains.annotations.NotNull;
 
 public class BlobLibProfileAPI {
 
     private static BlobLibProfileAPI INSTANCE;
 
-    public static BlobLibProfileAPI getInstance(){
-        if (INSTANCE == null){
+    public static BlobLibProfileAPI getInstance() {
+        if (INSTANCE == null) {
             INSTANCE = new BlobLibProfileAPI();
         }
         return INSTANCE;
     }
 
-    private ProfileProvider provider;
-
-    private BlobLibProfileAPI(){
-    }
-
-    private void setupProvider(){
-        PluginManager pluginManager = Bukkit.getPluginManager();
-        boolean blobTycoonEnabled = pluginManager.isPluginEnabled("BlobTycoon");
-        if (blobTycoonEnabled){
-            provider = new BlobTycoonMiddleman();
-            return;
-        }
-        boolean alternativeSavingEnabled = pluginManager.isPluginEnabled("AlternativeSaving");
-        if (alternativeSavingEnabled){
-            provider = new AlternativeSavingMiddleman();
-            return;
-        }
-        provider = new AbsentProfileProvider();
+    private BlobLibProfileAPI() {
     }
 
     /**
-     * Gets the ProfileProvider
-     * @return the ProfileProvider that has been detected.
+     * Gets the detected Vault profile provider, wrapped in an {@link ElasticProfile}.
+     * If there is no Vault compatible profile provider, the returned instance
+     * is absent ({@link ElasticProfile#isAbsent()} returns true).
+     *
+     * @return the ElasticProfile that has been detected.
      */
     @NotNull
-    public ProfileProvider getProvider() {
-        if (provider == null){
-            setupProvider();
-        }
-        return provider;
+    public ElasticProfile getProvider() {
+        return BlobLib.getInstance().getVaultManager().getElasticProfile();
     }
 
 }

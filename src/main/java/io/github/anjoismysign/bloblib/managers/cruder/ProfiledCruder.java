@@ -3,11 +3,11 @@ package io.github.anjoismysign.bloblib.managers.cruder;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.github.anjoismysign.bloblib.api.BlobLibProfileAPI;
-import io.github.anjoismysign.bloblib.entities.PlayerDecorator;
-import io.github.anjoismysign.bloblib.events.ProfileLoadEvent;
-import io.github.anjoismysign.bloblib.middleman.profile.Profile;
+import io.github.anjoismysign.bloblib.domain.PlayerDecorator;
+import io.github.anjoismysign.bloblib.profile.ProfileView;
 import io.github.anjoismysign.psa.crud.Crudable;
 import io.papermc.paper.connection.PlayerConnection;
+import net.milkbowl.vault.profile.ProfileLoadEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -52,7 +52,7 @@ public abstract class ProfiledCruder<T extends Crudable> implements Listener {
 
     @EventHandler
     public void onLoad(ProfileLoadEvent event) {
-        Profile profile = event.getProfile();
+        ProfileView profile = ProfileView.of(event.getIdentification(), event.getName());
         Player player = event.getPlayer();
         var connection = player.getConnection();
         UUID uniqueId = player.getUniqueId();
@@ -76,7 +76,7 @@ public abstract class ProfiledCruder<T extends Crudable> implements Listener {
 
     abstract Runnable loadRunnable(PlayerConnection connection,
                                    UUID uniqueId,
-                                   Profile profile);
+                                   ProfileView profile);
 
     void loadAll() {
         var scheduler = Bukkit.getScheduler();
@@ -87,13 +87,12 @@ public abstract class ProfiledCruder<T extends Crudable> implements Listener {
                     task.cancel();
                     return;
                 }
-                var profileManagement = BlobLibProfileAPI.getInstance().getProvider().getProfileManagement(player);
-                var currentProfileIndex = profileManagement.getCurrentProfileIndex();
+                var elasticProfile = BlobLibProfileAPI.getInstance().getProvider();
+                var currentProfileIndex = elasticProfile.getCurrentProfileIndex(player);
                 if (currentProfileIndex < 0){
                     return;
                 }
-                var profiles = profileManagement.getProfiles();
-                var profile = profiles.get(currentProfileIndex);
+                var profile = elasticProfile.toView(player, currentProfileIndex);
                 UUID uniqueId = player.getUniqueId();
                 loading.add(uniqueId);
                 playerDecorators.put(uniqueId.toString(), PlayerDecorator.of(player));

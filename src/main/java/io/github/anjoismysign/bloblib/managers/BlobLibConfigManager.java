@@ -1,10 +1,10 @@
 package io.github.anjoismysign.bloblib.managers;
 
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.entities.ConfigDecorator;
-import io.github.anjoismysign.bloblib.entities.ListenersSection;
-import io.github.anjoismysign.bloblib.entities.LocaleDefault;
-import io.github.anjoismysign.bloblib.entities.TinyEventListener;
+import io.github.anjoismysign.bloblib.domain.ConfigDecorator;
+import io.github.anjoismysign.bloblib.listeners.ListenersSection;
+import io.github.anjoismysign.bloblib.domain.LocaleDefault;
+import io.github.anjoismysign.bloblib.listeners.TinyEventListener;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 

@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.api;
 
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.entities.tag.TagSet;
+import io.github.anjoismysign.bloblib.tag.TagSet;
 import io.github.anjoismysign.bloblib.managers.DataAssetManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

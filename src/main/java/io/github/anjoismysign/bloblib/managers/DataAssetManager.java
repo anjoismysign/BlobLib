@@ -1,7 +1,7 @@
 package io.github.anjoismysign.bloblib.managers;
 
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.entities.DataAssetType;
+import io.github.anjoismysign.bloblib.domain.DataAssetType;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import io.github.anjoismysign.holoworld.asset.DataAsset;
 import org.apache.commons.io.FilenameUtils;
