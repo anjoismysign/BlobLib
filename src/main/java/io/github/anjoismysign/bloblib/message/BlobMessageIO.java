@@ -1,13 +1,10 @@
 package io.github.anjoismysign.bloblib.message;
 
-import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import io.github.anjoismysign.bloblib.utility.TextColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -17,10 +14,6 @@ import java.util.Optional;
  * Recommended method is parse(ConfigurationSection section)
  */
 public class BlobMessageIO {
-    public static BlobMessage read(@NotNull ConfigurationSection section,
-                                   @NotNull String key) {
-        return read(section, "en_us", key);
-    }
 
     /**
      * Will read a BlobMessage from a ConfigurationSection
@@ -134,37 +127,5 @@ public class BlobMessageIO {
             default ->
                     throw new IllegalArgumentException("Invalid message type: '" + type + "' at " + section.getCurrentPath());
         }
-    }
-
-    /**
-     * Whenever detecting BlobMessage being a single line String, will attempt to read it
-     * as a ReferenceBlobMessage.
-     * Otherwise, will attempt to read it as a SerialBlobMessage
-     *
-     * @param parent The parent configuration section
-     * @return BlobMessage
-     */
-    public static Optional<BlobMessage> parse(@NotNull ConfigurationSection parent,
-                                              @Nullable String key) {
-        if (!parent.contains("BlobMessage"))
-            return Optional.empty();
-        if (parent.isString("BlobMessage"))
-            return Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(parent.getString("BlobMessage")));
-        Objects.requireNonNull(key, "Key must be provided when parsing a BlobMessage");
-        return Optional.of(read(parent.getConfigurationSection("BlobMessage"), key));
-    }
-
-    /**
-     * Reads a ReferenceBlobMessage from a ConfigurationSection
-     *
-     * @param section The ConfigurationSection
-     * @return ReferenceBlobMessage
-     */
-    public static Optional<BlobMessage> readReference(ConfigurationSection section) {
-        if (!section.contains("BlobMessage"))
-            return Optional.empty();
-        if (!section.isString("BlobMessage"))
-            throw new IllegalArgumentException("'BlobMessage' must be a String");
-        return Optional.ofNullable(BlobLibMessageAPI.getInstance().getMessage(section.getString("BlobMessage")));
     }
 }
