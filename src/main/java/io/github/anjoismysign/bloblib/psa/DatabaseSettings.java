@@ -12,7 +12,7 @@ public record DatabaseSettings(@NotNull String providerName,
                                @Nullable String connectionString) {
 
     public static DatabaseSettings LOAD(){
-        BlobLib blobLib = new BlobLib();
+        BlobLib blobLib = BlobLib.getInstance();
         blobLib.saveResource("database-settings.yml", false);
         File file = blobLib.getDataFolder();
         if (!file.exists()){
