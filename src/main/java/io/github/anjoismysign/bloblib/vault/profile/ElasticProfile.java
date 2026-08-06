@@ -108,7 +108,6 @@ public class ElasticProfile implements Profile {
      * @return the ProfileView
      */
     public @NotNull ProfileView toView(@NotNull OfflinePlayer player, int index) {
-        return ProfileView.of(getProfileIdentification(player, index),
-                getProfileName(player, index));
+        return new ProfileView(getProfileIdentification(player, index), getProfileName(player, index));
     }
 }

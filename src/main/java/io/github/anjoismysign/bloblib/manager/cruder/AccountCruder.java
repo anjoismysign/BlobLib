@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -171,7 +172,7 @@ public final class AccountCruder<R extends AccountCrudable<T>, T extends Crudabl
     private void createProfile(PlayerConnection connection, Data<R,T> data) {
         var account = data.account;
         var view = data.create;
-        T profile = profileCreateFunction.apply(view.getIdentification());
+        T profile = profileCreateFunction.apply(Objects.requireNonNull(view, "View cannot be null!").identification());
         if (profile instanceof PostLoadable postLoadable){
             postLoadable.onPostLoad();
         }
@@ -245,7 +246,7 @@ public final class AccountCruder<R extends AccountCrudable<T>, T extends Crudabl
             var profiles = account.getProfiles();
             @Nullable var accountProfile = profiles
                     .stream()
-                    .filter(view -> view.getIdentification().equals(profile.getIdentification()))
+                    .filter(view -> view.getIdentification().equals(profile.identification()))
                     .findFirst()
                     .orElse(null);
             int index = profiles.indexOf(accountProfile);

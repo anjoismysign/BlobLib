@@ -52,7 +52,8 @@ public abstract class ProfiledCruder<T extends Crudable> implements Listener {
 
     @EventHandler
     public void onLoad(ProfileLoadEvent event) {
-        ProfileView profile = ProfileView.of(event.getIdentification(), event.getName());
+        ProfileView profile = new ProfileView(event.getIdentification(), event.getName());
+//        SimpleProfileView profile = ProfileView.of(event.getIdentification(), event.getName());
         Player player = event.getPlayer();
         var connection = player.getConnection();
         UUID uniqueId = player.getUniqueId();

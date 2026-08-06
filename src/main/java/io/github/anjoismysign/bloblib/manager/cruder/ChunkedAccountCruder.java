@@ -149,7 +149,7 @@ public final class ChunkedAccountCruder<T extends Crudable> extends ProfiledCrud
                     cleanable.cleanup();
                 }
             }
-            data.currentProfile = profileCruder.readOrGenerate(view.getIdentification());
+            data.currentProfile = profileCruder.readOrGenerate(view.identification());
             if (data.currentProfile instanceof PlayerDecoratorAware aware){
                 Runnable syncRunnable = () -> {
                     if (!connection.isConnected()){
@@ -179,7 +179,7 @@ public final class ChunkedAccountCruder<T extends Crudable> extends ProfiledCrud
         if (currentProfile != null) {
             profileCruder.update(currentProfile);
         }
-        T profile = profileCruder.createAndUpdate(view.getIdentification());
+        T profile = profileCruder.createAndUpdate(view.identification());
         if (profile instanceof PlayerDecoratorAware aware){
             Runnable syncRunnable = () -> {
                 if (!connection.isConnected()){
@@ -253,7 +253,7 @@ public final class ChunkedAccountCruder<T extends Crudable> extends ProfiledCrud
             var profiles = account.getProfiles();
             @Nullable var profileView = profiles
                     .stream()
-                    .filter(view -> view.getIdentification().equals(profile.getIdentification()))
+                    .filter(view -> view.identification().equals(profile.identification()))
                     .findFirst()
                     .orElse(null);
             int index = profiles.indexOf(profileView);
