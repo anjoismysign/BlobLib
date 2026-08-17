@@ -94,7 +94,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
         File directory = director.getFileManager().getDirectory(type);
         if (directory == null)
             throw new NullPointerException("Directory for " + type.name() + " is null");
-        loadFiles(directory);
+        loadFiles(directory, plugin);
         duplicates.forEach((identifier, paths) -> plugin.getAnjoLogger()
                 .log("Duplicate " + type.name() + ": '" + identifier + "' (found " + paths.size() + " instances)\n" +
                         paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
@@ -102,10 +102,20 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
 
     public void unload(BlobPlugin plugin) {
         String pluginName = plugin.getName();
-        this.assets.remove(pluginName);
+        @Nullable Set<String> references = this.assets.remove(pluginName);
+        if (references == null)
+            return;
+        for (String reference : references) {
+            locales.values().forEach(localeMap -> localeMap.remove(reference));
+            keyFirstFile.remove(reference);
+        }
     }
 
     private void loadFiles(File directory) {
+        loadFiles(directory, null);
+    }
+
+    private void loadFiles(File directory, @Nullable BlobPlugin plugin) {
         @Nullable File[] listOfFiles = directory.listFiles();
         if (listOfFiles == null)
             return;
@@ -114,7 +124,10 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
                 if (file.getName().equals(".DS_Store"))
                     continue;
                 try {
-                    loadYamlConfiguration(file);
+                    if (plugin == null)
+                        loadYamlConfiguration(file);
+                    else
+                        loadYamlConfiguration(file, plugin);
                 } catch (ConfigurationFieldException exception) {
                     blobLib.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
                     continue;
@@ -124,7 +137,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
                 }
             }
             if (file.isDirectory())
-                loadFiles(file);
+                loadFiles(file, plugin);
         }
     }
 
@@ -172,7 +185,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
                 if (asset == null)
                     return;
                 addOrCreateLocale(asset, fileName, filePath);
-                assets.get(plugin.getName()).add(fileName);
+                assets.computeIfAbsent(plugin.getName(), k -> new HashSet<>()).add(fileName);
             } catch (Throwable throwable) {
                 BlobLib.getInstance().getLogger().severe("At: " + filePath);
                 throwable.printStackTrace();
@@ -188,7 +201,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
             try {
                 T asset = readFunction.apply(section, locale, reference);
                 addOrCreateLocale(asset, reference, filePath);
-                assets.get(plugin.getName()).add(reference);
+                assets.computeIfAbsent(plugin.getName(), k -> new HashSet<>()).add(reference);
             } catch (Throwable throwable) {
                 BlobLib.getInstance().getLogger().severe("At: " + filePath);
                 throwable.printStackTrace();

@@ -4,7 +4,6 @@ import io.github.anjoismysign.anjo.entities.NamingConventions;
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.manager.BlobPlugin;
 import io.github.anjoismysign.bloblib.manager.InventoryManager;
-import io.github.anjoismysign.bloblib.manager.TranslatableManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,9 +27,9 @@ public enum DataAssetType {
     ACTION("actions", File.separator + "Action", "_actions.yml",
             (plugin, files) -> BlobLib.getInstance().getActionManager().continueLoadingAssets(plugin, true, files.toArray(new File[0]))),
     TRANSLATABLE_BLOCK("translatableBlocks", File.separator + "TranslatableBlock", "_translatable_blocks.yml",
-            (plugin, files) -> TranslatableManager.continueLoadingBlocks(plugin, true, files.toArray(new File[0]))),
+            (plugin, files) -> BlobLib.getInstance().getTranslatableBlockManager().continueLoadingAssets(plugin, true, files.toArray(new File[0]))),
     TRANSLATABLE_SNIPPET("translatableSnippets", File.separator + "TranslatableSnippet", "_translatable_snippets.yml",
-            (plugin, files) -> TranslatableManager.continueLoadingSnippets(plugin, true, files.toArray(new File[0]))),
+            (plugin, files) -> BlobLib.getInstance().getTranslatableSnippetManager().continueLoadingAssets(plugin, true, files.toArray(new File[0]))),
     TRANSLATABLE_ITEM("translatableItems", File.separator + "TranslatableItem", "_translatable_items.yml",
             (plugin, files) -> BlobLib.getInstance().getTranslatableItemManager().continueLoadingAssets(plugin, true, files.toArray(new File[0]))),
     TAG_SET("tagSets", File.separator + "TagSet", "_tag_sets.yml",

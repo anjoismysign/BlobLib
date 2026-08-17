@@ -491,7 +491,7 @@ public abstract class ManagerDirector implements IManagerDirector {
     public ManagerDirector registerTranslatableBlock(boolean debug, String... fileNames) {
         String[] yaml = addYml(fileNames);
         File[] freshFiles = freshFiles(debug, getRealFileManager().getDirectory(DataAssetType.TRANSLATABLE_BLOCK), yaml);
-        TranslatableManager.continueLoadingBlocks(plugin, true, freshFiles);
+        BlobLib.getInstance().getTranslatableBlockManager().continueLoadingAssets(plugin, true, freshFiles);
         if (debug) {
             getPlugin().getAnjoLogger().debug(" translatable block asset " + Arrays.toString(fileNames) + " successfully registered");
         }
@@ -521,7 +521,7 @@ public abstract class ManagerDirector implements IManagerDirector {
     public ManagerDirector registerTranslatableSnippet(boolean debug, String... fileNames) {
         String[] yaml = addYml(fileNames);
         File[] freshFiles = freshFiles(debug, getRealFileManager().getDirectory(DataAssetType.TRANSLATABLE_SNIPPET), yaml);
-        TranslatableManager.continueLoadingSnippets(plugin, true, freshFiles);
+        BlobLib.getInstance().getTranslatableSnippetManager().continueLoadingAssets(plugin, true, freshFiles);
         if (debug) {
             getPlugin().getAnjoLogger().debug(" translatable block asset " + Arrays.toString(fileNames) + " successfully registered");
         }

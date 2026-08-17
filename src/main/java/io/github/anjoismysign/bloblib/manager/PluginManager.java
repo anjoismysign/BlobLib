@@ -106,7 +106,8 @@ public class PluginManager {
      * @param plugin The plugin that is being disabled.
      */
     public static void unloadAssets(BlobPlugin plugin) {
-        TranslatableManager.unloadBlobPlugin(plugin);
+        blobLib().getTranslatableSnippetManager().unload(plugin);
+        blobLib().getTranslatableBlockManager().unload(plugin);
         blobLib().getTranslatableItemManager().unload(plugin);
         blobLib().getTagSetManager().unload(plugin);
         blobLib().getTranslatablePositionableManager().unload(plugin);
@@ -122,7 +123,8 @@ public class PluginManager {
                                     @NotNull IManagerDirector director) {
         Objects.requireNonNull(director,
                 plugin.getName() + "'s ManagerDirector is null!");
-        TranslatableManager.loadBlobPlugin(plugin, director);
+        blobLib().getTranslatableSnippetManager().reload(plugin, director);
+        blobLib().getTranslatableBlockManager().reload(plugin, director);
         blobLib().getTagSetManager().reload(plugin, director);
         blobLib().getTranslatableItemManager().reload(plugin, director);
         blobLib().getTranslatablePositionableManager().reload(plugin, director);
