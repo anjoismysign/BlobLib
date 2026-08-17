@@ -24,7 +24,6 @@ import io.github.anjoismysign.bloblib.manager.PluginManager;
 import io.github.anjoismysign.bloblib.manager.SelPosListenerManager;
 import io.github.anjoismysign.bloblib.manager.SelectorListenerManager;
 import io.github.anjoismysign.bloblib.manager.TranslatableAreaManager;
-import io.github.anjoismysign.bloblib.manager.TranslatableManager;
 import io.github.anjoismysign.bloblib.manager.VariableSelectorManager;
 import io.github.anjoismysign.bloblib.manager.fillermanager.FillerManager;
 import io.github.anjoismysign.bloblib.message.BlobMessage;
@@ -41,9 +40,11 @@ import io.github.anjoismysign.bloblib.psa.BukkitPSA;
 import io.github.anjoismysign.bloblib.tag.TagSet;
 import io.github.anjoismysign.bloblib.tag.TagSetIO;
 import io.github.anjoismysign.bloblib.translatable.BlobTranslatablePositionable;
+import io.github.anjoismysign.bloblib.translatable.TranslatableBlock;
 import io.github.anjoismysign.bloblib.translatable.TranslatableItem;
 import io.github.anjoismysign.bloblib.translatable.TranslatablePositionable;
 import io.github.anjoismysign.bloblib.translatable.TranslatableReader;
+import io.github.anjoismysign.bloblib.translatable.TranslatableSnippet;
 import io.github.anjoismysign.bloblib.utility.MinecraftVersion;
 import io.github.anjoismysign.bloblib.utility.SerializationLib;
 import io.github.anjoismysign.bloblib.vault.VaultManager;
@@ -81,7 +82,8 @@ public class BlobLib extends JavaPlugin {
     private BlobLibConfigManager configManager;
     private BlobLibListenerManager listenerManager;
     private InventoryTrackerManager inventoryTrackerManager;
-    private TranslatableManager translatableManager;
+    private LocalizableDataAssetManager<TranslatableSnippet> translatableSnippetManager;
+    private LocalizableDataAssetManager<TranslatableBlock> translatableBlockManager;
     private LocalizableDataAssetManager<TranslatableItem> translatableItemManager;
     private LocalizableDataAssetManager<TranslatablePositionable> translatablePositionableManager;
     private TranslatableAreaManager translatableAreaManager;
@@ -145,7 +147,16 @@ public class BlobLib extends JavaPlugin {
 
         inventoryManager = new InventoryManager();
         inventoryTrackerManager = new InventoryTrackerManager();
-        translatableManager = new TranslatableManager();
+        translatableSnippetManager = LocalizableDataAssetManager
+                .of(fileManager.getDirectory(DataAssetType.TRANSLATABLE_SNIPPET),
+                        TranslatableReader::SNIPPET,
+                        DataAssetType.TRANSLATABLE_SNIPPET,
+                        section -> section.isString("Snippet"));
+        translatableBlockManager = LocalizableDataAssetManager
+                .of(fileManager.getDirectory(DataAssetType.TRANSLATABLE_BLOCK),
+                        TranslatableReader::BLOCK,
+                        DataAssetType.TRANSLATABLE_BLOCK,
+                        section -> !section.getStringList("Block").isEmpty());
         tagSetManager = DataAssetManager.of(fileManager.getDirectory(DataAssetType.TAG_SET),
                 TagSetIO::READ,
                 DataAssetType.TAG_SET,
@@ -220,9 +231,9 @@ public class BlobLib extends JavaPlugin {
         listenerManager.reload();
         soundManager.reload();
         tagSetManager.reload();
-        translatableManager.reload();
+        translatableSnippetManager.reload();
+        translatableBlockManager.reload();
         translatableItemManager.reload();
-        translatablePositionableManager.reload();
         translatablePositionableManager.reload();
         translatableAreaManager.reload();
         messageManager.reload();
@@ -282,8 +293,12 @@ public class BlobLib extends JavaPlugin {
         return inventoryTrackerManager;
     }
 
-    public TranslatableManager getTranslatableManager() {
-        return translatableManager;
+    public LocalizableDataAssetManager<TranslatableSnippet> getTranslatableSnippetManager() {
+        return translatableSnippetManager;
+    }
+
+    public LocalizableDataAssetManager<TranslatableBlock> getTranslatableBlockManager() {
+        return translatableBlockManager;
     }
 
     public LocalizableDataAssetManager<TranslatableItem> getTranslatableItemManager() {

@@ -2,7 +2,7 @@ package io.github.anjoismysign.bloblib.api;
 
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.manager.BlobLibConfigManager;
-import io.github.anjoismysign.bloblib.manager.TranslatableManager;
+import io.github.anjoismysign.bloblib.manager.LocalizableDataAssetManager;
 import io.github.anjoismysign.bloblib.translatable.TranslatableArea;
 import io.github.anjoismysign.bloblib.translatable.TranslatableBlock;
 import io.github.anjoismysign.bloblib.translatable.TranslatableItem;
@@ -38,10 +38,17 @@ public class BlobLibTranslatableAPI {
     }
 
     /**
-     * @return The translatable manager
+     * @return The TranslatableBlock manager
      */
-    public TranslatableManager getTranslatableManager() {
-        return plugin.getTranslatableManager();
+    public LocalizableDataAssetManager<TranslatableBlock> getTranslatableBlockManager() {
+        return plugin.getTranslatableBlockManager();
+    }
+
+    /**
+     * @return The TranslatableSnippet manager
+     */
+    public LocalizableDataAssetManager<TranslatableSnippet> getTranslatableSnippetManager() {
+        return plugin.getTranslatableSnippetManager();
     }
 
     /**
@@ -55,7 +62,7 @@ public class BlobLibTranslatableAPI {
     @Nullable
     public TranslatableBlock getTranslatableBlock(@NotNull String identifier,
                                                   @NotNull String locale) {
-        return getTranslatableManager().getBlock(identifier, locale);
+        return getTranslatableBlockManager().getAsset(identifier, locale);
     }
 
     /**
@@ -66,7 +73,7 @@ public class BlobLibTranslatableAPI {
      */
     @Nullable
     public TranslatableBlock getTranslatableBlock(@NotNull String identifier) {
-        return getTranslatableManager().getBlock(identifier);
+        return getTranslatableBlockManager().getAsset(identifier);
     }
 
     /**
@@ -80,7 +87,7 @@ public class BlobLibTranslatableAPI {
     public TranslatableBlock getTranslatableBlock(@NotNull String identifier,
                                                   @NotNull Player player) {
         Objects.requireNonNull(player);
-        return getTranslatableManager().getBlock(identifier, player.getLocale());
+        return getTranslatableBlockManager().getAsset(identifier, player.getLocale());
     }
 
     /**
@@ -94,7 +101,7 @@ public class BlobLibTranslatableAPI {
     @Nullable
     public TranslatableSnippet getTranslatableSnippet(@NotNull String identifier,
                                                       @NotNull String locale) {
-        return getTranslatableManager().getSnippet(identifier, locale);
+        return getTranslatableSnippetManager().getAsset(identifier, locale);
     }
 
     /**
@@ -105,7 +112,7 @@ public class BlobLibTranslatableAPI {
      */
     @Nullable
     public TranslatableSnippet getTranslatableSnippet(@NotNull String identifier) {
-        return getTranslatableManager().getSnippet(identifier);
+        return getTranslatableSnippetManager().getAsset(identifier);
     }
 
     /**
@@ -119,7 +126,7 @@ public class BlobLibTranslatableAPI {
     public TranslatableSnippet getTranslatableSnippet(@NotNull String identifier,
                                                       @NotNull Player player) {
         Objects.requireNonNull(player);
-        return getTranslatableManager().getSnippet(identifier, player.getLocale());
+        return getTranslatableSnippetManager().getAsset(identifier, player.getLocale());
     }
 
     /**

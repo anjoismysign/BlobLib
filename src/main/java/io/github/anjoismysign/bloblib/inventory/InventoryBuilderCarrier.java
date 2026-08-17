@@ -1,6 +1,8 @@
 package io.github.anjoismysign.bloblib.inventory;
 
+import io.github.anjoismysign.bloblib.domain.Localizable;
 import io.github.anjoismysign.bloblib.utility.TextColor;
+import io.github.anjoismysign.holoworld.asset.DataAsset;
 import org.apache.commons.io.FilenameUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -17,16 +19,15 @@ public record InventoryBuilderCarrier<T extends InventoryButton>(@NotNull String
                                                                  @Nullable String type,
                                                                  @NotNull String reference,
                                                                  @NotNull String locale,
-                                                                 @NotNull String path) {
-    public boolean isMetaInventoryButton() {
-        return type != null;
+                                                                 @NotNull String path) implements DataAsset, Localizable {
+    @Override
+    @NotNull
+    public String identifier() {
+        return reference;
     }
 
-    public static InventoryBuilderCarrier<InventoryButton> BLOB_FROM_FILE(@NotNull File file) {
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(
-                Objects.requireNonNull(file, "'file' cannot be null!"));
-        String fileName = FilenameUtils.removeExtension(file.getName());
-        return BLOB_FROM_CONFIGURATION_SECTION(configuration, fileName, file.getPath());
+    public boolean isMetaInventoryButton() {
+        return type != null;
     }
 
     @NotNull
@@ -60,13 +61,6 @@ public record InventoryBuilderCarrier<T extends InventoryButton>(@NotNull String
                 .fromConfigurationSection(buttonsSection, locale, reference);
         return new InventoryBuilderCarrier<>(title, size, buttonManager,
                 null, reference, locale, path);
-    }
-
-    public static InventoryBuilderCarrier<MetaInventoryButton> META_FROM_FILE(@NotNull File file) {
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(
-                Objects.requireNonNull(file, "'file' cannot be null!"));
-        String fileName = FilenameUtils.removeExtension(file.getName());
-        return META_FROM_CONFIGURATION_SECTION(configuration, fileName, file.getPath());
     }
 
     public static InventoryBuilderCarrier<MetaInventoryButton> META_FROM_CONFIGURATION_SECTION(
@@ -107,4 +101,5 @@ public record InventoryBuilderCarrier<T extends InventoryButton>(@NotNull String
         Objects.requireNonNull(locale, "'locale' cannot be null!");
         return new InventoryBuilderCarrier<>(title, size, buttonManager, type, reference, locale, path);
     }
+
 }
