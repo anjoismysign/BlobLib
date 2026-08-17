@@ -59,12 +59,17 @@ public class BlobTranslatableItem implements TranslatableItem {
         ItemMeta meta = clone.getItemMeta();
         Objects.requireNonNull(meta, "ItemMeta cannot be null");
         ItemStackModder modder = ItemStackModder.mod(clone);
-        modder.itemName(function.apply(meta.getItemName()));
-        modder.displayName(function.apply(meta.getDisplayName()));
-        if (meta.hasLore())
+        if (meta.hasItemName()) {
+            modder.itemName(function.apply(meta.getItemName()));
+        }
+        if (meta.hasDisplayName()) {
+            modder.displayName(function.apply(meta.getDisplayName()));
+        }
+        if (meta.hasLore()) {
             modder.lore(meta.getLore().stream()
                     .map(function)
                     .toList());
+        }
         return new BlobTranslatableItem(key, locale, ()->clone, rarity);
     }
 
