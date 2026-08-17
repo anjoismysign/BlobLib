@@ -3,6 +3,7 @@ package io.github.anjoismysign.bloblib.message;
 import io.github.anjoismysign.bloblib.translatable.BlobTranslatableSnippet;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,8 +33,8 @@ public class BlobTitleMessage extends AbstractMessage {
                             @Nullable BlobSound sound,
                             @NotNull String locale) {
         super(reference, sound, locale, null);
-        this.title = BlobTranslatableSnippet.PARSE(title, locale);
-        this.subtitle = BlobTranslatableSnippet.PARSE(subtitle, locale);
+        this.title = title;
+        this.subtitle = subtitle;
         this.fadeIn = fadeIn;
         this.stay = stay;
         this.fadeOut = fadeOut;
@@ -41,7 +42,7 @@ public class BlobTitleMessage extends AbstractMessage {
 
     @Override
     public void send(Player player) {
-        player.sendTitle(title, subtitle, fadeIn, stay, fadeOut);
+        player.sendTitle(BlobTranslatableSnippet.PARSE(title, locale()), BlobTranslatableSnippet.PARSE(subtitle, locale()), fadeIn, stay, fadeOut);
     }
 
     @Override
@@ -49,14 +50,21 @@ public class BlobTitleMessage extends AbstractMessage {
         if (commandSender instanceof Player player)
             handle(player);
         else {
-            commandSender.sendMessage(title);
-            commandSender.sendMessage(subtitle);
+            commandSender.sendMessage(BlobTranslatableSnippet.PARSE(title, locale()));
+            commandSender.sendMessage(BlobTranslatableSnippet.PARSE(subtitle, locale()));
         }
     }
 
+    @ApiStatus.Internal
     @Override
     public @NotNull BlobTitleMessage modify(Function<String, String> function) {
         return new BlobTitleMessage(identifier(), function.apply(title), function.apply(subtitle), fadeIn, stay,
                 fadeOut, getSound(), locale());
     }
+
+    @Override
+    public @NotNull ModernMessage toModernMessage() {
+        return new ModernMessage(identifier(), null, null, null, title, subtitle, fadeIn, stay, fadeOut, getSound(), locale(), getClickEvent());
+    }
+
 }

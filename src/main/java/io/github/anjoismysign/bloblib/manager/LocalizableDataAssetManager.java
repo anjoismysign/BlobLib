@@ -21,18 +21,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
+public class LocalizableDataAssetManager<T extends DataAsset & Localizable> implements BlobLibDataAssetManager<T> {
     private final File assetDirectory;
     private final TriFunction<ConfigurationSection, String, String, T> readFunction;
     private final DataAssetType type;
     private final Predicate<ConfigurationSection> filter;
 
-    private final BlobLib main;
-    private final @Nullable BiConsumer<YamlConfiguration, T> saveConsumer;
+    private final BlobLib blobLib;
     private Map<String, Set<String>> assets;
     private Map<String, List<String>> duplicates;
     private Map<String, String> keyFirstFile;
@@ -47,17 +45,13 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
      * @param filter         The filter that if true will load the asset.
      *                       Think of it as checks that once met, the ConfigurationSection
      *                       is considered from an asset.
-     * @param saveConsumer   Accepts the YamlConfiguration where it is being saved and the asset.
-     *                       There's no need to save the file.
-     *                       There's no need to save the locale.
      * @param <T>            The type of the asset
      * @return The new instance of the LocalizableDataAssetManager
      */
     public static <T extends DataAsset & Localizable> LocalizableDataAssetManager<T> of(@NotNull File assetDirectory,
                                                                                         @NotNull TriFunction<ConfigurationSection, String, String, T> readFunction,
                                                                                         @NotNull DataAssetType type,
-                                                                                        @NotNull Predicate<ConfigurationSection> filter,
-                                                                                        @Nullable BiConsumer<YamlConfiguration, T> saveConsumer) {
+                                                                                        @NotNull Predicate<ConfigurationSection> filter) {
         Objects.requireNonNull(assetDirectory, "Asset directory cannot be null");
         Objects.requireNonNull(readFunction, "Read function cannot be null");
         Objects.requireNonNull(type, "Data asset type cannot be null");
@@ -66,16 +60,14 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
             assetDirectory.mkdirs();
         }
         return new LocalizableDataAssetManager<>(assetDirectory,
-                readFunction, type, filter, saveConsumer);
+                readFunction, type, filter);
     }
 
     LocalizableDataAssetManager(@NotNull File assetDirectory,
                                 @NotNull TriFunction<ConfigurationSection, String, String, T> readFunction,
                                 @NotNull DataAssetType type,
-                                @NotNull Predicate<ConfigurationSection> filter,
-                                @Nullable BiConsumer<YamlConfiguration, T> saveConsumer) {
-        this.main = BlobLib.getInstance();
-        this.saveConsumer = saveConsumer;
+                                @NotNull Predicate<ConfigurationSection> filter) {
+        this.blobLib = BlobLib.getInstance();
         this.assetDirectory = assetDirectory;
         this.readFunction = readFunction;
         this.type = type;
@@ -113,32 +105,6 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
         this.assets.remove(pluginName);
     }
 
-    public void saveAsset(@NotNull File file,
-                          @NotNull T asset) {
-        if (saveConsumer == null)
-            return;
-        Objects.requireNonNull(file, "'file' cannot be null");
-        Objects.requireNonNull(asset, "'asset' cannot be null");
-        if (!file.getName().endsWith(".yml"))
-            return;
-        File directory = file.getParentFile();
-        if (!directory.isDirectory())
-            directory.mkdirs();
-        try {
-            if (!file.isFile()) {
-                file.createNewFile();
-            }
-            String identifier = file.getName().replace(".yml", "");
-            YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-            configuration.set("Locale", asset.locale());
-            saveConsumer.accept(configuration, asset);
-            configuration.save(file);
-            addOrCreateLocale(asset, identifier, file.getPath());
-        } catch (Throwable throwable) {
-            main.getLogger().severe(throwable.getMessage() + "\nAt: " + file.getPath());
-        }
-    }
-
     private void loadFiles(File directory) {
         @Nullable File[] listOfFiles = directory.listFiles();
         if (listOfFiles == null)
@@ -150,7 +116,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
                 try {
                     loadYamlConfiguration(file);
                 } catch (ConfigurationFieldException exception) {
-                    main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
+                    blobLib.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
                     continue;
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
@@ -263,10 +229,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
     @Nullable
     public T getAsset(@NotNull String identifier) {
         Objects.requireNonNull(identifier);
-        Map<String, T> map = locales.get("en_us");
-        if (map == null)
-            return null;
-        return map.get(identifier);
+        return getAsset(identifier, "en_us");
     }
 
     public List<T> getAssets(@NotNull String locale) {
@@ -287,10 +250,6 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
         if (english != null)
             copy.putAll(english);
         return copy;
-    }
-
-    public List<T> getAssets() {
-        return getAssets("en_us");
     }
 
     @Nullable

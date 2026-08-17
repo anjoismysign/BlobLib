@@ -6,6 +6,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,8 +51,8 @@ public class BlobChatActionbarTitleMessage extends BlobChatMessage {
                                          @NotNull String locale,
                                          @Nullable ClickEvent clickEvent) {
         super(reference, chat, hover, sound, locale, clickEvent);
-        this.actionbar = BlobTranslatableSnippet.PARSE(actionbar, locale);
-        this.title = BlobTranslatableSnippet.PARSE(title, locale);
+        this.actionbar = actionbar;
+        this.title = title;
         this.subtitle = subtitle;
         this.fadeIn = fadeIn;
         this.stay = stay;
@@ -66,8 +67,8 @@ public class BlobChatActionbarTitleMessage extends BlobChatMessage {
     @Override
     public void send(Player player) {
         super.send(player);
-        player.sendTitle(title, subtitle, fadeIn, stay, fadeOut);
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(actionbar));
+        player.sendTitle(BlobTranslatableSnippet.PARSE(title, locale()), BlobTranslatableSnippet.PARSE(subtitle, locale()), fadeIn, stay, fadeOut);
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(BlobTranslatableSnippet.PARSE(actionbar, locale())));
     }
 
     /**
@@ -80,10 +81,10 @@ public class BlobChatActionbarTitleMessage extends BlobChatMessage {
         if (commandSender instanceof Player player)
             handle(player);
         else {
-            commandSender.sendMessage(chat);
-            commandSender.sendMessage(title);
-            commandSender.sendMessage(subtitle);
-            commandSender.sendMessage(actionbar);
+            commandSender.sendMessage(BlobTranslatableSnippet.PARSE(chat, locale()));
+            commandSender.sendMessage(BlobTranslatableSnippet.PARSE(actionbar, locale()));
+            commandSender.sendMessage(BlobTranslatableSnippet.PARSE(title, locale()));
+            commandSender.sendMessage(BlobTranslatableSnippet.PARSE(subtitle, locale()));
         }
     }
 
@@ -91,6 +92,7 @@ public class BlobChatActionbarTitleMessage extends BlobChatMessage {
      * @param function the function to apply to the chat and actionbar message
      * @return a new BlobChatActionbarMessage with the modified chat and actionbar message
      */
+    @ApiStatus.Internal
     @Override
     public @NotNull BlobChatActionbarTitleMessage modify(Function<String, String> function) {
         return new BlobChatActionbarTitleMessage(identifier(), function.apply(chat),
@@ -110,5 +112,10 @@ public class BlobChatActionbarTitleMessage extends BlobChatMessage {
         return new BlobChatActionbarTitleMessage(identifier(), chat, hover, actionbar, title,
                 subtitle, fadeIn, stay, fadeOut, getSound(), locale(),
                 event);
+    }
+
+    @Override
+    public ModernMessage toModernMessage(){
+        return new ModernMessage(identifier(), chat, hover, actionbar, title, subtitle, fadeIn, stay, fadeOut, getSound(), locale(), getClickEvent());
     }
 }

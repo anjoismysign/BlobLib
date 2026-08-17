@@ -6,6 +6,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,7 +39,7 @@ public class BlobChatActionbarMessage extends BlobChatMessage {
                                     @NotNull String locale,
                                     @Nullable ClickEvent clickEvent) {
         super(reference, chat, hover, sound, locale, clickEvent);
-        this.actionbar = BlobTranslatableSnippet.PARSE(actionbar, locale);
+        this.actionbar = actionbar;
     }
 
     /**
@@ -49,7 +50,7 @@ public class BlobChatActionbarMessage extends BlobChatMessage {
     @Override
     public void send(Player player) {
         super.send(player);
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(actionbar));
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(BlobTranslatableSnippet.PARSE(actionbar, locale())));
     }
 
     /**
@@ -62,8 +63,8 @@ public class BlobChatActionbarMessage extends BlobChatMessage {
         if (commandSender instanceof Player player)
             handle(player);
         else {
-            commandSender.sendMessage(chat);
-            commandSender.sendMessage(actionbar);
+            commandSender.sendMessage(BlobTranslatableSnippet.PARSE(chat, locale()));
+            commandSender.sendMessage(BlobTranslatableSnippet.PARSE(actionbar, locale()));
         }
     }
 
@@ -71,6 +72,7 @@ public class BlobChatActionbarMessage extends BlobChatMessage {
      * @param function the function to apply to the chat and actionbar message
      * @return a new BlobChatActionbarMessage with the modified chat and actionbar message
      */
+    @ApiStatus.Internal
     @Override
     public @NotNull BlobChatActionbarMessage modify(Function<String, String> function) {
         return new BlobChatActionbarMessage(identifier(), function.apply(chat),
@@ -86,5 +88,10 @@ public class BlobChatActionbarMessage extends BlobChatMessage {
     public BlobChatActionbarMessage onClick(ClickEvent event) {
         return new BlobChatActionbarMessage(identifier(), chat, hover, actionbar, getSound(),
                 locale(), event);
+    }
+
+    @Override
+    public ModernMessage toModernMessage(){
+        return new ModernMessage(identifier(), chat, hover, actionbar, null, null, -1, -1, -1, getSound(), locale(), getClickEvent());
     }
 }

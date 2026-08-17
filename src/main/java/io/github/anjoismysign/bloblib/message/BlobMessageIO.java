@@ -4,6 +4,7 @@ import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import io.github.anjoismysign.bloblib.utility.TextColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -13,7 +14,14 @@ import java.util.Optional;
  * <p>
  * Recommended method is parse(ConfigurationSection section)
  */
-public class BlobMessageIO {
+public enum BlobMessageIO {
+    INSTANCE;
+
+    public void write(@NotNull ConfigurationSection at,
+                      @NotNull BlobMessage message){
+        ModernMessage modernMessage = message.toModernMessage();
+        modernMessage.write(at);
+    }
 
     /**
      * Will read a BlobMessage from a ConfigurationSection
@@ -21,12 +29,31 @@ public class BlobMessageIO {
      * @param section The section to read from
      * @return The BlobMessage
      */
-    public static BlobMessage read(@NotNull ConfigurationSection section,
-                                   @NotNull String locale,
-                                   @NotNull String key) {
-        String type = section.getString("Type");
+    public BlobMessage read(@NotNull ConfigurationSection section,
+                            @NotNull String locale,
+                            @NotNull String key) {
         Optional<BlobSound> sound = section.contains("BlobSound") ?
                 BlobSoundReader.parse(section, null) : Optional.empty();
+        String type = section.getString("Type");
+        if (type == null) {
+            @Nullable String chat = section.getString("Chat");
+            chat = chat == null ? null : TextColor.PARSE(chat);
+            @Nullable String hover = section.getString("Hover");
+            hover = hover == null ? null : TextColor.PARSE(hover);
+            @Nullable String actionbar = section.getString("Actionbar");
+            actionbar = actionbar == null ? null : TextColor.PARSE(actionbar);
+            @Nullable String title = section.getString("Title");
+            title = title == null ? null : TextColor.PARSE(title);
+            @Nullable String subtitle = section.getString("Subtitle");
+            subtitle = subtitle == null ? null : TextColor.PARSE(subtitle);
+            if (chat == null && actionbar == null && (title == null || subtitle == null)){
+                throw new ConfigurationFieldException("There's neither 'Chat', 'Actionbar' or 'Title' and 'Subtitle' at " + section.getCurrentPath());
+            }
+            int fadeIn = section.getInt("FadeIn", 10);
+            int stay = section.getInt("Stay", 70);
+            int fadeOut = section.getInt("FadeOut", 20);
+            return new ModernMessage(key, chat, hover, actionbar, title, subtitle, fadeIn, stay, fadeOut, sound.orElse(null), locale, null);
+        }
         switch (type) {
             case "ACTIONBAR" -> {
                 if (!section.contains("Message"))

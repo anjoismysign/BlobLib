@@ -7,6 +7,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,8 +43,8 @@ public class BlobChatMessage extends AbstractMessage {
                            @NotNull String locale,
                            @Nullable ClickEvent clickEvent) {
         super(reference, sound, locale, clickEvent);
-        this.chat = BlobTranslatableSnippet.PARSE(message, locale);
-        this.hover = hover == null ? null : BlobTranslatableSnippet.PARSE(hover, locale);
+        this.chat = message;
+        this.hover = hover;
     }
 
     /**
@@ -54,11 +55,11 @@ public class BlobChatMessage extends AbstractMessage {
     @Override
     public void send(Player player) {
         if (hover == null)
-            player.sendMessage(chat);
+            player.sendMessage(BlobTranslatableSnippet.PARSE(chat, locale()));
         else {
-            TextComponent component = new TextComponent(TextComponent.fromLegacyText(chat));
+            TextComponent component = new TextComponent(TextComponent.fromLegacyText(BlobTranslatableSnippet.PARSE(chat, locale())));
             component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                    new Text(hover)));
+                    new Text(BlobTranslatableSnippet.PARSE(hover, locale()))));
             ClickEvent clickEvent = getClickEvent();
             if (clickEvent != null)
                 component.setClickEvent(clickEvent);
@@ -72,7 +73,7 @@ public class BlobChatMessage extends AbstractMessage {
      * @param sender The command sender to send the message to
      */
     public void send(CommandSender sender) {
-        sender.sendMessage(chat);
+        sender.sendMessage(BlobTranslatableSnippet.PARSE(chat, locale()));
     }
 
     /**
@@ -92,6 +93,7 @@ public class BlobChatMessage extends AbstractMessage {
      * @param function the function to apply to the chat message
      * @return a new BlobChatMessage with the modified chat message
      */
+    @ApiStatus.Internal
     @Override
     public @NotNull BlobChatMessage modify(Function<String, String> function) {
         return new BlobChatMessage(identifier(), function.apply(chat),
@@ -105,5 +107,10 @@ public class BlobChatMessage extends AbstractMessage {
     @NotNull
     public BlobChatMessage onClick(ClickEvent event) {
         return new BlobChatMessage(identifier(), chat, hover, getSound(), locale(), event);
+    }
+
+    @Override
+    public @NotNull ModernMessage toModernMessage() {
+        return new ModernMessage(identifier(), chat, hover, null, null, null, -1, -1, -1, getSound(), locale(), getClickEvent());
     }
 }

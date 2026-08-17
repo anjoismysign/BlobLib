@@ -50,6 +50,7 @@ import io.github.anjoismysign.bloblib.vault.VaultManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The main class of the plugin
@@ -149,43 +150,38 @@ public class BlobLib extends JavaPlugin {
                 TagSetIO::READ,
                 DataAssetType.TAG_SET,
                 section -> section.isList("Inclusions") ||
-                        !section.getStringList("Include-Set").isEmpty(),
-                TagSetIO::WRITE);
+                        !section.getStringList("Include-Set").isEmpty());
         lootTableManager = new LootTableManager(this);
         translatableItemManager = LocalizableDataAssetManager
                 .of(fileManager.getDirectory(DataAssetType.TRANSLATABLE_ITEM),
                         TranslatableReader::ITEM,
                         DataAssetType.TRANSLATABLE_ITEM,
-                        section -> section.isConfigurationSection("ItemStack"),
-                        null);
+                        section -> section.isConfigurationSection("ItemStack"));
         translatablePositionableManager = LocalizableDataAssetManager
                 .of(fileManager.getDirectory(DataAssetType.TRANSLATABLE_POSITIONABLE),
                         (section, locale, key) -> {
                             Positionable positionable = PositionableIO.INSTANCE.read(section);
-                            if (!section.isString("Display"))
+                            @Nullable String display = section.getString("Display");
+                            if (display == null) {
                                 throw new ConfigurationFieldException("'Display' is missing or not set");
-                            String display = section.getString("Display");
+                            }
                             return BlobTranslatablePositionable.of(key, locale, display, positionable);
                         },
                         DataAssetType.TRANSLATABLE_POSITIONABLE,
-                        section -> section.isDouble("X") && section.isDouble("Y") && section.isDouble("Z"),
-                        PositionableIO.INSTANCE::write);
+                        section -> section.isDouble("X") && section.isDouble("Y") && section.isDouble("Z"));
         translatableAreaManager = TranslatableAreaManager.of();
         messageManager = LocalizableDataAssetManager.of(fileManager.getDirectory(DataAssetType.BLOB_MESSAGE),
-                (section, locale, key) -> BlobMessageIO.read(section, locale, key),
+                BlobMessageIO.INSTANCE::read,
         DataAssetType.BLOB_MESSAGE,
-        section -> section.isString("Type"),
-        null);
+        section -> section.isString("Chat") || section.isString("Actionbar") || section.isString("Title") && section.isString("Subtitle"));
         actionManager = DataAssetManager.of(fileManager.getDirectory(DataAssetType.ACTION),
                 (section, key) -> Action.fromConfigurationSection(section),
                 DataAssetType.ACTION,
-                section -> section.contains("Type") && section.isString("Type"),
-                null);
+                section -> section.contains("Type") && section.isString("Type"));
         soundManager = DataAssetManager.of(fileManager.getDirectory(DataAssetType.BLOB_SOUND),
                 BlobSoundReader::read,
                 DataAssetType.BLOB_SOUND,
-                section -> section.contains("Sound"),
-                null);
+                section -> section.contains("Sound"));
         fillerManager = new FillerManager();
         vaultManager = new VaultManager();
         disguiseManager = new DisguiseManager();

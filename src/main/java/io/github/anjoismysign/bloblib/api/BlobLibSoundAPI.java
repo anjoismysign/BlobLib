@@ -6,7 +6,6 @@ import io.github.anjoismysign.bloblib.message.BlobSound;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Map;
 
 public class BlobLibSoundAPI {
@@ -57,11 +56,8 @@ public class BlobLibSoundAPI {
         sound.play(player);
     }
 
-    public List<BlobSound> getDefault() {
-        return getSoundManager().getAssets();
-    }
-
-    public Map<String, BlobSound> mapDefault(){
+    public Map<String, BlobSound> getDefault() {
         return getSoundManager().mapAssets();
     }
+
 }
