@@ -22,7 +22,9 @@ public class BlobSoundReader {
     private static Sound getSound(@NotNull String name) {
         RegistryAccess access = RegistryAccess.registryAccess();
         Registry<@NotNull Sound> registry = access.getRegistry(RegistryKey.SOUND_EVENT);
-        return registry.get(NamespacedKey.minecraft(name));
+        String[] split = name.split(":");
+        NamespacedKey namespacedKey = split.length == 2 ? new NamespacedKey(split[0], split[1]) : NamespacedKey.minecraft(name);
+        return registry.get(namespacedKey);
     }
 
     public static BlobSound read(@NotNull ConfigurationSection section,
