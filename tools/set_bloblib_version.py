@@ -11,8 +11,11 @@ If the dependency's version is a property reference (${bloblib.version}), the pr
 definition is updated instead of the dependency block.
 
 Before writing, each repo gets a new branch named after the version (e.g. `1.701`),
-created from its base branch. The base is auto-detected as `master`, or `main` when the
-repo has no `master` — most of these repos use `main` — and can be forced with --base.
+created from its base branch. An existing branch of that name is reused only when it
+already contains the base; a stale one (cut before the last sync) is refused rather than
+built on, unless --rebase-existing moves it forward. The base is the repo's own default
+branch, taken from the remote's HEAD — `master` for some repos, `main` for others — and
+can be forced with --base.
 A repo with uncommitted changes is skipped rather than dragged onto the new branch;
 pass --allow-dirty to branch anyway (the changes come along, as with any checkout).
 
@@ -85,14 +88,31 @@ def is_dirty(repo: Path) -> bool:
     return bool(git(repo, "status", "--porcelain", "--untracked-files=no").stdout.strip())
 
 
+def last_line(proc: subprocess.CompletedProcess) -> str:
+    lines = (proc.stderr or proc.stdout).strip().splitlines()
+    return lines[-1].strip() if lines else f"exit {proc.returncode}"
+
+
 def base_branch(repo: Path, requested: str | None) -> str | None:
-    """The branch to base the new branch on."""
+    """The branch to base the new branch on: the repo's own default branch."""
     if requested:
         return requested if has_ref(repo, requested) else None
+    # Ask the remote which branch is the default, so a repo on `main` and a repo on
+    # `master` each get the right base even when both refs exist locally.
+    head = git(repo, "symbolic-ref", "--short", "refs/remotes/origin/HEAD").stdout.strip()
+    if head.startswith("origin/"):
+        candidate = head[len("origin/"):]
+        if has_ref(repo, candidate):
+            return candidate
     for candidate in ("master", "main"):
         if has_ref(repo, candidate):
             return candidate
     return None
+
+
+def contains(repo: Path, branch: str, base: str) -> bool:
+    """True when `branch` already holds every commit on `base`."""
+    return git(repo, "merge-base", "--is-ancestor", base, branch).returncode == 0
 
 
 def make_branch(repo: Path, version: str, args: argparse.Namespace) -> tuple[bool, str]:
@@ -107,16 +127,39 @@ def make_branch(repo: Path, version: str, args: argparse.Namespace) -> tuple[boo
         wanted = args.base or "master/main"
         return False, f"no base branch {wanted} in this repo"
 
-    if current_branch(repo) == version:
-        return True, f"already on branch {version}"
+    on_it = current_branch(repo) == version
 
     if has_ref(repo, version):
+        # An existing version branch cut before the last sync holds stale code, and
+        # building on it silently compiles against the old sources. Refuse it unless
+        # it already contains the base, or --rebase-existing is passed to move it.
+        if not contains(repo, version, base):
+            if not args.rebase_existing:
+                return False, (f"branch {version} is stale — missing commits from {base};"
+                               " rerun with --rebase-existing, or delete it")
+            if args.dry_run:
+                return True, f"would rebase existing branch {version} onto {base}"
+            if not on_it:
+                proc = git(repo, "checkout", version)
+                if proc.returncode != 0:
+                    return False, f"checkout {version} failed: {last_line(proc)}"
+            proc = git(repo, "rebase", base)
+            if proc.returncode != 0:
+                git(repo, "rebase", "--abort")
+                return False, f"rebase {version} onto {base} failed: {last_line(proc)}"
+            return True, f"rebased existing branch {version} onto {base}"
+
+        if on_it:
+            return True, f"already on branch {version}"
         if args.dry_run:
             return True, f"would switch to existing branch {version}"
         proc = git(repo, "checkout", version)
         if proc.returncode != 0:
-            return False, f"checkout {version} failed: {proc.stderr.strip().splitlines()[-1:]}"
+            return False, f"checkout {version} failed: {last_line(proc)}"
         return True, f"switched to existing branch {version}"
+
+    if on_it:
+        return True, f"already on branch {version}"
 
     if args.dry_run:
         return True, f"would create branch {version} from {base}"
@@ -218,7 +261,11 @@ def main() -> int:
     parser.add_argument("--dry-run", action="store_true",
                         help="report what would change without writing or touching git")
     parser.add_argument("--base", default=None, metavar="BRANCH",
-                        help="base branch for the new branch (default: master, else main)")
+                        help="base branch for the new branch"
+                             " (default: the repo's own default branch)")
+    parser.add_argument("--rebase-existing", action="store_true",
+                        help="rebase an existing version branch onto the base when it is"
+                             " missing commits, instead of refusing it as stale")
     parser.add_argument("--allow-dirty", action="store_true",
                         help="branch even when the repo has uncommitted changes")
     parser.add_argument("--no-branch", action="store_true",
