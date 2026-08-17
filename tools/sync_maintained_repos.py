@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fetch and fast-forward every repo listed in docs/maintained repos.md.
+"""Fetch and fast-forward every repo listed in bloblib-memory/maintained repos.md.
 
 By default each repo is switched to its own default branch — whatever the remote's HEAD
 points at, so a repo on `master` and a repo on `main` both work — and fast-forwarded
@@ -32,7 +32,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-DEFAULT_LIST = Path(__file__).resolve().parent.parent / "docs" / "maintained repos.md"
+DEFAULT_LIST = Path(__file__).resolve().parent.parent / "bloblib-memory" / "maintained repos.md"
 
 
 @dataclass

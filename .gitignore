@@ -128,5 +128,4 @@ run/
 /.project
 /.settings/org.eclipse.buildship.core.prefs
 /.mcp.json
-/docs/.obsidian/
-/docs/maintained repos.md
+/bloblib-memory/

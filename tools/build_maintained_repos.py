@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run `mvn clean package` on every repo listed in docs/maintained repos.md.
+"""Run `mvn clean package` on every repo listed in bloblib-memory/maintained repos.md.
 
 Each repo is built from its root pom.xml, so multi-module projects (e.g. BlobOutlaw)
 are built as a whole reactor instead of module by module.
@@ -31,7 +31,7 @@ from pathlib import Path
 POM = "pom.xml"
 MAVEN_NS = "{http://maven.apache.org/POM/4.0.0}"
 
-DEFAULT_LIST = Path(__file__).resolve().parent.parent / "docs" / "maintained repos.md"
+DEFAULT_LIST = Path(__file__).resolve().parent.parent / "bloblib-memory" / "maintained repos.md"
 
 
 @dataclass

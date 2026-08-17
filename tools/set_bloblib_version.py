@@ -39,7 +39,7 @@ GROUP_ID = "io.github.anjoismysign"
 ARTIFACT_ID = "bloblib"
 MAVEN_NS = "{http://maven.apache.org/POM/4.0.0}"
 
-DEFAULT_LIST = Path(__file__).resolve().parent.parent / "docs" / "maintained repos.md"
+DEFAULT_LIST = Path(__file__).resolve().parent.parent / "bloblib-memory" / "maintained repos.md"
 
 # One <dependency> block declaring bloblib, capturing its <version> text.
 DEP_RE = re.compile(

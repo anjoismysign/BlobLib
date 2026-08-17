@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Commit, push, PR and merge one branch across every repo in docs/maintained repos.md.
+"""Commit, push, PR and merge one branch across every repo in bloblib-memory/maintained repos.md.
 
 For each repo the pipeline is: checkout BRANCH -> stage -> commit MESSAGE -> push ->
 open a pull request against the repo's default branch -> merge it. Each stage is skipped
@@ -36,7 +36,7 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
-DEFAULT_LIST = Path(__file__).resolve().parent.parent / "docs" / "maintained repos.md"
+DEFAULT_LIST = Path(__file__).resolve().parent.parent / "bloblib-memory" / "maintained repos.md"
 MERGE_FLAG = {"squash": "--squash", "merge": "--merge", "rebase": "--rebase"}
 
 

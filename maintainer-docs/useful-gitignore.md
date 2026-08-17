@@ -1,0 +1,1 @@
+``/bloblib-memory/`` is ignored by git, the idea is to store your personal obsidian memory
