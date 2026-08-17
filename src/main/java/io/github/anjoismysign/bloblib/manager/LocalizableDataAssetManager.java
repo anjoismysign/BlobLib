@@ -25,8 +25,29 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class LocalizableDataAssetManager<T extends DataAsset & Localizable> implements BlobLibDataAssetManager<T> {
+    /**
+     * Reads an asset from a ConfigurationSection, being aware of the file it belongs to.
+     *
+     * @param <T> The type of the asset
+     */
+    @FunctionalInterface
+    public interface AssetReader<T> {
+        /**
+         * @param section   The section the asset is read from
+         * @param locale    The locale of the file the section belongs to
+         * @param reference The identifier of the asset
+         * @param filePath  The path of the file the section belongs to
+         * @return The asset, or null if it should be skipped
+         */
+        @Nullable
+        T read(@NotNull ConfigurationSection section,
+               @NotNull String locale,
+               @NotNull String reference,
+               @NotNull String filePath);
+    }
+
     private final File assetDirectory;
-    private final TriFunction<ConfigurationSection, String, String, T> readFunction;
+    private final AssetReader<T> readFunction;
     private final DataAssetType type;
     private final Predicate<ConfigurationSection> filter;
 
@@ -52,6 +73,27 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
                                                                                         @NotNull TriFunction<ConfigurationSection, String, String, T> readFunction,
                                                                                         @NotNull DataAssetType type,
                                                                                         @NotNull Predicate<ConfigurationSection> filter) {
+        Objects.requireNonNull(readFunction, "Read function cannot be null");
+        return of(assetDirectory,
+                (section, locale, reference, filePath) -> readFunction.apply(section, locale, reference),
+                type, filter);
+    }
+
+    /**
+     * Creates a new instance of the LocalizableDataAssetManager whose read function
+     * is aware of the path of the file the asset is being read from.
+     *
+     * @param assetDirectory The directory where the assets are located
+     * @param readFunction   The function that will read the assets
+     * @param type           The type of the asset
+     * @param filter         The filter that if true will load the asset.
+     * @param <T>            The type of the asset
+     * @return The new instance of the LocalizableDataAssetManager
+     */
+    public static <T extends DataAsset & Localizable> LocalizableDataAssetManager<T> of(@NotNull File assetDirectory,
+                                                                                        @NotNull AssetReader<T> readFunction,
+                                                                                        @NotNull DataAssetType type,
+                                                                                        @NotNull Predicate<ConfigurationSection> filter) {
         Objects.requireNonNull(assetDirectory, "Asset directory cannot be null");
         Objects.requireNonNull(readFunction, "Read function cannot be null");
         Objects.requireNonNull(type, "Data asset type cannot be null");
@@ -65,6 +107,15 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
 
     LocalizableDataAssetManager(@NotNull File assetDirectory,
                                 @NotNull TriFunction<ConfigurationSection, String, String, T> readFunction,
+                                @NotNull DataAssetType type,
+                                @NotNull Predicate<ConfigurationSection> filter) {
+        this(assetDirectory,
+                (section, locale, reference, filePath) -> readFunction.apply(section, locale, reference),
+                type, filter);
+    }
+
+    LocalizableDataAssetManager(@NotNull File assetDirectory,
+                                @NotNull AssetReader<T> readFunction,
                                 @NotNull DataAssetType type,
                                 @NotNull Predicate<ConfigurationSection> filter) {
         this.blobLib = BlobLib.getInstance();
@@ -148,7 +199,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
         String locale = yamlConfiguration.getString("Locale", "en_us");
         if (filter.test(yamlConfiguration)) {
             try {
-                T asset = readFunction.apply(yamlConfiguration, locale, fileName);
+                T asset = readFunction.read(yamlConfiguration, locale, fileName, filePath);
                 if (asset == null)
                     return;
                 addOrCreateLocale(asset, fileName, filePath);
@@ -165,7 +216,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
             if (!filter.test(section))
                 return;
             try {
-                T asset = readFunction.apply(section, locale, reference);
+                T asset = readFunction.read(section, locale, reference, filePath);
                 addOrCreateLocale(asset, reference, filePath);
             } catch (Throwable throwable) {
                 BlobLib.getInstance().getLogger().severe("At: " + filePath);
@@ -181,7 +232,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
         String locale = yamlConfiguration.getString("Locale", "en_us");
         if (filter.test(yamlConfiguration)) {
             try {
-                T asset = readFunction.apply(yamlConfiguration, locale, fileName);
+                T asset = readFunction.read(yamlConfiguration, locale, fileName, filePath);
                 if (asset == null)
                     return;
                 addOrCreateLocale(asset, fileName, filePath);
@@ -199,7 +250,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
             if (!filter.test(section))
                 return;
             try {
-                T asset = readFunction.apply(section, locale, reference);
+                T asset = readFunction.read(section, locale, reference, filePath);
                 addOrCreateLocale(asset, reference, filePath);
                 assets.computeIfAbsent(plugin.getName(), k -> new HashSet<>()).add(reference);
             } catch (Throwable throwable) {
@@ -277,6 +328,16 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
         if (localeMap == null)
             return null;
         return localeMap.get(identifier);
+    }
+
+    /**
+     * @return All identifiers held by this manager, across every locale
+     */
+    @NotNull
+    public Set<String> getIdentifiers() {
+        Set<String> identifiers = new HashSet<>();
+        locales.values().forEach(localeMap -> identifiers.addAll(localeMap.keySet()));
+        return identifiers;
     }
 
     @NotNull

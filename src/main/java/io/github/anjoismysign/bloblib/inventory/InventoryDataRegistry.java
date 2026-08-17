@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 /**
@@ -21,7 +22,7 @@ import java.util.function.Consumer;
 public class InventoryDataRegistry<T extends InventoryButton> {
     @NotNull
     private final String defaultLocale, key;
-    private final Map<String, InventoryBuilderCarrier<T>> carriers;
+    private final BiFunction<String, String, InventoryBuilderCarrier<T>> lookup;
     private final Map<String, Consumer<BlobInventoryClickEvent>> singleClickEvents;
     private final Map<String, BiConsumer<InventoryCloseEvent, SharableInventory<?>>> closeEvents;
     private final Map<String, BiConsumer<InventoryClickEvent, T>> clickEvents;
@@ -35,35 +36,23 @@ public class InventoryDataRegistry<T extends InventoryButton> {
      * @return a new InventoryDataRegistry with the specified default locale
      */
     public static <T extends InventoryButton> InventoryDataRegistry<T> of(
-            @NotNull String defaultLocale, @NotNull String key) {
+            @NotNull String defaultLocale, @NotNull String key,
+            @NotNull BiFunction<String, String, InventoryBuilderCarrier<T>> lookup) {
         Objects.requireNonNull(defaultLocale, "'defaultLocale' cannot be null!");
         Objects.requireNonNull(key, "'key' cannot be null!");
-        return new InventoryDataRegistry<>(defaultLocale, key);
+        Objects.requireNonNull(lookup, "'lookup' cannot be null!");
+        return new InventoryDataRegistry<>(defaultLocale, key, lookup);
     }
 
-    private InventoryDataRegistry(@NotNull String defaultLocale, @NotNull String key) {
+    private InventoryDataRegistry(@NotNull String defaultLocale, @NotNull String key,
+                                  @NotNull BiFunction<String, String, InventoryBuilderCarrier<T>> lookup) {
         this.defaultLocale = defaultLocale;
         this.key = key;
-        this.carriers = new HashMap<>();
+        this.lookup = lookup;
         this.singleClickEvents = new HashMap<>();
         this.closeEvents = new HashMap<>();
         this.clickEvents = new HashMap<>();
         this.playerInventoryClickEvents = new HashMap<>();
-    }
-
-    /**
-     * Will process the carrier and add it to the registry.
-     *
-     * @param carrier the carrier to process
-     * @return true if the carrier was added, false if it already exists
-     */
-    public boolean process(@NotNull InventoryBuilderCarrier<T> carrier) {
-        Objects.requireNonNull(carrier, "carrier cannot be null");
-        String locale = carrier.locale();
-        if (carriers.containsKey(locale))
-            return false;
-        carriers.put(locale, carrier);
-        return true;
     }
 
     /**
@@ -74,10 +63,7 @@ public class InventoryDataRegistry<T extends InventoryButton> {
      */
     @NotNull
     public InventoryBuilderCarrier<T> get(String locale) {
-        InventoryBuilderCarrier<T> result = this.carriers.get(locale);
-        if (result == null)
-            result = getDefault();
-        return result;
+        return lookup.apply(key, locale == null ? defaultLocale : locale);
     }
 
     /**
@@ -87,7 +73,7 @@ public class InventoryDataRegistry<T extends InventoryButton> {
      */
     @NotNull
     public InventoryBuilderCarrier<T> getDefault() {
-        return this.carriers.get(this.defaultLocale);
+        return lookup.apply(key, defaultLocale);
     }
 
     @NotNull
