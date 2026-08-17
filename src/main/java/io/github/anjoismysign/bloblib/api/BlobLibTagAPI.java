@@ -53,6 +53,5 @@ public class BlobLibTagAPI {
     @NotNull
     public List<TagSet> getAll() {
         return getTagSetManager().getAssets();
-
     }
 }

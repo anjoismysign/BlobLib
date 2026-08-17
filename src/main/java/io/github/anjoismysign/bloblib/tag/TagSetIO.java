@@ -1,6 +1,6 @@
 package io.github.anjoismysign.bloblib.tag;
 
-import io.github.anjoismysign.bloblib.api.BlobLibTagAPI;
+import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class TagSetIO {
 
@@ -26,24 +25,18 @@ public class TagSetIO {
         Objects.requireNonNull(key);
         List<String> readInclusions = section.getStringList("Inclusions");
         List<String> readExclusions = section.getStringList("Exclusions");
+        if (!readExclusions.isEmpty()){
+            throw new ConfigurationFieldException("'Exclusions' is deprecated and won't be used");
+        }
         List<String> readIncludeSet = section.getStringList("Include-Tags");
+        if (!readExclusions.isEmpty()){
+            throw new ConfigurationFieldException("'Include-Tags' is deprecated and won't be used");
+        }
         List<String> readExcludeSet = section.getStringList("Exclude-Tags");
+        if (!readExclusions.isEmpty()){
+            throw new ConfigurationFieldException("'Exclude-Tags' is deprecated and won't be used");
+        }
         Set<String> inclusions = new HashSet<>(readInclusions);
-        readIncludeSet.forEach(reference -> {
-            TagSet tagSet = BlobLibTagAPI.getInstance().getTagSet(reference);
-            if (tagSet == null)
-                return;
-            inclusions.addAll(tagSet.getInclusions());
-        });
-        Set<String> exclusions = new HashSet<>(readExclusions);
-        readExcludeSet.forEach(reference -> {
-            TagSet tagSet = BlobLibTagAPI.getInstance().getTagSet(reference);
-            if (tagSet == null)
-                return;
-            exclusions.addAll(tagSet.getInclusions());
-        });
-        return new TagSet(inclusions.stream()
-                .filter(s -> !exclusions.contains(s))
-                .collect(Collectors.toSet()), key);
+        return new TagSet(inclusions, key);
     }
 }

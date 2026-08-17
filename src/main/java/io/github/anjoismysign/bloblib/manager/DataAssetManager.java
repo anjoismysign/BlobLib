@@ -18,19 +18,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class DataAssetManager<T extends DataAsset> {
+public class DataAssetManager<T extends DataAsset> implements BlobLibDataAssetManager<T> {
     private final File assetDirectory;
     private final BiFunction<ConfigurationSection, String, T> readFunction;
     private final DataAssetType type;
     private final Predicate<ConfigurationSection> filter;
 
     private final BlobLib main;
-    private final @Nullable BiConsumer<YamlConfiguration, T> saveConsumer;
     private Map<String, Set<String>> pluginAssets;
     private Map<String, List<String>> duplicates;
     private Map<String, String> keyFirstFile;
@@ -45,16 +43,13 @@ public class DataAssetManager<T extends DataAsset> {
      * @param filter         The filter that if true will load the asset.
      *                       Think of it as checks that once met, the ConfigurationSection
      *                       is considered from an asset.
-     * @param saveConsumer   Accepts the YamlConfiguration where it is being saved and the asset.
-     *                       There's no need to save the file.
      * @param <T>            The type of the asset
      * @return The new instance of the DataAssetManager
      */
     public static <T extends DataAsset> DataAssetManager<T> of(@NotNull File assetDirectory,
                                                                @NotNull BiFunction<ConfigurationSection, String, T> readFunction,
                                                                @NotNull DataAssetType type,
-                                                               @NotNull Predicate<ConfigurationSection> filter,
-                                                               @Nullable BiConsumer<YamlConfiguration, T> saveConsumer) {
+                                                               @NotNull Predicate<ConfigurationSection> filter) {
         Objects.requireNonNull(assetDirectory, "Asset directory cannot be null");
         Objects.requireNonNull(readFunction, "Read function cannot be null");
         Objects.requireNonNull(type, "Data asset type cannot be null");
@@ -63,16 +58,14 @@ public class DataAssetManager<T extends DataAsset> {
             assetDirectory.mkdirs();
         }
         return new DataAssetManager<>(assetDirectory,
-                readFunction, type, filter, saveConsumer);
+                readFunction, type, filter);
     }
 
     private DataAssetManager(@NotNull File assetDirectory,
                              @NotNull BiFunction<ConfigurationSection, String, T> readFunction,
                              @NotNull DataAssetType type,
-                             @NotNull Predicate<ConfigurationSection> filter,
-                             @Nullable BiConsumer<YamlConfiguration, T> saveConsumer) {
+                             @NotNull Predicate<ConfigurationSection> filter) {
         this.main = BlobLib.getInstance();
-        this.saveConsumer = saveConsumer;
         this.assetDirectory = assetDirectory;
         this.readFunction = readFunction;
         this.type = type;
@@ -108,31 +101,6 @@ public class DataAssetManager<T extends DataAsset> {
     public void unload(BlobPlugin plugin) {
         String pluginName = plugin.getName();
         this.pluginAssets.remove(pluginName);
-    }
-
-    public void saveAsset(@NotNull File file,
-                          @NotNull T asset) {
-        if (saveConsumer == null)
-            return;
-        Objects.requireNonNull(file, "'file' cannot be null");
-        Objects.requireNonNull(asset, "'asset' cannot be null");
-        if (!file.getName().endsWith(".yml"))
-            return;
-        File directory = file.getParentFile();
-        if (!directory.isDirectory())
-            directory.mkdirs();
-        try {
-            if (!file.isFile()) {
-                file.createNewFile();
-            }
-            String identifier = file.getName().replace(".yml", "");
-            YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-            saveConsumer.accept(configuration, asset);
-            configuration.save(file);
-            addOrCreate(asset, identifier, file.getPath());
-        } catch (Throwable throwable) {
-            main.getLogger().severe(throwable.getMessage() + "\nAt: " + file.getPath());
-        }
     }
 
     private void loadFiles(File directory) {
