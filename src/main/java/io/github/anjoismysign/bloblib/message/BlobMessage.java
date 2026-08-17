@@ -4,10 +4,10 @@ import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
 import io.github.anjoismysign.bloblib.domain.Localizable;
 import io.github.anjoismysign.holoworld.asset.DataAsset;
 import net.md_5.bungee.api.chat.ClickEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,15 +20,11 @@ import java.util.function.Function;
  * makes use of. This includes chat messages, actionbar messages, title messages
  * and sounds. Bossbar messages are not included in this interface but may be
  * part of a future update. BlobMessages are meant to be able to be written in
- * YAML files and be parsed into a BlobMessage object (which instance is a
- * SerialBlobMessage) and be stored in random access memory (RAM) for later
- * being retrieved (which instance is a ReferenceBlobMessage).
+ * YAML files and be parsed into a BlobMessage object and be stored in random
+ * access memory for later being retrieved (which instance is a ReferenceBlobMessage).
  * There are also utility methods to modify the message, such as replacing
  * all types of texts in multiple types of messages (since you can have multiple
- * types of messages in a BlobMessage, such as a BlobChatTitleMessage) while at
- * the same time being able to import your own SerialBlobMessage's in your own
- * plugin and store them in the same way as the BlobMessages in BlobLib so other
- * plugins and even the same server administrator can use them.
+ * types of messages in a BlobMessage, such as a BlobChatTitleMessage).
  */
 public interface BlobMessage extends Localizable, DataAsset {
 
@@ -78,60 +74,6 @@ public interface BlobMessage extends Localizable, DataAsset {
     void send(Player player);
 
     /**
-     * If sound is not null, it will play the sound to the player.
-     *
-     * @param player   The player to send the message to
-     * @param location The location to play the sound at
-     * @deprecated Use {@link #handle(Player)} instead
-     */
-    @Deprecated
-    default void sendAndPlay(Player player, Location location) {
-        send(player);
-        if (getSound() != null)
-            getSound().play(player, location);
-    }
-
-    /**
-     * If sound is not null, it will play the sound to the player.
-     * Would be played at the player's location.
-     *
-     * @param player The player to send the message to
-     * @deprecated Use {@link #handle(Player)} instead
-     */
-    @Deprecated
-    default void sendAndPlay(Player player) {
-        sendAndPlay(player, player.getLocation());
-    }
-
-    /**
-     * If the sound is not null, it will play the sound at player's location
-     * and nearby players will be able to hear it.
-     *
-     * @param player   The player to send the message to
-     * @param location The location to play the sound at
-     * @deprecated Use {@link #handle(Player)} instead
-     */
-    @Deprecated
-    default void sendAndPlayInWorld(Player player, Location location) {
-        send(player);
-        if (getSound() != null)
-            getSound().playInWorld(location);
-    }
-
-    /**
-     * If the sound is not null, it will play the sound at player's location
-     * and nearby players will be able to hear it.
-     * Would be played at the player's location.
-     *
-     * @param player The player to send the message to
-     * @deprecated Use {@link #handle(Player)} instead
-     */
-    @Deprecated
-    default void sendAndPlayInWorld(Player player) {
-        sendAndPlayInWorld(player, player.getLocation());
-    }
-
-    /**
      * Will handle the message with the required settings for the player
      * such as not having a sound, if having sound playing just
      * to the player, or playing to the whole world, etc.
@@ -140,12 +82,17 @@ public interface BlobMessage extends Localizable, DataAsset {
      * @param location The location to play the sound at
      */
     default void handle(Player player, Location location) {
-        if (getSound() == null)
+        @Nullable BlobSound sound = getSound();
+        if (sound == null)
             send(player);
-        else if (getSound().audience() == MessageAudience.PLAYER)
-            sendAndPlay(player, location);
-        else
-            sendAndPlayInWorld(player, location);
+        else if (sound.audience() == MessageAudience.PLAYER) {
+            send(player);
+            sound.play(player, location);
+        }
+        else {
+            send(player);
+            sound.playInWorld(location);
+        }
     }
 
     /**
@@ -158,16 +105,6 @@ public interface BlobMessage extends Localizable, DataAsset {
      */
     default void handle(Player player) {
         handle(player, player.getLocation());
-    }
-
-    /**
-     * Will handle the message to all online players.
-     *
-     * @deprecated Use @link {@link BlobLibMessageAPI#broadcast(String)} instead
-     */
-    @Deprecated
-    default void broadcast() {
-        Bukkit.getOnlinePlayers().forEach(this::handle);
     }
 
     /**
@@ -189,6 +126,7 @@ public interface BlobMessage extends Localizable, DataAsset {
      * @param function The function to modify the message with
      * @return A new message with the modified message
      */
+    @ApiStatus.Internal
     @NotNull
     BlobMessage modify(Function<String, String> function);
 
@@ -205,4 +143,8 @@ public interface BlobMessage extends Localizable, DataAsset {
     default BlobMessageModder<BlobMessage> modder() {
         return BlobMessageModder.mod(this);
     }
+
+    @ApiStatus.Internal
+    @NotNull
+    ModernMessage toModernMessage();
 }

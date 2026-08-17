@@ -5,6 +5,7 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,7 +28,7 @@ public class BlobActionbarMessage extends AbstractMessage {
                                 @Nullable BlobSound sound,
                                 @NotNull String locale) {
         super(reference, sound, locale, null);
-        this.actionbar = BlobTranslatableSnippet.PARSE(message, locale);
+        this.actionbar = message;
     }
 
     public String getActionbar() {
@@ -39,7 +40,7 @@ public class BlobActionbarMessage extends AbstractMessage {
      */
     @Override
     public void send(Player player) {
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(actionbar));
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(BlobTranslatableSnippet.PARSE(actionbar, locale())));
     }
 
     /**
@@ -50,15 +51,22 @@ public class BlobActionbarMessage extends AbstractMessage {
         if (commandSender instanceof Player player)
             handle(player);
         else
-            commandSender.sendMessage(actionbar);
+            commandSender.sendMessage(BlobTranslatableSnippet.PARSE(actionbar, locale()));
     }
 
     /**
      * @param function The function to modify the message with
      * @return A new message with the modified message
      */
+    @ApiStatus.Internal
     @Override
     public @NotNull BlobActionbarMessage modify(Function<String, String> function) {
         return new BlobActionbarMessage(identifier(), function.apply(actionbar), getSound(), locale());
     }
+
+    @Override
+    public @NotNull ModernMessage toModernMessage() {
+        return new ModernMessage(identifier(), null, null, actionbar, null, null, -1, -1, -1, getSound(), locale(), getClickEvent());
+    }
+
 }

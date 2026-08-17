@@ -4,6 +4,7 @@ import io.github.anjoismysign.bloblib.domain.DataAssetType;
 import net.md_5.bungee.api.chat.ClickEvent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -70,5 +71,6 @@ public abstract class AbstractMessage implements BlobMessage {
         return this;
     }
 
+    @ApiStatus.Internal
     public abstract @NotNull AbstractMessage modify(Function<String, String> function);
 }

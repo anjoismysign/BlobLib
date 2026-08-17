@@ -5,6 +5,7 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,7 +40,7 @@ public class BlobActionbarTitleMessage extends BlobTitleMessage {
                                      @Nullable BlobSound sound,
                                      @NotNull String locale) {
         super(reference, title, subtitle, fadeIn, stay, fadeOut, sound, locale);
-        this.actionbar = BlobTranslatableSnippet.PARSE(actionbar, locale);
+        this.actionbar = actionbar;
     }
 
     /**
@@ -48,7 +49,7 @@ public class BlobActionbarTitleMessage extends BlobTitleMessage {
     @Override
     public void send(Player player) {
         super.send(player);
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(actionbar));
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(BlobTranslatableSnippet.PARSE(actionbar, locale())));
     }
 
     /**
@@ -59,9 +60,9 @@ public class BlobActionbarTitleMessage extends BlobTitleMessage {
         if (commandSender instanceof Player player)
             handle(player);
         else {
-            commandSender.sendMessage(title);
-            commandSender.sendMessage(subtitle);
-            commandSender.sendMessage(actionbar);
+            commandSender.sendMessage(BlobTranslatableSnippet.PARSE(title, locale()));
+            commandSender.sendMessage(BlobTranslatableSnippet.PARSE(subtitle, locale()));
+            commandSender.sendMessage(BlobTranslatableSnippet.PARSE(actionbar, locale()));
         }
     }
 
@@ -69,10 +70,17 @@ public class BlobActionbarTitleMessage extends BlobTitleMessage {
      * @param function The function to modify the message with
      * @return A new message with the modified message
      */
+    @ApiStatus.Internal
     @Override
     public @NotNull BlobActionbarTitleMessage modify(Function<String, String> function) {
         return new BlobActionbarTitleMessage(identifier(), function.apply(actionbar), function.apply(title),
                 function.apply(subtitle), fadeIn, stay, fadeOut, getSound(),
                 locale());
     }
+
+    @Override
+    public ModernMessage toModernMessage(){
+        return new ModernMessage(identifier(), null, null, actionbar, title, subtitle, fadeIn, stay, fadeOut, getSound(), locale(), getClickEvent());
+    }
+
 }

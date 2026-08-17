@@ -4,6 +4,7 @@ import io.github.anjoismysign.bloblib.translatable.BlobTranslatableSnippet;
 import net.md_5.bungee.api.chat.ClickEvent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,8 +41,8 @@ public class BlobChatTitleMessage extends BlobChatMessage {
                                 @NotNull String locale,
                                 @Nullable ClickEvent clickEvent) {
         super(reference, chat, hover, sound, locale, clickEvent);
-        this.title = BlobTranslatableSnippet.PARSE(title, locale);
-        this.subtitle = BlobTranslatableSnippet.PARSE(subtitle, locale);
+        this.title = title;
+        this.subtitle = subtitle;
         this.fadeIn = fadeIn;
         this.stay = stay;
         this.fadeOut = fadeOut;
@@ -53,7 +54,7 @@ public class BlobChatTitleMessage extends BlobChatMessage {
     @Override
     public void send(Player player) {
         super.send(player);
-        player.sendTitle(title, subtitle, fadeIn, stay, fadeOut);
+        player.sendTitle(BlobTranslatableSnippet.PARSE(title, locale()), BlobTranslatableSnippet.PARSE(subtitle, locale()), fadeIn, stay, fadeOut);
     }
 
     /**
@@ -64,9 +65,9 @@ public class BlobChatTitleMessage extends BlobChatMessage {
         if (commandSender instanceof Player player)
             handle(player);
         else {
-            commandSender.sendMessage(chat);
-            commandSender.sendMessage(title);
-            commandSender.sendMessage(subtitle);
+            commandSender.sendMessage(BlobTranslatableSnippet.PARSE(chat, locale()));
+            commandSender.sendMessage(BlobTranslatableSnippet.PARSE(title, locale()));
+            commandSender.sendMessage(BlobTranslatableSnippet.PARSE(subtitle, locale()));
         }
     }
 
@@ -74,6 +75,7 @@ public class BlobChatTitleMessage extends BlobChatMessage {
      * @param function the function to modify the message
      * @return a new BlobChatTitleMessage with the modified message
      */
+    @ApiStatus.Internal
     @Override
     public @NotNull BlobChatTitleMessage modify(Function<String, String> function) {
         return new BlobChatTitleMessage(identifier(), function.apply(chat),
@@ -92,4 +94,10 @@ public class BlobChatTitleMessage extends BlobChatMessage {
         return new BlobChatTitleMessage(identifier(), chat, hover, title, subtitle, fadeIn, stay,
                 fadeOut, getSound(), locale(), event);
     }
+
+    @Override
+    public ModernMessage toModernMessage(){
+        return new ModernMessage(identifier(), chat, hover, null, title, subtitle, fadeIn, stay, fadeOut, getSound(), locale(), getClickEvent());
+    }
+
 }

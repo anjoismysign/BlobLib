@@ -31,7 +31,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
     private final DataAssetType type;
     private final Predicate<ConfigurationSection> filter;
 
-    private final BlobLib main;
+    private final BlobLib blobLib;
     private final @Nullable BiConsumer<YamlConfiguration, T> saveConsumer;
     private Map<String, Set<String>> assets;
     private Map<String, List<String>> duplicates;
@@ -74,7 +74,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
                                 @NotNull DataAssetType type,
                                 @NotNull Predicate<ConfigurationSection> filter,
                                 @Nullable BiConsumer<YamlConfiguration, T> saveConsumer) {
-        this.main = BlobLib.getInstance();
+        this.blobLib = BlobLib.getInstance();
         this.saveConsumer = saveConsumer;
         this.assetDirectory = assetDirectory;
         this.readFunction = readFunction;
@@ -135,7 +135,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
             configuration.save(file);
             addOrCreateLocale(asset, identifier, file.getPath());
         } catch (Throwable throwable) {
-            main.getLogger().severe(throwable.getMessage() + "\nAt: " + file.getPath());
+            blobLib.getLogger().severe(throwable.getMessage() + "\nAt: " + file.getPath());
         }
     }
 
@@ -150,7 +150,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> {
                 try {
                     loadYamlConfiguration(file);
                 } catch (ConfigurationFieldException exception) {
-                    main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
+                    blobLib.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
                     continue;
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();

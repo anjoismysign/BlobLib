@@ -172,9 +172,9 @@ public class BlobLib extends JavaPlugin {
                         PositionableIO.INSTANCE::write);
         translatableAreaManager = TranslatableAreaManager.of();
         messageManager = LocalizableDataAssetManager.of(fileManager.getDirectory(DataAssetType.BLOB_MESSAGE),
-                (section, locale, key) -> BlobMessageIO.read(section, locale, key),
+                (section, locale, key) -> BlobMessageIO.INSTANCE.read(section, locale, key),
         DataAssetType.BLOB_MESSAGE,
-        section -> section.isString("Type"),
+        section -> section.isString("Chat") || section.isString("Actionbar") || section.isString("Title") && section.isString("Subtitle"),
         null);
         actionManager = DataAssetManager.of(fileManager.getDirectory(DataAssetType.ACTION),
                 (section, key) -> Action.fromConfigurationSection(section),
