@@ -22,7 +22,6 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -48,19 +47,10 @@ public final class AccountCruder<R extends AccountCrudable<T>, T extends Crudabl
                          @NotNull Class<R> accountClass,
                          @NotNull Class<T> profileClass) {
         super(plugin);
-        var profileAPI = BlobLibProfileAPI.getInstance();
-        var provider = profileAPI.getProvider();
-        @NotNull var directory = provider.isAbsent() ?
-                plugin.getDataFolder()
-                :
-                new File(plugin.getDataFolder(), provider.getName());
-        if (!directory.isDirectory()) {
-            directory.mkdirs();
-        }
         Function<String, R> accountCreateFunction = identification -> new ClassHandler<>(accountClass).constructCrudable(identification);
         var profileClassHandler = new ClassHandler<>(profileClass);
         profileCreateFunction = profileClassHandler::constructCrudable;
-        accountCruder = Cruder.of(plugin, accountClass, accountCreateFunction, directory);
+        accountCruder = Cruder.of(accountClass, accountCreateFunction);
         loadAll();
     }
 

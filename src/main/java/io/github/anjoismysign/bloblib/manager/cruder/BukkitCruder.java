@@ -19,7 +19,6 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
@@ -56,8 +55,7 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
                            @Nullable Consumer<T> onUpdate,
                            @Nullable Consumer<T> onAutoSave,
                            @Nullable Consumer<T> onJoin,
-                           @Nullable Consumer<T> onQuit,
-                           @Nullable File customDirectory) {
+                           @Nullable Consumer<T> onQuit) {
         this.plugin = plugin;
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(this, plugin);
@@ -71,7 +69,7 @@ public class BukkitCruder<T extends Crudable> implements BlobSerializableHandler
         this.quitEvent = quitEvent;
         loading = Sets.newConcurrentHashSet();
         saving = Sets.newConcurrentHashSet();
-        cruder = Cruder.of(plugin, clazz, createFunction, customDirectory);
+        cruder = Cruder.of(clazz, createFunction);
         this.onRead = onRead;
         this.onUpdate = onUpdate;
         this.onAutoSave = onAutoSave;

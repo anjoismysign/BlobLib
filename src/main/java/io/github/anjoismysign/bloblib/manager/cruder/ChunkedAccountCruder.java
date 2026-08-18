@@ -21,7 +21,6 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.util.Map;
 import java.util.UUID;
 
@@ -46,17 +45,8 @@ public final class ChunkedAccountCruder<T extends Crudable> extends ProfiledCrud
     public ChunkedAccountCruder(@NotNull JavaPlugin plugin,
                                 @NotNull Class<T> profileClass) {
         super(plugin);
-        var profileAPI = BlobLibProfileAPI.getInstance();
-        var provider = profileAPI.getProvider();
-        @NotNull var directory = provider.isAbsent() ?
-                plugin.getDataFolder()
-                :
-                new File(plugin.getDataFolder(), provider.getName());
-        if (!directory.isDirectory()) {
-            directory.mkdirs();
-        }
-        accountCruder = Cruder.of(plugin, ChunkedAccountCrudable.class, ChunkedAccountCrudable::new, directory);
-        profileCruder = Cruder.of(plugin, profileClass, identification -> new ClassHandler<>(profileClass).constructCrudable(identification), directory);
+        accountCruder = Cruder.of(ChunkedAccountCrudable.class, ChunkedAccountCrudable::new);
+        profileCruder = Cruder.of(profileClass, identification -> new ClassHandler<>(profileClass).constructCrudable(identification));
         loadAll();
     }
 
