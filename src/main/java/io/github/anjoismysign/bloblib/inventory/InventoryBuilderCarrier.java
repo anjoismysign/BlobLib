@@ -3,14 +3,11 @@ package io.github.anjoismysign.bloblib.inventory;
 import io.github.anjoismysign.bloblib.domain.Localizable;
 import io.github.anjoismysign.bloblib.utility.TextColor;
 import io.github.anjoismysign.holoworld.asset.DataAsset;
-import org.apache.commons.io.FilenameUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.util.Objects;
 
 public record InventoryBuilderCarrier<T extends InventoryButton>(@NotNull String title,
