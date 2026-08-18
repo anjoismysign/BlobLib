@@ -15,10 +15,6 @@ would do. Branching is done once per repo up front (same rules as those two scri
 stale-branch refusal, --rebase-existing, --allow-dirty, --no-branch), then both rewrites
 land on it together.
 
-Use set_own_version.py directly instead when you're cutting another build against a
-BlobLib version a repo is already on -- that is where the build number actually
-increments.
-
 Usage:
     python3 tools/bump_bloblib_version.py 1.702 [-l LIST] [--only NAME ...] [--dry-run]
                                                 [--base BRANCH] [--allow-dirty]
