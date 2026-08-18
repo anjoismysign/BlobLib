@@ -102,13 +102,27 @@ java.sourceCompatibility = JavaVersion.VERSION_25
 java.targetCompatibility = JavaVersion.VERSION_25
 
 publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/anjoismysign/BlobLib")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                    ?: providers.gradleProperty("gpr.user").orNull
+                password = System.getenv("GITHUB_TOKEN")
+                    ?: providers.gradleProperty("gpr.key").orNull
+            }
+        }
+    }
+
     publications.create<MavenPublication>("maven") {
         artifact(tasks.shadowJar) {
             classifier = null
         }
 
         groupId = project.group.toString()
-        artifactId = project.name
+        // GitHub Packages rejects uppercase artifact ids with a 422
+        artifactId = project.name.lowercase()
         version = project.version.toString()
     }
 }
