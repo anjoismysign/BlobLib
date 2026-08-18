@@ -5,11 +5,11 @@ import io.github.anjoismysign.bloblib.area.Area;
 import io.github.anjoismysign.bloblib.area.AreaIO;
 import io.github.anjoismysign.bloblib.area.AreaType;
 import io.github.anjoismysign.bloblib.area.BoxArea;
+import io.github.anjoismysign.bloblib.content.LocaleOverlay;
 import io.github.anjoismysign.bloblib.domain.DataAssetType;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import io.github.anjoismysign.bloblib.translatable.BlobTranslatableArea;
 import io.github.anjoismysign.bloblib.translatable.TranslatableArea;
-import org.apache.commons.lang3.function.TriFunction;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiPredicate;
 
 public class TranslatableAreaManager extends LocalizableDataAssetManager<TranslatableArea> {
@@ -28,8 +29,8 @@ public class TranslatableAreaManager extends LocalizableDataAssetManager<Transla
      */
     public static TranslatableAreaManager of() {
         return new TranslatableAreaManager(BlobLib.getInstance().getFileManager().getDirectory(DataAssetType.TRANSLATABLE_AREA),
-                (section, locale, key) -> {
-                    if (locale.equalsIgnoreCase("en_us")) {
+                (section, locale, key, filePath) -> {
+                    if (LocaleOverlay.isDefault(locale)) {
                         Area area = AreaIO.INSTANCE.read(section);
                         if (!section.isString("Display"))
                             throw new ConfigurationFieldException("'Display' is missing or not set");
@@ -39,16 +40,18 @@ public class TranslatableAreaManager extends LocalizableDataAssetManager<Transla
                         if (!section.isString("Display"))
                             throw new ConfigurationFieldException("'Display' is missing or not set");
                         String display = section.getString("Display");
+                        LocaleOverlay.warnStrayFields(DataAssetType.TRANSLATABLE_AREA,
+                                key, locale, filePath, section, Set.of("Display"));
                         return TranslatableArea.forLocale(key, locale, display);
                     }
                 },
                 DataAssetType.TRANSLATABLE_AREA,
-                (section, locale) -> locale.equalsIgnoreCase("en_us")
+                (section, locale) -> LocaleOverlay.isDefault(locale)
                         ? section.isString("World")
                         : section.isString("Display"));
     }
 
-    TranslatableAreaManager(@NotNull File assetDirectory, @NotNull TriFunction<ConfigurationSection, String, String, TranslatableArea> readFunction, @NotNull DataAssetType type, BiPredicate<ConfigurationSection, String> filter) {
+    TranslatableAreaManager(@NotNull File assetDirectory, @NotNull LocalizableDataAssetManager.AssetReader<TranslatableArea> readFunction, @NotNull DataAssetType type, BiPredicate<ConfigurationSection, String> filter) {
         super(assetDirectory, readFunction, type, filter);
     }
 

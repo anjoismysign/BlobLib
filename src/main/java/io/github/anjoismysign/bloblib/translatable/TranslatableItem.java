@@ -1,5 +1,6 @@
 package io.github.anjoismysign.bloblib.translatable;
 
+import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
 import io.github.anjoismysign.bloblib.domain.TranslatableRarity;
 import io.github.anjoismysign.bloblib.event.TranslatableItemCloneEvent;
@@ -14,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
 public interface TranslatableItem extends Translatable<ItemStack> {
 
@@ -60,6 +62,70 @@ public interface TranslatableItem extends Translatable<ItemStack> {
     static TranslatableItem by(@NotNull String identifier) {
         Objects.requireNonNull(identifier);
         return BlobLibTranslatableAPI.getInstance().getTranslatableItem(identifier);
+    }
+
+    /**
+     * Creates a locale overlay of a TranslatableItem.
+     * <p>
+     * The overlay carries translatable text alone. Every other field is inherited
+     * from the default locale (en_us) asset of the same reference, which is
+     * resolved lazily so that load order does not matter.
+     * <p>
+     * The inherited text is not: display name, item name and lore start unset, as
+     * if the ItemMeta had never been touched, and only what this overlay declares
+     * is applied.
+     *
+     * @param reference   The identifier of the asset.
+     * @param locale      The locale this overlay belongs to.
+     * @param displayName The display name, or null to leave it unset.
+     * @param itemName    The item name, or null to leave it unset.
+     * @param lore        The lore, or null to leave it unset.
+     * @param miniMessage Whether the overlay parses as MiniMessage, or null to inherit.
+     * @return The overlaying TranslatableItem.
+     */
+    @NotNull
+    static TranslatableItem forLocale(@NotNull String reference,
+                                      @NotNull String locale,
+                                      @Nullable String displayName,
+                                      @Nullable String itemName,
+                                      @Nullable List<String> lore,
+                                      @Nullable Boolean miniMessage) {
+        Objects.requireNonNull(reference, "'reference' cannot be null");
+        Objects.requireNonNull(locale, "'locale' cannot be null");
+        return new TranslatableItem() {
+            @NotNull
+            private BlobTranslatableItem overlay() {
+                TranslatableItem asset = BlobLib.getInstance().getTranslatableItemManager().getAsset(reference);
+                if (!(asset instanceof BlobTranslatableItem base))
+                    throw new NullPointerException("No default locale (en_us) provided for '" + reference + "' TranslatableItem");
+                return base.overlay(locale, displayName, itemName, lore, miniMessage);
+            }
+
+            @Override
+            public @NotNull ItemStack get() {
+                return overlay().get();
+            }
+
+            @Override
+            public TranslatableRarity getRarity() {
+                return overlay().getRarity();
+            }
+
+            @Override
+            public @NotNull TranslatableItem modify(Function<String, String> function) {
+                return overlay().modify(function);
+            }
+
+            @Override
+            public @NotNull String identifier() {
+                return reference;
+            }
+
+            @Override
+            public @NotNull String locale() {
+                return locale;
+            }
+        };
     }
 
     /**

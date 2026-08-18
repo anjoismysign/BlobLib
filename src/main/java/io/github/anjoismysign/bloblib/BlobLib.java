@@ -2,6 +2,9 @@ package io.github.anjoismysign.bloblib;
 
 import io.github.anjoismysign.bloblib.action.Action;
 import io.github.anjoismysign.bloblib.command.BlobLibCommand;
+import io.github.anjoismysign.bloblib.content.ContentWarningListener;
+import io.github.anjoismysign.bloblib.content.ContentWarningRegistry;
+import io.github.anjoismysign.bloblib.content.LocaleOverlay;
 import io.github.anjoismysign.bloblib.disguise.DisguiseManager;
 import io.github.anjoismysign.bloblib.domain.DataAssetType;
 import io.github.anjoismysign.bloblib.event.BlobLibPreReloadEvent;
@@ -52,6 +55,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Set;
 
 /**
  * The main class of the plugin
@@ -165,7 +170,7 @@ public class BlobLib extends JavaPlugin {
         lootTableManager = new LootTableManager(this);
         translatableItemManager = LocalizableDataAssetManager
                 .of(fileManager.getDirectory(DataAssetType.TRANSLATABLE_ITEM),
-                        TranslatableReader::ITEM,
+                        (LocalizableDataAssetManager.AssetReader<TranslatableItem>) TranslatableReader::ITEM,
                         DataAssetType.TRANSLATABLE_ITEM,
                         section -> section.isConfigurationSection("ItemStack"));
         translatablePositionableManager = LocalizableDataAssetManager
@@ -175,13 +180,16 @@ public class BlobLib extends JavaPlugin {
                             if (display == null) {
                                 throw new ConfigurationFieldException("'Display' is missing or not set");
                             }
-                            if (!locale.equalsIgnoreCase("en_us"))
+                            if (!LocaleOverlay.isDefault(locale)) {
+                                LocaleOverlay.warnStrayFields(DataAssetType.TRANSLATABLE_POSITIONABLE,
+                                        key, locale, filePath, section, Set.of("Display"));
                                 return TranslatablePositionable.forLocale(key, locale, display);
+                            }
                             Positionable positionable = PositionableIO.INSTANCE.read(section);
                             return BlobTranslatablePositionable.of(key, locale, display, positionable);
                         },
                         DataAssetType.TRANSLATABLE_POSITIONABLE,
-                        (section, locale) -> locale.equalsIgnoreCase("en_us")
+                        (section, locale) -> LocaleOverlay.isDefault(locale)
                                 ? section.isDouble("X") && section.isDouble("Y") && section.isDouble("Z")
                                 : section.isString("Display"));
         translatableAreaManager = TranslatableAreaManager.of();
@@ -211,6 +219,7 @@ public class BlobLib extends JavaPlugin {
         //Load reloadable managers
         reload();
         BlobLibCommand.INSTANCE.initialize();
+        new ContentWarningListener(this);
 
         Bukkit.getScheduler().runTask(this, () -> {
             TranslatablePH.getInstance(this);
@@ -230,6 +239,7 @@ public class BlobLib extends JavaPlugin {
         org.bukkit.plugin.PluginManager pluginManager = Bukkit.getPluginManager();
         BlobLibPreReloadEvent preReloadEvent = new BlobLibPreReloadEvent();
         pluginManager.callEvent(preReloadEvent);
+        ContentWarningRegistry.getInstance().clear();
 
         configManager.reload();
         listenerManager.reload();
