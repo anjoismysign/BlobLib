@@ -1,12 +1,15 @@
 package io.github.anjoismysign.bloblib.translatable;
 
+import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
 import io.github.anjoismysign.bloblib.positionable.Positionable;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 public interface TranslatablePositionable extends Displayable<Positionable> {
 
@@ -20,6 +23,52 @@ public interface TranslatablePositionable extends Displayable<Positionable> {
     static TranslatablePositionable by(@NotNull String key) {
         Objects.requireNonNull(key);
         return BlobLibTranslatableAPI.getInstance().getTranslatablePositionable(key);
+    }
+
+    /**
+     * Creates a locale overlay of a TranslatablePositionable: it carries only the
+     * translatable display, while the Positionable itself is resolved lazily from
+     * the default locale (en_us) asset of the same reference.
+     *
+     * @param reference The identifier of the asset.
+     * @param locale    The locale this overlay belongs to.
+     * @param display   The translated display.
+     * @return The overlaying TranslatablePositionable.
+     */
+    @NotNull
+    static TranslatablePositionable forLocale(@NotNull String reference,
+                                              @NotNull String locale,
+                                              @NotNull String display) {
+        Objects.requireNonNull(reference, "'reference' cannot be null");
+        Objects.requireNonNull(locale, "'locale' cannot be null");
+        Objects.requireNonNull(display, "'display' cannot be null");
+        return new TranslatablePositionable() {
+            @Override
+            public @NotNull String getDisplay() {
+                return display;
+            }
+
+            @Override
+            public @NotNull Positionable get() {
+                return Objects.requireNonNull(BlobLib.getInstance().getTranslatablePositionableManager().getAsset(reference),
+                        "No default locale (en_us) provided for '" + reference + "' TranslatablePositionable").get();
+            }
+
+            @Override
+            public @NotNull Translatable<Positionable> modify(Function<String, String> function) {
+                return new BlobTranslatablePositionable(reference, locale, function.apply(display), get());
+            }
+
+            @Override
+            public @NonNull String identifier() {
+                return reference;
+            }
+
+            @Override
+            public @NotNull String locale() {
+                return locale;
+            }
+        };
     }
 
     /**

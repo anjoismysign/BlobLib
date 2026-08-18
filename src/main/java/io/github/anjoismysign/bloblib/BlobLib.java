@@ -170,16 +170,20 @@ public class BlobLib extends JavaPlugin {
                         section -> section.isConfigurationSection("ItemStack"));
         translatablePositionableManager = LocalizableDataAssetManager
                 .of(fileManager.getDirectory(DataAssetType.TRANSLATABLE_POSITIONABLE),
-                        (section, locale, key) -> {
-                            Positionable positionable = PositionableIO.INSTANCE.read(section);
+                        (section, locale, key, filePath) -> {
                             @Nullable String display = section.getString("Display");
                             if (display == null) {
                                 throw new ConfigurationFieldException("'Display' is missing or not set");
                             }
+                            if (!locale.equalsIgnoreCase("en_us"))
+                                return TranslatablePositionable.forLocale(key, locale, display);
+                            Positionable positionable = PositionableIO.INSTANCE.read(section);
                             return BlobTranslatablePositionable.of(key, locale, display, positionable);
                         },
                         DataAssetType.TRANSLATABLE_POSITIONABLE,
-                        section -> section.isDouble("X") && section.isDouble("Y") && section.isDouble("Z"));
+                        (section, locale) -> locale.equalsIgnoreCase("en_us")
+                                ? section.isDouble("X") && section.isDouble("Y") && section.isDouble("Z")
+                                : section.isString("Display"));
         translatableAreaManager = TranslatableAreaManager.of();
         messageManager = LocalizableDataAssetManager.of(fileManager.getDirectory(DataAssetType.BLOB_MESSAGE),
                 BlobMessageIO.INSTANCE::read,

@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
+import java.util.function.BiPredicate;
 
 public class TranslatableAreaManager extends LocalizableDataAssetManager<TranslatableArea> {
 
@@ -43,10 +43,12 @@ public class TranslatableAreaManager extends LocalizableDataAssetManager<Transla
                     }
                 },
                 DataAssetType.TRANSLATABLE_AREA,
-                section -> section.isString("World"));
+                (section, locale) -> locale.equalsIgnoreCase("en_us")
+                        ? section.isString("World")
+                        : section.isString("Display"));
     }
 
-    TranslatableAreaManager(@NotNull File assetDirectory, @NotNull TriFunction<ConfigurationSection, String, String, TranslatableArea> readFunction, @NotNull DataAssetType type, Predicate<ConfigurationSection> filter) {
+    TranslatableAreaManager(@NotNull File assetDirectory, @NotNull TriFunction<ConfigurationSection, String, String, TranslatableArea> readFunction, @NotNull DataAssetType type, BiPredicate<ConfigurationSection, String> filter) {
         super(assetDirectory, readFunction, type, filter);
     }
 
