@@ -6,6 +6,7 @@ import io.github.anjoismysign.bloblib.area.Area;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -36,7 +37,7 @@ public interface TranslatableArea extends Displayable<Area> {
 
             @Override
             public @NotNull Area get() {
-                return Objects.requireNonNull(BlobLib.getInstance().getTranslatableAreaManager().getAsset(reference), "No default locale provided").get();
+                return Objects.requireNonNull(BlobLib.getInstance().getTranslatableAreaManager().getAsset(reference), "No default locale (en_us) provided for '"+reference+"' TranslatableArea").get();
             }
 
             @Override
@@ -45,7 +46,7 @@ public interface TranslatableArea extends Displayable<Area> {
             }
 
             @Override
-            public String identifier() {
+            public @NonNull String identifier() {
                 return reference;
             }
 
