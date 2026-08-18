@@ -48,13 +48,12 @@ public class BlobMultiSlotable extends MultiSlotable {
                                          String locale,
                                          String inventoryIdentifier) {
         final Supplier<ItemStack> readSupplier;
-        if (section.isString("ItemStack")) {
-            String reference = section.getString("ItemStack");
+        @Nullable String translatableItemReference = section.getString("ItemStack");
+        if (translatableItemReference != null) {
             TranslatableItem translatableItem = BlobLibTranslatableAPI.getInstance()
-                    .getTranslatableItem(reference,
-                            locale);
+                    .getTranslatableItem(translatableItemReference, locale);
             if (translatableItem == null)
-                throw new ConfigurationFieldException("TranslatableItem not found: " + reference);
+                throw new ConfigurationFieldException("TranslatableItem not found: " + translatableItemReference);
             readSupplier = translatableItem::getClone;
         } else {
             ConfigurationSection itemStackSection = section.getConfigurationSection("ItemStack");
@@ -128,7 +127,7 @@ public class BlobMultiSlotable extends MultiSlotable {
             ConfigurationSection actionsSection = section.getConfigurationSection("Actions");
             for (String actionIdentifier : actionsSection.getKeys(false)) {
                 ConfigurationSection actionSection = actionsSection.getConfigurationSection(actionIdentifier);
-                String reference;
+                String actionReference;
                 ActionType type = null;
                 if (actionSection != null) {
                     String path = identifier + ".Actions." + actionIdentifier;
@@ -136,16 +135,16 @@ public class BlobMultiSlotable extends MultiSlotable {
                         Bukkit.getLogger().info("'Action' field is missing in 'Action' ConfigurationSection (" + path + ")");
                     if (!actionSection.isString("Action-Type"))
                         Bukkit.getLogger().info("'Action-Type' field is missing in 'Action' ConfigurationSection (" + path + ")");
-                    reference = actionSection.getString("Action");
+                    actionReference = actionSection.getString("Action");
                     try {
                         type = ActionType.valueOf(actionSection.getString("Action-Type"));
                     } catch (IllegalArgumentException exception) {
                         throw new ConfigurationFieldException("Invalid 'ActionType' for " + identifier + ".Action.Action-Type");
                     }
-                    actions.add(new ActionMemo(reference, type, "MS-" + inventoryIdentifier + "-" + identifier + "." + actionIdentifier));
+                    actions.add(new ActionMemo(actionReference, type, "MS-" + inventoryIdentifier + "-" + identifier + "." + actionIdentifier));
                 } else if (actionsSection.isString(actionIdentifier)) {
-                    reference = actionsSection.getString(actionIdentifier);
-                    actions.add(new ActionMemo(reference, null, "MS-" + inventoryIdentifier + "-" + identifier + "." + actionIdentifier));
+                    actionReference = actionsSection.getString(actionIdentifier);
+                    actions.add(new ActionMemo(actionReference, null, "MS-" + inventoryIdentifier + "-" + identifier + "." + actionIdentifier));
                 }
             }
         }
