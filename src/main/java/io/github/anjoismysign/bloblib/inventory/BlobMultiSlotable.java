@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -48,8 +49,9 @@ public class BlobMultiSlotable extends MultiSlotable {
                                          String locale,
                                          String inventoryIdentifier) {
         final Supplier<ItemStack> readSupplier;
-        @Nullable String translatableItemReference = section.getString("ItemStack");
-        if (translatableItemReference != null) {
+        if (section.isString("ItemStack")) {
+            @Nullable String translatableItemReference = section.getString("ItemStack", null);
+            Objects.requireNonNull(translatableItemReference, "'translatableItemReference' cannot be null!");
             TranslatableItem translatableItem = BlobLibTranslatableAPI.getInstance()
                     .getTranslatableItem(translatableItemReference, locale);
             if (translatableItem == null)

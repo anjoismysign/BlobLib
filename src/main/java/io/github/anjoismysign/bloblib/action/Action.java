@@ -21,9 +21,13 @@ public abstract class Action<T extends Entity> implements DataAsset {
      * @return The action
      */
     public static Action<Entity> fromConfigurationSection(ConfigurationSection section) {
-        String type = section.getString("Type");
-        if (type == null)
+        if (!section.isString("Type")){
             throw new ConfigurationFieldException("'Action.Type' is not set or valid");
+        }
+        String type = section.getString("Type");
+        if (type == null) {
+            throw new ConfigurationFieldException("'Action.Type' is not set or valid");
+        }
         ActionType actionType;
         try {
             actionType = ActionType.valueOf(type);

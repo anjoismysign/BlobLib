@@ -189,22 +189,20 @@ public class BlobLib extends JavaPlugin {
                             return BlobTranslatablePositionable.of(key, locale, display, positionable);
                         },
                         DataAssetType.TRANSLATABLE_POSITIONABLE,
-                        (section, locale) -> LocaleOverlay.isDefault(locale)
-                                ? section.isDouble("X") && section.isDouble("Y") && section.isDouble("Z")
-                                : section.isString("Display"));
+                        (section, locale) -> section.isString("Display") && (!LocaleOverlay.isDefault(locale) || (section.isDouble("X") && section.isDouble("Y") && section.isDouble("Z"))));
         translatableAreaManager = TranslatableAreaManager.of();
         messageManager = LocalizableDataAssetManager.of(fileManager.getDirectory(DataAssetType.BLOB_MESSAGE),
                 BlobMessageIO.INSTANCE::read,
         DataAssetType.BLOB_MESSAGE,
-        section -> section.isString("Chat") || section.isString("Actionbar") || section.isString("Title") && section.isString("Subtitle"));
+        section -> section.isString("Chat") || section.isString("Actionbar") || (section.isString("Title") && section.isString("Subtitle")));
         actionManager = DataAssetManager.of(fileManager.getDirectory(DataAssetType.ACTION),
                 (section, key) -> Action.fromConfigurationSection(section),
                 DataAssetType.ACTION,
-                section -> section.contains("Type") && section.isString("Type"));
+                section -> section.isString("Type"));
         soundManager = DataAssetManager.of(fileManager.getDirectory(DataAssetType.BLOB_SOUND),
                 BlobSoundReader::read,
                 DataAssetType.BLOB_SOUND,
-                section -> section.contains("Sound"));
+                section -> section.isString("Sound"));
         fillerManager = new FillerManager();
         vaultManager = new VaultManager();
         disguiseManager = new DisguiseManager();

@@ -29,31 +29,32 @@ public class BlobSoundReader {
 
     public static BlobSound read(@NotNull ConfigurationSection section,
                                  @NotNull String key) {
-        if (!section.contains("Sound"))
-            throw new ConfigurationFieldException("'Sound' is not defined");
-        if (!section.contains("Volume"))
+        if (!section.isDouble("Volume"))
             throw new ConfigurationFieldException("'Volume' is not defined");
-        if (!section.contains("Pitch"))
+        if (!section.isDouble("Pitch"))
             throw new ConfigurationFieldException("'Pitch' is not defined");
         Optional<SoundCategory> category = Optional.empty();
-        if (section.contains("Category"))
+        if (section.contains("Category")) {
             try {
                 category = Optional.of(SoundCategory.valueOf(section.getString("Category")));
             } catch (IllegalArgumentException e) {
                 throw new ConfigurationFieldException("Invalid Sound's Category: " + section.getString("Category"));
             }
+        }
         MessageAudience audience = MessageAudience.PLAYER;
-        if (section.contains("Audience"))
+        if (section.contains("Audience")) {
             try {
                 audience = MessageAudience.valueOf(section.getString("Audience"));
             } catch (IllegalArgumentException e) {
                 throw new ConfigurationFieldException("Invalid Sound's Audience: " + section.getString("Audience"));
             }
+        }
+        @Nullable Long seed = section.isLong("Seed") ? section.getLong("Seed") : null;
         return new BlobSound(
                 getSound(section.getString("Sound")),
                 (float) section.getDouble("Volume"),
                 (float) section.getDouble("Pitch"),
-                (Long) section.get("Seed", null),
+                seed,
                 category.orElse(null),
                 audience,
                 key

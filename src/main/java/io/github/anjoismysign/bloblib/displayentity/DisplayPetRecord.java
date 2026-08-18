@@ -1,6 +1,6 @@
 package io.github.anjoismysign.bloblib.displayentity;
 
-import io.github.anjoismysign.bloblib.BlobLib;
+import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import io.github.anjoismysign.bloblib.middleman.itemstack.ItemStackReader;
 import io.github.anjoismysign.bloblib.utility.TextColor;
 import io.papermc.paper.registry.RegistryAccess;
@@ -39,16 +39,15 @@ public record DisplayPetRecord(@Nullable ItemStack itemStack,
             blockData = Bukkit.createBlockData(section.getString("BlockData"));
         }
         Particle particle = null;
-        if (section.contains("Particle")) {
+        if (section.isString("Particle")) {
             String particleName = section.getString("Particle");
             particle = RegistryAccess.registryAccess().getRegistry(RegistryKey.PARTICLE_TYPE).get(NamespacedKey.minecraft(particleName));
         }
         String customName = null;
-        if (section.contains("CustomName"))
+        if (section.isString("CustomName"))
             customName = TextColor.PARSE(section.getString("CustomName"));
         if (itemStack == null && blockData == null) {
-            BlobLib.getAnjoLogger().singleError("ItemStack and BlockData are both empty at " + section.getCurrentPath());
-            return null;
+            throw new ConfigurationFieldException("ItemStack and BlockData are both empty at " + section.getCurrentPath());
         }
         return new DisplayPetRecord(itemStack, blockData, particle, customName);
     }

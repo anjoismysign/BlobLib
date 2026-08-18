@@ -9,6 +9,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,8 @@ public class BlobLibConfigManager {
     private boolean verbose;
     private TranslatableRarities rarities;
 
+    private static final Path CONFIG_PATH = BlobLib.getInstance().getDataFolder().toPath().resolve("config.yml");
+
     private BlobLibConfigManager(BlobLib plugin) {
         this.plugin = plugin;
         reload();
@@ -47,12 +50,22 @@ public class BlobLibConfigManager {
         plugin.reloadConfig();
         plugin.saveDefaultConfig();
         ConfigDecorator configDecorator = new ConfigDecorator(plugin);
-        ConfigurationSection section = configDecorator.reloadAndGetSection("Settings");
-        verbose = section.getBoolean("Verbose", false);
-        ConfigurationSection locale = configDecorator.reloadAndGetSection("Locale");
-        consoleLocale = locale.getString("Console");
-        Set<LocaleDefault> set = LocaleDefault.READ(
-                locale.getConfigurationSection("Default-To"));
+        ConfigurationSection settingsSection = configDecorator.reloadAndGetSection("Settings");
+        verbose = settingsSection.getBoolean("Verbose", false);
+        ConfigurationSection localeSection = configDecorator.reloadAndGetSection("Locale");
+        if (!localeSection.isString("Console")){
+            plugin.getLogger().severe("'Locale.Console' must be a String! \nAt: "+CONFIG_PATH);
+            consoleLocale = "en_us";
+        } else {
+            consoleLocale = localeSection.getString("Console", "en_us");
+        }
+        Set<LocaleDefault> set;
+        if (localeSection.isConfigurationSection("Default-To")) {
+            set = LocaleDefault.READ(localeSection.getConfigurationSection("Default-To"));
+        } else {
+            plugin.getLogger().severe("'Locale.Default-To' must be a mapping/object! \nAt: "+CONFIG_PATH);
+            set = Set.of();
+        }
         set.forEach(localeDefault -> {
             String to = localeDefault.to();
             List<String> from = localeDefault.from();
