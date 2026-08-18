@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """Publish a GitHub release for every repo in bloblib-memory/maintained repos.md.
 
+Pass --repo PATH to release something else instead; `--repo .` releases BlobLib itself,
+which is Gradle rather than Maven but follows the same tagging convention.
+
 Each release is cut from the repo's default branch (`main` for some, `master` for
-others), tagged after the version in the root pom — `v1.0.16` for a pom at 1.0.16, which
-is the convention the existing releases already follow — and its body is the list of
+others), tagged after the version the build declares — `v1.0.16` for a pom at 1.0.16,
+`v1.701` for a Gradle build at 1.701, which is the convention the releases already follow — and its body is the list of
 commit subjects since the previous release:
 
     ## Changes since v1.0.15
@@ -23,6 +26,7 @@ Requires the `gh` CLI, authenticated.
 Usage:
     python3 tools/github_release_maintained_repos.py --yes
                                                      [-l LIST] [--only NAME ...]
+                                                     [--repo PATH ...]
                                                      [--tag-prefix v] [--draft]
                                                      [--prerelease] [--no-merges]
                                                      [--allow-existing] [--dry-run]
@@ -32,6 +36,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -141,6 +146,37 @@ def pom_version(repo: Path) -> str | None:
     return text if text and not text.startswith("${") else None
 
 
+def gradle_version(repo: Path) -> str | None:
+    """The `version = "1.701"` line from a Gradle build, or gradle.properties.
+
+    BlobLib itself is Gradle rather than Maven, and it releases under the same
+    v<version> convention, so the version lookup has to handle both.
+    """
+    props = repo / "gradle.properties"
+    if props.is_file():
+        for line in props.read_text(encoding="utf-8", errors="replace").splitlines():
+            match = re.fullmatch(r"\s*version\s*=\s*(.+?)\s*", line)
+            if match:
+                return match.group(1).strip("\"'")
+
+    for name in ("build.gradle.kts", "build.gradle"):
+        build = repo / name
+        if not build.is_file():
+            continue
+        # Top level only: an indented `version =` belongs to a subproject or a
+        # publication block, not to the root project.
+        for line in build.read_text(encoding="utf-8", errors="replace").splitlines():
+            match = re.fullmatch(r"version\s*=\s*[\"'](.+?)[\"']\s*", line)
+            if match:
+                return match.group(1)
+    return None
+
+
+def project_version(repo: Path) -> str | None:
+    """Version to release, from whichever build system the repo uses."""
+    return pom_version(repo) or gradle_version(repo)
+
+
 def previous_release_tag(repo: Path, args: argparse.Namespace) -> str | None:
     """Tag of the latest published release, per GitHub — not per the local clone."""
     proc = run(repo, "gh", "release", "list", "--limit", "1",
@@ -202,9 +238,10 @@ def publish(repo: Path, args: argparse.Namespace) -> Result:
         return Result(name, "skipped",
                       detail=f"{unpushed} unpushed commit(s) — push before releasing")
 
-    version = pom_version(repo)
+    version = project_version(repo)
     if version is None:
-        return Result(name, "skipped", detail="cannot read a version from the root pom")
+        return Result(name, "skipped",
+                      detail="cannot read a version from the root pom or Gradle build")
     tag = f"{args.tag_prefix}{version}"
 
     if release_exists(repo, tag):
@@ -248,6 +285,9 @@ def main() -> int:
                         help="markdown file with one repo path per bullet")
     parser.add_argument("--only", nargs="+", default=None, metavar="NAME",
                         help="limit to repos whose directory name matches (case-insensitive)")
+    parser.add_argument("--repo", nargs="+", default=None, type=Path, metavar="PATH",
+                        help="release these repo paths instead of the list — `--repo .` "
+                             "releases BlobLib itself")
     parser.add_argument("--tag-prefix", default="v",
                         help="prefix for the tag built from the pom version (default: v)")
     parser.add_argument("--draft", action="store_true", help="create the release as a draft")
@@ -271,11 +311,14 @@ def main() -> int:
     if shutil.which("gh") is None:
         print("gh not on PATH — install it and authenticate", file=sys.stderr)
         return 2
-    if not args.list.is_file():
+    if not args.repo and not args.list.is_file():
         print(f"repo list not found: {args.list}", file=sys.stderr)
         return 2
 
-    repos = parse_list(args.list)
+    if args.repo:
+        repos = [Path(os.path.expanduser(str(r))).resolve() for r in args.repo]
+    else:
+        repos = parse_list(args.list)
     if args.only:
         wanted = {n.lower() for n in args.only}
         repos = [r for r in repos if r.name.lower() in wanted]
