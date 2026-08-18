@@ -10,6 +10,7 @@ import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibSoundAPI;
 import io.github.anjoismysign.bloblib.area.AreaIO;
 import io.github.anjoismysign.bloblib.component.textbubble.TextBubbleComponent;
+import io.github.anjoismysign.bloblib.content.ContentWarningRegistry;
 import io.github.anjoismysign.bloblib.inventory.BlobInventoryTracker;
 import io.github.anjoismysign.bloblib.itemapi.ItemMaterial;
 import io.github.anjoismysign.bloblib.itemapi.ItemMaterialManager;
@@ -72,6 +73,7 @@ public enum BlobLibCommand {
         closeinventory(bloblib);
         blobmessage(bloblib);
         teleport(bloblib);
+        warnings(bloblib);
     }
 
     public void reload(@NotNull Command bloblib) {
@@ -140,6 +142,38 @@ public enum BlobLibCommand {
                     .get()
                     .toCommandSender(sender);
 
+        }));
+    }
+
+    public void warnings(@NotNull Command bloblib) {
+        Command command = bloblib.child("warnings");
+        Command content = command.child("content");
+        content.onExecute(((permissionMessenger, args) -> {
+            CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
+            ContentWarningRegistry registry = ContentWarningRegistry.getInstance();
+            if (registry.isEmpty()) {
+                BlobLibMessageAPI.getInstance()
+                        .getMessage("BlobLib.Content-Warnings-None", sender)
+                        .toCommandSender(sender);
+                return;
+            }
+            Path path;
+            try {
+                path = registry.saveReport(main.getDataFolder().toPath().resolve("warnings"));
+            } catch (IOException exception) {
+                BlobLib.getAnjoLogger().error("Could not save the content warnings report: " + exception.getMessage());
+                BlobLibMessageAPI.getInstance()
+                        .getMessage("System.Error", sender)
+                        .toCommandSender(sender);
+                return;
+            }
+            BlobLibMessageAPI.getInstance()
+                    .getMessage("BlobLib.Content-Warnings-Saved", sender)
+                    .modder()
+                    .replace("%amount%", String.valueOf(registry.size()))
+                    .replace("%path%", path.toString())
+                    .get()
+                    .toCommandSender(sender);
         }));
     }
 

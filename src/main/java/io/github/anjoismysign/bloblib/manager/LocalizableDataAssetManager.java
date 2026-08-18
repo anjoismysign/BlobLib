@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -49,7 +50,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
     private final File assetDirectory;
     private final AssetReader<T> readFunction;
     private final DataAssetType type;
-    private final Predicate<ConfigurationSection> filter;
+    private final BiPredicate<ConfigurationSection, String> filter;
 
     private final BlobLib blobLib;
     private Map<String, Set<String>> assets;
@@ -94,6 +95,30 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
                                                                                         @NotNull AssetReader<T> readFunction,
                                                                                         @NotNull DataAssetType type,
                                                                                         @NotNull Predicate<ConfigurationSection> filter) {
+        Objects.requireNonNull(filter, "Filter cannot be null");
+        return of(assetDirectory, readFunction, type, (section, locale) -> filter.test(section));
+    }
+
+    /**
+     * Creates a new instance of the LocalizableDataAssetManager whose filter is aware
+     * of the locale of the file the ConfigurationSection belongs to.
+     * <p>
+     * This allows a data asset type to accept 'locale overlay' files: files of a
+     * non-default locale that carry only the translatable fields, while the
+     * non-translatable data lives solely in the default locale ({@code en_us}) file.
+     *
+     * @param assetDirectory The directory where the assets are located
+     * @param readFunction   The function that will read the assets
+     * @param type           The type of the asset
+     * @param filter         The filter that if true will load the asset, receiving
+     *                       the ConfigurationSection and the locale of its file.
+     * @param <T>            The type of the asset
+     * @return The new instance of the LocalizableDataAssetManager
+     */
+    public static <T extends DataAsset & Localizable> LocalizableDataAssetManager<T> of(@NotNull File assetDirectory,
+                                                                                        @NotNull AssetReader<T> readFunction,
+                                                                                        @NotNull DataAssetType type,
+                                                                                        @NotNull BiPredicate<ConfigurationSection, String> filter) {
         Objects.requireNonNull(assetDirectory, "Asset directory cannot be null");
         Objects.requireNonNull(readFunction, "Read function cannot be null");
         Objects.requireNonNull(type, "Data asset type cannot be null");
@@ -111,6 +136,15 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
                                 @NotNull Predicate<ConfigurationSection> filter) {
         this(assetDirectory,
                 (section, locale, reference, filePath) -> readFunction.apply(section, locale, reference),
+                type, (section, locale) -> filter.test(section));
+    }
+
+    LocalizableDataAssetManager(@NotNull File assetDirectory,
+                                @NotNull TriFunction<ConfigurationSection, String, String, T> readFunction,
+                                @NotNull DataAssetType type,
+                                @NotNull BiPredicate<ConfigurationSection, String> filter) {
+        this(assetDirectory,
+                (section, locale, reference, filePath) -> readFunction.apply(section, locale, reference),
                 type, filter);
     }
 
@@ -118,6 +152,13 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
                                 @NotNull AssetReader<T> readFunction,
                                 @NotNull DataAssetType type,
                                 @NotNull Predicate<ConfigurationSection> filter) {
+        this(assetDirectory, readFunction, type, (section, locale) -> filter.test(section));
+    }
+
+    LocalizableDataAssetManager(@NotNull File assetDirectory,
+                                @NotNull AssetReader<T> readFunction,
+                                @NotNull DataAssetType type,
+                                @NotNull BiPredicate<ConfigurationSection, String> filter) {
         this.blobLib = BlobLib.getInstance();
         this.assetDirectory = assetDirectory;
         this.readFunction = readFunction;
@@ -197,7 +238,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
         String filePath = file.getPath();
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         String locale = yamlConfiguration.getString("Locale", "en_us");
-        if (filter.test(yamlConfiguration)) {
+        if (filter.test(yamlConfiguration, locale)) {
             try {
                 T asset = readFunction.read(yamlConfiguration, locale, fileName, filePath);
                 if (asset == null)
@@ -213,7 +254,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
             if (!yamlConfiguration.isConfigurationSection(reference))
                 return;
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
-            if (!filter.test(section))
+            if (!filter.test(section, locale))
                 return;
             try {
                 T asset = readFunction.read(section, locale, reference, filePath);
@@ -230,7 +271,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
         String filePath = file.getPath();
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         String locale = yamlConfiguration.getString("Locale", "en_us");
-        if (filter.test(yamlConfiguration)) {
+        if (filter.test(yamlConfiguration, locale)) {
             try {
                 T asset = readFunction.read(yamlConfiguration, locale, fileName, filePath);
                 if (asset == null)
@@ -247,7 +288,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
             if (!yamlConfiguration.isConfigurationSection(reference))
                 return;
             ConfigurationSection section = yamlConfiguration.getConfigurationSection(reference);
-            if (!filter.test(section))
+            if (!filter.test(section, locale))
                 return;
             try {
                 T asset = readFunction.read(section, locale, reference, filePath);

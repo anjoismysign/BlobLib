@@ -129,3 +129,4 @@ run/
 /.settings/org.eclipse.buildship.core.prefs
 /.mcp.json
 /bloblib-memory/
+/tools/__pycache__/
