@@ -6,8 +6,9 @@ Reuses the exact line-based rewrite from modernize_blob_messages.py: comments,
 quoting style, key order and line wrapping in untouched parts of the file are
 preserved exactly. See that script's docstring for the format being migrated.
 
-Each repo is expected to keep its lang file(s) under src/main/resources, matched
-recursively as *_lang.yml / *_lang.yaml -- this also picks up locale overlays
+Lang files are matched recursively as *_lang.yml / *_lang.yaml under every
+src/main/resources found in the repo, at the root or in any submodule (e.g.
+BlobOutlaw/bloboutlaw-paper/src/main/resources) -- this also picks up locale overlays
 such as resources/es_es/foo_lang.yml (see TranslatableArea's locale-overlay
 support) alongside the default resources/foo_lang.yml.
 (BlobLib's own bloblib_lang.yml included, since it's listed via --include-self.)
@@ -47,12 +48,30 @@ def parse_list(path: Path) -> list[Path]:
     return repos
 
 
+SKIP_DIRS = {".git", "build", "target", "out", ".gradle", ".idea", "node_modules"}
+
+
+def resource_roots(repo: Path):
+    """Yield every src/main/resources under repo -- multi-module projects (e.g.
+    BlobOutlaw/bloboutlaw-paper) keep their lang files in a submodule, not at
+    the repo root."""
+    root = repo / "src" / "main" / "resources"
+    if root.is_dir():
+        yield root
+    for entry in sorted(repo.iterdir()):
+        if not entry.is_dir() or entry.name in SKIP_DIRS or entry.name.startswith("."):
+            continue
+        yield from resource_roots(entry)
+
+
 def lang_files(repo: Path):
-    resources = repo / "src" / "main" / "resources"
-    if not resources.is_dir():
-        return
-    yield from sorted(resources.rglob("*_lang.yml"))
-    yield from sorted(resources.rglob("*_lang.yaml"))
+    seen = set()
+    for resources in resource_roots(repo):
+        for pattern in ("*_lang.yml", "*_lang.yaml"):
+            for yml in sorted(resources.rglob(pattern)):
+                if yml not in seen:
+                    seen.add(yml)
+                    yield yml
 
 
 def main() -> int:
