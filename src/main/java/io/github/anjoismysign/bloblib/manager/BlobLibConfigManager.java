@@ -33,6 +33,7 @@ public class BlobLibConfigManager {
 
     private final BlobLib plugin;
     private TinyEventListener displayRiding;
+    private TinyEventListener itemConsumeUpdateInventory;
     private String consoleLocale;
     private Map<String, String> defaultLocale;
     private boolean verbose;
@@ -79,6 +80,7 @@ public class BlobLibConfigManager {
         });
         ListenersSection listenersSection = configDecorator.reloadAndGetListeners();
         displayRiding = listenersSection.tinyEventListener("Display-Unriding");
+        itemConsumeUpdateInventory = listenersSection.tinyEventListener("Item-Consume-Update-Inventory");
 
         plugin.saveResource("rarity.yml", false);
         File rarity = new File(plugin.getDataFolder(), "rarity.yml");
@@ -87,6 +89,10 @@ public class BlobLibConfigManager {
 
     public TinyEventListener getDisplayRiding() {
         return displayRiding;
+    }
+
+    public TinyEventListener getItemConsumeUpdateInventory() {
+        return itemConsumeUpdateInventory;
     }
 
     /**

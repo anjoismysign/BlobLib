@@ -3,6 +3,7 @@ Settings:
 Listeners:
   TinyListeners:
     Display-Unriding: false
+    Item-Consume-Update-Inventory: false
 Locale:
   Console: en_us
   Default-To:
