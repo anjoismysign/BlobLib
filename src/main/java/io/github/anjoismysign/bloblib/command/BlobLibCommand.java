@@ -8,6 +8,7 @@ import io.github.anjoismysign.bloblib.api.BlobLibInventoryAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibLootAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibSoundAPI;
+import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
 import io.github.anjoismysign.bloblib.area.AreaIO;
 import io.github.anjoismysign.bloblib.component.textbubble.TextBubbleComponent;
 import io.github.anjoismysign.bloblib.content.ContentWarningRegistry;
@@ -221,6 +222,27 @@ public enum BlobLibCommand {
         Command command = bloblib.child("translatableitem");
         ItemMaterialManager materialManager = ItemMaterialManager.getInstance();
         CommandTarget<ItemMaterial> target = CommandTargetBuilder.fromMap(materialManager::getItems);
+        Command view = command.child("view");
+        view.onExecute((permissionMessenger, args)->{
+            CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
+            if (!(sender instanceof Player player)) {
+                BlobLibMessageAPI.getInstance()
+                        .getMessage("System.Console-Not-Allowed-Command", sender)
+                        .toCommandSender(sender);
+                return;
+            }
+            BlobLibInventoryAPI.getInstance().selector(
+                    player,
+                    "TranslatableItem",
+                    ()-> BlobLibTranslatableAPI.getInstance().getTranslatableItems("en_us"),
+                    translatableItem -> {
+                        ItemStack clone = translatableItem.getClone();
+                        int maxStackSize = clone.getMaxStackSize();
+                        clone.setAmount(maxStackSize);
+                        player.give(clone);
+                    },
+                    TranslatableItem::getClone);
+        });
         Command get = command.child("get");
         get.setParameters(target);
         get.onExecute((permissionMessenger, args) -> {
