@@ -52,11 +52,36 @@ public final class LocaleOverlay {
                                        @NotNull String filePath,
                                        @NotNull ConfigurationSection section,
                                        @NotNull Set<String> effective) {
+        warnStrayFields(type, reference, locale, filePath, section, effective, "");
+    }
+
+    /**
+     * Registers a {@link ContentWarning} for every field of the section that a
+     * locale overlay is not read for, so that editing a field which changes
+     * nothing does not go unnoticed.
+     *
+     * @param type       The type of data asset
+     * @param reference  The identifier of the asset
+     * @param locale     The locale of the overlay file
+     * @param filePath   The path of the overlay file
+     * @param section    The section to inspect
+     * @param effective  The fields the overlay is actually read for
+     * @param pathPrefix The path of the section inside the file, so that a nested
+     *                   field points at where it was written. Empty for a root section.
+     */
+    public static void warnStrayFields(@NotNull DataAssetType type,
+                                       @NotNull String reference,
+                                       @NotNull String locale,
+                                       @NotNull String filePath,
+                                       @NotNull ConfigurationSection section,
+                                       @NotNull Set<String> effective,
+                                       @NotNull String pathPrefix) {
         ContentWarningRegistry registry = ContentWarningRegistry.getInstance();
+        String prefix = pathPrefix.isEmpty() ? "" : pathPrefix + ".";
         for (String field : section.getKeys(false)) {
             if (field.equals(LOCALE_FIELD) || effective.contains(field))
                 continue;
-            registry.register(ContentWarning.noEffectInOverlay(type, reference, locale, filePath, field));
+            registry.register(ContentWarning.noEffectInOverlay(type, reference, locale, filePath, prefix + field));
         }
     }
 }

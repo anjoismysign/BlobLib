@@ -36,6 +36,7 @@ public class ContentWarningListener implements Listener {
 
     @EventHandler
     public void handle(ServerLoadEvent event) {
+        plugin.getInventoryManager().materializeOverlays();
         ContentWarningRegistry registry = ContentWarningRegistry.getInstance();
         if (registry.isEmpty())
             return;

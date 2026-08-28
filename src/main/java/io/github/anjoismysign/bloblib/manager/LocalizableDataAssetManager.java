@@ -184,8 +184,6 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
         assets.put(pluginName, new HashSet<>());
         duplicates.clear();
         File directory = director.getFileManager().getDirectory(type);
-        if (directory == null)
-            throw new NullPointerException("Directory for " + type.name() + " is null");
         loadFiles(directory, plugin);
         duplicates.forEach((identifier, paths) -> plugin.getAnjoLogger()
                 .log("Duplicate " + type.name() + ": '" + identifier + "' (found " + paths.size() + " instances)\n" +
@@ -241,8 +239,9 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
         if (filter.test(yamlConfiguration, locale)) {
             try {
                 T asset = readFunction.read(yamlConfiguration, locale, fileName, filePath);
-                if (asset == null)
+                if (asset == null) {
                     return;
+                }
                 addOrCreateLocale(asset, fileName, filePath);
             } catch (Throwable throwable) {
                 BlobLib.getInstance().getLogger().severe("At: " + filePath);
@@ -258,6 +257,8 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
                 return;
             try {
                 T asset = readFunction.read(section, locale, reference, filePath);
+                if (asset == null)
+                    return;
                 addOrCreateLocale(asset, reference, filePath);
             } catch (Throwable throwable) {
                 BlobLib.getInstance().getLogger().severe("At: " + filePath);
@@ -292,6 +293,8 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
                 return;
             try {
                 T asset = readFunction.read(section, locale, reference, filePath);
+                if (asset == null)
+                    return;
                 addOrCreateLocale(asset, reference, filePath);
                 assets.computeIfAbsent(plugin.getName(), k -> new HashSet<>()).add(reference);
             } catch (Throwable throwable) {
@@ -299,6 +302,24 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
                 throwable.printStackTrace();
             }
         });
+    }
+
+    /**
+     * Adds an asset that was not built while its file was being read, such as a
+     * locale overlay that had to wait for its default locale counterpart to load.
+     *
+     * @param asset     The asset to add
+     * @param reference The identifier of the asset
+     * @param filePath  The path of the file the asset was read from
+     * @return true if it was added, false if the reference was already held for its locale
+     */
+    public boolean addAsset(@NotNull T asset,
+                            @NotNull String reference,
+                            @NotNull String filePath) {
+        Objects.requireNonNull(asset, "'asset' cannot be null");
+        Objects.requireNonNull(reference, "'reference' cannot be null");
+        Objects.requireNonNull(filePath, "'filePath' cannot be null");
+        return addOrCreateLocale(asset, reference, filePath);
     }
 
     private boolean addOrCreateLocale(T asset, String reference, String filePath) {

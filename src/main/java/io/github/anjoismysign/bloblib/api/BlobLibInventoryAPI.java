@@ -225,6 +225,24 @@ public class BlobLibInventoryAPI {
                 null);
     }
 
+    @Nullable
+    public <T> BlobSelector<T> detailedSelector(@NotNull Player player,
+                                                @NotNull String dataType,
+                                                @NotNull Supplier<List<T>> selectorList,
+                                                @NotNull Consumer<T> onSelect,
+                                                @Nullable Function<T, ItemStack> display,
+                                                @NotNull Consumer<Player> onReturn) {
+        return customSelector("DetailedVariableSelector",
+                player,
+                "White-Background",
+                dataType,
+                selectorList,
+                onSelect,
+                display,
+                onReturn,
+                null,
+                null);
+    }
     /**
      * Will allow player to edit a collection of elements.
      * The editor will be placed in the inventory at the specified buttonRangeKey.
@@ -337,6 +355,31 @@ public class BlobLibInventoryAPI {
                 removeDisplay,
                 onRemove,
                 null,
+                null,
+                null);
+    }
+
+    @Nullable
+    public <T> BlobEditor<T> detailedEditor(@NotNull Player player,
+                                            @NotNull String dataType,
+                                            @NotNull Supplier<Collection<T>> addCollection,
+                                            @NotNull Consumer<T> onAdd,
+                                            @Nullable Function<T, ItemStack> addDisplay,
+                                            @NotNull Supplier<Collection<T>> viewCollection,
+                                            @NotNull Function<T, ItemStack> removeDisplay,
+                                            @NotNull Consumer<T> onRemove,
+                                            @NotNull Consumer<Player> onReturn) {
+        return customEditor("DetailedBlobEditor",
+                player,
+                "White-Background",
+                dataType,
+                addCollection,
+                onAdd,
+                addDisplay,
+                viewCollection,
+                removeDisplay,
+                onRemove,
+                onReturn,
                 null,
                 null);
     }

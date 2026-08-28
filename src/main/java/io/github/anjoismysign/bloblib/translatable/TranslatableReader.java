@@ -68,7 +68,7 @@ public class TranslatableReader {
                     "three fields, or delete the file.");
         @Nullable Boolean miniMessage = itemStackSection.isBoolean("minimessage") ? itemStackSection.getBoolean("minimessage") : null;
         LocaleOverlay.warnStrayFields(DataAssetType.TRANSLATABLE_ITEM, key, locale, filePath, section, ITEM_OVERLAY_ROOT_FIELDS);
-        LocaleOverlay.warnStrayFields(DataAssetType.TRANSLATABLE_ITEM, key, locale, filePath, itemStackSection, ITEM_OVERLAY_STACK_FIELDS);
+        LocaleOverlay.warnStrayFields(DataAssetType.TRANSLATABLE_ITEM, key, locale, filePath, itemStackSection, ITEM_OVERLAY_STACK_FIELDS, "ItemStack");
         return TranslatableItem.forLocale(key, locale, displayName, itemName, lore, miniMessage);
     }
 
