@@ -8,6 +8,7 @@ import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import io.github.anjoismysign.bloblib.middleman.itemstack.ItemStackReader;
 import io.github.anjoismysign.bloblib.translatable.TranslatableItem;
 import io.github.anjoismysign.bloblib.utility.IntegerRange;
+import io.github.anjoismysign.holoworld.asset.DataAsset;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * @author anjoismysign
@@ -53,20 +55,40 @@ public class MetaBlobMultiSlotable extends MultiSlotable {
                                              String locale,
                                              String inventoryIdentifier) {
         final Supplier<ItemStack> readSupplier;
+        final String multiSlotableIdentifier = inventoryIdentifier+"."+identifier;
         if (section.isString("ItemStack")) {
-            @Nullable String translatableItemReference = section.getString("ItemStack", null);
-            Objects.requireNonNull(translatableItemReference, "'translatableItemReference' cannot be null!");
+            @Nullable String translatableItemIdentifier = section.getString("ItemStack", null);
+            Objects.requireNonNull(translatableItemIdentifier, "'translatableItemIdentifier' cannot be null!");
             TranslatableItem translatableItem = BlobLibTranslatableAPI.getInstance()
-                    .getTranslatableItem(translatableItemReference,
-                            locale);
-            if (translatableItem == null)
-                throw new ConfigurationFieldException("TranslatableItem not found: " + translatableItemReference);
+                    .getTranslatableItem(translatableItemIdentifier, locale);
+            if (translatableItem == null) {
+                throw new ConfigurationFieldException("TranslatableItem not found: " + translatableItemIdentifier);
+            }
             readSupplier = translatableItem::getClone;
-        } else {
+        } else if (section.isConfigurationSection("ItemStack")) {
             ConfigurationSection itemStackSection = section.getConfigurationSection("ItemStack");
-            if (itemStackSection == null)
+            if (itemStackSection == null) {
                 throw new ConfigurationFieldException("'ItemStack' ConfigurationSection is null");
+            }
             readSupplier = () -> ItemStackReader.OMNI_STACK(itemStackSection, null).getCopy();
+        } else {
+            Set<String> buttons = BlobLibTranslatableAPI.getInstance().getTranslatableItems("en_us")
+                    .stream()
+                    .map(DataAsset::identifier)
+                    .filter(itemIdentifier->itemIdentifier.startsWith("BlobLib."))
+                    .map(itemIdentifier->itemIdentifier.substring("BlobLib.".length()))
+                    .filter(suffix->!suffix.contains("."))
+                    .collect(Collectors.toSet());
+            String translatableItemIdentifier = "BlobLib."+identifier;
+            if (!buttons.contains(identifier)){
+                throw new ConfigurationFieldException("'"+multiSlotableIdentifier+"' (an inventory button) is expecting '"+translatableItemIdentifier+"' (a TranslatableItem) but it doesn't exist!");
+            }
+            TranslatableItem translatableItem = BlobLibTranslatableAPI.getInstance()
+                    .getTranslatableItem(translatableItemIdentifier, locale);
+            if (translatableItem == null) {
+                throw new ConfigurationFieldException("TranslatableItem not found: " + translatableItemIdentifier);
+            }
+            readSupplier = translatableItem::getClone;
         }
         final Supplier<ItemStack> supplier;
         if (section.isInt("Amount")) {
