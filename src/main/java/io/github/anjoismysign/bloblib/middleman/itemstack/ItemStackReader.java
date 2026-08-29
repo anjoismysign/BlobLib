@@ -145,9 +145,9 @@ public class ItemStackReader {
                     throw new ConfigurationFieldException("'" + trimPattern + "' is not a valid TrimPattern");
                 builder.armorTrim(new ArmorTrim(material, pattern));
             }
-            if (section.isBoolean("HideToolTip")) {
-                boolean hideToolTip = section.getBoolean("HideToolTip");
-                builder.hideToolTip(hideToolTip);
+            boolean hideToolTip = section.isBoolean("HideToolTip") && section.getBoolean("HideToolTip");
+            if (hideToolTip) {
+                builder.hideToolTip(true);
             }
             if (section.isBoolean("EnchantmentGlintOverride")) {
                 boolean enchantmentGlintOverride = section.getBoolean("EnchantmentGlintOverride");
@@ -467,10 +467,13 @@ public class ItemStackReader {
                 });
                 builder.attributeModifiers(attributesBuilder.build());
             }
-            builder.hideAll();
-            boolean showAll = section.getBoolean("ShowAllItemFlags", false);
-            if (showAll)
-                builder.showAll();
+            if (!hideToolTip) {
+                builder.hideAll();
+                boolean showAll = section.getBoolean("ShowAllItemFlags", false);
+                if (showAll) {
+                    builder.showAll();
+                }
+            }
             if (section.isList("ItemFlags")) {
                 List<String> flagNames = section.getStringList("ItemFlags");
                 builder.deserializeAndFlag(flagNames);

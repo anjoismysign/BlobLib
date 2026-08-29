@@ -37,7 +37,7 @@ public class FancyHolograms implements HologramDriver {
                 Display.Billboard.VERTICAL,
                 null,
                 false,
-                -1,
+                1000,
                 0.0F,
                 1.0F,
                 null,
