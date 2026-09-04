@@ -147,14 +147,21 @@ public interface TranslatableItem extends Translatable<ItemStack> {
         Objects.requireNonNull(from);
         ItemMeta to = toStack.getItemMeta();
         Objects.requireNonNull(to);
-        if (to.hasDisplayName())
+        if (to.hasItemName()){
+            from.setItemName(to.getItemName());
+        } else {
+            from.setItemName(null);
+        }
+        if (to.hasDisplayName()) {
             from.setDisplayName(to.getDisplayName());
-        else
+        } else {
             from.setDisplayName(null);
-        if (to.hasLore())
+        }
+        if (to.hasLore()) {
             from.setLore(to.getLore());
-        else
+        } else {
             from.setLore(null);
+        }
         var component = from.getCustomModelDataComponent();
         List<String> get = component.getStrings();
         List<String> list = new ArrayList<>(get

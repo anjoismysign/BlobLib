@@ -16,3 +16,12 @@ Rarity:
     Snippet: '&b&lRARE'
   Epic:
     Snippet: '&d&lEPIC'
+TimeUtil:
+  Day:
+    Snippet: 'd'
+  Hour:
+    Snippet: 'h'
+  Minute:
+    Snippet: 'm'
+  Second:
+    Snippet: 's'
