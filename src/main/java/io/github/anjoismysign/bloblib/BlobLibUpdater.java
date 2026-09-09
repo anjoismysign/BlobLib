@@ -24,9 +24,11 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.logging.Logger;
 
 public class BlobLibUpdater implements PluginUpdater {
     private final BlobLib plugin;
+    private final Logger logger;
     private final String currentVersion;
     private final UpdaterListener listener;
     private boolean updateAvailable;
@@ -34,6 +36,7 @@ public class BlobLibUpdater implements PluginUpdater {
 
     protected BlobLibUpdater(BlobLib plugin) {
         this.plugin = plugin;
+        this.logger = plugin.getLogger();
         this.currentVersion = plugin.getDescription().getVersion();
         this.listener = new UpdaterListener(plugin, this);
         reload();
@@ -73,7 +76,7 @@ public class BlobLibUpdater implements PluginUpdater {
         try {
             url = new URL(getLatestUrl());
         } catch (MalformedURLException e) {
-            BlobLib.getAnjoLogger().error("Could not download latest version of BlobLib because " +
+            logger.severe("Could not download latest version of BlobLib because " +
                     "the URL was malformed");
             return false;
         }
@@ -115,7 +118,7 @@ public class BlobLibUpdater implements PluginUpdater {
         try {
             connection = (HttpURLConnection) url.openConnection();
         } catch (IOException e) {
-            plugin.getLogger().severe("Could not connect to GitHub to check for updates");
+            logger.severe("Could not connect to GitHub to check for updates");
             return null;
         }
         try {

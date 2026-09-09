@@ -4,7 +4,6 @@ import io.github.anjoismysign.anjo.entities.Result;
 import io.github.anjoismysign.bloblib.domain.BlobObject;
 import io.github.anjoismysign.bloblib.domain.RunnableReloadable;
 import io.github.anjoismysign.bloblib.inventory.BlobEditor;
-import io.github.anjoismysign.bloblib.logger.BlobPluginLogger;
 import io.github.anjoismysign.skeramidcommands.command.CommandTarget;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -21,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.logging.Logger;
 
 /**
  * @param <T> The type of object this manager is managing
@@ -131,8 +131,9 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager
         File file = objectFiles.get(key);
         if (file == null)
             return;
-        if (!file.delete())
-            getPlugin().getAnjoLogger().singleError("Failed to delete file " + file.getName());
+        if (!file.delete()) {
+            getPlugin().getLogger().severe("Failed to delete file " + file.getName());
+        }
         objectFiles.remove(key);
     }
 
@@ -242,10 +243,10 @@ public abstract class ObjectManager<T extends BlobObject> extends Manager
     }
 
     public void whenFilesLoad(Consumer<ObjectManager<T>> consumer) {
-        BlobPluginLogger logger = getPlugin().getAnjoLogger();
+        Logger logger = getPlugin().getLogger();
         loadFiles.whenComplete((objectManager, throwable) -> {
             if (throwable != null) {
-                logger.singleError(throwable.getMessage());
+                logger.severe(throwable.getMessage());
                 return;
             }
             consumer.accept(this);

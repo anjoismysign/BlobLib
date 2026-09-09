@@ -3,7 +3,6 @@ package io.github.anjoismysign.bloblib.manager;
 import io.github.anjoismysign.bloblib.component.ComponentConsumer;
 import io.github.anjoismysign.bloblib.domain.ConfigDecorator;
 import io.github.anjoismysign.bloblib.domain.PermissionDecorator;
-import io.github.anjoismysign.bloblib.logger.BlobPluginLogger;
 import io.github.anjoismysign.bloblib.scheduler.BlobScheduler;
 import io.github.anjoismysign.bloblib.updater.GitHubPluginUpdater;
 import io.github.anjoismysign.bloblib.updater.PluginUpdater;
@@ -19,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
  * A BlobPlugin is a plugin that makes use of BlobLib's assets features.
  */
 public abstract class BlobPlugin extends JavaPlugin implements PermissionDecorator, ComponentConsumer {
-    private final BlobPluginLogger logger = new BlobPluginLogger(this);
     private final BlobScheduler scheduler = new BlobScheduler(this);
     private Permission permission;
 
@@ -107,11 +105,6 @@ public abstract class BlobPlugin extends JavaPlugin implements PermissionDecorat
     @Nullable
     public PluginUpdater getPluginUpdater() {
         return null;
-    }
-
-    @NotNull
-    public BlobPluginLogger getAnjoLogger() {
-        return logger;
     }
 
     /**

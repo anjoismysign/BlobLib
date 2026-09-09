@@ -1,7 +1,6 @@
 package io.github.anjoismysign.bloblib.manager;
 
 import io.github.anjoismysign.aesthetic.DirectoryAssistant;
-import io.github.anjoismysign.anjo.logger.Logger;
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.currency.Currency;
 import io.github.anjoismysign.bloblib.currency.EconomyFactory;
@@ -33,6 +32,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.logging.Logger;
 
 public abstract class ManagerDirector implements IManagerDirector {
     private final BlobPlugin plugin;
@@ -133,7 +133,7 @@ public abstract class ManagerDirector implements IManagerDirector {
      */
     public void instantiateBlobPHExpansion(String identifier, Consumer<BlobPHExpansion> consumer) {
         if (!isPlaceholderAPIEnabled()) {
-            getPlugin().getAnjoLogger().log("PlaceholderAPI not found, not instantiating PlaceholderAPI expansion for " + getPlugin().getName());
+            getPlugin().getLogger().warning("PlaceholderAPI not found, not instantiating PlaceholderAPI expansion for " + getPlugin().getName());
             return;
         }
         BlobPHExpansion expansion = new BlobPHExpansion(getPlugin(), identifier);
@@ -308,7 +308,7 @@ public abstract class ManagerDirector implements IManagerDirector {
      * @return The ManagerDirector instance for method chaining
      */
     public FileDetachment detachAsset(String fileName, boolean debug, File path) {
-        Logger logger = getPlugin().getAnjoLogger();
+        Logger logger = getPlugin().getLogger();
         String[] split = fileName.split("/");
         String original = fileName;
         if (split.length > 1) {
@@ -329,7 +329,7 @@ public abstract class ManagerDirector implements IManagerDirector {
             ResourceUtil.moveResource(file, plugin.getResource(original));
         }
         if (debug && successful) {
-            logger.debug(" asset " + original + " successfully detached");
+            logger.info(" asset " + original + " successfully detached");
         }
         return new FileDetachment(file, isFresh);
     }
@@ -373,7 +373,7 @@ public abstract class ManagerDirector implements IManagerDirector {
         File[] freshFiles = freshFiles(debug, getRealFileManager().getDirectory(DataAssetType.META_BLOB_INVENTORY), yaml);
         InventoryManager.continueLoadingMetaInventories(plugin, freshFiles);
         if (debug) {
-            getPlugin().getAnjoLogger().debug(" inventory asset " + Arrays.toString(fileNames) + " successfully registered");
+            getPlugin().getLogger().info(" inventory asset " + Arrays.toString(fileNames) + " successfully registered");
         }
         return this;
     }
@@ -403,7 +403,7 @@ public abstract class ManagerDirector implements IManagerDirector {
         File[] freshFiles = freshFiles(debug, getRealFileManager().getDirectory(DataAssetType.BLOB_INVENTORY), yaml);
         InventoryManager.continueLoadingBlobInventories(plugin, freshFiles);
         if (debug) {
-            getPlugin().getAnjoLogger().debug(" inventory asset " + Arrays.toString(fileNames) + ".yml successfully registered");
+            getPlugin().getLogger().info(" inventory asset " + Arrays.toString(fileNames) + ".yml successfully registered");
         }
         return this;
     }
@@ -433,7 +433,7 @@ public abstract class ManagerDirector implements IManagerDirector {
         File[] freshFiles = freshFiles(debug, getRealFileManager().getDirectory(DataAssetType.BLOB_MESSAGE), yaml);
         BlobLib.getInstance().getMessageManager().continueLoadingAssets(plugin, true, freshFiles);
         if (debug) {
-            getPlugin().getAnjoLogger().debug(" message asset " + Arrays.toString(fileNames) + " successfully registered");
+            getPlugin().getLogger().info(" message asset " + Arrays.toString(fileNames) + " successfully registered");
         }
         return this;
     }
@@ -463,7 +463,7 @@ public abstract class ManagerDirector implements IManagerDirector {
         File[] freshFiles = freshFiles(debug, getRealFileManager().getDirectory(DataAssetType.BLOB_SOUND), yaml);
         BlobLib.getInstance().getSoundManager().continueLoadingAssets(plugin, true, freshFiles);
         if (debug) {
-            getPlugin().getAnjoLogger().debug(" sound asset " + Arrays.toString(fileNames) + " successfully registered");
+            getPlugin().getLogger().info(" sound asset " + Arrays.toString(fileNames) + " successfully registered");
         }
         return this;
     }
@@ -493,7 +493,7 @@ public abstract class ManagerDirector implements IManagerDirector {
         File[] freshFiles = freshFiles(debug, getRealFileManager().getDirectory(DataAssetType.TRANSLATABLE_BLOCK), yaml);
         BlobLib.getInstance().getTranslatableBlockManager().continueLoadingAssets(plugin, true, freshFiles);
         if (debug) {
-            getPlugin().getAnjoLogger().debug(" translatable block asset " + Arrays.toString(fileNames) + " successfully registered");
+            getPlugin().getLogger().info(" translatable block asset " + Arrays.toString(fileNames) + " successfully registered");
         }
         return this;
     }
@@ -523,7 +523,7 @@ public abstract class ManagerDirector implements IManagerDirector {
         File[] freshFiles = freshFiles(debug, getRealFileManager().getDirectory(DataAssetType.TRANSLATABLE_SNIPPET), yaml);
         BlobLib.getInstance().getTranslatableSnippetManager().continueLoadingAssets(plugin, true, freshFiles);
         if (debug) {
-            getPlugin().getAnjoLogger().debug(" translatable block asset " + Arrays.toString(fileNames) + " successfully registered");
+            getPlugin().getLogger().info(" translatable block asset " + Arrays.toString(fileNames) + " successfully registered");
         }
         return this;
     }
@@ -552,7 +552,7 @@ public abstract class ManagerDirector implements IManagerDirector {
         File[] freshFiles = freshFiles(debug, getRealFileManager().getDirectory(DataAssetType.TRANSLATABLE_ITEM), yaml);
         BlobLib.getInstance().getTranslatableItemManager().continueLoadingAssets(plugin, true, freshFiles);
         if (debug) {
-            getPlugin().getAnjoLogger().debug(" translatable item asset " + Arrays.toString(fileNames) + " successfully registered");
+            getPlugin().getLogger().info(" translatable item asset " + Arrays.toString(fileNames) + " successfully registered");
         }
         return this;
     }
@@ -579,7 +579,7 @@ public abstract class ManagerDirector implements IManagerDirector {
         File[] freshFiles = freshFiles(debug, getRealFileManager().getDirectory(DataAssetType.TAG_SET), yaml);
         BlobLib.getInstance().getTagSetManager().continueLoadingAssets(plugin, true, freshFiles);
         if (debug) {
-            getPlugin().getAnjoLogger().debug(" tag set asset " + Arrays.toString(fileNames) + " successfully registered");
+            getPlugin().getLogger().info(" tag set asset " + Arrays.toString(fileNames) + " successfully registered");
         }
         return this;
     }
@@ -606,7 +606,7 @@ public abstract class ManagerDirector implements IManagerDirector {
         File[] freshFiles = freshFiles(debug, getRealFileManager().getDirectory(DataAssetType.TRANSLATABLE_POSITIONABLE), yaml);
         BlobLib.getInstance().getTranslatablePositionableManager().continueLoadingAssets(plugin, true, freshFiles);
         if (debug) {
-            getPlugin().getAnjoLogger().debug(" translatable positionable asset " + Arrays.toString(fileNames) + " successfully registered");
+            getPlugin().getLogger().info(" translatable positionable asset " + Arrays.toString(fileNames) + " successfully registered");
         }
         return this;
     }
@@ -633,7 +633,7 @@ public abstract class ManagerDirector implements IManagerDirector {
         File[] freshFiles = freshFiles(debug, getRealFileManager().getDirectory(DataAssetType.TRANSLATABLE_AREA), yaml);
         BlobLib.getInstance().getTranslatableAreaManager().continueLoadingAssets(plugin, true, freshFiles);
         if (debug) {
-            getPlugin().getAnjoLogger().debug(" translatable area asset " + Arrays.toString(fileNames) + " successfully registered");
+            getPlugin().getLogger().info(" translatable area asset " + Arrays.toString(fileNames) + " successfully registered");
         }
         return this;
     }
@@ -660,7 +660,7 @@ public abstract class ManagerDirector implements IManagerDirector {
         File[] freshFiles = freshFiles(debug, getRealFileManager().getDirectory(DataAssetType.LOOT_TABLE), json);
         BlobLib.getInstance().getLootTableManager().continueLoadingAssets(plugin, true, freshFiles);
         if (debug) {
-            getPlugin().getAnjoLogger().debug(" loot table asset " + Arrays.toString(fileNames) + " successfully registered");
+            getPlugin().getLogger().info(" loot table asset " + Arrays.toString(fileNames) + " successfully registered");
         }
         return this;
     }

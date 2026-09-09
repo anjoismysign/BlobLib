@@ -54,15 +54,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public enum BlobLibCommand {
     INSTANCE;
 
-    private static final BlobLib main = BlobLib.getInstance();
+    private static final BlobLib PLUGIN = BlobLib.getInstance();
+    private static final Logger LOGGER = PLUGIN.getLogger();
 
     public void initialize() {
-        Command bloblib = BukkitAdapter.getInstance().ofBukkitCommand(main.getName());
+        Command bloblib = BukkitAdapter.getInstance().ofBukkitCommand(PLUGIN.getName());
         reload(bloblib);
         update(bloblib);
         download(bloblib);
@@ -81,7 +83,7 @@ public enum BlobLibCommand {
         Command command = bloblib.child("reload");
         command.onExecute(((permissionMessenger, args) -> {
             CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
-            main.reload();
+            PLUGIN.reload();
             BlobLibMessageAPI.getInstance()
                     .getMessage("System.Reload", sender)
                     .toCommandSender(sender);
@@ -92,13 +94,13 @@ public enum BlobLibCommand {
         Command selfUpdate = bloblib.child("selfupdate");
         selfUpdate.onExecute(((permissionMessenger, args) -> {
             CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
-            PluginUpdater updater = main.getBloblibupdater();
+            PluginUpdater updater = PLUGIN.getBloblibupdater();
 
             BlobMessage message = BlobLibMessageAPI.getInstance()
                     .getMessage("BlobLib.Updater-Successful", sender);
 
             message.modder()
-                    .replace("%randomColor%", main.getColorManager().randomColor().toString())
+                    .replace("%randomColor%", PLUGIN.getColorManager().randomColor().toString())
                     .replace("%plugin%", updater.getPlugin().getName())
                     .replace("%version%", updater.getLatestVersion())
                     .get()
@@ -106,7 +108,7 @@ public enum BlobLibCommand {
         }));
 
         Command pluginUpdate = bloblib.child("update");
-        PluginManager pluginManager = main.getPluginManager();
+        PluginManager pluginManager = PLUGIN.getPluginManager();
         CommandTarget<BlobPlugin> target = CommandTargetBuilder.fromMap(() -> pluginManager.getPluginsAsMap().entrySet().stream()
                 .filter(entry -> {
                     @Nullable PluginUpdater pluginUpdater = entry.getValue().getPluginUpdater();
@@ -137,7 +139,7 @@ public enum BlobLibCommand {
                     .getMessage("BlobLib.Updater-Successful", sender);
 
             message.modder()
-                    .replace("%randomColor%", main.getColorManager().randomColor().toString())
+                    .replace("%randomColor%", PLUGIN.getColorManager().randomColor().toString())
                     .replace("%plugin%", updater.getPlugin().getName())
                     .replace("%version%", updater.getLatestVersion())
                     .get()
@@ -151,7 +153,7 @@ public enum BlobLibCommand {
         Command content = command.child("content");
         content.onExecute(((permissionMessenger, args) -> {
             CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
-            ContentWarningRegistry registry = ContentWarningRegistry.getInstance();
+            ContentWarningRegistry registry = ContentWarningRegistry.INSTANCE;
             if (registry.isEmpty()) {
                 BlobLibMessageAPI.getInstance()
                         .getMessage("BlobLib.Content-Warnings-None", sender)
@@ -160,9 +162,9 @@ public enum BlobLibCommand {
             }
             Path path;
             try {
-                path = registry.saveReport(main.getDataFolder().toPath().resolve("warnings"));
+                path = registry.saveReport(PLUGIN.getDataFolder().toPath().resolve("warnings"));
             } catch (IOException exception) {
-                BlobLib.getAnjoLogger().error("Could not save the content warnings report: " + exception.getMessage());
+                LOGGER.severe("Could not save the content warnings report: " + exception.getMessage());
                 BlobLibMessageAPI.getInstance()
                         .getMessage("System.Error", sender)
                         .toCommandSender(sender);
@@ -199,7 +201,7 @@ public enum BlobLibCommand {
                 BlobLibMessageAPI.getInstance()
                         .getMessage("BlobLib.Download-GitHub-Successful", sender)
                         .modder()
-                        .replace("%randomColor%", main.getColorManager().randomColor().toString())
+                        .replace("%randomColor%", PLUGIN.getColorManager().randomColor().toString())
                         .replace("%fileName%", download.fileName())
                         .get()
                         .toCommandSender(sender);
@@ -362,7 +364,7 @@ public enum BlobLibCommand {
         }));
         Command teleport = command.child("teleport");
         CommandTarget<Player> onlinePlayers = BukkitCommandTarget.ONLINE_PLAYERS();
-        CommandTarget<TranslatablePositionable> target = CommandTargetBuilder.fromMap(() -> main.getTranslatablePositionableManager().getDefault());
+        CommandTarget<TranslatablePositionable> target = CommandTargetBuilder.fromMap(() -> PLUGIN.getTranslatablePositionableManager().getDefault());
         teleport.setParameters(target, onlinePlayers);
         teleport.onExecute((permissionMessenger, args) -> {
             CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
@@ -599,7 +601,7 @@ public enum BlobLibCommand {
         try {
             reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         } catch (IOException exception) {
-            BlobLib.getAnjoLogger().singleError("Repo not found: " + repoUrl);
+            LOGGER.severe("Repo not found: " + repoUrl);
             return RepositoryDownload.FAIL(DownloadError.REPO_NOT_FOUND);
         }
         StringBuilder response = new StringBuilder();

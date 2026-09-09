@@ -37,7 +37,7 @@ public class WorldGuardPH {
     private WorldGuardPH(@NotNull BlobLib plugin) {
         instance = this;
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
-            BlobLib.getAnjoLogger().log("PlaceholderAPI not found, not registering WorldGuard PlaceholderAPI expansion");
+            BlobLib.getInstance().getLogger().warning("PlaceholderAPI not found, not registering WorldGuard PlaceholderAPI expansion");
             return;
         }
         BlobPHExpansion expansion = new BlobPHExpansion(plugin, "worldguard");

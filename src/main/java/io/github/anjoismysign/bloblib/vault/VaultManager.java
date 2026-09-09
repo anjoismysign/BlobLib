@@ -1,7 +1,6 @@
 package io.github.anjoismysign.bloblib.vault;
 
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.logger.BlobPluginLogger;
 import io.github.anjoismysign.bloblib.vault.economy.Absent;
 import io.github.anjoismysign.bloblib.vault.economy.Found;
 import io.github.anjoismysign.bloblib.vault.economy.VaultEconomyWorker;
@@ -23,8 +22,10 @@ import org.bukkit.event.server.ServiceUnregisterEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicesManager;
 
+import java.util.logging.Logger;
+
 public class VaultManager implements Listener {
-    private final BlobPluginLogger logger;
+    private static final Logger LOGGER = BlobLib.getInstance().getLogger();
     private VaultEconomyWorker vaultEconomyWorker = new Absent();
     private VaultPermissionsWorker vaultPermissionsWorker;
     private Economy economy = null;
@@ -39,7 +40,6 @@ public class VaultManager implements Listener {
     private final ServicesManager servicesManager = Bukkit.getServicesManager();
 
     public VaultManager() {
-        logger = BlobLib.getAnjoLogger();
         setupEconomy();
         setupPermissions();
         setupProfile();
@@ -269,7 +269,7 @@ public class VaultManager implements Listener {
 
     public void setupPermissions() {
         if (!hasPermissionsProvider()) {
-            logger.log("Vault dependency / permissions plugin not found, disabling permissions features.");
+            LOGGER.warning("Vault dependency / permissions plugin not found, disabling permissions features.");
             vaultPermissionsWorker = new AbsentPerms();
         } else {
             vaultPermissionsWorker = new FoundPerms(permission);

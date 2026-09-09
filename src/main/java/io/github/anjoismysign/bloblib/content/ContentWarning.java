@@ -58,6 +58,28 @@ public record ContentWarning(@NotNull DataAssetType type,
     }
 
     /**
+     * Builds the warning raised when a BlobMessage declares a 'Type', which makes it a
+     * legacy message rather than a ModernMessage.
+     *
+     * @param reference The identifier of the message
+     * @param locale    The locale of the file the message was read from
+     * @param filePath  The path of the file the message was read from
+     * @param legacy    The declared 'Type'
+     * @return The warning
+     */
+    @NotNull
+    public static ContentWarning legacyMessage(@NotNull String reference,
+                                               @NotNull String locale,
+                                               @NotNull String filePath,
+                                               @NotNull String legacy) {
+        return new ContentWarning(DataAssetType.BLOB_MESSAGE, reference, locale, filePath, "Type",
+                "'Type: " + legacy + "' makes this a legacy message. Delete the 'Type' field to turn it into a " +
+                        "ModernMessage, which reads the very same 'Chat', 'Hover', 'Actionbar', 'Title' and " +
+                        "'Subtitle' fields, sends whichever of them are present, and is the only kind that keeps " +
+                        "receiving new features. Legacy messages still work, but they are on their way out.");
+    }
+
+    /**
      * @return A single line describing this warning, meant for a console log or a file report.
      */
     @NotNull

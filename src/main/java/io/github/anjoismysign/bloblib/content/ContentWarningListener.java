@@ -11,6 +11,8 @@ import org.bukkit.event.server.ServerLoadEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.logging.Logger;
+
 /**
  * Reports {@link ContentWarning}s once every plugin has loaded its content.
  * <p>
@@ -36,11 +38,13 @@ public class ContentWarningListener implements Listener {
 
     @EventHandler
     public void handle(ServerLoadEvent event) {
-        plugin.getInventoryManager().materializeOverlays();
-        ContentWarningRegistry registry = ContentWarningRegistry.getInstance();
-        if (registry.isEmpty())
+        plugin.materializeOverlays();
+        ContentWarningRegistry registry = ContentWarningRegistry.INSTANCE;
+        if (registry.isEmpty()) {
             return;
-        registry.report().forEach(line -> BlobLib.getAnjoLogger().log(line));
+        }
+        Logger logger = BlobLib.getInstance().getLogger();
+        registry.report().forEach(logger::warning);
     }
 
     @EventHandler
@@ -51,7 +55,7 @@ public class ContentWarningListener implements Listener {
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (!player.isConnected())
                 return;
-            int amount = ContentWarningRegistry.getInstance().size();
+            int amount = ContentWarningRegistry.INSTANCE.size();
             if (amount < 1)
                 return;
             @Nullable BlobMessage message = BlobMessage.by(MESSAGE_KEY);

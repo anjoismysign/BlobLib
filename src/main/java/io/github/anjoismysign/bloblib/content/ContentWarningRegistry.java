@@ -28,11 +28,6 @@ public enum ContentWarningRegistry {
 
     private final List<ContentWarning> warnings = new ArrayList<>();
 
-    @NotNull
-    public static ContentWarningRegistry getInstance() {
-        return INSTANCE;
-    }
-
     /**
      * Registers a warning.
      *
@@ -94,8 +89,8 @@ public enum ContentWarningRegistry {
             byFile.computeIfAbsent(warning.filePath(), key -> new ArrayList<>()).add(warning);
         List<String> lines = new ArrayList<>();
         lines.add("BlobLib content warnings (" + snapshot.size() + ")");
-        lines.add("These are not errors. Every listed field was accepted and then ignored,");
-        lines.add("so editing it changes nothing in game.");
+        lines.add("These are not errors. Every listed field was accepted, and is either");
+        lines.add("ignored, so that editing it changes nothing in game, or deprecated.");
         byFile.forEach((filePath, fileWarnings) -> {
             lines.add("");
             lines.add(filePath);

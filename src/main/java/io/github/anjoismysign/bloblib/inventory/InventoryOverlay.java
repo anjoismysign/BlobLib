@@ -219,7 +219,7 @@ public final class InventoryOverlay {
     private static void warn(@NotNull Pending overlay,
                              @NotNull String field,
                              @NotNull String reason) {
-        ContentWarningRegistry.getInstance().register(new ContentWarning(overlay.type(), overlay.reference(),
+        ContentWarningRegistry.INSTANCE.register(new ContentWarning(overlay.type(), overlay.reference(),
                 overlay.locale(), overlay.filePath(), field, reason));
     }
 }

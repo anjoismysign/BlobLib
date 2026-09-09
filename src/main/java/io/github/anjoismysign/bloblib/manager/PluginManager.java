@@ -7,7 +7,6 @@ import io.github.anjoismysign.bloblib.manager.asset.BukkitIdentityManager;
 import io.github.anjoismysign.bloblib.manager.asset.SimpleBukkitAssetManager;
 import io.github.anjoismysign.bloblib.manager.asset.SimpleBukkitGeneratorManager;
 import io.github.anjoismysign.bloblib.manager.asset.SimpleBukkitIdentityManager;
-import io.github.anjoismysign.bloblib.utility.Debug;
 import io.github.anjoismysign.holoworld.asset.AssetGenerator;
 import io.github.anjoismysign.holoworld.asset.DataAsset;
 import io.github.anjoismysign.holoworld.asset.IdentityGenerator;
@@ -165,8 +164,7 @@ public class PluginManager {
         String name = plugin.getName();
         if (plugins.containsKey(name))
             throw new IllegalArgumentException("BlobPlugin '" + name + "' is already registered!");
-        Debug.log(ColorManager.getRandomColor() + "<{BlobLib}> --> successfully registered "
-                + ColorManager.getRandomColor() + name);
+        blobLib().getLogger().info("successfully registered " + name);
         plugins.put(name, plugin);
         order.add(name);
         postWorld.put(name, managerDirector::postWorld);
@@ -176,8 +174,7 @@ public class PluginManager {
         String name = plugin.getName();
         if (!plugins.containsKey(name))
             throw new IllegalArgumentException("BlobPlugin " + name + " was not registered!");
-        Debug.log(ColorManager.getRandomColor() + "<{BlobLib}> --> successfully unregistered "
-                + ColorManager.getRandomColor() + name);
+        blobLib().getLogger().info("successfully unregistered " + name);
         plugins.remove(name);
         order.remove(name);
         postWorld.remove(name);

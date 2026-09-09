@@ -11,7 +11,6 @@ import io.github.anjoismysign.bloblib.event.BlobLibPreReloadEvent;
 import io.github.anjoismysign.bloblib.event.BlobLibReloadEvent;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import io.github.anjoismysign.bloblib.hologram.HologramManager;
-import io.github.anjoismysign.bloblib.logger.BlobPluginLogger;
 import io.github.anjoismysign.bloblib.manager.BlobLibConfigManager;
 import io.github.anjoismysign.bloblib.manager.BlobLibFileManager;
 import io.github.anjoismysign.bloblib.manager.BlobLibListenerManager;
@@ -33,6 +32,7 @@ import io.github.anjoismysign.bloblib.message.BlobMessage;
 import io.github.anjoismysign.bloblib.message.BlobMessageIO;
 import io.github.anjoismysign.bloblib.message.BlobSound;
 import io.github.anjoismysign.bloblib.message.BlobSoundReader;
+import io.github.anjoismysign.bloblib.message.MessageOverlay;
 import io.github.anjoismysign.bloblib.middleman.enginehub.EngineHubManager;
 import io.github.anjoismysign.bloblib.middleman.skript.BlobLibSkriptAddon;
 import io.github.anjoismysign.bloblib.placeholderapi.TranslatablePH;
@@ -62,7 +62,6 @@ import java.util.Set;
  * The main class of the plugin
  */
 public class BlobLib extends JavaPlugin {
-    private static BlobPluginLogger anjoLogger;
     private static BlobLib instance;
     private SerializationLib serializationLib;
     private BlobLibUpdater bloblibupdater;
@@ -110,15 +109,6 @@ public class BlobLib extends JavaPlugin {
     }
 
     /**
-     * Will retrieve the Logger implementation of Anjo framework.
-     *
-     * @return The Logger implementation of Anjo framework.
-     */
-    public static BlobPluginLogger getAnjoLogger() {
-        return anjoLogger;
-    }
-
-    /**
      * Will retrieve the VaultManager
      *
      * @return The VaultManager
@@ -142,7 +132,6 @@ public class BlobLib extends JavaPlugin {
         projectileDamageAPI = ProjectileDamageAPI.getInstance(this);
         api = BlobLibAPI.getInstance(this);
         bloblibupdater = new BlobLibUpdater(this);
-        anjoLogger = new BlobPluginLogger(this);
         pluginManager = PluginManager.getInstance();
         colorManager = new ColorManager();
         fileManager = new BlobLibFileManager();
@@ -150,6 +139,10 @@ public class BlobLib extends JavaPlugin {
         engineHubManager = EngineHubManager.getInstance();
         configManager = BlobLibConfigManager.getInstance(this);
 
+        soundManager = DataAssetManager.of(fileManager.getDirectory(DataAssetType.BLOB_SOUND),
+                BlobSoundReader::read,
+                DataAssetType.BLOB_SOUND,
+                section -> section.isString("Sound"));
         inventoryManager = new InventoryManager();
         inventoryTrackerManager = new InventoryTrackerManager();
         translatableSnippetManager = LocalizableDataAssetManager
@@ -192,17 +185,17 @@ public class BlobLib extends JavaPlugin {
                         (section, locale) -> section.isString("Display") && (!LocaleOverlay.isDefault(locale) || (section.isDouble("X") && section.isDouble("Y") && section.isDouble("Z"))));
         translatableAreaManager = TranslatableAreaManager.of();
         messageManager = LocalizableDataAssetManager.of(fileManager.getDirectory(DataAssetType.BLOB_MESSAGE),
-                BlobMessageIO.INSTANCE::read,
-        DataAssetType.BLOB_MESSAGE,
-        section -> section.isString("Chat") || section.isString("Actionbar") || (section.isString("Title") && section.isString("Subtitle")));
+                        BlobMessageIO.INSTANCE::read,
+                        DataAssetType.BLOB_MESSAGE,
+                        (section, locale) -> LocaleOverlay.isDefault(locale)
+                                ? section.isString("Chat") || section.isString("Actionbar")
+                                || (section.isString("Title") && section.isString("Subtitle"))
+                                : MessageOverlay.declaresText(section))
+                .overlaying(MessageOverlay.INSTANCE);
         actionManager = DataAssetManager.of(fileManager.getDirectory(DataAssetType.ACTION),
                 (section, key) -> Action.fromConfigurationSection(section),
                 DataAssetType.ACTION,
                 section -> section.isString("Type"));
-        soundManager = DataAssetManager.of(fileManager.getDirectory(DataAssetType.BLOB_SOUND),
-                BlobSoundReader::read,
-                DataAssetType.BLOB_SOUND,
-                section -> section.isString("Sound"));
         fillerManager = new FillerManager();
         vaultManager = new VaultManager();
         disguiseManager = new DisguiseManager();
@@ -233,11 +226,24 @@ public class BlobLib extends JavaPlugin {
     /**
      * Will reload all the managers
      */
+    /**
+     * Builds every locale overlay that has been read but not merged yet, across every
+     * manager that supports them.
+     * <p>
+     * Overlays cannot be built while their file is read, since the en_us file they
+     * inherit from is not guaranteed to have loaded yet, and third party plugins load
+     * their own content during their onEnable.
+     */
+    public void materializeOverlays() {
+        inventoryManager.materializeOverlays();
+        messageManager.materializeOverlays();
+    }
+
     public void reload() {
         org.bukkit.plugin.PluginManager pluginManager = Bukkit.getPluginManager();
         BlobLibPreReloadEvent preReloadEvent = new BlobLibPreReloadEvent();
         pluginManager.callEvent(preReloadEvent);
-        ContentWarningRegistry.getInstance().clear();
+        ContentWarningRegistry.INSTANCE.clear();
 
         configManager.reload();
         listenerManager.reload();
@@ -253,6 +259,7 @@ public class BlobLib extends JavaPlugin {
         lootTableManager.reload();
         inventoryManager.reload();
         getPluginManager().reload();
+        materializeOverlays();
 
         BlobLibReloadEvent reloadEvent = new BlobLibReloadEvent();
         pluginManager.callEvent(reloadEvent);

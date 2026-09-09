@@ -1,5 +1,8 @@
 package io.github.anjoismysign.bloblib.message;
 
+import io.github.anjoismysign.bloblib.content.ContentWarning;
+import io.github.anjoismysign.bloblib.content.ContentWarningRegistry;
+import io.github.anjoismysign.bloblib.domain.DataAssetType;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import io.github.anjoismysign.bloblib.utility.TextColor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -24,17 +27,48 @@ public enum BlobMessageIO {
     }
 
     /**
-     * Will read a BlobMessage from a ConfigurationSection
+     * Will read a BlobMessage from a ConfigurationSection, being aware of the file it
+     * belongs to so that a legacy message can be pointed at.
      *
-     * @param section The section to read from
+     * @param section  The section to read from
+     * @param locale   The locale of the file the section belongs to
+     * @param key      The identifier of the message
+     * @param filePath The path of the file the section belongs to, null if unknown
      * @return The BlobMessage
      */
     public BlobMessage read(@NotNull ConfigurationSection section,
                             @NotNull String locale,
-                            @NotNull String key) {
-        Optional<BlobSound> sound = section.contains("BlobSound") ?
-                BlobSoundReader.parse(section, null) : Optional.empty();
+                            @NotNull String key,
+                            @Nullable String filePath) {
+        return readRaw(section, locale, key, filePath).toModernMessage();
+    }
+
+    /**
+     * Will read a BlobMessage from a ConfigurationSection, in whichever shape the section
+     * declares. A section carrying a 'Type' yields a legacy message, which {@link #read}
+     * then migrates to a {@link ModernMessage}.
+     *
+     * @param section  The section to read from
+     * @param locale   The locale of the file the section belongs to
+     * @param key      The identifier of the message
+     * @param filePath The path of the file the section belongs to, null if unknown
+     * @return The BlobMessage
+     */
+    private BlobMessage readRaw(@NotNull ConfigurationSection section,
+                                @NotNull String locale,
+                                @NotNull String key,
+                                @Nullable String filePath) {
+        Optional<BlobSound> sound = section.isString("BlobSound") ?
+                Optional.ofNullable(BlobSound.by(section.getString("BlobSound"))) : Optional.empty();
+        ContentWarningRegistry warningRegistry = ContentWarningRegistry.INSTANCE;
+        if (section.isConfigurationSection("BlobSound") && filePath != null){
+            warningRegistry.register(new ContentWarning(DataAssetType.BLOB_MESSAGE, key, locale, filePath, "BlobSound",
+                    "'BlobSound' must not be a ConfigurationSection! It should be the identifier of an actual BlobSound! Skipping BlobSound for this BlobMessage"));
+        }
         String type = section.getString("Type");
+        if (type != null && filePath != null) {
+            warningRegistry.register(ContentWarning.legacyMessage(key, locale, filePath, type));
+        }
         if (type == null) {
             @Nullable String chat = section.getString("Chat");
             chat = chat == null ? null : TextColor.PARSE(chat);

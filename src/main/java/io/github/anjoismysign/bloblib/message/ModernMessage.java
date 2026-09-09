@@ -111,6 +111,34 @@ public class ModernMessage extends AbstractMessage {
         return this;
     }
 
+    /**
+     * Derives the message of a non default locale from this one, which is the message
+     * of the default locale (en_us).
+     * <p>
+     * Every text field is replaced, never merged: the result carries exactly the text
+     * the overlay declares and nothing else, so a locale may show only an actionbar
+     * where en_us shows a chat line and a title. The sound and the title timings are
+     * inherited, since they are not translatable.
+     *
+     * @param locale    The locale of the overlay
+     * @param chat      The chat line of the overlay, null if it declares none
+     * @param hover     The hover text of the overlay, null if it declares none
+     * @param actionbar The actionbar of the overlay, null if it declares none
+     * @param title     The title of the overlay, null if it declares none
+     * @param subtitle  The subtitle of the overlay, null if it declares none
+     * @return The message of that locale
+     */
+    @NotNull
+    public ModernMessage overlay(@NotNull String locale,
+                                 @Nullable String chat,
+                                 @Nullable String hover,
+                                 @Nullable String actionbar,
+                                 @Nullable String title,
+                                 @Nullable String subtitle) {
+        return new ModernMessage(identifier(), chat, hover, actionbar, title, subtitle,
+                fadeIn, stay, fadeOut, getSound(), locale, getClickEvent());
+    }
+
     public void write(@NotNull ConfigurationSection at){
         if (chat != null){
             at.set("Chat", chat);

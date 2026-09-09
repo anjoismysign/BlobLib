@@ -16,8 +16,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.logging.Logger;
 
 public abstract class InventoryBuilder<T extends InventoryButton> {
+    private static final Logger LOGGER = BlobLib.getInstance().getLogger();
+
     private String title;
     private int size;
     private ButtonManager<T> buttonManager;
@@ -152,7 +155,7 @@ public abstract class InventoryBuilder<T extends InventoryButton> {
     public boolean isInsideButton(String key, int slot) {
         T button = getButton(key);
         if (button == null) {
-            BlobLib.getAnjoLogger().singleError("InventoryButton with key '" + key + "' inside " +
+            LOGGER.severe("InventoryButton with key '" + key + "' inside " +
                     "inventory '" + getTitle() + "' does not exist!");
             return false;
         }
@@ -170,7 +173,7 @@ public abstract class InventoryBuilder<T extends InventoryButton> {
     public boolean handleAll(String key, Player player) {
         T button = getButton(key);
         if (button == null) {
-            BlobLib.getAnjoLogger().singleError("InventoryButton with key '" + key + "' inside " +
+            LOGGER.severe("InventoryButton with key '" + key + "' inside " +
                     "inventory '" + getTitle() + "' does not exist!");
             return false;
         }

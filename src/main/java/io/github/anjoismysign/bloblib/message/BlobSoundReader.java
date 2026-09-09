@@ -79,7 +79,7 @@ public class BlobSoundReader {
                 try {
                     audience = MessageAudience.valueOf(split[1]);
                 } catch (IllegalArgumentException e) {
-                    BlobLib.getAnjoLogger().singleError("Invalid Sound's Audience: " + split[1]);
+                    BlobLib.getInstance().getLogger().severe("Invalid Sound's Audience: " + split[1]);
                     return Optional.empty();
                 }
                 BlobSound blobSound = optional.get();

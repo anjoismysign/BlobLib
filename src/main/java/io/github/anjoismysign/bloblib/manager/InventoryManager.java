@@ -15,10 +15,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,10 +29,6 @@ public class InventoryManager {
     private final Map<String, MetaInventoryShard> shards;
     private final Map<String, InventoryDataRegistry<InventoryButton>> blobRegistries;
     private final Map<String, InventoryDataRegistry<MetaInventoryButton>> metaRegistries;
-    private final Map<String, ConfigurationSection> sections;
-    private final Map<String, ConfigurationSection> metaSections;
-    private final List<InventoryOverlay.Pending> overlays;
-    private final List<InventoryOverlay.Pending> metaOverlays;
 
     public static void loadBlobPlugin(BlobPlugin plugin, IManagerDirector director) {
         InventoryManager manager = BlobLib.getInstance().getInventoryManager();
@@ -60,43 +54,68 @@ public class InventoryManager {
         this.shards = new HashMap<>();
         this.blobRegistries = new HashMap<>();
         this.metaRegistries = new HashMap<>();
-        this.sections = new HashMap<>();
-        this.metaSections = new HashMap<>();
-        this.overlays = new ArrayList<>();
-        this.metaOverlays = new ArrayList<>();
         this.blobInventoryManager = LocalizableDataAssetManager
                 .of(BlobLib.getInstance().getFileManager().getDirectory(DataAssetType.BLOB_INVENTORY),
-                        (section, locale, reference, filePath) -> {
-                            if (!LocaleOverlay.isDefault(locale)) {
-                                overlays.add(InventoryOverlay.read(DataAssetType.BLOB_INVENTORY,
-                                        section, locale, reference, filePath));
-                                return null;
-                            }
-                            sections.put(reference, section);
-                            return read(section, locale, reference, filePath);
-                        },
+                        (LocalizableDataAssetManager.AssetReader<InventoryBuilderCarrier<InventoryButton>>) this::read,
                         DataAssetType.BLOB_INVENTORY,
-                        (section, locale) -> LocaleOverlay.isDefault(locale)
-                                ? section.isInt("Size")
-                                : section.isString("Title") || section.isConfigurationSection("Buttons"));
+                        InventoryManager::isInventory)
+                .overlaying(overlayHandler(DataAssetType.BLOB_INVENTORY, this::read));
         this.metaInventoryManager = LocalizableDataAssetManager
                 .of(BlobLib.getInstance().getFileManager().getDirectory(DataAssetType.META_BLOB_INVENTORY),
-                        (section, locale, reference, filePath) -> {
-                            if (!LocaleOverlay.isDefault(locale)) {
-                                metaOverlays.add(InventoryOverlay.read(DataAssetType.META_BLOB_INVENTORY,
-                                        section, locale, reference, filePath));
-                                return null;
-                            }
-                            metaSections.put(reference, section);
+                        (LocalizableDataAssetManager.AssetReader<InventoryBuilderCarrier<MetaInventoryButton>>) (section, locale, reference, filePath) -> {
                             InventoryBuilderCarrier<MetaInventoryButton> carrier = readMeta(section, locale, reference, filePath);
                             shards.computeIfAbsent(carrier.type(), _ -> new MetaInventoryShard())
                                     .addInventory(carrier, reference);
                             return carrier;
                         },
                         DataAssetType.META_BLOB_INVENTORY,
-                        (section, locale) -> LocaleOverlay.isDefault(locale)
-                                ? section.isInt("Size")
-                                : section.isString("Title") || section.isConfigurationSection("Buttons"));
+                        InventoryManager::isInventory)
+                .overlaying(overlayHandler(DataAssetType.META_BLOB_INVENTORY, this::readMeta));
+    }
+
+    /**
+     * An inventory of the default locale is recognized by its 'Size', which an overlay
+     * does not carry: a locale overlay is recognized by the text it translates.
+     */
+    private static boolean isInventory(@NotNull ConfigurationSection section,
+                                       @NotNull String locale) {
+        return LocaleOverlay.isDefault(locale)
+                ? section.isInt("Size")
+                : section.isString("Title") || section.isConfigurationSection("Buttons");
+    }
+
+    /**
+     * Builds the handler that merges the locale overlays of an inventory onto the section
+     * its en_us counterpart was read from, and reads the result with the very same factory.
+     * <p>
+     * An overlay is never added to a {@link MetaInventoryShard}, since a shard is keyed by
+     * reference alone and would have its en_us carrier overwritten. Only the default locale
+     * reader above touches the shards, so this comes for free.
+     */
+    @NotNull
+    private <T extends InventoryButton> LocalizableDataAssetManager.OverlayHandler<InventoryBuilderCarrier<T>> overlayHandler(
+            @NotNull DataAssetType type,
+            @NotNull LocalizableDataAssetManager.AssetReader<InventoryBuilderCarrier<T>> reader) {
+        return new LocalizableDataAssetManager.OverlayHandler<>() {
+            @Override
+            public void validate(@NotNull ConfigurationSection section,
+                                 @NotNull String locale,
+                                 @NotNull String reference,
+                                 @NotNull String filePath) {
+                InventoryOverlay.read(type, section, locale, reference, filePath);
+            }
+
+            @Override
+            public InventoryBuilderCarrier<T> merge(@Nullable InventoryBuilderCarrier<T> baseAsset,
+                                                    @NotNull ConfigurationSection baseSection,
+                                                    @NotNull ConfigurationSection section,
+                                                    @NotNull String locale,
+                                                    @NotNull String reference,
+                                                    @NotNull String filePath) {
+                InventoryOverlay.Pending overlay = new InventoryOverlay.Pending(type, reference, locale, filePath, section);
+                return reader.read(InventoryOverlay.merge(baseSection, overlay), locale, reference, filePath);
+            }
+        };
     }
 
     @NotNull
@@ -120,51 +139,11 @@ public class InventoryManager {
     }
 
     /**
-     * Builds every locale overlay that has been read but not merged yet, now that the
-     * en_us file it inherits from is expected to have loaded.
-     * <p>
-     * An overlay is never added to a {@link MetaInventoryShard}, since a shard is keyed
-     * by reference alone and would have its en_us carrier overwritten.
+     * Builds every inventory locale overlay that has been read but not merged yet.
      */
     public void materializeOverlays() {
-        materialize(overlays, sections, blobInventoryManager, this::read);
-        materialize(metaOverlays, metaSections, metaInventoryManager, this::readMeta);
-    }
-
-    private <T extends InventoryButton> void materialize(@NotNull List<InventoryOverlay.Pending> overlays,
-                                                         @NotNull Map<String, ConfigurationSection> sections,
-                                                         @NotNull LocalizableDataAssetManager<InventoryBuilderCarrier<T>> manager,
-                                                         @NotNull OverlayReader<T> reader) {
-        if (overlays.isEmpty()) {
-            return;
-        }
-        List<InventoryOverlay.Pending> pending = new ArrayList<>(overlays);
-        overlays.clear();
-        for (InventoryOverlay.Pending overlay : pending) {
-            @Nullable ConfigurationSection base = sections.get(overlay.reference());
-            if (base == null) {
-                BlobLib.getAnjoLogger().error("No default locale (en_us) provided for '" +
-                        overlay.reference() + "' " + overlay.type().name() + "\nAt: " + overlay.filePath());
-                continue;
-            }
-            try {
-                ConfigurationSection merged = InventoryOverlay.merge(base, overlay);
-                manager.addAsset(reader.read(merged, overlay.locale(), overlay.reference(), overlay.filePath()),
-                        overlay.reference(), overlay.filePath());
-            } catch (Throwable throwable) {
-                BlobLib.getInstance().getLogger().severe("At: " + overlay.filePath());
-                throwable.printStackTrace();
-            }
-        }
-    }
-
-    @FunctionalInterface
-    private interface OverlayReader<T extends InventoryButton> {
-        @NotNull
-        InventoryBuilderCarrier<T> read(@NotNull ConfigurationSection section,
-                                        @NotNull String locale,
-                                        @NotNull String reference,
-                                        @NotNull String filePath);
+        blobInventoryManager.materializeOverlays();
+        metaInventoryManager.materializeOverlays();
     }
 
     /**
@@ -187,10 +166,6 @@ public class InventoryManager {
         shards.clear();
         blobRegistries.clear();
         metaRegistries.clear();
-        sections.clear();
-        metaSections.clear();
-        overlays.clear();
-        metaOverlays.clear();
         blobInventoryManager.reload();
         metaInventoryManager.reload();
         materializeOverlays();

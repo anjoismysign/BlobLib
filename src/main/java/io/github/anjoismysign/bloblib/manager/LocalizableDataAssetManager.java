@@ -2,6 +2,7 @@ package io.github.anjoismysign.bloblib.manager;
 
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
+import io.github.anjoismysign.bloblib.content.LocaleOverlay;
 import io.github.anjoismysign.bloblib.domain.DataAssetType;
 import io.github.anjoismysign.bloblib.domain.Localizable;
 import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
@@ -23,6 +24,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class LocalizableDataAssetManager<T extends DataAsset & Localizable> implements BlobLibDataAssetManager<T> {
@@ -47,12 +49,68 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
                @NotNull String filePath);
     }
 
+    /**
+     * Builds the assets of a non default locale, which carry translatable text alone and
+     * inherit every other field from the default locale (en_us) asset of the same reference.
+     * <p>
+     * Overlays cannot be built while their file is read, since the en_us file they inherit
+     * from is not guaranteed to have loaded yet. They are validated at read time and merged
+     * by {@link #materializeOverlays()}.
+     *
+     * @param <T> The type of the asset
+     */
+    public interface OverlayHandler<T> {
+        /**
+         * Inspects an overlay as its file is read, rejecting it if it would translate
+         * nothing and registering a warning for every field it declares that has no effect.
+         *
+         * @param section   The section the overlay is read from
+         * @param locale    The locale of the overlay file
+         * @param reference The identifier of the asset
+         * @param filePath  The path of the overlay file
+         */
+        void validate(@NotNull ConfigurationSection section,
+                      @NotNull String locale,
+                      @NotNull String reference,
+                      @NotNull String filePath);
+
+        /**
+         * Builds the asset of a non default locale from the default locale one.
+         *
+         * @param baseAsset   The asset of the default locale, null if it failed to load
+         * @param baseSection The section the default locale asset was read from
+         * @param section     The section the overlay is read from
+         * @param locale      The locale of the overlay file
+         * @param reference   The identifier of the asset
+         * @param filePath    The path of the overlay file
+         * @return The asset of that locale, or null if it should be skipped
+         */
+        @Nullable
+        T merge(@Nullable T baseAsset,
+                @NotNull ConfigurationSection baseSection,
+                @NotNull ConfigurationSection section,
+                @NotNull String locale,
+                @NotNull String reference,
+                @NotNull String filePath);
+    }
+
+    private record PendingOverlay(@NotNull String reference,
+                                  @NotNull String locale,
+                                  @NotNull String filePath,
+                                  @NotNull ConfigurationSection section) {
+    }
+
     private final File assetDirectory;
     private final AssetReader<T> readFunction;
     private final DataAssetType type;
     private final BiPredicate<ConfigurationSection, String> filter;
+    @Nullable
+    private OverlayHandler<T> overlayHandler;
+    private final Map<String, ConfigurationSection> defaultSections = new HashMap<>();
+    private final List<PendingOverlay> pendingOverlays = new ArrayList<>();
 
-    private final BlobLib blobLib;
+    private final BlobLib plugin;
+    private final Logger logger;
     private Map<String, Set<String>> assets;
     private Map<String, List<String>> duplicates;
     private Map<String, String> keyFirstFile;
@@ -159,7 +217,8 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
                                 @NotNull AssetReader<T> readFunction,
                                 @NotNull DataAssetType type,
                                 @NotNull BiPredicate<ConfigurationSection, String> filter) {
-        this.blobLib = BlobLib.getInstance();
+        this.plugin = BlobLib.getInstance();
+        this.logger = plugin.getLogger();
         this.assetDirectory = assetDirectory;
         this.readFunction = readFunction;
         this.type = type;
@@ -167,13 +226,15 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
     }
 
     public void reload() {
+        defaultSections.clear();
+        pendingOverlays.clear();
         locales = new HashMap<>();
         assets = new HashMap<>();
         duplicates = new HashMap<>();
         keyFirstFile = new HashMap<>();
         loadFiles(assetDirectory);
-        duplicates.forEach((identifier, paths) -> BlobLib.getAnjoLogger()
-                .log("Duplicate " + type.name() + ": '" + identifier + "' (found " + paths.size() + " instances)\n" +
+        duplicates.forEach((identifier, paths) -> logger
+                .warning("Duplicate " + type.name() + ": '" + identifier + "' (found " + paths.size() + " instances)\n" +
                         paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
     }
 
@@ -185,8 +246,8 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
         duplicates.clear();
         File directory = director.getFileManager().getDirectory(type);
         loadFiles(directory, plugin);
-        duplicates.forEach((identifier, paths) -> plugin.getAnjoLogger()
-                .log("Duplicate " + type.name() + ": '" + identifier + "' (found " + paths.size() + " instances)\n" +
+        duplicates.forEach((identifier, paths) -> plugin.getLogger()
+                .warning("Duplicate " + type.name() + ": '" + identifier + "' (found " + paths.size() + " instances)\n" +
                         paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
     }
 
@@ -219,7 +280,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
                     else
                         loadYamlConfiguration(file, plugin);
                 } catch (ConfigurationFieldException exception) {
-                    blobLib.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
+                    this.plugin.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
                     continue;
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
@@ -238,7 +299,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
         String locale = yamlConfiguration.getString("Locale", "en_us");
         if (filter.test(yamlConfiguration, locale)) {
             try {
-                T asset = readFunction.read(yamlConfiguration, locale, fileName, filePath);
+                T asset = readAsset(yamlConfiguration, locale, fileName, filePath);
                 if (asset == null) {
                     return;
                 }
@@ -256,7 +317,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
             if (!filter.test(section, locale))
                 return;
             try {
-                T asset = readFunction.read(section, locale, reference, filePath);
+                T asset = readAsset(section, locale, reference, filePath);
                 if (asset == null)
                     return;
                 addOrCreateLocale(asset, reference, filePath);
@@ -274,7 +335,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
         String locale = yamlConfiguration.getString("Locale", "en_us");
         if (filter.test(yamlConfiguration, locale)) {
             try {
-                T asset = readFunction.read(yamlConfiguration, locale, fileName, filePath);
+                T asset = readAsset(yamlConfiguration, locale, fileName, filePath);
                 if (asset == null)
                     return;
                 addOrCreateLocale(asset, fileName, filePath);
@@ -292,7 +353,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
             if (!filter.test(section, locale))
                 return;
             try {
-                T asset = readFunction.read(section, locale, reference, filePath);
+                T asset = readAsset(section, locale, reference, filePath);
                 if (asset == null)
                     return;
                 addOrCreateLocale(asset, reference, filePath);
@@ -302,6 +363,75 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
                 throwable.printStackTrace();
             }
         });
+    }
+
+    /**
+     * Turns this manager into one whose non default locale files are locale overlays.
+     *
+     * @param overlayHandler The handler that validates and merges them
+     * @return This manager
+     */
+    @NotNull
+    public LocalizableDataAssetManager<T> overlaying(@NotNull OverlayHandler<T> overlayHandler) {
+        this.overlayHandler = Objects.requireNonNull(overlayHandler, "'overlayHandler' cannot be null");
+        return this;
+    }
+
+    /**
+     * Builds every locale overlay that has been read but not merged yet, now that the
+     * en_us file it inherits from is expected to have loaded.
+     * <p>
+     * Draining is idempotent, so this may be called as often as is convenient.
+     */
+    public void materializeOverlays() {
+        if (overlayHandler == null || pendingOverlays.isEmpty()) {
+            return;
+        }
+        List<PendingOverlay> pending = new ArrayList<>(pendingOverlays);
+        pendingOverlays.clear();
+        @Nullable Map<String, T> english = locales.get(LocaleOverlay.DEFAULT_LOCALE);
+        for (PendingOverlay overlay : pending) {
+            @Nullable ConfigurationSection baseSection = defaultSections.get(overlay.reference());
+            if (baseSection == null) {
+                plugin.getLogger().severe("No default locale (" + LocaleOverlay.DEFAULT_LOCALE +
+                        ") provided for '" + overlay.reference() + "' " + type.name() +
+                        "\nAt: " + overlay.filePath());
+                continue;
+            }
+            try {
+                @Nullable T asset = overlayHandler.merge(english == null ? null : english.get(overlay.reference()),
+                        baseSection, overlay.section(), overlay.locale(), overlay.reference(), overlay.filePath());
+                if (asset == null) {
+                    continue;
+                }
+                addOrCreateLocale(asset, overlay.reference(), overlay.filePath());
+            } catch (ConfigurationFieldException exception) {
+                plugin.getLogger().severe(exception.getMessage() + "\nAt: " + overlay.filePath());
+            } catch (Throwable throwable) {
+                plugin.getLogger().severe("At: " + overlay.filePath());
+                throwable.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Reads an asset, holding back the overlays of a manager that has an
+     * {@link OverlayHandler} until every file has been read.
+     */
+    @Nullable
+    private T readAsset(@NotNull ConfigurationSection section,
+                        @NotNull String locale,
+                        @NotNull String reference,
+                        @NotNull String filePath) {
+        if (overlayHandler == null)
+            return readFunction.read(section, locale, reference, filePath);
+        if (!LocaleOverlay.isDefault(locale)) {
+            overlayHandler.validate(section, locale, reference, filePath);
+            pendingOverlays.add(new PendingOverlay(reference, locale, filePath, section));
+            return null;
+        }
+        defaultSections.put(reference, section);
+        return readFunction.read(section, locale, reference, filePath);
     }
 
     /**
@@ -339,8 +469,8 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
         for (File file : files)
             loadYamlConfiguration(file, plugin);
         if (warnDuplicates)
-            duplicates.forEach((identifier, paths) -> plugin.getAnjoLogger()
-                    .log("Duplicate " + type.name() + ": '" + identifier + "' (found " + paths.size() + " instances)\n" +
+            duplicates.forEach((identifier, paths) -> plugin.getLogger()
+                    .warning("Duplicate " + type.name() + ": '" + identifier + "' (found " + paths.size() + " instances)\n" +
                             paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
     }
 
@@ -359,6 +489,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
     }
 
     public List<T> getAssets(@NotNull String locale) {
+        materializeOverlays();
         Objects.requireNonNull(locale);
         @Nullable Map<String, T> english = locales.get("en_us");
         Map<String, T> copy = new HashMap<>();
@@ -371,6 +502,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
     }
 
     public Map<String, T> getDefault() {
+        materializeOverlays();
         @Nullable Map<String, T> english = locales.get("en_us");
         Map<String, T> copy = new HashMap<>();
         if (english != null)
@@ -381,6 +513,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
     @Nullable
     public T getAsset(@NotNull String identifier,
                       @NotNull String locale) {
+        materializeOverlays();
         Objects.requireNonNull(identifier);
         Objects.requireNonNull(locale);
         locale = BlobLibTranslatableAPI.getInstance().getRealLocale(locale);
@@ -397,6 +530,7 @@ public class LocalizableDataAssetManager<T extends DataAsset & Localizable> impl
      */
     @NotNull
     public Set<String> getIdentifiers() {
+        materializeOverlays();
         Set<String> identifiers = new HashSet<>();
         locales.values().forEach(localeMap -> identifiers.addAll(localeMap.keySet()));
         return identifiers;

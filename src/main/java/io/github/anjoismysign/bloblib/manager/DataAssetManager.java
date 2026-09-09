@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class DataAssetManager<T extends DataAsset> implements BlobLibDataAssetManager<T> {
@@ -28,7 +29,8 @@ public class DataAssetManager<T extends DataAsset> implements BlobLibDataAssetMa
     private final DataAssetType type;
     private final Predicate<ConfigurationSection> filter;
 
-    private final BlobLib main;
+    private final BlobLib plugin;
+    private final Logger logger;
     private Map<String, Set<String>> pluginAssets;
     private Map<String, List<String>> duplicates;
     private Map<String, String> keyFirstFile;
@@ -65,7 +67,8 @@ public class DataAssetManager<T extends DataAsset> implements BlobLibDataAssetMa
                              @NotNull BiFunction<ConfigurationSection, String, T> readFunction,
                              @NotNull DataAssetType type,
                              @NotNull Predicate<ConfigurationSection> filter) {
-        this.main = BlobLib.getInstance();
+        this.plugin = BlobLib.getInstance();
+        this.logger = plugin.getLogger();
         this.assetDirectory = assetDirectory;
         this.readFunction = readFunction;
         this.type = type;
@@ -78,8 +81,8 @@ public class DataAssetManager<T extends DataAsset> implements BlobLibDataAssetMa
         duplicates = new HashMap<>();
         keyFirstFile = new HashMap<>();
         loadFiles(assetDirectory);
-        duplicates.forEach((identifier, paths) -> BlobLib.getAnjoLogger()
-                .log("Duplicate " + type.name() + ": '" + identifier + "' (found " + paths.size() + " instances)\n" +
+        duplicates.forEach((identifier, paths) -> logger
+                .warning("Duplicate " + type.name() + ": '" + identifier + "' (found " + paths.size() + " instances)\n" +
                         paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
     }
 
@@ -93,8 +96,8 @@ public class DataAssetManager<T extends DataAsset> implements BlobLibDataAssetMa
         if (directory == null)
             throw new NullPointerException("Directory for " + type.name() + " is null");
         loadFiles(directory);
-        duplicates.forEach((identifier, paths) -> plugin.getAnjoLogger()
-                .log("Duplicate " + type.name() + ": '" + identifier + "' (found " + paths.size() + " instances)\n" +
+        duplicates.forEach((identifier, paths) -> plugin.getLogger()
+                .warning("Duplicate " + type.name() + ": '" + identifier + "' (found " + paths.size() + " instances)\n" +
                         paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
     }
 
@@ -114,7 +117,7 @@ public class DataAssetManager<T extends DataAsset> implements BlobLibDataAssetMa
                 try {
                     loadYamlConfiguration(file);
                 } catch (ConfigurationFieldException exception) {
-                    main.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
+                    plugin.getLogger().severe(exception.getMessage() + "\nAt: " + file.getPath());
                     continue;
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
@@ -207,8 +210,8 @@ public class DataAssetManager<T extends DataAsset> implements BlobLibDataAssetMa
         for (File file : files)
             loadYamlConfiguration(file, plugin);
         if (warnDuplicates)
-            duplicates.forEach((identifier, paths) -> plugin.getAnjoLogger()
-                    .log("Duplicate " + type.name() + ": '" + identifier + "' (found " + paths.size() + " instances)\n" +
+            duplicates.forEach((identifier, paths) -> plugin.getLogger()
+                    .warning("Duplicate " + type.name() + ": '" + identifier + "' (found " + paths.size() + " instances)\n" +
                             paths.stream().map(p -> "  - " + p).collect(Collectors.joining("\n"))));
     }
 

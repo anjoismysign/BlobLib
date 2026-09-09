@@ -26,7 +26,7 @@ public class TranslatablePH {
     private TranslatablePH(@NotNull BlobLib plugin) {
         instance = this;
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
-            BlobLib.getAnjoLogger().log("PlaceholderAPI not found, not registering Translatabe PlaceholderAPI expansion");
+            BlobLib.getInstance().getLogger().warning("PlaceholderAPI not found, not registering Translatabe PlaceholderAPI expansion");
             return;
         }
         BlobPHExpansion expansion = new BlobPHExpansion(plugin, "translatable");

@@ -71,7 +71,7 @@ public class GitHubPluginUpdater implements PluginUpdater {
         try {
             url = new URL(fetchLast().latestUrl());
         } catch (MalformedURLException e) {
-            BlobLib.getAnjoLogger().error("Could not download latest version of BlobLib because " +
+            BlobLib.getInstance().getLogger().severe("Could not download latest version of BlobLib because " +
                     "the URL was malformed");
             return false;
         }

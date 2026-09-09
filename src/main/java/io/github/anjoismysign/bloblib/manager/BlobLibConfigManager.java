@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 public class BlobLibConfigManager {
     private static BlobLibConfigManager instance;
@@ -32,6 +33,7 @@ public class BlobLibConfigManager {
     }
 
     private final BlobLib plugin;
+    private final Logger logger;
     private TinyEventListener displayRiding;
     private TinyEventListener itemConsumeUpdateInventory;
     private String consoleLocale;
@@ -43,6 +45,7 @@ public class BlobLibConfigManager {
 
     private BlobLibConfigManager(BlobLib plugin) {
         this.plugin = plugin;
+        this.logger = plugin.getLogger();
         reload();
     }
 
@@ -72,7 +75,7 @@ public class BlobLibConfigManager {
             List<String> from = localeDefault.from();
             from.forEach(fromLocale -> {
                 if (defaultLocale.containsKey(fromLocale)) {
-                    BlobLib.getAnjoLogger().singleError("Duplicate default description for " + fromLocale);
+                    logger.severe("Duplicate default description for " + fromLocale);
                     return;
                 }
                 defaultLocale.put(fromLocale, to);
