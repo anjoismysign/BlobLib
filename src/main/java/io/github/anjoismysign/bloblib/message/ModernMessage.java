@@ -139,6 +139,23 @@ public class ModernMessage extends AbstractMessage {
                 fadeIn, stay, fadeOut, getSound(), locale, getClickEvent());
     }
 
+    /**
+     * Derives the message of a non default locale from this one, taking every text field
+     * from another message and inheriting the sound and the title timings from this one.
+     * <p>
+     * This is the overlay of a file written in the legacy 'Type' shape, which is migrated
+     * to a ModernMessage before its text is applied.
+     *
+     * @param locale The locale of the overlay
+     * @param text   The message the text is taken from
+     * @return The message of that locale
+     */
+    @NotNull
+    public ModernMessage overlay(@NotNull String locale,
+                                 @NotNull ModernMessage text) {
+        return overlay(locale, text.chat, text.hover, text.actionbar, text.title, text.subtitle);
+    }
+
     public void write(@NotNull ConfigurationSection at){
         if (chat != null){
             at.set("Chat", chat);

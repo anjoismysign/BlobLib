@@ -29,6 +29,13 @@ public enum MessageOverlay implements LocalizableDataAssetManager.OverlayHandler
     public static final Set<String> TEXT_FIELDS = Set.of("Chat", "Hover", "Actionbar", "Title", "Subtitle");
 
     /**
+     * The fields an overlay written in the legacy 'Type' shape is read for. Its timings
+     * and its sound are still the en_us ones, so they are not among them.
+     */
+    private static final Set<String> LEGACY_FIELDS = Set.of("Type", "Message",
+            "Chat", "Hover", "Actionbar", "Title", "Subtitle");
+
+    /**
      * @param section The section to inspect
      * @return true if the section declares any text at all
      */
@@ -38,7 +45,15 @@ public enum MessageOverlay implements LocalizableDataAssetManager.OverlayHandler
                 return true;
             }
         }
-        return false;
+        return isLegacy(section);
+    }
+
+    /**
+     * @param section The section to inspect
+     * @return true if the section is written in the legacy 'Type' shape
+     */
+    public static boolean isLegacy(@NotNull ConfigurationSection section) {
+        return section.isString("Type");
     }
 
     @Override
@@ -54,6 +69,8 @@ public enum MessageOverlay implements LocalizableDataAssetManager.OverlayHandler
                     "that translates nothing is almost always a mistake. Either add text to translate, or " +
                     "delete the file.");
         }
+        LocaleOverlay.warnStrayFields(DataAssetType.BLOB_MESSAGE, reference, locale, filePath,
+                section, isLegacy(section) ? LEGACY_FIELDS : TEXT_FIELDS);
     }
 
     @Override
@@ -68,9 +85,12 @@ public enum MessageOverlay implements LocalizableDataAssetManager.OverlayHandler
             throw new ConfigurationFieldException("No default locale (" + LocaleOverlay.DEFAULT_LOCALE +
                     ") provided for '" + reference + "' BlobMessage");
         }
-        LocaleOverlay.warnChangedFields(DataAssetType.BLOB_MESSAGE, reference, locale, filePath,
-                section, baseSection, TEXT_FIELDS);
-        return baseAsset.toModernMessage().overlay(locale,
+        ModernMessage base = baseAsset.toModernMessage();
+        if (isLegacy(section)) {
+            return base.overlay(locale, BlobMessageIO.INSTANCE
+                    .read(section, locale, reference, filePath).toModernMessage());
+        }
+        return base.overlay(locale,
                 read(section, "Chat"),
                 read(section, "Hover"),
                 read(section, "Actionbar"),
