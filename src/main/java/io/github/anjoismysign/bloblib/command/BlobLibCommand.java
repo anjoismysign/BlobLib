@@ -236,7 +236,7 @@ public enum BlobLibCommand {
             BlobLibInventoryAPI.getInstance().selector(
                     player,
                     "TranslatableItem",
-                    ()-> BlobLibTranslatableAPI.getInstance().getTranslatableItems(player.getLocale()),
+                    ()-> BlobLibTranslatableAPI.getInstance().getTranslatableItems(player.getLocale()).stream().filter(item->!item.hideFromView()).toList(),
                     translatableItem -> {
                         ItemStack clone = translatableItem.getClone();
                         int maxStackSize = clone.getMaxStackSize();

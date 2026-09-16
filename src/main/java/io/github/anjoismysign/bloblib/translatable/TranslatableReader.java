@@ -40,11 +40,12 @@ public class TranslatableReader {
         boolean isSoul = section.getBoolean("Is-Soul", false);
         boolean isUnique = section.getBoolean("Is-Unique", false);
         String rarityName = section.getString("Rarity", "common");
+        boolean hideFromView = section.getBoolean("Hide-From-View", false);
         @Nullable Double fluidPressure = section.isDouble("Fluid-Pressure") ? section.getDouble("Fluid-Pressure") : null;
         @Nullable Double projectileDamage = section.isDouble("Projectile-Damage") ? section.getDouble("Projectile-Damage") : null;
         OmniStack omniStack = ItemStackReader.OMNI_STACK(itemStackSection, key);
         return BlobTranslatableItem.of(key, locale, omniStack, rarityName,
-                isSoul, isUnique, fluidPressure, projectileDamage);
+                isSoul, isUnique, fluidPressure, projectileDamage, hideFromView);
     }
 
     /**

@@ -112,6 +112,11 @@ public interface TranslatableItem extends Translatable<ItemStack> {
             }
 
             @Override
+            public boolean hideFromView() {
+                return overlay().hideFromView();
+            }
+
+            @Override
             public @NotNull TranslatableItem modify(Function<String, String> function) {
                 return overlay().modify(function);
             }
@@ -290,4 +295,9 @@ public interface TranslatableItem extends Translatable<ItemStack> {
         Objects.requireNonNull(player, "'player' cannot be null");
         apply(itemStack, player.getLocale());
     }
+
+    /**
+     * @return Whether to hide this TranslatableItem in a view (like in "/bloblib translatableitem view")
+     */
+    boolean hideFromView();
 }

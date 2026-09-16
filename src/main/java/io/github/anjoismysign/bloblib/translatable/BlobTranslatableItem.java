@@ -35,7 +35,7 @@ public class BlobTranslatableItem implements TranslatableItem {
     @Nullable
     private final OmniStack omniStack;
 
-    private final boolean isSoul, isUnique;
+    private final boolean isSoul, isUnique, hideFromView;
 
     @Nullable
     private final Double fluidPressure, projectileDamage;
@@ -53,6 +53,7 @@ public class BlobTranslatableItem implements TranslatableItem {
      * @param isUnique         Whether the item is unique
      * @param fluidPressure    The fluid pressure, or null if it has none
      * @param projectileDamage The projectile damage, or null if it has none
+     * @param hideFromView Whether to hide from view
      * @return The TranslatableItem
      */
     @NotNull
@@ -63,21 +64,13 @@ public class BlobTranslatableItem implements TranslatableItem {
                                           boolean isSoul,
                                           boolean isUnique,
                                           @Nullable Double fluidPressure,
-                                          @Nullable Double projectileDamage) {
+                                          @Nullable Double projectileDamage,
+                                          boolean hideFromView) {
         Objects.requireNonNull(key, "'key' cannot be null");
         Objects.requireNonNull(locale, "'locale' cannot be null");
         Objects.requireNonNull(omniStack, "'omniStack' cannot be null");
         return new BlobTranslatableItem(key, locale, omniStack, rarity,
-                isSoul, isUnique, fluidPressure, projectileDamage);
-    }
-
-    public static BlobTranslatableItem of(@NotNull String key,
-                                          @NotNull String locale,
-                                          @NotNull Supplier<ItemStack> supplier,
-                                          @NotNull String rarity) {
-        Objects.requireNonNull(locale, "'locale' cannot be null");
-        Objects.requireNonNull(supplier, "'supplier' cannot be null");
-        return new BlobTranslatableItem(key, locale, supplier, rarity);
+                isSoul, isUnique, fluidPressure, projectileDamage, hideFromView);
     }
 
     private BlobTranslatableItem(@NotNull String key,
@@ -87,7 +80,8 @@ public class BlobTranslatableItem implements TranslatableItem {
                                  boolean isSoul,
                                  boolean isUnique,
                                  @Nullable Double fluidPressure,
-                                 @Nullable Double projectileDamage) {
+                                 @Nullable Double projectileDamage,
+                                 boolean hideFromView) {
         this.key = key;
         this.locale = locale;
         this.rarity = rarity;
@@ -96,6 +90,7 @@ public class BlobTranslatableItem implements TranslatableItem {
         this.isUnique = isUnique;
         this.fluidPressure = fluidPressure;
         this.projectileDamage = projectileDamage;
+        this.hideFromView = hideFromView;
         this.supplier = () -> {
             ItemStack itemStack = omniStack.getCopy();
             @Nullable ItemMeta itemMeta = itemStack.getItemMeta();
@@ -122,11 +117,12 @@ public class BlobTranslatableItem implements TranslatableItem {
     private BlobTranslatableItem(@NotNull String key,
                                  @NotNull String locale,
                                  @NotNull Supplier<ItemStack> supplier,
-                                 @NotNull String rarity) {
+                                 @NotNull String rarity, boolean hideFromView) {
         this.key = key;
         this.locale = locale;
         this.supplier = supplier;
         this.rarity = rarity;
+        this.hideFromView = hideFromView;
         this.omniStack = null;
         this.isSoul = false;
         this.isUnique = false;
@@ -166,7 +162,7 @@ public class BlobTranslatableItem implements TranslatableItem {
                 lore,
                 displayName,
                 itemName);
-        return of(key, locale, derived, rarity, isSoul, isUnique, fluidPressure, projectileDamage);
+        return of(key, locale, derived, rarity, isSoul, isUnique, fluidPressure, projectileDamage, hideFromView);
     }
 
     @NotNull
@@ -202,11 +198,16 @@ public class BlobTranslatableItem implements TranslatableItem {
                     .map(function)
                     .toList());
         }
-        return new BlobTranslatableItem(key, locale, () -> clone, rarity);
+        return new BlobTranslatableItem(key, locale, () -> clone, rarity, hideFromView);
     }
 
     @Override
     public TranslatableRarity getRarity() {
         return BlobLibConfigManager.getInstance().getRarities().getRarity(rarity);
+    }
+
+    @Override
+    public boolean hideFromView() {
+        return hideFromView;
     }
 }
