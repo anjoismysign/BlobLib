@@ -1,5 +1,6 @@
 package io.github.anjoismysign.bloblib.utility;
 
+import io.github.anjoismysign.bloblib.listener.SmartTinyListener;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -11,12 +12,29 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 
 public final class ListenerScanner {
+
+    public enum ListenerType {
+        HARDCODED(clazz-> Listener.class.isAssignableFrom(clazz) &&
+                !SmartTinyListener.class.isAssignableFrom(clazz)),
+        SMART_TINY_LISTENER(SmartTinyListener.class::isAssignableFrom);
+
+        private final Predicate<Class<?>> filter;
+
+        ListenerType(Predicate<Class<?>> filter){
+            this.filter = filter;
+        }
+
+        public Predicate<Class<?>> getFilter() {
+            return filter;
+        }
+    }
 
     private ListenerScanner() {}
 
@@ -40,7 +58,8 @@ public final class ListenerScanner {
     public static void scanAndRegister(JavaPlugin plugin, String packageName, Supplier<Boolean> debugSupplier){
         List<Listener> listeners = ListenerScanner.scan(
                 plugin,
-                packageName
+                packageName,
+                ListenerType.HARDCODED
         );
 
         for (Listener listener : listeners) {
@@ -51,7 +70,9 @@ public final class ListenerScanner {
         }
     }
 
-    private static List<Listener> scan(JavaPlugin plugin, String packageName) {
+    public static List<Listener> scan(JavaPlugin plugin,
+                                      String packageName,
+                                      ListenerType listenerType) {
         List<Listener> result = new ArrayList<>();
         String packagePath = packageName.replace('.', '/');
 
@@ -86,7 +107,7 @@ public final class ListenerScanner {
                 try {
                     Class<?> clazz = classLoader.loadClass(className);
 
-                    if (!Listener.class.isAssignableFrom(clazz)) continue;
+                    if (!listenerType.filter.test(clazz)) continue;
                     if (clazz.isInterface()) continue;
                     if (Modifier.isAbstract(clazz.getModifiers())) continue;
 
