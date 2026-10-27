@@ -18,7 +18,7 @@ import java.util.TreeMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class BlobPHExpansion extends PlaceholderExpansion implements Relational {
+public class BlobPHExpansion extends PlaceholderExpansion implements Relational, PHExpansion {
     private final JavaPlugin plugin;
     private final String identifier;
 
@@ -43,20 +43,17 @@ public class BlobPHExpansion extends PlaceholderExpansion implements Relational 
         this(plugin, "");
     }
 
-    /**
-     * @return the previous value associated with key, or null if there was no mapping for key. (A null return can also indicate that the map previously associated null with key, if the implementation supports null values.)
-     */
+    @Override
     public Function<OfflinePlayer, String> putSimple(String key, Function<OfflinePlayer, String> function) {
         return simple.put(key, function);
     }
 
+    @Override
     public BiFunction<Player, Player, String> putSimpleRelational(String key, BiFunction<Player, Player, String> biFunction){
         return simpleRelational.put(key, biFunction);
     }
 
-    /**
-     * @return the previous value associated with key, or null if there was no mapping for key. (A null return can also indicate that the map previously associated null with key, if the implementation supports null values.)
-     */
+    @Override
     public BiFunction<OfflinePlayer, String, String> putStartsWith(String key, BiFunction<OfflinePlayer, String, String> function) {
         return startsWith.put(key, function);
     }

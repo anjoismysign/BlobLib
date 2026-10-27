@@ -8,6 +8,7 @@ import io.github.anjoismysign.bloblib.domain.BlobObject;
 import io.github.anjoismysign.bloblib.domain.DataAssetType;
 import io.github.anjoismysign.bloblib.exception.KeySharingException;
 import io.github.anjoismysign.bloblib.placeholderapi.BlobPHExpansion;
+import io.github.anjoismysign.bloblib.placeholderapi.PHExpansion;
 import io.github.anjoismysign.bloblib.proxy.BlobProxifier;
 import io.github.anjoismysign.bloblib.scheduler.BukkitPluginOperator;
 import io.github.anjoismysign.bloblib.storage.BlobFileManager;
@@ -127,11 +128,13 @@ public abstract class ManagerDirector implements IManagerDirector {
     /**
      * Will instantiate a BlobPHExpansion and still allow calling
      * methods on it.
+     * The consumer receives a {@link PHExpansion} instead of a {@link BlobPHExpansion}
+     * so that callers' lambdas don't load PlaceholderAPI classes when it's not installed.
      *
      * @param identifier The identifier of the expansion
      * @param consumer   The consumer that will consume the expansion
      */
-    public void instantiateBlobPHExpansion(String identifier, Consumer<BlobPHExpansion> consumer) {
+    public void instantiateBlobPHExpansion(String identifier, Consumer<PHExpansion> consumer) {
         if (!isPlaceholderAPIEnabled()) {
             getPlugin().getLogger().warning("PlaceholderAPI not found, not instantiating PlaceholderAPI expansion for " + getPlugin().getName());
             return;

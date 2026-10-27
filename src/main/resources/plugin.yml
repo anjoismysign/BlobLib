@@ -1,7 +1,7 @@
 name: BlobLib
-version: 1.698.32
+version: 1.703
 main: io.github.anjoismysign.bloblib.BlobLib
-api-version: 1.21.11
+api-version: 26.3
 load: STARTUP
 loadbefore:
   - Skript
