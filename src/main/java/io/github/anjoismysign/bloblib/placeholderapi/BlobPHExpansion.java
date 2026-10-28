@@ -20,15 +20,13 @@ import java.util.function.Function;
 
 public class BlobPHExpansion extends PlaceholderExpansion implements Relational, PHExpansion {
     private final JavaPlugin plugin;
-    private final String identifier;
 
     private final Map<String, Function<OfflinePlayer, String>> simple;
     private final Map<String, BiFunction<Player, Player, String>> simpleRelational;
     private final Map<String, BiFunction<OfflinePlayer, String, String>> startsWith;
 
-    public BlobPHExpansion(JavaPlugin plugin, String identifier) {
+    public BlobPHExpansion(JavaPlugin plugin) {
         this.plugin = plugin;
-        this.identifier = identifier.toLowerCase(Locale.ROOT);
         simple = new HashMap<>();
         simpleRelational = new HashMap<>();
         Comparator<String> lengthComparator = (s1, s2) -> {
@@ -37,10 +35,6 @@ public class BlobPHExpansion extends PlaceholderExpansion implements Relational,
         };
         this.startsWith = new TreeMap<>(lengthComparator);
         Bukkit.getScheduler().runTask(plugin, this::register);
-    }
-
-    public BlobPHExpansion(JavaPlugin plugin) {
-        this(plugin, "");
     }
 
     @Override
@@ -75,7 +69,7 @@ public class BlobPHExpansion extends PlaceholderExpansion implements Relational,
     }
 
     public @NotNull String getIdentifier() {
-        return plugin.getName().toLowerCase(Locale.ROOT) + identifier;
+        return plugin.getName().toLowerCase(Locale.ROOT);
     }
 
     public @NotNull String getVersion() {

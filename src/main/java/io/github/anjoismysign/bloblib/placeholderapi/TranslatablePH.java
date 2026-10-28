@@ -29,7 +29,7 @@ public class TranslatablePH {
             BlobLib.getInstance().getLogger().warning("PlaceholderAPI not found, not registering Translatabe PlaceholderAPI expansion");
             return;
         }
-        BlobPHExpansion expansion = new BlobPHExpansion(plugin, "translatable");
+        BlobPHExpansion expansion = new BlobPHExpansion(plugin);
         this.expansion = expansion;
         expansion.putStartsWith("snippet_", (offlinePlayer, key) -> {
             Player player = Bukkit.getPlayer(offlinePlayer.getUniqueId());

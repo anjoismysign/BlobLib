@@ -131,15 +131,14 @@ public abstract class ManagerDirector implements IManagerDirector {
      * The consumer receives a {@link PHExpansion} instead of a {@link BlobPHExpansion}
      * so that callers' lambdas don't load PlaceholderAPI classes when it's not installed.
      *
-     * @param identifier The identifier of the expansion
      * @param consumer   The consumer that will consume the expansion
      */
-    public void instantiateBlobPHExpansion(String identifier, Consumer<PHExpansion> consumer) {
+    public void instantiateBlobPHExpansion(Consumer<PHExpansion> consumer) {
         if (!isPlaceholderAPIEnabled()) {
             getPlugin().getLogger().warning("PlaceholderAPI not found, not instantiating PlaceholderAPI expansion for " + getPlugin().getName());
             return;
         }
-        BlobPHExpansion expansion = new BlobPHExpansion(getPlugin(), identifier);
+        BlobPHExpansion expansion = new BlobPHExpansion(getPlugin());
         consumer.accept(expansion);
     }
 

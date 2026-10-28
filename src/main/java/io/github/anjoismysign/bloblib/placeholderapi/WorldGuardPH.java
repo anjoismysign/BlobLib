@@ -40,7 +40,7 @@ public class WorldGuardPH {
             BlobLib.getInstance().getLogger().warning("PlaceholderAPI not found, not registering WorldGuard PlaceholderAPI expansion");
             return;
         }
-        BlobPHExpansion expansion = new BlobPHExpansion(plugin, "worldguard");
+        BlobPHExpansion expansion = new BlobPHExpansion(plugin);
         this.expansion = expansion;
         expansion.putSimple("translatable_area", offlinePlayer -> {
             Player player = Bukkit.getPlayer(offlinePlayer.getUniqueId());
