@@ -24,19 +24,24 @@ public class ProjectileDamage implements Listener {
     public void onShoot(ProjectileLaunchEvent event) {
         Projectile projectile = event.getEntity();
         @Nullable ProjectileSource shooter = projectile.getShooter();
-        if (shooter == null)
+        if (shooter == null) {
             return;
-        if (!(projectile instanceof Arrow arrow))
+        }
+        if (!(projectile instanceof Arrow arrow)) {
             return;
-        if (!(shooter instanceof LivingEntity livingEntity))
+        }
+        if (!(shooter instanceof LivingEntity livingEntity)) {
             return;
+        }
         ItemStack activeItem = livingEntity.getActiveItem();
         @Nullable ItemMeta itemMeta = activeItem.getItemMeta();
-        if (itemMeta == null)
+        if (itemMeta == null) {
             return;
+        }
         ProjectileDamageAPI api = ProjectileDamageAPI.getInstance();
-        if (!api.isInstance(activeItem))
+        if (!api.isInstance(activeItem)) {
             return;
+        }
         double damage = api.get(itemMeta);
         arrow.setDamage(damage);
     }

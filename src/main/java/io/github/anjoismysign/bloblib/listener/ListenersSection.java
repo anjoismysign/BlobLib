@@ -56,6 +56,20 @@ public record ListenersSection(ConfigurationSection tinyListeners,
     }
 
     /**
+     * Gets a tiny event listener from the tiny listeners section, returning a default if not found.
+     * @param name Name of the tiny event listener.
+     * @param def The default value to return if the tiny event listener is not found.
+     * @return Tiny event listener.
+     */
+    public TinyEventListener tinyEventListener(String name, boolean def){
+        try {
+            return tinyEventListener(name);
+        } catch (ConfigurationFieldException exception){
+            return new TinyEventListener(def);
+        }
+    }
+
+    /**
      * Gets a complex event listener from the complex listeners section.
      *
      * @param name Name of the complex event listener.

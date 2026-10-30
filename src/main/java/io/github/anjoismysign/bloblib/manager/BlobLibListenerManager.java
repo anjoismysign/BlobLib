@@ -1,5 +1,6 @@
 package io.github.anjoismysign.bloblib.manager;
 
+import io.github.anjoismysign.bloblib.content.ContentWarningListener;
 import io.github.anjoismysign.bloblib.listener.DisplayUnriding;
 import io.github.anjoismysign.bloblib.listener.ItemConsumeUpdateInventory;
 import io.github.anjoismysign.bloblib.listener.ProjectileDamage;
@@ -23,19 +24,22 @@ public class BlobLibListenerManager {
 
     private final DisplayUnriding displayUnriding;
     private final ItemConsumeUpdateInventory itemConsumeUpdateInventory;
-    private final ProjectileDamage projectileDamage;
+    private final ContentWarningListener contentWarning;
     private final TranslatableAreaWand areaWand;
 
     private BlobLibListenerManager(BlobLibConfigManager configManager) {
         this.displayUnriding = new DisplayUnriding(configManager);
         this.itemConsumeUpdateInventory = new ItemConsumeUpdateInventory(configManager);
-        this.projectileDamage = new ProjectileDamage();
+        this.contentWarning = new ContentWarningListener();
         this.areaWand = new TranslatableAreaWand();
+
+        new ProjectileDamage();
     }
 
     public void reload() {
         displayUnriding.reload();
         itemConsumeUpdateInventory.reload();
+        contentWarning.reload();
     }
 
     public TranslatableAreaWand getAreaWand() {

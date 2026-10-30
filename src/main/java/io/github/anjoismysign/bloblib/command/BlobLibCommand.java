@@ -13,8 +13,6 @@ import io.github.anjoismysign.bloblib.area.AreaIO;
 import io.github.anjoismysign.bloblib.component.textbubble.TextBubbleComponent;
 import io.github.anjoismysign.bloblib.content.ContentWarningRegistry;
 import io.github.anjoismysign.bloblib.inventory.BlobInventoryTracker;
-import io.github.anjoismysign.bloblib.itemapi.ItemMaterial;
-import io.github.anjoismysign.bloblib.itemapi.ItemMaterialManager;
 import io.github.anjoismysign.bloblib.loot.LootTable;
 import io.github.anjoismysign.bloblib.manager.BlobPlugin;
 import io.github.anjoismysign.bloblib.manager.PluginManager;
@@ -27,6 +25,7 @@ import io.github.anjoismysign.bloblib.translatable.TranslatablePositionable;
 import io.github.anjoismysign.bloblib.updater.PluginUpdater;
 import io.github.anjoismysign.bloblib.utility.PlayerUtil;
 import io.github.anjoismysign.bloblib.utility.TextColor;
+import io.github.anjoismysign.holoworld.Identifiable;
 import io.github.anjoismysign.skeramidcommands.command.Command;
 import io.github.anjoismysign.skeramidcommands.command.CommandTarget;
 import io.github.anjoismysign.skeramidcommands.commandtarget.BukkitCommandTarget;
@@ -54,6 +53,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -68,13 +68,13 @@ public enum BlobLibCommand {
         reload(bloblib);
         update(bloblib);
         download(bloblib);
-        translatableitem(bloblib);
-        translatablepositionable(bloblib);
-        translatablearea(bloblib);
+        translatableItem(bloblib);
+        translatablePositionable(bloblib);
+        translatableArea(bloblib);
         loot(bloblib);
-        blobinventory(bloblib);
-        closeinventory(bloblib);
-        blobmessage(bloblib);
+        blobInventory(bloblib);
+        closeInventory(bloblib);
+        blobMessage(bloblib);
         teleport(bloblib);
         warnings(bloblib);
     }
@@ -220,10 +220,12 @@ public enum BlobLibCommand {
         }));
     }
 
-    public void translatableitem(@NotNull Command bloblib) {
+    public void translatableItem(@NotNull Command bloblib) {
         Command command = bloblib.child("translatableitem");
-        ItemMaterialManager materialManager = ItemMaterialManager.getInstance();
-        CommandTarget<ItemMaterial> target = CommandTargetBuilder.fromMap(materialManager::getItems);
+        CommandTarget<TranslatableItem> target = CommandTargetBuilder.fromMap(()-> BlobLibTranslatableAPI.getInstance().getTranslatableItems("en_us")
+                .stream()
+                .filter(item->!item.hideFromView())
+                .collect(Collectors.toMap(Identifiable::identifier, Function.identity())));
         Command view = command.child("view");
         view.onExecute((permissionMessenger, args)->{
             CommandSender sender = BukkitAdapter.getInstance().of(permissionMessenger);
@@ -316,7 +318,7 @@ public enum BlobLibCommand {
 
     }
 
-    public void translatablepositionable(@NotNull Command bloblib) {
+    public void translatablePositionable(@NotNull Command bloblib) {
         Command command = bloblib.child("translatablepositionable");
         Command save = command.child("save");
         save.setParameters(CommandTargetBuilder.fromMap(() -> Map.of("Type the key you wanna use", "")));
@@ -405,7 +407,7 @@ public enum BlobLibCommand {
         });
     }
 
-    public void translatablearea(@NotNull Command bloblib) {
+    public void translatableArea(@NotNull Command bloblib) {
         Command command = bloblib.child("translatablearea");
         Command random = command.child("random");
         random.onExecute((permissionMessenger, args) -> {
@@ -432,7 +434,7 @@ public enum BlobLibCommand {
         });
     }
 
-    public void blobinventory(@NotNull Command bloblib) {
+    public void blobInventory(@NotNull Command bloblib) {
         Command command = bloblib.child("blobinventory");
         Command open = command.child("open");
         CommandTarget<Player> onlinePlayers = BukkitCommandTarget.ONLINE_PLAYERS();
@@ -476,7 +478,7 @@ public enum BlobLibCommand {
         });
     }
 
-    public void closeinventory(@NotNull Command bloblib) {
+    public void closeInventory(@NotNull Command bloblib) {
         Command command = bloblib.child("closeinventory");
         CommandTarget<Player> onlinePlayers = BukkitCommandTarget.ONLINE_PLAYERS();
         command.setParameters(onlinePlayers);
@@ -493,7 +495,7 @@ public enum BlobLibCommand {
         });
     }
 
-    public void blobmessage(@NotNull Command bloblib) {
+    public void blobMessage(@NotNull Command bloblib) {
         Command command = bloblib.child("blobmessage");
         Command send = command.child("send");
         CommandTarget<BlobMessage> target = CommandTargetBuilder.fromMap(() -> BlobLibMessageAPI.getInstance().getDefault());

@@ -2,7 +2,6 @@ package io.github.anjoismysign.bloblib;
 
 import io.github.anjoismysign.bloblib.action.Action;
 import io.github.anjoismysign.bloblib.command.BlobLibCommand;
-import io.github.anjoismysign.bloblib.content.ContentWarningListener;
 import io.github.anjoismysign.bloblib.content.ContentWarningRegistry;
 import io.github.anjoismysign.bloblib.content.LocaleOverlay;
 import io.github.anjoismysign.bloblib.disguise.DisguiseManager;
@@ -210,7 +209,6 @@ public class BlobLib extends JavaPlugin {
         //Load reloadable managers
         reload();
         BlobLibCommand.INSTANCE.initialize();
-        new ContentWarningListener(this);
 
         Bukkit.getScheduler().runTask(this, () -> {
             TranslatablePH.getInstance(this);

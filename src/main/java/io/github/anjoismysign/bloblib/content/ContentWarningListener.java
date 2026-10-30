@@ -1,14 +1,15 @@
 package io.github.anjoismysign.bloblib.content;
 
 import io.github.anjoismysign.bloblib.BlobLib;
+import io.github.anjoismysign.bloblib.manager.BlobLibConfigManager;
 import io.github.anjoismysign.bloblib.message.BlobMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.server.ServerLoadEvent;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.logging.Logger;
@@ -29,11 +30,13 @@ public class ContentWarningListener implements Listener {
 
     private static final String MESSAGE_KEY = "BlobLib.Content-Operator-Warnings";
 
-    private final BlobLib plugin;
+    private final BlobLib plugin = BlobLib.getInstance();
 
-    public ContentWarningListener(@NotNull BlobLib plugin) {
-        this.plugin = plugin;
-        Bukkit.getPluginManager().registerEvents(this, plugin);
+    public void reload(){
+        HandlerList.unregisterAll(this);
+        if (BlobLibConfigManager.getInstance().getContentWarning().register()){
+            Bukkit.getPluginManager().registerEvents(this, plugin);
+        }
     }
 
     @EventHandler

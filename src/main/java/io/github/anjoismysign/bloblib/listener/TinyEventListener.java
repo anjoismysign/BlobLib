@@ -1,5 +1,6 @@
 package io.github.anjoismysign.bloblib.listener;
 
+import io.github.anjoismysign.bloblib.exception.ConfigurationFieldException;
 import org.bukkit.configuration.ConfigurationSection;
 
 public record TinyEventListener(boolean register) {
@@ -19,13 +20,13 @@ public record TinyEventListener(boolean register) {
      * @param section The ConfigurationSection to read from
      * @param name    The name of the TinyEventListener
      * @return The TinyEventListener
-     * @throws RuntimeException If the ConfigurationSection does not point to a boolean
+     * @throws ConfigurationFieldException If the ConfigurationSection does not point to a boolean
      */
     public static TinyEventListener READ(ConfigurationSection section, String name) {
-        if (section.contains(name) && !section.isBoolean(name)) {
-            throw new RuntimeException("Not a TinyEventListener");
+        if (!section.isBoolean(name)) {
+            throw new ConfigurationFieldException("Not a TinyEventListener");
         }
-        boolean register = section.getBoolean(name, false);
+        boolean register = section.getBoolean(name);
         return new TinyEventListener(register);
     }
 
