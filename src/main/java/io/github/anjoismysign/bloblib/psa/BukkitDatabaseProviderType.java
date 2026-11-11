@@ -2,6 +2,7 @@ package io.github.anjoismysign.bloblib.psa;
 
 import io.github.anjoismysign.bloblib.BlobLib;
 import io.github.anjoismysign.psa.crud.DatabaseCredentials;
+import io.github.anjoismysign.psa.mongo.MongoDatabaseCredentials;
 import io.github.anjoismysign.psa.sql.SQLDatabaseCredentials;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,9 +11,16 @@ public enum BukkitDatabaseProviderType {
     MYSQL(() -> {
         String connectionString = BukkitDatabaseProvider.INSTANCE.getSettings().connectionString();
         if (connectionString == null || connectionString.isEmpty()) {
-            throw new IllegalArgumentException("database-settings.yml 'connectionString' cannot be null or empty");
+            throw new IllegalArgumentException("database-settings.yml 'connection-string' cannot be null or empty");
         }
         return SQLDatabaseCredentials.ofConnectionString(connectionString);
+    }),
+    MONGO(() -> {
+        String connectionString = BukkitDatabaseProvider.INSTANCE.getSettings().connectionString();
+        if (connectionString == null || connectionString.isEmpty()) {
+            throw new IllegalArgumentException("database-settings.yml 'connection-string' cannot be null or empty");
+        }
+        return MongoDatabaseCredentials.ofConnectionString(connectionString);
     });
 
     private final PluginDatabaseProvider provider;

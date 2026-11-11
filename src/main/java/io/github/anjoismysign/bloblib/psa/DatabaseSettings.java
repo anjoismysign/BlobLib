@@ -20,7 +20,7 @@ public record DatabaseSettings(@NotNull String providerName,
         }
         File databaseSettings = new File(file.getPath() + File.separator + "database-settings.yml");
         YamlConfiguration config = YamlConfiguration.loadConfiguration(databaseSettings);
-        String providerName = config.getString("provider-name", "SQLITE");
+        String providerName = config.getString("provider", config.getString("provider-name", "SQLITE"));
         String connectionString = config.getString("connection-string");
         return new DatabaseSettings(providerName, connectionString);
     }

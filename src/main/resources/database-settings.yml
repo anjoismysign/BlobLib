@@ -1,2 +1,5 @@
+# SQLITE: stores in plugins/BlobLib/database.db, 'connection-string' is ignored
+# MYSQL: 'connection-string' such as "uuid://user:password@localhost:3306/database"
+# MONGO: 'connection-string' such as "mongodb://user:password@localhost:27017/database"
 provider: SQLITE
 connection-string: ""

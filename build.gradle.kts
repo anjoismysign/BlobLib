@@ -57,7 +57,7 @@ repositories {
 }
 
 dependencies {
-    api(libs.org.mongodb.bson)
+    compileOnlyApi(libs.org.mongodb.bson)
     /*
      * Compile projects from github.com/anjoismysign
      * Install in maven local
@@ -69,6 +69,7 @@ dependencies {
     api(libs.io.github.anjoismysign.holoworld)
     api(libs.io.github.anjoismysign.psa.api)
     api(libs.io.github.anjoismysign.psa.sql)
+    api(libs.io.github.anjoismysign.psa.mongo)
     api(libs.io.github.anjoismysign.winona)
     api(libs.io.github.anjoismysign.aesthetic)
     api("io.github.anjoismysign:blobutil:1.0")
